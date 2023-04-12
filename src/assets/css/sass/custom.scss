@@ -1,0 +1,60 @@
+.name {
+    font-weight: bold;
+}
+
+.card-title {
+    font-weight: bold;
+}
+
+label {
+    font-size: 0.78rem;
+    font-weight: normal;
+}
+
+.yellowmedeva {
+    color: #D7B55D;
+}
+
+.react-datepicker__input-container input.disabled-datepicker {
+    background-color: #e9ecef !important;
+}
+
+.sidebar .sub-menu ul li {
+    margin-left: 15px;
+}
+
+.sidebar .sub-menu ul li:hover i {
+    color: $theme-color-1;
+}
+
+.sidebar .sub-menu ul li.active:after {
+    display: none;
+}
+
+.button-search {
+    border-radius: 0 0.1rem 0.1rem 0;
+}
+
+.page-item {
+    padding: 5px;
+}
+
+.page-item .page-link {
+    line-height: 1;
+    min-width: 30px;
+    height: 30px;
+}
+
+@media (min-width: 320px) and (max-width: 575px) {
+    .responsive-mobile-vertical-xs-2 {
+        -webkit-flex: 0 0 10%;
+        flex: 0 0 10%;
+        max-width: 10%;
+    }
+
+    .responsive-mobile-vertical-xs-5 {
+        -webkit-flex: 0 0 33.33333%;
+        flex: 0 0 33.33333%;
+        max-width: 33.33333%;
+    }
+}
