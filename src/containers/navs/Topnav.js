@@ -14,7 +14,7 @@ import { connect } from 'react-redux';
 import {
   setContainerClassnames,
   clickOnMobileMenu,
-  logoutUser,
+  // logoutUser,
 } from 'redux/actions';
 
 import {
@@ -32,7 +32,7 @@ const TopNav = ({
   selectedMenuHasSubItems,
   setContainerClassnamesAction,
   clickOnMobileMenuAction,
-  logoutUserAction,
+  // logoutUserAction,
 }) => {
   const [isInFullScreen, setIsInFullScreen] = useState(false);
   const [searchKeyword, setSearchKeyword] = useState('');
@@ -149,7 +149,7 @@ const TopNav = ({
   };
 
   const handleLogout = () => {
-    logoutUserAction(history);
+    // logoutUserAction(history);
   };
 
   const menuButtonClick = (e, _clickCount, _conClassnames) => {
@@ -252,5 +252,5 @@ const mapStateToProps = ({ menu, settings }) => {
 export default connect(mapStateToProps, {
     setContainerClassnamesAction: setContainerClassnames,
     clickOnMobileMenuAction: clickOnMobileMenu,
-    logoutUserAction: logoutUser,
+    // logoutUserAction: logoutUser,
   })(TopNav);

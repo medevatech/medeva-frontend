@@ -35,6 +35,49 @@ label {
     border-radius: 0 0.1rem 0.1rem 0;
 }
 
+.dropdown-button-input {
+    border-radius: 0.1rem 0 0 0.1rem;
+}
+
+.select-KITAS {
+    width: 30%;
+}
+
+.input-KITAS {
+    width: 70%;
+}
+
+.input-group-insurance {
+    margin-bottom: 1rem !important;
+}
+
+.select-insurance {
+    width: 30%;
+}
+
+.input-insurance {
+    // width: 70%;
+    // margin-right: 10px;
+}
+
+.remove-insurance {
+    border-radius: 0 0.1rem 0.1rem 0;
+}
+
+.schedule-row {
+    margin-left: 5px;
+    width: 100%;
+}
+
+.schedule-separator {
+    width: 80%;
+}
+
+.remove-schedule {
+    // margin-top: 30px;
+    border-radius: 0.1rem 0.1rem 0.1rem 0.1rem;
+}
+
 .page-item {
     padding: 5px;
 }
@@ -43,6 +86,12 @@ label {
     line-height: 1;
     min-width: 30px;
     height: 30px;
+}
+
+@media (max-width: 768px) {
+    .schedule-row-col-1 {
+        display: none;
+    }
 }
 
 @media (min-width: 320px) and (max-width: 575px) {

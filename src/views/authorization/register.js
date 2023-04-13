@@ -13,7 +13,6 @@ import {
 import Select from 'react-select';
 import { NavLink } from 'react-router-dom';
 import { connect } from 'react-redux';
-import { registerUser } from 'redux/actions';
 
 import { Colxx } from 'components/common/CustomBootstrap';
 import CustomSelectInput from 'components/common/CustomSelectInput';
@@ -80,7 +79,7 @@ const Register = ({ history, loading, error }) => {
                     <Form>
                     <FormGroup className="form-group has-float-label  mb-4">
                         <Label>
-                        Username
+                        Username<span className="required text-danger" aria-required="true"> *</span>
                         </Label>
                         <Input type="text" defaultValue={username} name="username" id="username" />
                     </FormGroup>
@@ -94,14 +93,14 @@ const Register = ({ history, loading, error }) => {
 
                     <FormGroup className="form-group has-float-label  mb-4">
                         <Label>
-                        Password
+                        Password<span className="required text-danger" aria-required="true"> *</span>
                         </Label>
                         <Input type="password" defaultValue={password} name="password" id="password" />
                     </FormGroup>
 
                     <FormGroup className="form-group has-float-label  mb-4">
                         <Label>
-                        Peran
+                        Peran<span className="required text-danger" aria-required="true"> *</span>
                         </Label>
                         <Select
                           components={{ Input: CustomSelectInput }}
@@ -118,14 +117,14 @@ const Register = ({ history, loading, error }) => {
 
                     <FormGroup className="form-group has-float-label  mb-4">
                         <Label>
-                        No. KITAS
+                        No. KITAS<span className="required text-danger" aria-required="true"> *</span>
                         </Label>
                         <Input type="text" defaultValue="" name="noKITAS" id="noKITAS" />
                     </FormGroup>
 
                     <FormGroup className="form-group has-float-label  mb-4">
                         <Label>
-                        Nama Lengkap
+                        Nama Lengkap<span className="required text-danger" aria-required="true"> *</span>
                         </Label>
                         <Input type="text" defaultValue={namaLengkap} name="namaLengkap" id="namaLengkap"  />
                     </FormGroup>
@@ -217,7 +216,7 @@ const Register = ({ history, loading, error }) => {
 
                     <FormGroup className="form-group mb-4">
                         <Label style={{ fontSize: '80%', color: 'rgba(58, 58, 58, 0.7)' }}>
-                        Jenis Kelamin
+                        Jenis Kelamin<span className="required text-danger" aria-required="true"> *</span>
                         </Label>
                         <Row>
                           <Colxx md={4} xl={3}>
@@ -279,7 +278,7 @@ const Register = ({ history, loading, error }) => {
 
                     <FormGroup className="form-group has-float-label  mb-4">
                         <Label>
-                        Tipe Izin
+                        Tipe Izin<span className="required text-danger" aria-required="true"> *</span>
                         </Label>
                         <Select
                           components={{ Input: CustomSelectInput }}
@@ -296,14 +295,14 @@ const Register = ({ history, loading, error }) => {
 
                     <FormGroup className="form-group has-float-label  mb-4">
                         <Label>
-                        No. Izin
+                        No. Izin<span className="required text-danger" aria-required="true"> *</span>
                         </Label>
                         <Input type="text" defaultValue="" name="noIzin" id="noIzin"  />
                     </FormGroup>
 
                     <FormGroup className="form-group has-float-label  mb-4">
                         <Label>
-                        Kadaluarsa Izin
+                        Kadaluarsa Izin<span className="required text-danger" aria-required="true"> *</span>
                         </Label>
                         <Input
                           type="date"
@@ -333,10 +332,11 @@ const Register = ({ history, loading, error }) => {
 };
 
 const mapStateToProps = ({ authUser }) => {
-    const { loading, error } = authUser;
+    // const { loading, error } = authUser;
+    const { loading, error } = "";
     return { loading, error };
 };
 
 export default connect(mapStateToProps, {
-  registerUserAction: registerUser,
+  // registerUserAction: registerUser,
 })(Register);

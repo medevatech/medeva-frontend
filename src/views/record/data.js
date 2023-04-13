@@ -56,6 +56,13 @@ const selectPrognosa = [
   { label: 'Dubia Ad Malam (Tidak tentu/Ragu-ragu, Cenderung Buruk/Jelek)', value: 'dubiamalam', key: 3 },
 ];
 
+const selectType = [
+  { label: 'Promotif', value: 'promotif', key: 0 },
+  { label: 'Preventif', value: 'preventif', key: 1 },
+  { label: 'Rawat Inap', value: 'ranap', key: 2 },
+  { label: 'Rawat Jalan', value: 'rajal', key: 3 }
+];
+
 const filterPassedTime = (time) => {
   const currentDate = new Date();
   const selectedDate = new Date(time);
@@ -179,7 +186,7 @@ const Data = ({ match }) => {
                     <Colxx sm={5}>
                       <FormGroup>
                         <Label for="waktuMulai">
-                          Waktu Mulai
+                          Waktu Mulai<span className="required text-danger" aria-required="true"> *</span>
                         </Label>
                         <DatePicker
                           selected={startDateTime}
@@ -190,7 +197,7 @@ const Data = ({ match }) => {
                           showTimeSelect
                           timeFormat="HH:mm"
                           timeIntervals={5}
-                          dateFormat="d MMMM yyyy H:mm"
+                          dateFormat="d MMMM yyyy HH:mm"
                           readOnly={true}
                           timeCaption="Jam"
                           className="disabled-datepicker"
@@ -201,7 +208,7 @@ const Data = ({ match }) => {
                     <Colxx sm={5}>
                       <FormGroup>
                         <Label for="waktuSelesai">
-                          Waktu Selesai
+                          Waktu Selesai<span className="required text-danger" aria-required="true"> *</span>
                         </Label>
                         <DatePicker
                           selected={endDateTime}
@@ -212,7 +219,7 @@ const Data = ({ match }) => {
                           showTimeSelect
                           timeFormat="HH:mm"
                           timeIntervals={5}
-                          dateFormat="d MMMM yyyy H:mm"
+                          dateFormat="d MMMM yyyy HH:mm"
                           timeCaption="Jam"
                         />
                       </FormGroup>
@@ -236,7 +243,7 @@ const Data = ({ match }) => {
                     <Colxx sm={12}>
                       <FormGroup>
                         <Label for="pasien">
-                          Pasien
+                          Pasien<span className="required text-danger" aria-required="true"> *</span>
                         </Label>
                         <Select
                           components={{ Input: CustomSelectInput }}
@@ -262,7 +269,7 @@ const Data = ({ match }) => {
                           name="tipe"
                           value={selectedType}
                           onChange={setSelectedType}
-                          // options={selectType}
+                          options={selectType}
                         />
                       </FormGroup>
                     </Colxx>
@@ -345,7 +352,7 @@ const Data = ({ match }) => {
                       </FormGroup>
                     </Colxx>
 
-                    <Colxx sm={12}>
+                    {/* <Colxx sm={12}>
                       <FormGroup>
                         <Label for="catatan">
                           Catatan Tambahan
@@ -358,12 +365,14 @@ const Data = ({ match }) => {
                           style={{minHeight: '100px'}}
                         />
                       </FormGroup>
-                    </Colxx>
+                    </Colxx> */}
                   </FormGroup>
 
                   <Row>
                     <Colxx sm={6}>
-                      &nbsp;
+                      <Label>
+                        * ) Wajib diisi
+                      </Label>
                     </Colxx>
                     <Colxx sm={6} className="text-right">
                       <Button outline color="danger">
