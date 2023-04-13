@@ -139,7 +139,7 @@ const Data = ({ match }) => {
                     <Colxx sm={4}>
                       <FormGroup>
                         <Label for="username">
-                          Username
+                          Username<span className="required text-danger" aria-required="true"> *</span>
                         </Label>
                         <Input
                           type="text"
@@ -167,7 +167,7 @@ const Data = ({ match }) => {
                     <Colxx sm={4}>
                       <FormGroup>
                         <Label for="password">
-                          Password
+                          Password<span className="required text-danger" aria-required="true"> *</span>
                         </Label>
                         <Input
                           type="password"
@@ -181,7 +181,7 @@ const Data = ({ match }) => {
                     <Colxx sm={6}>
                       <FormGroup>
                         <Label for="noKITAS">
-                          No. KITAS
+                          No. KITAS<span className="required text-danger" aria-required="true"> *</span>
                         </Label>
                         <Input
                           type="text"
@@ -195,7 +195,7 @@ const Data = ({ match }) => {
                     <Colxx sm={6}>
                       <FormGroup>
                         <Label for="namaLengkap">
-                          Nama Lengkap
+                          Nama Lengkap<span className="required text-danger" aria-required="true"> *</span>
                         </Label>
                         <Input
                           type="text"
@@ -209,7 +209,7 @@ const Data = ({ match }) => {
                     <Colxx sm={6}>
                       <FormGroup>
                         <Label for="peran">
-                          Peran
+                          Peran<span className="required text-danger" aria-required="true"> *</span>
                         </Label>
                         <Select
                           components={{ Input: CustomSelectInput }}
@@ -227,7 +227,7 @@ const Data = ({ match }) => {
                     <Colxx sm={6}>
                       <FormGroup>
                         <Label for="divisi">
-                          Divisi
+                          Divisi<span className="required text-danger" aria-required="true"> *</span>
                         </Label>
                         <Select
                           components={{ Input: CustomSelectInput }}
@@ -355,7 +355,7 @@ const Data = ({ match }) => {
                     <Colxx sm={4}>
                       <FormGroup>
                       <Label for="jenisKelamin">
-                        Jenis Kelamin
+                        Jenis Kelamin<span className="required text-danger" aria-required="true"> *</span>
                       </Label>
                       <Row>
                         <Colxx sm={12} md={12} xl={4}>
@@ -435,7 +435,7 @@ const Data = ({ match }) => {
                     <Colxx sm={4}>
                       <FormGroup>
                         <Label for="izin">
-                          Tipe Izin
+                          Tipe Izin<span className="required text-danger" aria-required="true"> *</span>
                         </Label>
                         <Select
                           components={{ Input: CustomSelectInput }}
@@ -454,7 +454,7 @@ const Data = ({ match }) => {
                     <Colxx sm={4}>
                     <FormGroup>
                         <Label for="noIzin">
-                        No. Izin
+                        No. Izin<span className="required text-danger" aria-required="true"> *</span>
                         </Label>
                         <Input
                         type="text"
@@ -468,7 +468,7 @@ const Data = ({ match }) => {
                     <Colxx sm={4}>
                       <FormGroup>
                         <Label for="kadaluarsaIzin">
-                          Kadaluarsa Izin
+                          Kadaluarsa Izin<span className="required text-danger" aria-required="true"> *</span>
                         </Label>
                         <Input
                           type="date"
@@ -482,7 +482,9 @@ const Data = ({ match }) => {
 
                   <Row>
                     <Colxx sm={6}>
-                      &nbsp;
+                      <Label>
+                        * ) Wajib diisi
+                      </Label>
                     </Colxx>
                     <Colxx sm={6} className="text-right">
                       <Button outline color="danger">

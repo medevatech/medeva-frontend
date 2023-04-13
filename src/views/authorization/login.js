@@ -4,9 +4,7 @@ import { NavLink } from 'react-router-dom';
 import { connect } from 'react-redux';
 
 import { Formik, Form, Field } from 'formik';
-import { NotificationManager } from 'components/common/react-notifications';
 
-import { loginUser } from 'redux/actions';
 import { Colxx } from 'components/common/CustomBootstrap';
 
 import UserLayout from 'layout/UserLayout';
@@ -81,7 +79,7 @@ const Home = ({ history, loading, error, loginUserAction }) => {
                   <Form className="av-tooltip tooltip-label-bottom">
                     <FormGroup className="form-group has-float-label">
                       <Label>
-                        Username atau Email
+                        Username atau Email<span className="required text-danger" aria-required="true"> *</span>
                       </Label>
                       <Field
                         className="form-control"
@@ -96,7 +94,7 @@ const Home = ({ history, loading, error, loginUserAction }) => {
                     </FormGroup>
                     <FormGroup className="form-group has-float-label">
                       <Label>
-                        Password
+                        Password<span className="required text-danger" aria-required="true"> *</span>
                       </Label>
                       <Field
                         className="form-control"
@@ -147,10 +145,11 @@ const Home = ({ history, loading, error, loginUserAction }) => {
 };
 
 const mapStateToProps = ({ authUser }) => {
-  const { loading, error } = authUser;
+  // const { loading, error } = authUser;
+  const { loading, error } = "";
   return { loading, error };
 };
 
 export default connect(mapStateToProps, {
-  loginUserAction: loginUser,
+  // loginUserAction: loginUser,
 })(Home);

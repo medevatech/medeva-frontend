@@ -173,7 +173,7 @@ const VitalSigns = ({ match }) => {
                           showTimeSelect
                           timeFormat="HH:mm"
                           timeIntervals={30}
-                          dateFormat="d MMMM yyyy H:mm"
+                          dateFormat="d MMMM yyyy HH:mm"
                           readOnly={true}
                           timeCaption="Jam"
                           className="disabled-datepicker"
@@ -199,7 +199,7 @@ const VitalSigns = ({ match }) => {
                     <Colxx sm={12}>
                       <FormGroup>
                         <Label for="pasien">
-                          Pasien
+                          Pasien<span className="required text-danger" aria-required="true"> *</span>
                         </Label>
                         <Select
                           components={{ Input: CustomSelectInput }}
@@ -427,7 +427,9 @@ const VitalSigns = ({ match }) => {
 
                   <Row>
                     <Colxx sm={6}>
-                      &nbsp;
+                      <Label>
+                        * ) Wajib diisi
+                      </Label>
                     </Colxx>
                     <Colxx sm={6} className="text-right">
                       <Button outline color="danger">

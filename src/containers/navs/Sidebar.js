@@ -511,14 +511,14 @@ const mapStateToProps = ({ menu, authUser }) => {
     selectedMenuHasSubItems,
   } = menu;
 
-  const { currentUser } = authUser;
+  // const { currentUser } = authUser;
   return {
     containerClassnames,
     subHiddenBreakpoint,
     menuHiddenBreakpoint,
     menuClickCount,
     selectedMenuHasSubItems,
-    currentUser,
+    // currentUser,
   };
 };
 export default withRouter(

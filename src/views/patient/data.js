@@ -12,7 +12,11 @@ import {
   CustomInput,
   Button,
   Form,
-  Table
+  Table,
+  DropdownToggle,
+  DropdownItem,
+  DropdownMenu,
+  UncontrolledDropdown,
 } from 'reactstrap';
 
 import 'react-tagsinput/react-tagsinput.css';
@@ -26,6 +30,16 @@ import { Colxx, Separator } from 'components/common/CustomBootstrap';
 import Pagination from 'components/common/Pagination';
 
 import CustomSelectInput from 'components/common/CustomSelectInput';
+
+const selectKITAS = [
+  { label: 'KTP', value: 'ktp', key: 0 },
+  { label: 'SIM', value: 'sim', key: 1 },
+  { label: 'Paspor', value: 'paspor', key: 2 }
+];
+
+const selectInsurance = [
+  { label: 'BPJS', value: 'bpjs', key: 0, target: { name: 'tipeAsuransi'} }
+];
 
 const selectReligion = [
   { label: 'Islam', value: 'islam', key: 0 },
@@ -139,8 +153,10 @@ const selectBlood = [
 ];
 
 const Data = ({ match }) => {
+  const [selectedKITAS, setSelectedKITAS] = useState([]);
   const [selectedReligion, setSelectedReligion] = useState([]);
   const [selectedEmployment, setSelectedEmployment] = useState([]);
+  const [selectedInsurance, setSelectedInsurance] = useState([]);
   const [selectedBlood, setSelectedBlood] = useState([]);
 
   const [selectedNationality, setSelectedNationality] = useState([]);
@@ -151,6 +167,25 @@ const Data = ({ match }) => {
 
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPage, setTotalPage] = useState(3);
+  
+  const [asuransi, setAsuransi] = useState([{ id: Math.random(), tipeAsuransi: '', noAsuransi: '' }]);
+
+  const addInsuranceFields = () => {
+    let newfield = { id: Math.random(), tipeAsuransi: '', noAsuransi: '' }
+    setAsuransi([...asuransi, newfield])
+  }
+
+  const removeInsuranceFields = (id, index) => {
+    let data = [...asuransi];
+    data.splice(index, 1);
+    setAsuransi(data);
+  }
+
+  const handleInsuranceAdd = (index, event) => {
+    let data = [...asuransi];
+    data[index][event.target.name] = event.target.value;
+    setAsuransi(data);
+  }
 
   return (
     <>
@@ -229,38 +264,36 @@ const Data = ({ match }) => {
                 </CardTitle>
                 <Form>
                   <FormGroup row>
-                    <Colxx sm={3}>
+                    <Colxx sm={6}>
                       <FormGroup>
                         <Label for="noKITAS">
-                          No. KITAS
+                          No. KITAS<span className="required text-danger" aria-required="true"> *</span>
                         </Label>
-                        <Input
-                          type="text"
-                          name="noKITAS"
-                          id="noKITAS"
-                          placeholder="No. KITAS"
-                        />
-                      </FormGroup>
-                    </Colxx>
-
-                    <Colxx sm={3}>
-                      <FormGroup>
-                        <Label for="noAsuransi">
-                          No. Asuransi
-                        </Label>
-                        <Input
-                          type="text"
-                          name="noAsuransi"
-                          id="noAsuransi"
-                          placeholder="No. Asuransi"
-                        />
+                        <InputGroup>
+                          <Select addonType="prepend"
+                            components={{ Input: CustomSelectInput }}
+                            className="react-select select-KITAS"
+                            classNamePrefix="react-select"
+                            name="tipeKITAS"
+                            value={selectedKITAS}
+                            onChange={setSelectedKITAS}
+                            options={selectKITAS}
+                          />
+                          <Input
+                            type="text"
+                            name="noKITAS"
+                            id="noKITAS"
+                            placeholder="No. KITAS"
+                            className="input-KITAS"
+                          />
+                        </InputGroup>
                       </FormGroup>
                     </Colxx>
                     
                     <Colxx sm={6}>
                       <FormGroup>
                         <Label for="namaLengkap">
-                          Nama Lengkap
+                          Nama Lengkap<span className="required text-danger" aria-required="true"> *</span>
                         </Label>
                         <Input
                           type="text"
@@ -274,7 +307,7 @@ const Data = ({ match }) => {
                     <Colxx sm={6}>
                       <FormGroup>
                       <Label for="jenisKelamin">
-                        Jenis Kelamin
+                        Jenis Kelamin<span className="required text-danger" aria-required="true"> *</span>
                       </Label>
                       <Row>
                         <Colxx sm={6} md={4} xl={3}>
@@ -516,7 +549,7 @@ const Data = ({ match }) => {
                     <Colxx sm={3}>
                       <FormGroup>
                         <Label for="golonganDarah">
-                          Golongan Darah
+                          Golongan Darah<span className="required text-danger" aria-required="true"> *</span>
                         </Label>
                         <Select
                           components={{ Input: CustomSelectInput }}
@@ -529,11 +562,55 @@ const Data = ({ match }) => {
                         />
                       </FormGroup>
                     </Colxx>
+
+                    <Colxx sm={6}>
+                      <FormGroup>
+                        <Label for="noAsuransi">
+                          No. Asuransi
+                        </Label>
+                        <Button color="primary" style={{float: 'right'}} className="mb-2" onClick={addInsuranceFields}>
+                          Tambah
+                        </Button>
+                        {asuransi.map((input, index) => {
+                          return (
+                            <InputGroup key={input.id} className="input-group-insurance">
+                              <Select addonType="prepend"
+                                components={{ Input: CustomSelectInput }}
+                                className="react-select select-insurance"
+                                classNamePrefix="react-select"
+                                // id="tipeAsuransi"
+                                name="tipeAsuransi"
+                                value={input.tipeAsuransi}
+                                // onChange={setSelectedInsurance}
+                                options={selectInsurance}
+                                onChange={event => handleInsuranceAdd(index, event)}
+                              />
+                              <Input
+                                type="text"
+                                name="noAsuransi"
+                                // id="noAsuransi"
+                                placeholder="No. Asuransi"
+                                className="input-insurance"
+                                value={input.noAsuransi}
+                                onChange={event => handleInsuranceAdd(index, event)}
+                              />
+                              {index > 0 &&
+                                <Button color="danger" style={{float: 'right'}} onClick={() => removeInsuranceFields(input.id, index)} className="remove-insurance">
+                                  <i className="simple-icon-trash"></i>
+                                </Button>
+                              }
+                            </InputGroup>
+                          )
+                        })}
+                      </FormGroup>
+                    </Colxx>
                   </FormGroup>
 
                   <Row>
                     <Colxx sm={6}>
-                      &nbsp;
+                      <Label>
+                        * ) Wajib diisi
+                      </Label>
                     </Colxx>
                     <Colxx sm={6} className="text-right">
                       <Button outline color="danger">
