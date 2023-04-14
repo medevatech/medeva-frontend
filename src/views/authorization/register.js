@@ -16,9 +16,11 @@ import { connect } from 'react-redux';
 
 import { Colxx } from 'components/common/CustomBootstrap';
 import CustomSelectInput from 'components/common/CustomSelectInput';
-import axios from 'axios';
 
 import UserLayout from 'layout/UserLayout';
+
+import auth from 'api/authorization';
+import Swal from 'sweetalert2';
 
 const selectRole = [
   // { label: 'Developer', value: 'DEVELOPER', key: 0 },
@@ -42,22 +44,22 @@ var urlKelurahan = "https://ibnux.github.io/data-indonesia/kelurahan/";
 
 
 const Register = ({ history, loading, error }) => {
-  const [username, setUsername] = useState('medeva');
+  const [username, setUsername] = useState('medeva1');
   const [nama, setNama] = useState('Medeva Tech');
   const [email, setEmail] = useState('dev@medeva.tech1');
   const [password, setPassword] = useState('medeva123');
 
-  const [is_dev] = useState('');
-  const [is_manager] = useState('');
-  const [is_admin] = useState('');
-  const [is_resepsionis] = useState('');
-  const [is_perawat] = useState('');
-  const [is_dokter] = useState('');
-  const [is_manajemen] = useState('');
+  const [is_dev, setIsDev] = useState(0);
+  const [is_manager, setIsManager] = useState(0);
+  const [is_admin, setIsAdmin] = useState(0);
+  const [is_resepsionis, setIsResepsionis] = useState(0);
+  const [is_perawat, setIsPerawat] = useState(0);
+  const [is_dokter, setIsDokter] = useState(0);
+  const [is_manajemen, setIsManajemen] = useState(0);
 
   const [jenis_kelamin, setJenisKelamin] = useState('');
   const [nomor_kitas, setNoKITAS] = useState('');
-  const [tipe_izin, setTipeKITAS] = useState('');
+  const [tipe_izin, setTipeIzin] = useState('');
   const [nomor_izin, setNoIzin] = useState('');
   const [kadaluarsa_izin, setKadaluarsaIzin] = useState('');
   const [nomor_hp, setNoHP] = useState('');
@@ -79,23 +81,31 @@ const Register = ({ history, loading, error }) => {
   const [selectedSubdistrict, setSelectedSubdistrict] = useState([]);
   const [selectedWard, setSelectedWard] = useState([]);
 
+  const [selectProvince, setSelectProvince] = useState([]);
+  const [selectCity, setSelectCity] = useState([]);
+  const [selectSubdistrict, setSelectSubdistrict] = useState([]);
+  const [selectWard, setSelectWard] = useState([]);
+
   const handleChangeProv = (event) => {
-    console.log(event);
-    setProvinsi(event);
+    setSelectProvince(event);
+    setProvinsi(event.value);
     changeKota(event.key);
   };
 
   const handleChangeCity = event => {
+    setSelectCity(event);
     setKota(event.value);
     changeKecamatan(event.key);
   };
 
   const handleChangeSubdistrict = event => {
+    setSelectSubdistrict(event);
     setKecamatan(event.value);
     changeKelurahan(event.key);
   };
 
   const handleChangeWard = event => {
+    setSelectWard(event);
     setKelurahan(event.value);
   };
 
@@ -106,15 +116,11 @@ const Register = ({ history, loading, error }) => {
           
         if (response.ok) {
             let data = await response.json();
-            // console.log(data);
             for(var i = 0; i < data.length; i++){
-              // console.log(data[i].id);
               setSelectedProvince(current => 
                 [...current, { label: data[i].nama, value: data[i].nama, key: data[i].id }]
               );
             }
-
-            // setSelectedProvince(data);
         } else {
             throw Error(`Error status: ${response.status}`);
         }
@@ -186,6 +192,52 @@ const Register = ({ history, loading, error }) => {
     }
   }
 
+  const handleChangeGender = (e, jns) => {
+    setJenisKelamin(jns);
+    // console.log(e.target);
+    // console.log(jns);
+  }
+
+  const handleChangeMarital = (e, nkh) => {
+    setStatus(nkh);
+  }
+
+  const handleChangePermissionType = event => {
+    setSelectedWP(event);
+    setTipeIzin(event.value);
+  };
+
+  const handleChangeRole = event => {
+    setSelectedRole(event); // is_dev, is_manager, is_admin, is_resepsionis, is_perawat, is_dokter, is_manajemen
+    // console.log(event);
+
+    for(var i=0; i < event.length; i++){
+      if(event[i].value === "DEVELOPER") {
+        setIsDev(1);
+      } else if(event[i].value === "MANAGER") {
+        setIsManager(1);
+      } else if(event[i].value === "ADMIN") {
+        setIsAdmin(1);
+      } else if(event[i].value === "RESEPSIONIS") {
+        setIsResepsionis(1);
+      } else if(event[i].value === "PERAWAT") {
+        setIsPerawat(1);
+      } else if(event[i].value === "DOKTER") {
+        setIsDokter(1);
+      } else if(event[i].value === "MANAJEMEN") {
+        setIsManajemen(1);
+      } else {
+        // setIsDev(0);
+        // setIsManager(0);
+        // setIsAdmin(0);
+        // setIsResepsionis(0);
+        // setIsPerawat(0);
+        // setIsDokter(0);
+        // setIsManajemen(0);
+      }
+    };
+  }
+
   useEffect(() => {
     onLoadProvinsi();
   }, []);
@@ -195,56 +247,53 @@ const Register = ({ history, loading, error }) => {
     //   history.push("./login");
     // }
 
-    if (selectedRole) {
-      console.log(selectRole);
-      // is_dev, is_manager, is_admin, is_resepsionis, is_perawat, is_dokter, is_manajemen
-    }
+    try {
+        let data = { nama, username, email, password, is_dev, is_manager, is_admin, is_resepsionis, is_perawat, is_dokter, is_manajemen,
+          jenis_kelamin, nomor_kitas, tipe_izin, nomor_izin, kadaluarsa_izin, nomor_hp, tempat_lahir, tanggal_lahir, alamat, kode_pos,
+          provinsi, kota, kecamatan, kelurahan, status_menikah };
+        // console.log(data);
 
-    // try {
-    //     let data = { nama, username, email, password, is_dev, is_manager, is_admin, is_resepsionis, is_perawat, is_dokter, is_manajemen,
-    //       jenis_kelamin, nomor_kitas, tipe_izin, nomor_izin, kadaluarsa_izin, nomor_hp, tempat_lahir, tanggal_lahir, alamat, status_menikah };
+        const response = await auth.register(data);
+        // console.log(response);
 
-    //     // const response = await auth.register(data);
-    //     // console.log(response);
+        if (response.status == 200) {
+            let data = await response.data.data;
+            // console.log(data);
 
-    //     if (response.status == 200) {
-    //         let data = await response.data.data;
-    //         // console.log(data);
-
-    //         Swal.fire({
-    //             title: 'Sukses!',
-    //             html: `Registrasi sukses`,
-    //             icon: 'success',
-    //             confirmButtonColor: '#008ecc',
-    //             confirmButtonText: 'Menuju login',
-    //         }).then((result) => {
-    //           if (result.isConfirmed) {
-    //             history.push("./login");
-    //           }
-    //         })
+            Swal.fire({
+                title: 'Sukses!',
+                html: `Registrasi sukses`,
+                icon: 'success',
+                confirmButtonColor: '#008ecc',
+                confirmButtonText: 'Menuju login',
+            }).then((result) => {
+              if (result.isConfirmed) {
+                history.push("./login");
+              }
+            })
             
-    //     } else {
-    //       Swal.fire({
-    //           title: 'Gagal!',
-    //           html: `Registrasi gagal`,
-    //           icon: 'error',
-    //           confirmButtonColor: '#008ecc',
-    //           confirmButtonText: 'Coba lagi',
-    //       })
+        } else {
+          Swal.fire({
+              title: 'Gagal!',
+              html: `Registrasi gagal`,
+              icon: 'error',
+              confirmButtonColor: '#008ecc',
+              confirmButtonText: 'Coba lagi',
+          })
 
-    //       throw Error(`Error status: ${response.status}`);
-    //     }
-    // } catch (e) {
-    //     Swal.fire({
-    //       title: 'Error!',
-    //       html: `Login failed`,
-    //       icon: 'error',
-    //       confirmButtonColor: '#008ecc',
-    //       confirmButtonText: 'Try again',
-    //   })
+          throw Error(`Error status: ${response.status}`);
+        }
+    } catch (e) {
+        Swal.fire({
+          title: 'Error!',
+          html: `Login failed`,
+          icon: 'error',
+          confirmButtonColor: '#008ecc',
+          confirmButtonText: 'Try again',
+      })
       
-    //   console.log(e);
-    // }
+      console.log(e);
+    }
   };
 
   return (
@@ -303,8 +352,9 @@ const Register = ({ history, loading, error }) => {
                           name="peran"
                           id="peran"
                           value={selectedRole}
-                          onChange={setSelectedRole}
+                          // onChange={setSelectedRole}
                           options={selectRole}
+                          onChange={(event)=>handleChangeRole(event)}
                         />
                     </FormGroup>
 
@@ -350,8 +400,7 @@ const Register = ({ history, loading, error }) => {
                           // onChange={setSelectedProvince}
                           // options={selectProvince}
                           options={selectedProvince}
-                          value={provinsi}
-                          // onChange={handleChangeProv}
+                          value={selectProvince}
                           onChange={(event)=>handleChangeProv(event)}
                         />
                     </FormGroup>
@@ -370,8 +419,8 @@ const Register = ({ history, loading, error }) => {
                           // onChange={setSelectedCity}
                           // options={selectCity}
                           options={selectedCity}
-                          value={kota}
-                          onChange={(event)=>handleChangeCity(event.target.value)}
+                          value={selectCity}
+                          onChange={(event)=>handleChangeCity(event)}
                         />
                     </FormGroup>
 
@@ -388,8 +437,9 @@ const Register = ({ history, loading, error }) => {
                           // value={selectedSubdistrict}
                           // onChange={setSelectedSubdistrict}
                           // options={selectSubdistrict}
-                          value={kecamatan}
-                          onChange={handleChangeSubdistrict}
+                          options={selectedSubdistrict}
+                          value={selectSubdistrict}
+                          onChange={(event)=>handleChangeSubdistrict(event)}
                         />
                     </FormGroup>
 
@@ -406,8 +456,9 @@ const Register = ({ history, loading, error }) => {
                           // value={selectedWard}
                           // onChange={setSelectedWard}
                           // options={selectWard}
-                          value={kelurahan}
-                          onChange={handleChangeWard}
+                          options={selectedWard}
+                          value={selectWard}
+                          onChange={(event)=>handleChangeWard(event)}
                         />
                     </FormGroup>
 
@@ -430,6 +481,7 @@ const Register = ({ history, loading, error }) => {
                               name="jenisKelamin"
                               label="Laki-laki"
                               value={jenis_kelamin} 
+                              onChange={(e) => handleChangeGender(e, "Laki-laki")}
                             />
                           </Colxx>
                           <Colxx md={8} xl={9}>
@@ -439,6 +491,7 @@ const Register = ({ history, loading, error }) => {
                               name="jenisKelamin"
                               label="Perempuan"
                               value={jenis_kelamin}
+                              onChange={(e) => handleChangeGender(e, "Perempuan")}
                             />
                           </Colxx>
                         </Row>
@@ -456,6 +509,7 @@ const Register = ({ history, loading, error }) => {
                               name="menikah"
                               label="Menikah"
                               value={status_menikah}
+                              onChange={(e) => handleChangeMarital(e, "Menikah")}
                             />
                           </Colxx>
                           <Colxx md={8} xl={9}>
@@ -465,6 +519,7 @@ const Register = ({ history, loading, error }) => {
                               name="menikah"
                               label="Belum Menikah"
                               value={status_menikah}
+                              onChange={(e) => handleChangeMarital(e, "Belum Menikah")}
                             />
                           </Colxx>
                         </Row>
@@ -492,12 +547,13 @@ const Register = ({ history, loading, error }) => {
                           components={{ Input: CustomSelectInput }}
                           className="react-select"
                           classNamePrefix="react-select"
-                          name="izin"
-                          id="izin"
-                          value={selectedWP}
-                          onChange={setSelectedWP}
+                          name="tipe_izin"
+                          id="tipe_izin"
+                          // value={selectedWP}
+                          // onChange={setSelectedWP}
                           options={selectWP}
-                          // value={tipe_izin}
+                          value={selectedWP}
+                          onChange={(event)=>handleChangePermissionType(event)}
                         />
                     </FormGroup>
 
