@@ -1,5 +1,5 @@
 const api = {
-  base: process.env.BASE_PATHV1,
+  base: process.env.REACT_APP_BASE_PATHV1,
   auth: {
     login: '/karyawan/login',
     register: '/karyawan/register',

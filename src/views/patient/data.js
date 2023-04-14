@@ -41,6 +41,11 @@ const selectInsurance = [
   { label: 'BPJS', value: 'bpjs', key: 0, target: { name: 'tipeAsuransi'} }
 ];
 
+const selectNationality = [
+  { label: 'WNI', value: 'wni', key: 0 },
+  { label: 'WNA', value: 'wna', key: 1 }
+];
+
 const selectReligion = [
   { label: 'Islam', value: 'islam', key: 0 },
   { label: 'Protestan', value: 'protestan', key: 1 },
@@ -481,7 +486,7 @@ const Data = ({ match }) => {
                           name="kewarganegaraan"
                           value={selectedNationality}
                           onChange={setSelectedNationality}
-                          // options={selectNationality}
+                          options={selectNationality}
                         />
                       </FormGroup>
                     </Colxx>

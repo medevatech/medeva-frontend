@@ -23,10 +23,10 @@ const selectRole = [
   { label: 'Developer', value: 'developer', key: 0 },
   { label: 'Super Admin', value: 'superAdmin', key: 1 },
   { label: 'Admin', value: 'admin', key: 2 },
-  { label: 'Receptionist', value: 'receptionist', key: 3 },
-  { label: 'Nurse', value: 'nurse', key: 4 },
-  { label: 'Doctor', value: 'doctor', key: 5 },
-  { label: 'Management', value: 'management', key: 6 }
+  { label: 'Resepsionis', value: 'resepsionis', key: 3 },
+  { label: 'Perawat', value: 'perawat', key: 4 },
+  { label: 'Dokter', value: 'dokter', key: 5 },
+  { label: 'Manajemen', value: 'manajemen', key: 6 }
 ];
 
 const selectWP = [
@@ -37,7 +37,7 @@ const selectWP = [
 const Register = ({ history, loading, error }) => {
   const [username] = useState('medeva');
   const [namaLengkap] = useState('Medeva Tech');
-  const [email] = useState('dev@medeva.tech');
+  const [email] = useState('dev@medeva.tech1');
   const [password] = useState('medeva123');
 
   const [selectedRole, setSelectedRole] = useState([]);
@@ -48,9 +48,68 @@ const Register = ({ history, loading, error }) => {
   const [selectedSubdistrict, setSelectedSubdistrict] = useState([]);
   const [selectedWard, setSelectedWard] = useState([]);
 
-  const onUserRegister = () => {
-    if (email !== '' && password !== '') {
-      history.push("./login");
+  const onUserRegister = async () => {
+    // if (email !== '' && password !== '') {
+    //   history.push("./login");
+    // }
+
+    try {
+        // userLoginData = JSON.stringify({ input_login: userLogin.email, password: userLogin.password })
+        // userLoginData = { input_login: email, password: password };
+        let data = { input_login, password };
+
+        const response = await auth.login(data);
+        // console.log(response);
+
+        if (response.status == 200) {
+            let data = await response.data.data;
+            // console.log(data);
+
+            localStorage.setItem('userID', data.id);
+            localStorage.setItem('token', data.token);
+            localStorage.setItem('username', data.username);
+            
+            localStorage.setItem('isDev', data.is_dev);
+            localStorage.setItem('isManager', data.is_manager);
+            localStorage.setItem('isAdmin', data.is_admin);
+            localStorage.setItem('isDokter', data.is_dokter);
+            localStorage.setItem('isManajemen', data.is_manajemen);
+            localStorage.setItem('isPerawat', data.is_perawat);
+            localStorage.setItem('isResepsionis', data.is_resepsionis);
+
+            Swal.fire({
+                title: 'Sukses!',
+                html: `Login sukses`,
+                icon: 'success',
+                confirmButtonColor: '#008ecc',
+                confirmButtonText: 'Menuju dashboard',
+            }).then((result) => {
+              if (result.isConfirmed) {
+                history.push("../dashboard");
+              }
+            })
+            
+        } else {
+          Swal.fire({
+              title: 'Gagal!',
+              html: `Login gagal`,
+              icon: 'error',
+              confirmButtonColor: '#008ecc',
+              confirmButtonText: 'Coba lagi',
+          })
+
+          throw Error(`Error status: ${response.status}`);
+        }
+    } catch (e) {
+        Swal.fire({
+          title: 'Error!',
+          html: `Login failed`,
+          icon: 'error',
+          confirmButtonColor: '#008ecc',
+          confirmButtonText: 'Try again',
+      })
+      
+      console.log(e);
     }
   };
 
@@ -284,7 +343,6 @@ const Register = ({ history, loading, error }) => {
                           components={{ Input: CustomSelectInput }}
                           className="react-select"
                           classNamePrefix="react-select"
-                          isMulti
                           name="izin"
                           id="izin"
                           value={selectedWP}

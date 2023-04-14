@@ -31,10 +31,10 @@ const selectRole = [
   { label: 'Developer', value: 'developer', key: 0 },
   { label: 'Super Admin', value: 'superAdmin', key: 1 },
   { label: 'Admin', value: 'admin', key: 2 },
-  { label: 'Receptionist', value: 'receptionist', key: 3 },
-  { label: 'Nurse', value: 'nurse', key: 4 },
-  { label: 'Doctor', value: 'doctor', key: 5 },
-  { label: 'Management', value: 'management', key: 6 }
+  { label: 'Resepsionis', value: 'resepsionis', key: 3 },
+  { label: 'Perawat', value: 'perawat', key: 4 },
+  { label: 'Dokter', value: 'dokter', key: 5 },
+  { label: 'Manajemen', value: 'manajemen', key: 6 }
 ];
 
 const selectDivision = [
@@ -441,7 +441,6 @@ const Data = ({ match }) => {
                           components={{ Input: CustomSelectInput }}
                           className="react-select"
                           classNamePrefix="react-select"
-                          isMulti
                           name="izin"
                           id="izin"
                           value={selectedWP}
