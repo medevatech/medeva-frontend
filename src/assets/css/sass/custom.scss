@@ -1,109 +1,114 @@
 .name {
-    font-weight: bold;
+  font-weight: bold;
 }
 
 .card-title {
-    font-weight: bold;
+  font-weight: bold;
 }
 
 label {
-    font-size: 0.78rem;
-    font-weight: normal;
+  font-size: 0.78rem;
+  font-weight: normal;
 }
 
 .yellowmedeva {
-    color: #D7B55D;
+  color: #d7b55d;
 }
 
 .react-datepicker__input-container input.disabled-datepicker {
-    background-color: #e9ecef !important;
+  background-color: #e9ecef !important;
 }
 
 .sidebar .sub-menu ul li {
-    margin-left: 15px;
+  margin-left: 15px;
 }
 
 .sidebar .sub-menu ul li:hover i {
-    color: $theme-color-1;
+  color: $theme-color-1;
 }
 
 .sidebar .sub-menu ul li.active:after {
-    display: none;
+  display: none;
 }
 
 .button-search {
-    border-radius: 0 0.1rem 0.1rem 0;
+  border-radius: 0 0.1rem 0.1rem 0;
 }
 
 .dropdown-button-input {
-    border-radius: 0.1rem 0 0 0.1rem;
+  border-radius: 0.1rem 0 0 0.1rem;
 }
 
 .select-KITAS {
-    width: 30%;
+  width: 30%;
 }
 
 .input-KITAS {
-    width: 70%;
+  width: 70%;
 }
 
 .input-group-insurance {
-    margin-bottom: 1rem !important;
+  margin-bottom: 1rem !important;
 }
 
 .select-insurance {
-    width: 30%;
+  width: 30%;
 }
 
 .input-insurance {
-    // width: 70%;
-    // margin-right: 10px;
+  // width: 70%;
+  // margin-right: 10px;
 }
 
 .remove-insurance {
-    border-radius: 0 0.1rem 0.1rem 0;
+  border-radius: 0 0.1rem 0.1rem 0;
 }
 
 .schedule-row {
-    margin-left: 5px;
-    width: 100%;
+  margin-left: 5px;
+  width: 100%;
 }
 
 .schedule-separator {
-    width: 80%;
+  width: 80%;
 }
 
 .remove-schedule {
-    // margin-top: 30px;
-    border-radius: 0.1rem 0.1rem 0.1rem 0.1rem;
+  // margin-top: 30px;
+  border-radius: 0.1rem 0.1rem 0.1rem 0.1rem;
 }
 
 .page-item {
-    padding: 5px;
+  padding: 5px;
 }
 
 .page-item .page-link {
-    line-height: 1;
-    min-width: 30px;
-    height: 30px;
+  line-height: 1;
+  min-width: 30px;
+  height: 30px;
+}
+
+.overflow-table-employee {
+  overflow-y: scroll;
+  overflow-x: scroll;
 }
 
 @media (max-width: 768px) {
-    .schedule-row-col-1 {
-        display: none;
-    }
+  .schedule-row-col-1 {
+    display: none;
+  }
 }
 
 @media (min-width: 320px) and (max-width: 575px) {
-    .responsive-mobile-vertical-xs-2 {
-        -webkit-flex: 0 0 10%;
-        flex: 0 0 10%;
-        max-width: 10%;
-    }
+  .responsive-mobile-vertical-xs-2 {
+    -webkit-flex: 0 0 10%;
+    flex: 0 0 10%;
+    max-width: 10%;
+  }
 
-    .responsive-mobile-vertical-xs-5 {
-        -webkit-flex: 0 0 33.33333%;
-        flex: 0 0 33.33333%;
-        max-width: 33.33333%;
-    }
+  .responsive-mobile-vertical-xs-5 {
+    -webkit-flex: 0 0 33.33333%;
+    flex: 0 0 33.33333%;
+    max-width: 33.33333%;
+  }
 }

@@ -1,6 +1,6 @@
 const getAuthHeader = () => {
   return {
-    Authorization: 'Bearer ' + localStorage.getItem('access_token'),
+    Authorization: 'Bearer ' + localStorage.getItem('token'),
     'Access-Control-Allow-Origin': '*'
   }
 }
@@ -11,12 +11,18 @@ const getOriginHeader = () => {
   }
 }
 
+const getJSONHeader = () => {
+  return {
+    'Content-Type': 'application/json'
+  }
+}
+
 const getAuthAndMultipartHeader = () => {
   return {
     'Content-Type': 'multipart/form-data',
-    Authorization: 'Bearer ' + localStorage.getItem('access_token'),
+    Authorization: 'Bearer ' + localStorage.getItem('token'),
     'Access-Control-Allow-Origin': '*'
   }
 }
 
-export { getAuthHeader, getOriginHeader, getAuthAndMultipartHeader }
+export { getAuthHeader, getOriginHeader, getAuthAndMultipartHeader, getJSONHeader }

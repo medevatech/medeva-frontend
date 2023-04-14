@@ -150,6 +150,9 @@ const TopNav = ({
 
   const handleLogout = () => {
     // logoutUserAction(history);
+    // history.push("../login");
+    localStorage.clear();
+    history.push('../');
   };
 
   const menuButtonClick = (e, _clickCount, _conClassnames) => {
