@@ -214,7 +214,7 @@ const Data = ({ match }) => {
 
   useEffect(() => {
     let url = `https://medeva-backend-production.up.railway.app/api/v1/pasien`;
-    if (limit !== "10") {
+    if (limit !== "5") {
       url = `${url}?limit=${limit}`;
     } else {
       url = `${url}?limit=5`;

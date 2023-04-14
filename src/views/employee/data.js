@@ -27,14 +27,17 @@ import Pagination from "components/common/Pagination";
 
 import CustomSelectInput from "components/common/CustomSelectInput";
 
+import auth from "api/authorization";
+import Swal from "sweetalert2";
+
 const selectRole = [
-  { label: "Developer", value: "developer", key: 0 },
-  { label: "Super Admin", value: "superAdmin", key: 1 },
-  { label: "Admin", value: "admin", key: 2 },
-  { label: "Resepsionis", value: "resepsionis", key: 3 },
-  { label: "Perawat", value: "perawat", key: 4 },
-  { label: "Dokter", value: "dokter", key: 5 },
-  { label: "Manajemen", value: "manajemen", key: 6 },
+  // { label: 'Developer', value: 'DEVELOPER', key: 0 },
+  // { label: 'Manager', value: 'MANAGER', key: 1 },
+  { label: "Admin", value: "ADMIN", key: 2 },
+  { label: "Resepsionis", value: "RESEPSIONIS", key: 3 },
+  { label: "Perawat", value: "PERAWAT", key: 4 },
+  { label: "Dokter", value: "DOKTER", key: 5 },
+  { label: "Manajemen", value: "MANAJEMEN", key: 6 },
 ];
 
 const selectDivision = [
@@ -43,13 +46,17 @@ const selectDivision = [
 ];
 
 const selectWP = [
-  { label: "SIP", value: "sip", key: 0 },
-  { label: "STR", value: "str", key: 1 },
+  { label: "SIP", value: "SIP", key: 0 },
+  { label: "STR", value: "STR", key: 1 },
 ];
 
-const Data = ({ match }) => {
+var urlProvinsi = "https://ibnux.github.io/data-indonesia/provinsi.json";
+var urlKabupaten = "https://ibnux.github.io/data-indonesia/kabupaten/";
+var urlKecamatan = "https://ibnux.github.io/data-indonesia/kecamatan/";
+var urlKelurahan = "https://ibnux.github.io/data-indonesia/kelurahan/";
+
+const Data = ({ match, history, loading, error }) => {
   const [selectedRole, setSelectedRole] = useState([]);
-  const [selectedDivision, setSelectedDivision] = useState([]);
   const [selectedWP, setSelectedWP] = useState([]);
 
   const [selectedProvince, setSelectedProvince] = useState([]);
@@ -57,8 +64,43 @@ const Data = ({ match }) => {
   const [selectedSubdistrict, setSelectedSubdistrict] = useState([]);
   const [selectedWard, setSelectedWard] = useState([]);
 
+  const [selectProvince, setSelectProvince] = useState([]);
+  const [selectCity, setSelectCity] = useState([]);
+  const [selectSubdistrict, setSelectSubdistrict] = useState([]);
+  const [selectWard, setSelectWard] = useState([]);
+
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPage, setTotalPage] = useState(3);
+
+  const [username, setUsername] = useState("medeva1");
+  const [nama, setNama] = useState("Medeva Tech");
+  const [email, setEmail] = useState("dev@medeva.tech1");
+  const [password, setPassword] = useState("medeva123");
+
+  const [is_dev, setIsDev] = useState(0);
+  const [is_manager, setIsManager] = useState(0);
+  const [is_admin, setIsAdmin] = useState(0);
+  const [is_resepsionis, setIsResepsionis] = useState(0);
+  const [is_perawat, setIsPerawat] = useState(0);
+  const [is_dokter, setIsDokter] = useState(0);
+  const [is_manajemen, setIsManajemen] = useState(0);
+
+  const [divisi, setDivisi] = useState("");
+  const [jenis_kelamin, setJenisKelamin] = useState("");
+  const [nomor_kitas, setNoKITAS] = useState("");
+  const [tipe_izin, setTipeIzin] = useState("");
+  const [nomor_izin, setNoIzin] = useState("");
+  const [kadaluarsa_izin, setKadaluarsaIzin] = useState("");
+  const [nomor_hp, setNoHP] = useState("");
+  const [tempat_lahir, setTempatLahir] = useState("");
+  const [tanggal_lahir, setTanggalLahir] = useState("");
+  const [alamat, setAlamat] = useState("");
+  const [kode_pos, setKodePos] = useState("");
+  const [provinsi, setProvinsi] = useState([]);
+  const [kota, setKota] = useState([]);
+  const [kecamatan, setKecamatan] = useState([]);
+  const [kelurahan, setKelurahan] = useState([]);
+  const [status_menikah, setStatus] = useState("");
 
   const [employeeData, setEmployeeData] = useState([]);
 
@@ -67,6 +109,280 @@ const Data = ({ match }) => {
   const [sortBy, setSortBy] = useState("nama");
   const [sortOrder, setSortOrder] = useState("desc");
   const [search, setSearch] = useState("");
+
+  const handleChangeProv = (event) => {
+    setSelectProvince(event);
+    setProvinsi(event.value);
+    changeKota(event.key);
+  };
+
+  const handleChangeCity = (event) => {
+    setSelectCity(event);
+    setKota(event.value);
+    changeKecamatan(event.key);
+  };
+
+  const handleChangeSubdistrict = (event) => {
+    setSelectSubdistrict(event);
+    setKecamatan(event.value);
+    changeKelurahan(event.key);
+  };
+
+  const handleChangeWard = (event) => {
+    setSelectWard(event);
+    setKelurahan(event.value);
+  };
+
+  const onLoadProvinsi = async () => {
+    try {
+      const response = await fetch(urlProvinsi);
+      // console.log(response);
+
+      if (response.ok) {
+        let data = await response.json();
+        for (var i = 0; i < data.length; i++) {
+          setSelectedProvince((current) => [
+            ...current,
+            { label: data[i].nama, value: data[i].nama, key: data[i].id },
+          ]);
+        }
+      } else {
+        throw Error(`Error status: ${response.status}`);
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  const changeKota = async (id_prov) => {
+    try {
+      const response = await fetch(`${urlKabupaten}/${id_prov}.json`);
+      // console.log(response);
+
+      if (response.ok) {
+        let data = await response.json();
+        setSelectedCity([]);
+        for (var i = 0; i < data.length; i++) {
+          setSelectedCity((current) => [
+            ...current,
+            { label: data[i].nama, value: data[i].nama, key: data[i].id },
+          ]);
+        }
+      } else {
+        throw Error(`Error status: ${response.status}`);
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  const changeKecamatan = async (id_kota) => {
+    try {
+      const response = await fetch(`${urlKecamatan}/${id_kota}.json`);
+      // console.log(response);
+
+      if (response.ok) {
+        let data = await response.json();
+        setSelectedSubdistrict([]);
+        for (var i = 0; i < data.length; i++) {
+          setSelectedSubdistrict((current) => [
+            ...current,
+            { label: data[i].nama, value: data[i].nama, key: data[i].id },
+          ]);
+        }
+      } else {
+        throw Error(`Error status: ${response.status}`);
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  const changeKelurahan = async (id_kecamatan) => {
+    try {
+      const response = await fetch(`${urlKelurahan}/${id_kecamatan}.json`);
+      // console.log(response);
+
+      if (response.ok) {
+        let data = await response.json();
+        setSelectedWard([]);
+        for (var i = 0; i < data.length; i++) {
+          setSelectedWard((current) => [
+            ...current,
+            { label: data[i].nama, value: data[i].nama, key: data[i].id },
+          ]);
+        }
+      } else {
+        throw Error(`Error status: ${response.status}`);
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  const handleChangeGender = (e, jns) => {
+    setJenisKelamin(jns);
+    // console.log(e.target);
+    // console.log(jns);
+  };
+
+  const handleChangeMarital = (e, nkh) => {
+    setStatus(nkh);
+  };
+
+  const handleChangePermissionType = (event) => {
+    setSelectedWP(event);
+    setTipeIzin(event.value);
+  };
+
+  const handleChangeRole = (event) => {
+    setSelectedRole(event); // is_dev, is_manager, is_admin, is_resepsionis, is_perawat, is_dokter, is_manajemen
+    // console.log(event);
+
+    for (var i = 0; i < event.length; i++) {
+      if (event[i].value === "DEVELOPER") {
+        setIsDev(1);
+      } else if (event[i].value === "MANAGER") {
+        setIsManager(1);
+      } else if (event[i].value === "ADMIN") {
+        setIsAdmin(1);
+      } else if (event[i].value === "RESEPSIONIS") {
+        setIsResepsionis(1);
+      } else if (event[i].value === "PERAWAT") {
+        setIsPerawat(1);
+      } else if (event[i].value === "DOKTER") {
+        setIsDokter(1);
+      } else if (event[i].value === "MANAJEMEN") {
+        setIsManajemen(1);
+      } else {
+        // setIsDev(0);
+        // setIsManager(0);
+        // setIsAdmin(0);
+        // setIsResepsionis(0);
+        // setIsPerawat(0);
+        // setIsDokter(0);
+        // setIsManajemen(0);
+      }
+    }
+  };
+
+  useEffect(() => {
+    onLoadProvinsi();
+  }, []);
+
+  const onUserRegister = async (values) => {
+    // if (email !== '' && password !== '') {
+    //   history.push("./login");
+    // }
+
+    try {
+      let data = {
+        nama,
+        username,
+        email,
+        password,
+        is_dev,
+        is_manager,
+        is_admin,
+        is_resepsionis,
+        is_perawat,
+        is_dokter,
+        is_manajemen,
+        jenis_kelamin,
+        nomor_kitas,
+        tipe_izin,
+        nomor_izin,
+        kadaluarsa_izin,
+        nomor_hp,
+        tempat_lahir,
+        tanggal_lahir,
+        alamat,
+        kode_pos,
+        provinsi,
+        kota,
+        kecamatan,
+        kelurahan,
+        status_menikah,
+      };
+      // console.log(data);
+
+      const response = await auth.register(data);
+      // console.log(response);
+
+      if (response.status == 200) {
+        let data = await response.data.data;
+        // console.log(data);
+
+        Swal.fire({
+          title: "Sukses!",
+          html: `Tambah karyawan sukses`,
+          icon: "success",
+          confirmButtonColor: "#008ecc",
+        });
+      } else {
+        Swal.fire({
+          title: "Gagal!",
+          html: `Tambah karyawan gagal`,
+          icon: "error",
+          confirmButtonColor: "#008ecc",
+          confirmButtonText: "Coba lagi",
+        });
+
+        throw Error(`Error status: ${response.status}`);
+      }
+    } catch (e) {
+      Swal.fire({
+        title: "Error!",
+        html: `Tambah karyawan gagal`,
+        icon: "error",
+        confirmButtonColor: "#008ecc",
+        confirmButtonText: "Coba lagi",
+      });
+
+      console.log(e);
+    }
+  };
+
+  const resetForm = (e) => {
+    e.preventDefault();
+    setUsername("");
+    setNama("");
+    setEmail("");
+    setPassword("");
+    setIsDev(0);
+    setIsManager(0);
+    setIsAdmin(0);
+    setIsResepsionis(0);
+    setIsPerawat(0);
+    setIsDokter(0);
+    setIsManajemen(0);
+    setJenisKelamin("");
+    setNoKITAS("");
+    setTipeIzin("");
+    setNoIzin("");
+    setKadaluarsaIzin("");
+    setNoHP("");
+    setTempatLahir("");
+    setTanggalLahir("");
+    setAlamat("");
+    setKodePos("");
+    setProvinsi([]);
+    setKota([]);
+    setKecamatan([]);
+    setKelurahan([]);
+    setStatus("");
+    setSelectedRole([]);
+    // setSelectedDivision([]);
+    setSelectedWP([]);
+    setSelectedProvince([]);
+    setSelectedCity([]);
+    setSelectedSubdistrict([]);
+    setSelectedWard([]);
+    setSelectProvince([]);
+    setSelectCity([]);
+    setSelectSubdistrict([]);
+    setSelectWard([]);
+  };
 
   const getEmployee = async (url) => {
     try {
@@ -80,7 +396,7 @@ const Data = ({ match }) => {
 
   useEffect(() => {
     let url = `https://medv.vercel.app/api/v1/karyawan`;
-    if (limit !== "10") {
+    if (limit !== "5") {
       url = `${url}?limit=${limit}`;
     } else {
       url = `${url}?limit=5`;
@@ -190,7 +506,8 @@ const Data = ({ match }) => {
                         type="text"
                         name="username"
                         id="username"
-                        placeholder="Username"
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
                       />
                     </FormGroup>
                   </Colxx>
@@ -202,7 +519,8 @@ const Data = ({ match }) => {
                         type="email"
                         name="email"
                         id="email"
-                        placeholder="Email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
                       />
                     </FormGroup>
                   </Colxx>
@@ -223,7 +541,8 @@ const Data = ({ match }) => {
                         type="password"
                         name="password"
                         id="password"
-                        placeholder="Password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
                       />
                     </FormGroup>
                   </Colxx>
@@ -244,7 +563,8 @@ const Data = ({ match }) => {
                         type="text"
                         name="noKITAS"
                         id="noKITAS"
-                        placeholder="No. KITAS"
+                        value={nomor_kitas}
+                        onChange={(e) => setNoKITAS(e.target.value)}
                       />
                     </FormGroup>
                   </Colxx>
@@ -263,9 +583,10 @@ const Data = ({ match }) => {
                       </Label>
                       <Input
                         type="text"
-                        name="namaLengkap"
-                        id="namaLengkap"
-                        placeholder="Nama Lengkap"
+                        name="nama"
+                        id="nama"
+                        value={nama}
+                        onChange={(e) => setNama(e.target.value)}
                       />
                     </FormGroup>
                   </Colxx>
@@ -288,14 +609,16 @@ const Data = ({ match }) => {
                         classNamePrefix="react-select"
                         isMulti
                         name="peran"
+                        id="peran"
                         value={selectedRole}
-                        onChange={setSelectedRole}
+                        // onChange={setSelectedRole}
                         options={selectRole}
+                        onChange={(event) => handleChangeRole(event)}
                       />
                     </FormGroup>
                   </Colxx>
 
-                  <Colxx sm={6}>
+                  {/* <Colxx sm={6}>
                     <FormGroup>
                       <Label for="divisi">
                         Divisi
@@ -317,17 +640,17 @@ const Data = ({ match }) => {
                         options={selectDivision}
                       />
                     </FormGroup>
-                  </Colxx>
+                  </Colxx> */}
 
                   <Colxx sm={6}>
                     <FormGroup>
                       <Label for="alamat">Alamat</Label>
                       <Input
-                        type="textarea"
+                        type="text"
                         name="alamat"
                         id="alamat"
-                        placeholder="Alamat"
-                        style={{ minHeight: "100" }}
+                        value={alamat}
+                        onChange={(e) => setAlamat(e.target.value)}
                       />
                     </FormGroup>
                   </Colxx>
@@ -339,7 +662,8 @@ const Data = ({ match }) => {
                         type="text"
                         name="kodePos"
                         id="kodePos"
-                        placeholder="Kode Pos"
+                        value={kode_pos}
+                        onChange={(e) => setKodePos(e.target.value)}
                       />
                     </FormGroup>
                   </Colxx>
@@ -352,9 +676,13 @@ const Data = ({ match }) => {
                         className="react-select"
                         classNamePrefix="react-select"
                         name="provinsi"
-                        value={selectedProvince}
-                        onChange={setSelectedProvince}
-                        // options={selectNationality}
+                        id="provinsi"
+                        // value={selectedProvince}
+                        // onChange={setSelectedProvince}
+                        // options={selectProvince}
+                        options={selectedProvince}
+                        value={selectProvince}
+                        onChange={(event) => handleChangeProv(event)}
                       />
                     </FormGroup>
                   </Colxx>
@@ -367,9 +695,13 @@ const Data = ({ match }) => {
                         className="react-select"
                         classNamePrefix="react-select"
                         name="kotakab"
-                        value={selectedCity}
-                        onChange={setSelectedCity}
+                        id="kotakab"
+                        // value={selectedCity}
+                        // onChange={setSelectedCity}
                         // options={selectCity}
+                        options={selectedCity}
+                        value={selectCity}
+                        onChange={(event) => handleChangeCity(event)}
                       />
                     </FormGroup>
                   </Colxx>
@@ -382,9 +714,13 @@ const Data = ({ match }) => {
                         className="react-select"
                         classNamePrefix="react-select"
                         name="kecamatan"
-                        value={selectedSubdistrict}
-                        onChange={setSelectedSubdistrict}
+                        id="kecamatan"
+                        // value={selectedSubdistrict}
+                        // onChange={setSelectedSubdistrict}
                         // options={selectSubdistrict}
+                        options={selectedSubdistrict}
+                        value={selectSubdistrict}
+                        onChange={(event) => handleChangeSubdistrict(event)}
                       />
                     </FormGroup>
                   </Colxx>
@@ -397,9 +733,13 @@ const Data = ({ match }) => {
                         className="react-select"
                         classNamePrefix="react-select"
                         name="kelurahan"
-                        value={selectedWard}
-                        onChange={setSelectedWard}
+                        id="kelurahan"
+                        // value={selectedWard}
+                        // onChange={setSelectedWard}
                         // options={selectWard}
+                        options={selectedWard}
+                        value={selectWard}
+                        onChange={(event) => handleChangeWard(event)}
                       />
                     </FormGroup>
                   </Colxx>
@@ -411,7 +751,8 @@ const Data = ({ match }) => {
                         type="text"
                         name="noHP"
                         id="noHP"
-                        placeholder="No. HP"
+                        value={nomor_hp}
+                        onChange={(e) => setNoHP(e.target.value)}
                       />
                     </FormGroup>
                   </Colxx>
@@ -435,6 +776,8 @@ const Data = ({ match }) => {
                             id="laki"
                             name="jenisKelamin"
                             label="Laki-laki"
+                            value={jenis_kelamin}
+                            onChange={(e) => handleChangeGender(e, "Laki-laki")}
                           />
                         </Colxx>
                         <Colxx sm={12} md={12} xl={8}>
@@ -443,6 +786,8 @@ const Data = ({ match }) => {
                             id="perempuan"
                             name="jenisKelamin"
                             label="Perempuan"
+                            value={jenis_kelamin}
+                            onChange={(e) => handleChangeGender(e, "Perempuan")}
                           />
                         </Colxx>
                       </Row>
@@ -459,6 +804,8 @@ const Data = ({ match }) => {
                             id="menikah"
                             name="menikah"
                             label="Menikah"
+                            value={status_menikah}
+                            onChange={(e) => handleChangeMarital(e, "Menikah")}
                           />
                         </Colxx>
                         <Colxx sm={12} md={12} xl={8}>
@@ -467,6 +814,10 @@ const Data = ({ match }) => {
                             id="belumMenikah"
                             name="menikah"
                             label="Belum Menikah"
+                            value={status_menikah}
+                            onChange={(e) =>
+                              handleChangeMarital(e, "Belum Menikah")
+                            }
                           />
                         </Colxx>
                       </Row>
@@ -480,7 +831,8 @@ const Data = ({ match }) => {
                         type="text"
                         name="tempatLahir"
                         id="tempatLahir"
-                        placeholder="Tempat Lahir"
+                        value={tempat_lahir}
+                        onChange={(e) => setTempatLahir(e.target.value)}
                       />
                     </FormGroup>
                   </Colxx>
@@ -492,7 +844,8 @@ const Data = ({ match }) => {
                         type="date"
                         name="tanggalLahir"
                         id="tanggalLahir"
-                        placeholder="Tanggal Lahir"
+                        value={tanggal_lahir}
+                        onChange={(e) => setTanggalLahir(e.target.value)}
                       />
                     </FormGroup>
                   </Colxx>
@@ -513,11 +866,13 @@ const Data = ({ match }) => {
                         components={{ Input: CustomSelectInput }}
                         className="react-select"
                         classNamePrefix="react-select"
-                        name="izin"
-                        id="izin"
-                        value={selectedWP}
-                        onChange={setSelectedWP}
+                        name="tipe_izin"
+                        id="tipe_izin"
+                        // value={selectedWP}
+                        // onChange={setSelectedWP}
                         options={selectWP}
+                        value={selectedWP}
+                        onChange={(event) => handleChangePermissionType(event)}
                       />
                     </FormGroup>
                   </Colxx>
@@ -538,7 +893,8 @@ const Data = ({ match }) => {
                         type="text"
                         name="noIzin"
                         id="noIzin"
-                        placeholder="No. Izin"
+                        value={nomor_izin}
+                        onChange={(e) => setNoIzin(e.target.value)}
                       />
                     </FormGroup>
                   </Colxx>
@@ -560,6 +916,8 @@ const Data = ({ match }) => {
                         name="kadaluarsaIzin"
                         id="kadaluarsaIzin"
                         placeholder="Kadaluarsa Izin"
+                        value={kadaluarsa_izin}
+                        onChange={(e) => setKadaluarsaIzin(e.target.value)}
                       />
                     </FormGroup>
                   </Colxx>
@@ -567,14 +925,26 @@ const Data = ({ match }) => {
 
                 <Row>
                   <Colxx sm={6}>
-                    <Label>* ) Wajib diisi</Label>
+                    <Label>* Wajib diisi</Label>
                   </Colxx>
                   <Colxx sm={6} className="text-right">
-                    <Button outline color="danger">
+                    <Button
+                      type="submit"
+                      onClick={resetForm}
+                      outline
+                      color="danger"
+                    >
                       Batal
                     </Button>
                     &nbsp;&nbsp;
-                    <Button color="primary">Simpan</Button>
+                    <Button
+                      color="primary"
+                      className="btn-shadow"
+                      size="lg"
+                      onClick={() => onUserRegister()}
+                    >
+                      Simpan
+                    </Button>
                   </Colxx>
                 </Row>
               </Form>
