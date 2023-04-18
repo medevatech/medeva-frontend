@@ -3,12 +3,31 @@ const api = {
   auth: {
     login: '/karyawan/login',
     register: '/karyawan/register',
-    resetPassword: '/karyawan/update/password'
+    uploadPhoto: '/karyawan/photo',
+    updatePassword: '/karyawan/password'
   },
   employee: {
-    updateEmployee: '/karyawan/update',
-    updateEmployeePhoto: '/karyawan/update/foto'
-  }
+    all: '/karyawan/',
+    create: '/karyawan/register',
+    updatePhoto: '/karyawan/photo',
+    updatePassword: '/karyawan/password'
+  },
+  clinic: '/klinik',
+  division: '/divisi',
+  shift: '/shift',
+  schedule: '/jaga',
+  patient: '/pasien',
+  insurance: '/asuransi',
+  allergy: '/alergi', // MASTER OF 'ALERGI' FIELD
+  patientAllergy: '/alergi-pasien', // JOIN TABLE ID ALERGY TO ID PATIENT AND ID RECORD
+  vitalSigns: '/vital-signs',
+  record: '/kunjungan',
+  tempRecord: '/temp-kunjungan', // JOIN TABLE ID RECORD TO ID VITAL SIGNS
+  disease: '/penyakit', // MASTER OF 'DIAGNOSIS' FIELD
+  diagnose: '/diagnosis', // MASTER OF 'DIAGNOSIS' FIELD
+  inspect: '/pemeriksaan', // MASTER OF 'PEMERIKSAAN' FIELD
+  inspectSupport: '/pemeriksaan-penunjang', // JOIN TABLE ID RECORD TO ID PATIENT AND 
+  poly: '/poli', // MASTER OF 'POLI' FIELD
 }
 
 export default api

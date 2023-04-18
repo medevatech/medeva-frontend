@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Row, Card, CardTitle, Label, FormGroup, Button, Input } from 'reactstrap';
+import { Row, Card, CardTitle, Label, Form, FormGroup, Button, Input } from 'reactstrap';
 import { NavLink } from 'react-router-dom';
 import { connect } from 'react-redux';
 
-import { Formik, Form, Field } from 'formik';
+// import { Formik, Form, Field } from 'formik';
 
 import { Colxx } from 'components/common/CustomBootstrap';
 
@@ -36,13 +36,13 @@ const Home = ({ history, loading, error, loginUserAction }) => {
   const [input_login, setInputLogin] = useState('dev@medeva.tech');
   const [password, setPassword] = useState('dev123');
 
+  const [ userLogin, setUserLogin ] = useState({ input_login: 'dev@medeva.tech', password: 'dev123'});
+
   // useEffect(() => {
   //   if (error) {
   //     NotificationManager.warning(error, 'Login Error', 3000, null, null, '');
   //   }
   // }, [error]);
-
-  const [ userLogin, setUserLogin ] = useState({ input_login: 'dev@medeva.tech', password: 'dev123'});
 
   const onUserLogin = async (values) => {
     if (!loading) {
@@ -53,76 +53,76 @@ const Home = ({ history, loading, error, loginUserAction }) => {
         // const loginDB = async (e) => {
           // values.preventDefault();
   
-          try {
+          // try {
               // userLoginData = JSON.stringify({ input_login: userLogin.email, password: userLogin.password })
               // userLoginData = { input_login: email, password: password };
-              let data = { input_login, password };
+              // let data = { input_login, password };
 
-              const response = await auth.login(data);
-              // console.log(response);
+              // const response = await auth.login(userLogin);
+              console.log(values);
   
-              if (response.status == 200) {
-                  let data = await response.data.data;
-                  // console.log(data);
+          //     if (response.status == 200) {
+          //         let data = await response.data.data;
+          //         // console.log(data);
 
-                  localStorage.setItem('userID', data.id);
-                  localStorage.setItem('token', data.token);
-                  localStorage.setItem('username', data.username);
+          //         localStorage.setItem('userID', data.id);
+          //         localStorage.setItem('token', data.token);
+          //         localStorage.setItem('username', data.username);
                   
-                  localStorage.setItem('isDev', data.is_dev);
-                  localStorage.setItem('isManager', data.is_manager);
-                  localStorage.setItem('isAdmin', data.is_admin);
-                  localStorage.setItem('isDokter', data.is_dokter);
-                  localStorage.setItem('isManajemen', data.is_manajemen);
-                  localStorage.setItem('isPerawat', data.is_perawat);
-                  localStorage.setItem('isResepsionis', data.is_resepsionis);
+          //         localStorage.setItem('isDev', data.is_dev);
+          //         localStorage.setItem('isManager', data.is_manager);
+          //         localStorage.setItem('isAdmin', data.is_admin);
+          //         localStorage.setItem('isDokter', data.is_dokter);
+          //         localStorage.setItem('isManajemen', data.is_manajemen);
+          //         localStorage.setItem('isPerawat', data.is_perawat);
+          //         localStorage.setItem('isResepsionis', data.is_resepsionis);
 
-                  // Swal.fire({
-                  //     title: 'Sukses!',
-                  //     html: `Login sukses`,
-                  //     icon: 'success',
-                  //     confirmButtonColor: '#008ecc',
-                  //     confirmButtonText: 'Menuju dashboard',
-                  // }).then((result) => {
-                  //   if (result.isConfirmed) {
-                      history.push("../dashboard");
-                  //   }
-                  // })
+          //         Swal.fire({
+          //             title: 'Sukses!',
+          //             html: `Login sukses`,
+          //             icon: 'success',
+          //             confirmButtonColor: '#008ecc',
+          //             confirmButtonText: 'Menuju dashboard',
+          //         }).then((result) => {
+          //           if (result.isConfirmed) {
+          //             history.push("../dashboard");
+          //           }
+          //         })
                   
-              } else {
-                Swal.fire({
-                    title: 'Gagal!',
-                    html: `Login gagal`,
-                    icon: 'error',
-                    confirmButtonColor: '#008ecc',
-                    confirmButtonText: 'Coba lagi',
-                })
+          //     } else {
+          //       Swal.fire({
+          //           title: 'Gagal!',
+          //           html: `Login gagal`,
+          //           icon: 'error',
+          //           confirmButtonColor: '#008ecc',
+          //           confirmButtonText: 'Coba lagi',
+          //       })
 
-                throw Error(`Error status: ${response.status}`);
-              }
-          } catch (e) {
-              Swal.fire({
-                title: 'Error!',
-                html: `Login failed`,
-                icon: 'error',
-                confirmButtonColor: '#008ecc',
-                confirmButtonText: 'Coba lagi',
-            })
+          //       throw Error(`Error status: ${response.status}`);
+          //     }
+          // } catch (e) {
+          //     Swal.fire({
+          //       title: 'Error!',
+          //       html: `Login failed`,
+          //       icon: 'error',
+          //       confirmButtonColor: '#008ecc',
+          //       confirmButtonText: 'Coba lagi',
+          //   })
             
-            console.log(e);
-          }
+          //   console.log(e);
+          // }
         // }
       }
     }
   }
 
-  const initialValues = { input_login, password };
+  // const initialValues = { userLogin.input_login, userLogin.password };
 
-  // const onChange = (e) => {
-  //   setUserLogin(currState => {
-  //       return { ...currState, [e.target.id]: e.target.value }
-  //   })
-  // }
+  const onChange = (e) => {
+    // setUserLogin(currState => {
+    //     return { ...currState, [e.target.id]: e.target.value }
+    // })
+  }
 
   return (
     <UserLayout>
@@ -148,8 +148,8 @@ const Home = ({ history, loading, error, loginUserAction }) => {
                 Login
               </CardTitle>
 
-              <Formik initialValues={initialValues} onSubmit={onUserLogin}>
-                {({ errors, touched }) => (
+              {/* <Formik onSubmit={onUserLogin}> */}
+                {/* {({ errors, touched }) => ( */}
                   <Form className="av-tooltip tooltip-label-bottom">
                     <FormGroup className="form-group has-float-label">
                       <Label>
@@ -157,11 +157,11 @@ const Home = ({ history, loading, error, loginUserAction }) => {
                       </Label>
                       <input
                         className="form-control"
-                        name="email"
+                        id="input_login"
                         // validate={validateEmail}
-                        value={input_login}
-                        // onChange={onChange}
-                        onChange={(e) => setInputLogin(e.target.value)}
+                        value={userLogin.input_login}
+                        onChange={onChange}
+                        // onChange={(e) => setInputLogin(e.target.value)}
                       />
                       {/* {errors.email && touched.email && (
                         <div className="invalid-feedback d-block">
@@ -176,11 +176,11 @@ const Home = ({ history, loading, error, loginUserAction }) => {
                       <input
                         className="form-control"
                         type="password"
-                        name="password"
+                        id="password"
                         // validate={validatePassword}
-                        value={password}
-                        // onChange={onChange}
-                        onChange={(e) => setPassword(e.target.value)}
+                        value={userLogin.password}
+                        onChange={onChange}
+                        // onChange={(e) => setPassword(e.target.value)}
                       />
                       {/* {errors.password && touched.password && (
                         <div className="invalid-feedback d-block">
@@ -203,6 +203,7 @@ const Home = ({ history, loading, error, loginUserAction }) => {
                         }`}
                         size="lg"
                         type="submit"
+                        onClick={() => onUserLogin(userLogin)}
                       >
                         <span className="spinner d-inline-block">
                           <span className="bounce1" />
@@ -215,8 +216,8 @@ const Home = ({ history, loading, error, loginUserAction }) => {
                       </Button>
                     </div>
                   </Form>
-                )}
-              </Formik>
+                {/* )} */}
+              {/* </Formik> */}
             </div>
           </Card>
         </Colxx>

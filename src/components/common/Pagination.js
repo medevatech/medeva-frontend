@@ -5,7 +5,7 @@ import { Colxx } from 'components/common/CustomBootstrap';
 const Pagination = ({
   totalPage = 0,
   currentPage = 1,
-  numberLimit = 5,
+  numberLimit = 3,
   lastIsActive = true,
   firstIsActive = true,
   onChangePage,
@@ -16,12 +16,12 @@ const Pagination = ({
   if (numberLimit > totalPage) {
     startPoint = 1;
     endPoint = totalPage;
-  } else if (currentPage <= parseInt(numberLimit / 2, 10)) {
+  } else if (currentPage <= parseInt(numberLimit / 2)) {
     startPoint = 1;
     endPoint = numberLimit;
-  } else if (currentPage + parseInt(numberLimit / 2, 10) <= totalPage) {
-    startPoint = currentPage - parseInt(numberLimit / 2, 10);
-    endPoint = currentPage + parseInt(numberLimit / 2, 10);
+  } else if (currentPage + parseInt(numberLimit / 2) <= totalPage) {
+    startPoint = currentPage - parseInt(numberLimit / 2);
+    endPoint = currentPage + parseInt(numberLimit / 2);
   } else {
     startPoint = totalPage - (numberLimit - 1);
     endPoint = totalPage;

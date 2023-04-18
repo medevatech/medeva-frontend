@@ -22,6 +22,8 @@ import UserLayout from 'layout/UserLayout';
 import auth from 'api/authorization';
 import Swal from 'sweetalert2';
 
+import * as Address from '../../utils/address';
+
 const selectRole = [
   // { label: 'Developer', value: 'DEVELOPER', key: 0 },
   // { label: 'Manager', value: 'MANAGER', key: 1 },
@@ -36,12 +38,6 @@ const selectWP = [
   { label: 'SIP', value: 'SIP', key: 0 },
   { label: 'STR', value: 'STR', key: 1 },
 ];
-
-var urlProvinsi = "https://ibnux.github.io/data-indonesia/provinsi.json";
-var urlKabupaten = "https://ibnux.github.io/data-indonesia/kabupaten/";
-var urlKecamatan = "https://ibnux.github.io/data-indonesia/kecamatan/";
-var urlKelurahan = "https://ibnux.github.io/data-indonesia/kelurahan/";
-
 
 const Register = ({ history, loading, error }) => {
   const [username, setUsername] = useState('medeva1');
@@ -67,130 +63,10 @@ const Register = ({ history, loading, error }) => {
   const [tanggal_lahir, setTanggalLahir] = useState('');
   const [alamat, setAlamat] = useState('');
   const [kode_pos, setKodePos] = useState('');
-  const [provinsi, setProvinsi] = useState([]);
-  const [kota, setKota] = useState([]);
-  const [kecamatan, setKecamatan] = useState([]);
-  const [kelurahan, setKelurahan] = useState([]);
   const [status_menikah, setStatus] = useState('');
 
   const [selectedRole, setSelectedRole] = useState([]);
   const [selectedWP, setSelectedWP] = useState([]);
-
-  const [selectedProvince, setSelectedProvince] = useState([]);
-  const [selectedCity, setSelectedCity] = useState([]);
-  const [selectedSubdistrict, setSelectedSubdistrict] = useState([]);
-  const [selectedWard, setSelectedWard] = useState([]);
-
-  const [selectProvince, setSelectProvince] = useState([]);
-  const [selectCity, setSelectCity] = useState([]);
-  const [selectSubdistrict, setSelectSubdistrict] = useState([]);
-  const [selectWard, setSelectWard] = useState([]);
-
-  const handleChangeProv = (event) => {
-    setSelectProvince(event);
-    setProvinsi(event.value);
-    changeKota(event.key);
-  };
-
-  const handleChangeCity = event => {
-    setSelectCity(event);
-    setKota(event.value);
-    changeKecamatan(event.key);
-  };
-
-  const handleChangeSubdistrict = event => {
-    setSelectSubdistrict(event);
-    setKecamatan(event.value);
-    changeKelurahan(event.key);
-  };
-
-  const handleChangeWard = event => {
-    setSelectWard(event);
-    setKelurahan(event.value);
-  };
-
-  const onLoadProvinsi = async () => {
-    try {
-        const response = await fetch(urlProvinsi);
-        // console.log(response);
-          
-        if (response.ok) {
-            let data = await response.json();
-            for(var i = 0; i < data.length; i++){
-              setSelectedProvince(current => 
-                [...current, { label: data[i].nama, value: data[i].nama, key: data[i].id }]
-              );
-            }
-        } else {
-            throw Error(`Error status: ${response.status}`);
-        }
-    } catch (e) {
-      console.log(e);
-    }
-  }
-
-  const changeKota = async (id_prov) => {
-    try {
-        const response = await fetch(`${urlKabupaten}/${id_prov}.json`);
-        // console.log(response);
-          
-        if (response.ok) {
-            let data = await response.json();
-            setSelectedCity([]);
-            for(var i = 0; i < data.length; i++){
-              setSelectedCity(current => 
-                [...current, { label: data[i].nama, value: data[i].nama, key: data[i].id }]
-              );
-            }
-        } else {
-            throw Error(`Error status: ${response.status}`);
-        }
-    } catch (e) {
-      console.log(e);
-    }
-  }
-
-  const changeKecamatan = async (id_kota) => {
-    try {
-        const response = await fetch(`${urlKecamatan}/${id_kota}.json`);
-        // console.log(response);
-          
-        if (response.ok) {
-            let data = await response.json();
-            setSelectedSubdistrict([]);
-            for(var i = 0; i < data.length; i++){
-              setSelectedSubdistrict(current => 
-                [...current, { label: data[i].nama, value: data[i].nama, key: data[i].id }]
-              );
-            }
-        } else {
-            throw Error(`Error status: ${response.status}`);
-        }
-    } catch (e) {
-      console.log(e);
-    }
-  }
-
-  const changeKelurahan = async (id_kecamatan) => {
-    try {
-        const response = await fetch(`${urlKelurahan}/${id_kecamatan}.json`);
-        // console.log(response);
-          
-        if (response.ok) {
-            let data = await response.json();
-            setSelectedWard([]);
-            for(var i = 0; i < data.length; i++){
-              setSelectedWard(current => 
-                [...current, { label: data[i].nama, value: data[i].nama, key: data[i].id }]
-              );
-            }
-        } else {
-            throw Error(`Error status: ${response.status}`);
-        }
-    } catch (e) {
-      console.log(e);
-    }
-  }
 
   const handleChangeGender = (e, jns) => {
     setJenisKelamin(jns);
@@ -239,13 +115,15 @@ const Register = ({ history, loading, error }) => {
   }
 
   useEffect(() => {
-    onLoadProvinsi();
+    Address.Address.onLoadProvinsi();
   }, []);
 
   const onUserRegister = async (values) => {
     // if (email !== '' && password !== '') {
     //   history.push("./login");
     // }
+
+    let provinsi = Address.Address.provinsi; let kota = Address.Address.kota; let kecamatan = Address.Address.kecamatan; let kelurahan = Address.Address.kelurahan;
 
     try {
         let data = { nama, username, email, password, is_dev, is_manager, is_admin, is_resepsionis, is_perawat, is_dokter, is_manajemen,
@@ -396,12 +274,9 @@ const Register = ({ history, loading, error }) => {
                           classNamePrefix="react-select"
                           name="provinsi"
                           id="provinsi"
-                          // value={selectedProvince}
-                          // onChange={setSelectedProvince}
-                          // options={selectProvince}
-                          options={selectedProvince}
-                          value={selectProvince}
-                          onChange={(event)=>handleChangeProv(event)}
+                          options={Address.Address.selectedProvince}
+                          value={Address.Address.selectProvince}
+                          onChange={(event)=>Address.Address.handleChangeProv(event)}
                         />
                     </FormGroup>
 
@@ -415,12 +290,9 @@ const Register = ({ history, loading, error }) => {
                           classNamePrefix="react-select"
                           name="kotakab"
                           id="kotakab"
-                          // value={selectedCity}
-                          // onChange={setSelectedCity}
-                          // options={selectCity}
-                          options={selectedCity}
-                          value={selectCity}
-                          onChange={(event)=>handleChangeCity(event)}
+                          options={Address.Address.selectedCity}
+                          value={Address.Address.selectCity}
+                          onChange={(event)=>Address.Address.handleChangeCity(event)}
                         />
                     </FormGroup>
 
@@ -434,12 +306,9 @@ const Register = ({ history, loading, error }) => {
                           classNamePrefix="react-select"
                           name="kecamatan"
                           id="kecamatan"
-                          // value={selectedSubdistrict}
-                          // onChange={setSelectedSubdistrict}
-                          // options={selectSubdistrict}
-                          options={selectedSubdistrict}
-                          value={selectSubdistrict}
-                          onChange={(event)=>handleChangeSubdistrict(event)}
+                          options={Address.Address.selectedSubdistrict}
+                          value={Address.Address.selectSubdistrict}
+                          onChange={(event)=>Address.Address.handleChangeSubdistrict(event)}
                         />
                     </FormGroup>
 
@@ -453,12 +322,9 @@ const Register = ({ history, loading, error }) => {
                           classNamePrefix="react-select"
                           name="kelurahan"
                           id="kelurahan"
-                          // value={selectedWard}
-                          // onChange={setSelectedWard}
-                          // options={selectWard}
-                          options={selectedWard}
-                          value={selectWard}
-                          onChange={(event)=>handleChangeWard(event)}
+                          options={Address.Address.selectedWard}
+                          value={Address.Address.selectWard}
+                          onChange={(event)=>Address.Address.handleChangeWard(event)}
                         />
                     </FormGroup>
 

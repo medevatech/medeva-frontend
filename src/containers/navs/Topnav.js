@@ -228,11 +228,11 @@ const TopNav = ({
                 <img alt="Profile" src="/assets/img/profiles/l-1.jpg" />
               </span>
             </DropdownToggle>
-            <DropdownMenu className="mt-3" right>
+            <DropdownMenu className="mt-3" right style={{ paddingBottom: '0px' }}>
               <DropdownItem>Edit Profil</DropdownItem>
               <DropdownItem>Jadwal Jaga</DropdownItem>
-              <DropdownItem divider />
-              <DropdownItem onClick={() => handleLogout()}>
+              <DropdownItem divider style={{ marginBottom: '0px' }}/>
+              <DropdownItem onClick={() => handleLogout()} style={{ backgroundColor: '#8aaab4', color: '#fff' }}>
                 Log out
               </DropdownItem>
             </DropdownMenu>

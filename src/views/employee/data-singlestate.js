@@ -14,7 +14,7 @@ import {
   Form,
   Table,
 } from "reactstrap";
-import { useDispatch, useSelector } from 'react-redux';
+import axios from "axios";
 import "react-tagsinput/react-tagsinput.css";
 import "react-datepicker/dist/react-datepicker.css";
 import "rc-switch/assets/index.css";
@@ -27,7 +27,7 @@ import Pagination from "components/common/Pagination";
 
 import CustomSelectInput from "components/common/CustomSelectInput";
 
-import employeeAPI from "api/employee";
+import auth from "api/authorization";
 import Swal from "sweetalert2";
 
 const selectRole = [
@@ -38,14 +38,6 @@ const selectRole = [
   { label: "Perawat", value: "PERAWAT", key: 4 },
   { label: "Dokter", value: "DOKTER", key: 5 },
   { label: "Manajemen", value: "MANAJEMEN", key: 6 },
-];
-
-const selectType = [
-  { label: "Admin", value: "ADMIN", key: 1 },
-  { label: "Resepsionis", value: "RESEPSIONIS", key: 2 },
-  { label: "Perawat", value: "PERAWAT", key: 3 },
-  { label: "Dokter", value: "DOKTER", key: 4 },
-  { label: "Manajemen", value: "MANAJEMEN", key: 5 },
 ];
 
 const selectDivision = [
@@ -64,12 +56,47 @@ var urlKecamatan = "https://ibnux.github.io/data-indonesia/kecamatan/";
 var urlKelurahan = "https://ibnux.github.io/data-indonesia/kelurahan/";
 
 const Data = ({ match, history, loading, error }) => {
-  const dispatch = useDispatch();
-  const employeeAll = useSelector(state => state.employee);
+  const [ userLogin, setUserLogin ] = useState({
+    username: "medeva1", nama: "Medeva Tech", email: "dev@medeva.tech1", password: "medeva123",
+    is_dev: 0, is_manager: 0, is_admin: 0, is_resepsionis: 0, is_perawat: 0, is_dokter: 0, is_manajemen: 0,
+    jenis_kelamin: "", nomor_kitas: "", tipe_izin: "", nomor_izin: "", kadaluarsa_izin: "",
+    nomor_hp: "", tempat_lahir: "", tanggal_lahir: "",
+    alamat: "", kode_pos: "", provinsi: "", kota: "", kecamatan: "", kelurahan: "",
+    status_menikah: ""
+  });
+
+  // const [username, setUsername] = useState("medeva1");
+  // const [nama, setNama] = useState("Medeva Tech");
+  // const [email, setEmail] = useState("dev@medeva.tech1");
+  // const [password, setPassword] = useState("medeva123");
+
+  // const [is_dev, setIsDev] = useState(0);
+  // const [is_manager, setIsManager] = useState(0);
+  // const [is_admin, setIsAdmin] = useState(0);
+  // const [is_resepsionis, setIsResepsionis] = useState(0);
+  // const [is_perawat, setIsPerawat] = useState(0);
+  // const [is_dokter, setIsDokter] = useState(0);
+  // const [is_manajemen, setIsManajemen] = useState(0);
+
+  // const [divisi, setDivisi] = useState("");
+  // const [jenis_kelamin, setJenisKelamin] = useState("");
+  // const [nomor_kitas, setNoKITAS] = useState("");
+  // const [tipe_izin, setTipeIzin] = useState("");
+  // const [nomor_izin, setNoIzin] = useState("");
+  // const [kadaluarsa_izin, setKadaluarsaIzin] = useState("");
+  // const [nomor_hp, setNoHP] = useState("");
+  // const [tempat_lahir, setTempatLahir] = useState("");
+  // const [tanggal_lahir, setTanggalLahir] = useState("");
+  // const [alamat, setAlamat] = useState("");
+  // const [kode_pos, setKodePos] = useState("");
+  // const [provinsi, setProvinsi] = useState([]);
+  // const [kota, setKota] = useState([]);
+  // const [kecamatan, setKecamatan] = useState([]);
+  // const [kelurahan, setKelurahan] = useState([]);
+  // const [status_menikah, setStatus] = useState("");
 
   const [selectedRole, setSelectedRole] = useState([]);
   const [selectedWP, setSelectedWP] = useState([]);
-  const [selectedType, setSelectedType] = useState([]);
 
   const [selectedProvince, setSelectedProvince] = useState([]);
   const [selectedCity, setSelectedCity] = useState([]);
@@ -84,44 +111,12 @@ const Data = ({ match, history, loading, error }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPage, setTotalPage] = useState(0);
 
-  const [username, setUsername] = useState("medeva1");
-  const [nama, setNama] = useState("Medeva Tech");
-  const [email, setEmail] = useState("dev@medeva.tech1");
-  const [password, setPassword] = useState("medeva123");
-
-  const [is_dev, setIsDev] = useState(0);
-  const [is_manager, setIsManager] = useState(0);
-  const [is_admin, setIsAdmin] = useState(0);
-  const [is_resepsionis, setIsResepsionis] = useState(0);
-  const [is_perawat, setIsPerawat] = useState(0);
-  const [is_dokter, setIsDokter] = useState(0);
-  const [is_manajemen, setIsManajemen] = useState(0);
-
-  const [divisi, setDivisi] = useState("");
-  const [jenis_kelamin, setJenisKelamin] = useState("");
-  const [nomor_kitas, setNoKITAS] = useState("");
-  const [tipe_izin, setTipeIzin] = useState("");
-  const [nomor_izin, setNoIzin] = useState("");
-  const [kadaluarsa_izin, setKadaluarsaIzin] = useState("");
-  const [nomor_hp, setNoHP] = useState("");
-  const [tempat_lahir, setTempatLahir] = useState("");
-  const [tanggal_lahir, setTanggalLahir] = useState("");
-  const [alamat, setAlamat] = useState("");
-  const [tipe, setTipe] = useState("");
-  const [spesialisasi, setSpesialisasi] = useState("");
-  const [kode_pos, setKodePos] = useState("");
-  const [provinsi, setProvinsi] = useState([]);
-  const [kota, setKota] = useState([]);
-  const [kecamatan, setKecamatan] = useState([]);
-  const [kelurahan, setKelurahan] = useState([]);
-  const [status_menikah, setStatus] = useState("");
-
   const [employeeData, setEmployeeData] = useState([]);
 
-  const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(10);
-  const [sortBy, setSortBy] = useState("");
-  const [sortOrder, setSortOrder] = useState("");
+  // const [page, setPage] = useState("1");
+  const [limit, setLimit] = useState("5");
+  const [sortBy, setSortBy] = useState("nama");
+  const [sortOrder, setSortOrder] = useState("desc");
   const [search, setSearch] = useState("");
 
   const handleChangeProv = (event) => {
@@ -242,16 +237,14 @@ const Data = ({ match, history, loading, error }) => {
 
   const handleChangeMarital = (e, nkh) => {
     setStatus(nkh);
+    // setUserLogin(current) => {
+    //   set
+    // }
   };
 
   const handleChangePermissionType = (event) => {
     setSelectedWP(event);
     setTipeIzin(event.value);
-  };
-
-  const handleChangeType = (event) => {
-    setSelectedType(event);
-    setTipe(event.value);
   };
 
   const handleChangeRole = (event) => {
@@ -289,7 +282,11 @@ const Data = ({ match, history, loading, error }) => {
     onLoadProvinsi();
   }, []);
 
-  const onEmployeeAdd = async (e) => {
+  const onUserRegister = async (e) => {
+    // if (email !== '' && password !== '') {
+    //   history.push("./login");
+    // }
+
     try {
       let data = {
         nama,
@@ -312,8 +309,6 @@ const Data = ({ match, history, loading, error }) => {
         tempat_lahir,
         tanggal_lahir,
         alamat,
-        tipe,
-        spesialisasi,
         kode_pos,
         provinsi,
         kota,
@@ -321,9 +316,9 @@ const Data = ({ match, history, loading, error }) => {
         kelurahan,
         status_menikah,
       };
-      // console.log(data);
+      console.log(data);
 
-      const response = await employee.create(data);
+      const response = await auth.register(data);
       // console.log(response);
 
       if (response.status == 200) {
@@ -351,7 +346,7 @@ const Data = ({ match, history, loading, error }) => {
       }
     } catch (e) {
       Swal.fire({
-        title: "Gagal!",
+        title: "Error!",
         html: `Tambah karyawan gagal`,
         icon: "error",
         confirmButtonColor: "#008ecc",
@@ -364,6 +359,7 @@ const Data = ({ match, history, loading, error }) => {
 
   const resetForm = (e) => {
     e.preventDefault();
+    
     setUsername("");
     setNama("");
     setEmail("");
@@ -384,8 +380,6 @@ const Data = ({ match, history, loading, error }) => {
     setTempatLahir("");
     setTanggalLahir("");
     setAlamat("");
-    setTipe("");
-    setSpesialisasi("");
     setKodePos("");
     setProvinsi([]);
     setKota([]);
@@ -407,43 +401,37 @@ const Data = ({ match, history, loading, error }) => {
     onLoadProvinsi();
   };
 
-  const getEmployee = async (params) => {
-
+  const getEmployee = async (url) => {
     try {
-      const res = await employeeAPI.get("", params);
+      const res = await axios.get(url);
       setEmployeeData(res.data.data.result);
-      setTotalPage(res.data.data.pagination.totalPage)
-      // console.log("Get employee", res.data.data.result);
-      dispatch({type: "GET_EMPLOYEE", payload: res.data.data.result});
-    } catch (e) {
-      console.log(e);
+      console.log("Get employee", res.data.data.result);
+    } catch (err) {
+      console.log(err);
     }
   };
 
   useEffect(() => {
-    let params = "";
-    
+    let url = `https://medv.vercel.app/api/v1/karyawan`;
     if (limit !== "10") {
-      params = `${params}?limit=${limit}`;
+      url = `${url}?limit=${limit}`;
     } else {
-      params = `${params}?limit=10`;
+      url = `${url}?limit=5`;
     }
     if (search !== "") {
-      params = `${params}&searchName=${search}`;
+      url = `${url}&searchName=${search}`;
     }
     if (currentPage !== "1") {
-      params = `${params}&page=${currentPage}`;
+      url = `${url}&page=${currentPage}`;
     }
-
-    getEmployee(params);
+    getEmployee(url);
     onLoadProvinsi();
-
   }, [limit, search, sortBy, sortOrder, currentPage]);
 
   let startNumber = 1;
 
   if (currentPage !== 1) {
-    startNumber = (currentPage - 1) * 10 + 1;
+    startNumber = (currentPage - 1) * 5 + 1;
   }
 
   return (
@@ -481,33 +469,29 @@ const Data = ({ match, history, loading, error }) => {
                 <thead>
                   <tr>
                     <th style={{ textAlign: "center" }}>No</th>
-                    {/* <th>ID</th> */}
-                    <th>Nama Lengkap</th>
-                    <th style={{ textAlign: "center" }}>Tipe</th>
+                    <th>ID</th>
+                    <th>Nama</th>
+                    <th style={{ textAlign: "center" }}>Username</th>
                     {/* <th style={{ textAlign: "center" }}>Email</th> */}
                   </tr>
                 </thead>
                 <tbody>
-                  {/* {employeeData ? (
-                    employeeData.map((data) => ( */}
-                  {employeeAll ? (
-                    employeeAll.map((data) => (
+                  {employeeData ? (
+                    employeeData.map((data) => (
                       <tr key={data.id}>
                         <th scope="row" style={{ textAlign: "center" }}>
                           {startNumber++}
                         </th>
-                        {/* <td>{data.id}</td> */}
+                        <td>{data.id}</td>
                         <td>{data.nama}</td>
-                        <td style={{ textAlign: "center" }}>{data.tipe ? data.tipe : "-"}</td>
+                        <td style={{ textAlign: "center" }}>{data.username}</td>
                         {/* <td style={{ textAlign: "center" }}>{data.email}</td> */}
                       </tr>
                     ))
                   ) : (
-                    <tr>
-                      <td>
-                        <p>Loading data</p>
-                      </td>
-                    </tr>
+                    <>
+                      <b2>Loading data</b2>
+                    </>
                   )}
                 </tbody>
               </Table>
@@ -626,6 +610,33 @@ const Data = ({ match, history, loading, error }) => {
                     </FormGroup>
                   </Colxx>
 
+                  <Colxx sm={6}>
+                    <FormGroup>
+                      <Label for="peran">
+                        Peran
+                        <span
+                          className="required text-danger"
+                          aria-required="true"
+                        >
+                          {" "}
+                          *
+                        </span>
+                      </Label>
+                      <Select
+                        components={{ Input: CustomSelectInput }}
+                        className="react-select"
+                        classNamePrefix="react-select"
+                        isMulti
+                        name="peran"
+                        id="peran"
+                        value={selectedRole}
+                        // onChange={setSelectedRole}
+                        options={selectRole}
+                        onChange={(event) => handleChangeRole(event)}
+                      />
+                    </FormGroup>
+                  </Colxx>
+
                   {/* <Colxx sm={6}>
                     <FormGroup>
                       <Label for="divisi">
@@ -649,44 +660,6 @@ const Data = ({ match, history, loading, error }) => {
                       />
                     </FormGroup>
                   </Colxx> */}
-
-                  <Colxx sm={6}>
-                    <FormGroup>
-                      <Label for="peran">
-                          Tipe
-                          <span
-                            className="required text-danger"
-                            aria-required="true"
-                          >
-                            {" "}
-                            *
-                          </span>
-                        </Label>
-                        <Select
-                          components={{ Input: CustomSelectInput }}
-                          className="react-select"
-                          classNamePrefix="react-select"
-                          name="tipe"
-                          id="tipe"
-                          value={selectedType}
-                          options={selectType}
-                          onChange={(event) => handleChangeType(event)}
-                        />
-                    </FormGroup>
-                  </Colxx>
-
-                  <Colxx sm={6}>
-                    <FormGroup>
-                      <Label for="spesialisasi">Spesialisasi</Label>
-                      <Input
-                        type="text"
-                        name="spesialisasi"
-                        id="spesialisasi"
-                        value={spesialisasi}
-                        onChange={(e) => setSpesialisasi(e.target.value)}
-                      />
-                    </FormGroup>
-                  </Colxx>
 
                   <Colxx sm={6}>
                     <FormGroup>
@@ -967,33 +940,6 @@ const Data = ({ match, history, loading, error }) => {
                       />
                     </FormGroup>
                   </Colxx>
-
-                  <Colxx sm={12}>
-                    <FormGroup>
-                      <Label for="peran">
-                        Peran
-                        <span
-                          className="required text-danger"
-                          aria-required="true"
-                        >
-                          {" "}
-                          *
-                        </span>
-                      </Label>
-                      <Select
-                        components={{ Input: CustomSelectInput }}
-                        className="react-select"
-                        classNamePrefix="react-select"
-                        isMulti
-                        name="peran"
-                        id="peran"
-                        value={selectedRole}
-                        // onChange={setSelectedRole}
-                        options={selectRole}
-                        onChange={(event) => handleChangeRole(event)}
-                      />
-                    </FormGroup>
-                  </Colxx>
                 </FormGroup>
 
                 <Row>
@@ -1012,7 +958,7 @@ const Data = ({ match, history, loading, error }) => {
                     &nbsp;&nbsp;
                     <Button
                       color="primary"
-                      onClick={(e) => onEmployeeAdd(e)}
+                      onClick={(e) => onUserRegister(e)}
                     >
                       Simpan
                     </Button>

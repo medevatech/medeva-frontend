@@ -95,30 +95,33 @@ const Data = ({ match }) => {
                     Tambah
                   </Button>
                 </CardTitle>
-                <FormGroup className="mt-4">
-                  <Label for="tanggalRekamCari">
-                    Tanggal
-                  </Label>
-                  <Input
-                    type="date"
-                    name="tanggalRekamCari"
-                    id="tanggalRekamCari"
-                    placeholder="Tanggal"
-                  />
-                </FormGroup>
-                <FormGroup className="mt-4">
-                  <Label for="divisi">
-                    Divisi
-                  </Label>
-                  <Select
-                    components={{ Input: CustomSelectInput }}
-                    className="react-select"
-                    classNamePrefix="react-select"
-                    name="divisi"
-                    value={selectedDivision}
-                    onChange={setSelectedDivision}
-                    options={selectDivision}
-                  />
+                <FormGroup row style={{ margin: '0px', width: '100%' }}>
+                  <Colxx sm="12" md="6" style={{ paddingLeft: '0px' }}>
+                    <Label for="tanggalRekamCari">
+                          Tanggal
+                        </Label>
+                        <Input
+                          type="date"
+                          name="tanggalRekamCari"
+                          id="tanggalRekamCari"
+                          placeholder="Tanggal"
+                          defaultValue={new Date().toISOString().substr(0, 10)}
+                        />
+                  </Colxx>
+                  <Colxx sm="12" md="6" style={{ paddingRight: '0px' }}>
+                    <Label for="divisi">
+                      Divisi
+                    </Label>
+                    <Select
+                      components={{ Input: CustomSelectInput }}
+                      className="react-select"
+                      classNamePrefix="react-select"
+                      name="divisi"
+                      value={selectedDivision}
+                      onChange={setSelectedDivision}
+                      options={selectDivision}
+                    />
+                  </Colxx>
                 </FormGroup>
                 <InputGroup className="my-4">
                   <Input
