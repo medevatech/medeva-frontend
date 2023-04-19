@@ -47,20 +47,20 @@ label {
     width: 70%;
 }
 
-.input-group-insurance {
+.input-group-insurance, .input-group-allergy {
     margin-bottom: 1rem !important;
 }
 
-.select-insurance {
+.select-insurance, .select-allergy {
     width: 30%;
 }
 
-.input-insurance {
+.input-insurance, .input-allergy {
     // width: 70%;
     // margin-right: 10px;
 }
 
-.remove-insurance {
+.remove-insurance, .remove-allergy {
     border-radius: 0 0.1rem 0.1rem 0;
 }
 

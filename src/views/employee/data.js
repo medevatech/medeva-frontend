@@ -116,18 +116,18 @@ const Data = ({ match, history, loading, error }) => {
   const dispatch = useDispatch();
   const employeeAll = useSelector(state => state.employee);
   const employeeTotalPage = useSelector(state => state.employeeTotalPage);
-  const [selectedTypeF, setSelectedTypeF] = useState([]);
-  const [selectedSpecialistF, setSelectedSpecialistF] = useState([]);
+  const [selectedTypeF, setSelectedTypeF] = useState("");
+  const [selectedSpecialistF, setSelectedSpecialistF] = useState("");
 
   const [selectedRole, setSelectedRole] = useState([]);
-  const [selectedWP, setSelectedWP] = useState([]);
-  const [selectedType, setSelectedType] = useState([]);
-  const [selectedSpecialist, setSelectedSpecialist] = useState([]);
+  const [selectedWP, setSelectedWP] = useState("");
+  const [selectedType, setSelectedType] = useState("");
+  const [selectedSpecialist, setSelectedSpecialist] = useState("");
 
-  const [selectedProvince, setSelectedProvince] = useState([]);
-  const [selectedCity, setSelectedCity] = useState([]);
-  const [selectedSubdistrict, setSelectedSubdistrict] = useState([]);
-  const [selectedWard, setSelectedWard] = useState([]);
+  const [selectedProvince, setSelectedProvince] = useState();
+  const [selectedCity, setSelectedCity] = useState("");
+  const [selectedSubdistrict, setSelectedSubdistrict] = useState("");
+  const [selectedWard, setSelectedWard] = useState("");
 
   const [selectProvince, setSelectProvince] = useState([]);
   const [selectCity, setSelectCity] = useState([]);
@@ -340,10 +340,6 @@ const Data = ({ match, history, loading, error }) => {
     }
   };
 
-  useEffect(() => {
-    onLoadProvinsi();
-  }, []);
-
   const onEmployeeAdd = async (e) => {
     try {
       let data = {
@@ -366,9 +362,9 @@ const Data = ({ match, history, loading, error }) => {
         nomor_hp,
         tempat_lahir,
         tanggal_lahir,
-        alamat,
         tipe,
         spesialis,
+        alamat,
         kode_pos,
         provinsi,
         kota,
@@ -1092,7 +1088,7 @@ const Data = ({ match, history, loading, error }) => {
                   </Colxx>
                   <Colxx sm={6} className="text-right">
                     <Button
-                      type="submit"
+                      type="button"
                       onClick={resetForm}
                       outline
                       color="danger"
