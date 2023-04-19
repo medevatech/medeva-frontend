@@ -4,14 +4,14 @@ const data = [
     icon: 'iconsminds-line-chart-1',
     label: 'Dashboard',
     to: `/dashboard`,
-    // roles: [UserRole.Admin, UserRole.Editor],
+    roles: [ "isDev", "isManager", "isAdmin", "isResepsionis", "isPerawat", "isDokter", "isManajemen" ],
   },
   {
     id: 'patient',
     icon: 'iconsminds-add-user',
     label: 'Pasien',
-    to: `/patient`
-    // roles: [UserRole.Admin, UserRole.Editor],
+    to: `/patient`,
+    roles: [ "isDev", "isResepsionis", "isPerawat", "isDokter" ],
   },
   {
     id: 'record',
@@ -23,13 +23,13 @@ const data = [
         icon: 'iconsminds-pulse',
         label: 'Pra-Konsultasi',
         to: `/record/vital-signs`,
-        // roles: [UserRole.Admin, UserRole.Editor],
+        roles: [ "isDev", "isPerawat" ],
       },
       {
         icon: 'iconsminds-notepad',
         label: 'Rekam Medis',
         to: `/record/data`,
-        // roles: [UserRole.Admin, UserRole.Editor],
+        roles: [ "isDev", "isDokter" ],
       },
     ]
   },
@@ -38,14 +38,14 @@ const data = [
     icon: 'iconsminds-male-female',
     label: 'Karyawan',
     to: `/employee`,
-    // roles: [UserRole.Admin, UserRole.Editor],
+    roles: [ "isDev", "isManager", "isAdmin" ],
   },
   {
     id: 'schedule',
     icon: 'iconsminds-calendar-4',
     label: 'Jadwal',
     to: `/schedule`,
-    // roles: [UserRole.Admin, UserRole.Editor],
+    roles: [ "isDev", "isManager", "isAdmin", "isResepsionis", "isPerawat", "isDokter" ],
   },
 ];
 export default data;

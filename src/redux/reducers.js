@@ -2,10 +2,8 @@ import { combineReducers } from 'redux';
 import menu from './menu/reducer';
 
 import dashboard from "../store/dashboard";
-import employee from "../store/employee";
-import employeeTotalPage from "../store/employeeTotalPage";
-import patient from "../store/patient";
-import patientTotalPage from "../store/patientTotalPage";
+import { employee, employeeTotalPage } from "../store/employee";
+import { patient, patientTotalPage } from "../store/patient";
 import record from "../store/record";
 import schedule from "../store/schedule";
 import vitalSigns from "../store/vital-signs";

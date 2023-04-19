@@ -54,7 +54,7 @@ export const defaultDirection = 'ltr';
 // export const themeRadiusStorageKey = '__theme_radius';
 export const themeColorStorageKey="__theme_color";
 export const themeRadiusStorageKey = true;
-export const isAuthGuardActive = false;
+export const isAuthGuardActive = true;
 // export const colors = [
 //   'bluenavy',
 //   'blueyale',

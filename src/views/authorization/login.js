@@ -65,24 +65,68 @@ const Home = ({ history, loading, error, loginUserAction }) => {
                   let data = await response.data.data;
                   // console.log(data);
 
-                  localStorage.setItem('userID', data.id);
-                  localStorage.setItem('token', data.token);
-                  localStorage.setItem('username', data.username);
-                  
-                  localStorage.setItem('isDev', data.is_dev);
-                  localStorage.setItem('isManager', data.is_manager);
-                  localStorage.setItem('isAdmin', data.is_admin);
-                  localStorage.setItem('isDokter', data.is_dokter);
-                  localStorage.setItem('isManajemen', data.is_manajemen);
-                  localStorage.setItem('isPerawat', data.is_perawat);
-                  localStorage.setItem('isResepsionis', data.is_resepsionis);
+                  let user = { id : "", username: "", roles: {}}
+                  // let roles = { isDev: 0, isManager: 0, isAdmin: 0, isResepsionis: 0, isPerawat: 0, isDokter: 0, isManajemen: 0};
 
-                  // Swal.fire({
-                  //     title: 'Sukses!',
-                  //     html: `Login sukses`,
-                  //     icon: 'success',
-                  //     confirmButtonColor: '#008ecc',
+                  // if (data.is_dev === 1) {
+                  //   roles.isDev = 1;
+                  // } else if (data.is_manager === 1) {
+                  //   roles.isManager = 1;
+                  // } else if (data.is_admin === 1) {
+                  //   roles.isAdmin = 1;
+                  // } else if (data.is_resepsionis === 1) {
+                  //   roles.isResepsionis = 1;
+                  // } else if (data.is_perawat === 1) {
+                  //   roles.isPerawat = 1;
+                  // } else if (data.is_dokter === 1) {
+                  //   roles.isDokter = 1;
+                  // } else if (data.is_manajemen === 1) {
+                  //   roles.isManajemen = 1;
+                  // }
+
+                  let roles = [];
+
+                  if (data.is_dev === 1) {
+                    roles.push("isDev");
+                  } else if (data.is_manager === 1) {
+                    roles.push("isManager");
+                  } else if (data.is_admin === 1) {
+                    roles.push("isAdmin");
+                  } else if (data.is_resepsionis === 1) {
+                    roles.push("isResepsionis");
+                  } else if (data.is_perawat === 1) {
+                    roles.push("isPerawat");
+                  } else if (data.is_dokter === 1) {
+                    roles.push("isDokter");
+                  } else if (data.is_manajemen === 1) {
+                    roles.push("isManajemen");
+                  }
+
+                  user.id = data.id; user.username = data.username; user.roles = roles;
+
+                  localStorage.setItem('user_data', JSON.stringify(user));
+                  console.log(localStorage.getItem('user_data'));
+
+                  // localStorage.setItem('id', data.id);
+                  // localStorage.setItem('username', data.username);
+                  // localStorage.setItem('roles', JSON.stringify(roles));
+                  // localStorage.setItem('token', data.token);
+                  
+                  // localStorage.setItem('isDev', data.is_dev);
+                  // localStorage.setItem('isManager', data.is_manager);
+                  // localStorage.setItem('isAdmin', data.is_admin);
+                  // localStorage.setItem('isResepsionis', data.is_resepsionis);
+                  // localStorage.setItem('isPerawat', data.is_perawat);
+                  // localStorage.setItem('isDokter', data.is_dokter);
+                  // localStorage.setItem('isManajemen', data.is_manajemen);
+
+                  Swal.fire({
+                      title: 'Sukses!',
+                      html: `Login sukses`,
+                      icon: 'success',
+                      confirmButtonColor: '#008ecc',
                   //     confirmButtonText: 'Menuju dashboard',
+                  })
                   // }).then((result) => {
                   //   if (result.isConfirmed) {
                       history.push("../dashboard");

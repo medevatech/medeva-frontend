@@ -19,7 +19,7 @@ const App = ({ match }) => {
         <Suspense fallback={<div className="loading" />}>
           <Switch>
             <Redirect exact from={`${match.url}/`} to={`${match.url}/vital-signs`} />
-            <Route
+            {/* <Route
               path={`${match.url}/vital-signs`}
               render={(props) => <VitalSigns {...props} />}
             />
@@ -30,17 +30,17 @@ const App = ({ match }) => {
             <Route
               path={`${match.url}/screening`}
               render={(props) => <Screening {...props} />}
-            />
-            {/* <ProtectedRoute
-                    path={`${match.url}/patient`}
-                    component={Patient}
-                    // roles={[UserRole.Admin]}
+            /> */}
+            <ProtectedRoute
+              path={`${match.url}/vital-signs`}
+              component={VitalSigns}
+              roles={[ "isDev", "isPerawat" ]}
             />
             <ProtectedRoute
-                    path={`${match.url}/employee`}
-                    component={Employee}
-                    // roles={[UserRole.Admin]}
-            /> */}
+              path={`${match.url}/data`}
+              component={Data}
+              roles={[ "isDev", "isDokter" ]}
+            />
             <Redirect to="/error" />
           </Switch>
         </Suspense>

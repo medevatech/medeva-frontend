@@ -417,10 +417,10 @@ const Data = ({ match }) => {
     setSelectedSubdistrict("");
     setSelectedWard("");
     setSelectedBlood("");
-    setSelectProvince([]);
-    setSelectCity([]);
-    setSelectSubdistrict([]);
-    setSelectWard([]);
+    setSelectProvince("");
+    setSelectCity("");
+    setSelectSubdistrict("");
+    setSelectWard("");
     onLoadProvinsi();
   };
 

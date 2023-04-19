@@ -49,35 +49,35 @@ const MainRouter = () => {
       // <Provider store={store}>
         <Router>
             <Switch>
-                {/* <ProtectedRoute */}
-                <Route
+                <ProtectedRoute
+                // <Route
                     path="/dashboard"
                     component={Dashboard}
-                    // roles={[UserRole.Admin, UserRole.Editor]}
+                    roles={[ "isDev", "isManager", "isAdmin", "isResepsionis", "isPerawat", "isDokter", "isManajemen" ]}
                 />
-                {/* <ProtectedRoute */}
-                <Route
+                <ProtectedRoute
+                // <Route
                     path="/patient"
                     component={Patient}
-                    // roles={[UserRole.Admin, UserRole.Editor]}
+                    roles={[ "isDev", "isResepsionis", "isPerawat", "isDokter" ]}
                 />
-                {/* <ProtectedRoute */}
-                <Route
+                <ProtectedRoute
+                // <Route
                     path="/record"
                     component={Record}
-                    // roles={[UserRole.Admin, UserRole.Editor]}
+                    roles={[ "isDev", "isPerawat", "isDokter" ]}
                 />
-                {/* <ProtectedRoute */}
-                <Route
+                <ProtectedRoute
+                // <Route
                     path="/employee"
                     component={Employee}
-                    // roles={[UserRole.Admin, UserRole.Editor]}
+                    roles={[ "isDev", "isManager", "isAdmin" ]}
                 />
-                {/* <ProtectedRoute */}
-                <Route
+                <ProtectedRoute
+                // <Route
                     path="/schedule"
                     component={Schedule}
-                    // roles={[UserRole.Admin, UserRole.Editor]}
+                    roles={[ "isDev", "isManager", "isAdmin", "isResepsionis", "isPerawat", "isDokter" ]}
                 />
                 <Route
                     path="/error"
@@ -89,10 +89,10 @@ const MainRouter = () => {
                     exact
                     render={(props) => <Unauthorized {...props} />}
                 />
-                <Route
+                {/* <Route
                     path="/register"
                     render={(props) => <Register {...props} />}
-                />
+                /> */}
                 <Route
                     path="/"
                     render={(props) => <Login {...props} />}

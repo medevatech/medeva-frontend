@@ -162,13 +162,11 @@ const Data = ({ match, history, loading, error }) => {
   const [tipe, setTipe] = useState("");
   const [spesialis, setSpesialis] = useState("");
   const [kode_pos, setKodePos] = useState("");
-  const [provinsi, setProvinsi] = useState([]);
-  const [kota, setKota] = useState([]);
-  const [kecamatan, setKecamatan] = useState([]);
-  const [kelurahan, setKelurahan] = useState([]);
+  const [provinsi, setProvinsi] = useState("");
+  const [kota, setKota] = useState("");
+  const [kecamatan, setKecamatan] = useState("");
+  const [kelurahan, setKelurahan] = useState("");
   const [status_menikah, setStatus] = useState("");
-
-  const [employeeData, setEmployeeData] = useState([]);
 
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
@@ -444,22 +442,22 @@ const Data = ({ match, history, loading, error }) => {
     setTipe("");
     setSpesialis("");
     setKodePos("");
-    setProvinsi([]);
-    setKota([]);
-    setKecamatan([]);
-    setKelurahan([]);
+    setProvinsi("");
+    setKota("");
+    setKecamatan("");
+    setKelurahan("");
     setStatus("");
     setSelectedRole([]);
     // setSelectedDivision([]);
     setSelectedWP([]);
-    setSelectedProvince([]);
-    setSelectedCity([]);
-    setSelectedSubdistrict([]);
-    setSelectedWard([]);
-    setSelectProvince([]);
-    setSelectCity([]);
-    setSelectSubdistrict([]);
-    setSelectWard([]);
+    setSelectedProvince("");
+    setSelectedCity("");
+    setSelectedSubdistrict("");
+    setSelectedWard("");
+    setSelectProvince("");
+    setSelectCity("");
+    setSelectSubdistrict("");
+    setSelectWard("");
 
     onLoadProvinsi();
   };
