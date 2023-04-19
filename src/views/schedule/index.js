@@ -3,7 +3,7 @@ import { Route, withRouter, Switch, Redirect } from 'react-router-dom';
 import { connect } from 'react-redux';
 
 import AppLayout from 'layout/AppLayout';
-// import { ProtectedRoute, UserRole } from 'helpers/authHelper';
+import { ProtectedRoute } from 'helpers/authHelper';
 
 const Data = React.lazy(() =>
   import(/* webpackChunkName: "views-schedule-data" */ './data')

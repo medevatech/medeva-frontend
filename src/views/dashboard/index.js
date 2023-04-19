@@ -3,7 +3,7 @@ import { Route, withRouter, Switch, Redirect } from 'react-router-dom';
 import { connect } from 'react-redux';
 
 import AppLayout from 'layout/AppLayout';
-// import { ProtectedRoute, UserRole } from 'helpers/authHelper';
+import { ProtectedRoute } from 'helpers/authHelper';
 
 const Main = React.lazy(() =>
   import(/* webpackChunkName: "views-dashboard" */ './main')
@@ -22,7 +22,7 @@ const App = ({ match }) => {
             /> */}
             <ProtectedRoute
               path={`${match.url}/`}
-              component={Data}
+              component={Main}
               roles={[ "isDev", "isManager", "isAdmin", "isResepsionis", "isPerawat", "isDokter", "isManajemen" ]}
             />
             <Redirect to="/error" />
