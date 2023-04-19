@@ -2,13 +2,13 @@ const api = {
   base: process.env.REACT_APP_BASE_PATHV1,
   auth: {
     login: '/karyawan/login',
-    register: '/karyawan/register',
+    register: '/karyawan/add',
     uploadPhoto: '/karyawan/photo',
     updatePassword: '/karyawan/password'
   },
   employee: {
     all: '/karyawan/',
-    create: '/karyawan/register',
+    create: '/karyawan/add',
     updatePhoto: '/karyawan/photo',
     updatePassword: '/karyawan/password'
   },

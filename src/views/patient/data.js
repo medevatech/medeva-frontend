@@ -18,7 +18,7 @@ import {
   DropdownMenu,
   UncontrolledDropdown,
 } from "reactstrap";
-import axios from "axios";
+import { useDispatch, useSelector } from 'react-redux';
 import "react-tagsinput/react-tagsinput.css";
 import "react-datepicker/dist/react-datepicker.css";
 import "rc-switch/assets/index.css";
@@ -30,6 +30,9 @@ import { Colxx, Separator } from "components/common/CustomBootstrap";
 import Pagination from "components/common/Pagination";
 
 import CustomSelectInput from "components/common/CustomSelectInput";
+
+import patientAPI from "api/patient";
+import Swal from "sweetalert2";
 
 const selectKITAS = [
   { label: "KTP", value: "KTP", key: 0 },
@@ -44,6 +47,13 @@ const selectInsurance = [
 const selectNationality = [
   { label: "WNI", value: "WNI", key: 0 },
   { label: "WNA", value: "WNA", key: 1 },
+];
+
+const selectMaritalStatus = [
+  { label: "Belum Kawin", value: "belum kawin", key: 0 },
+  { label: "Cerai Hidup", value: "cerai hidup", key: 1 },
+  { label: "Cerai Mati", value: "cerai mati", key: 2 },
+  { label: "Kawin", value: "kawin", key: 3 },
 ];
 
 const selectReligion = [
@@ -163,31 +173,47 @@ var urlKecamatan = "https://ibnux.github.io/data-indonesia/kecamatan/";
 var urlKelurahan = "https://ibnux.github.io/data-indonesia/kelurahan/";
 
 const Data = ({ match }) => {
-  const [selectedKITAS, setSelectedKITAS] = useState([]);
-  const [selectedReligion, setSelectedReligion] = useState([]);
-  const [selectedEmployment, setSelectedEmployment] = useState([]);
-  const [selectedInsurance, setSelectedInsurance] = useState([]);
-  const [selectedBlood, setSelectedBlood] = useState([]);
-  
-  const [provinsi, setProvinsi] = useState([]);
-  const [kota, setKota] = useState([]);
-  const [kecamatan, setKecamatan] = useState([]);
-  const [kelurahan, setKelurahan] = useState([]);
-  const [status_menikah, setStatus] = useState("");
+  const dispatch = useDispatch();
+  const patientAll = useSelector(state => state.patient);
+  const patientTotalPage = useSelector(state => state.patientTotalPage);
 
-  const [selectedNationality, setSelectedNationality] = useState([]);
-  const [selectedProvince, setSelectedProvince] = useState([]);
-  const [selectedCity, setSelectedCity] = useState([]);
-  const [selectedSubdistrict, setSelectedSubdistrict] = useState([]);
-  const [selectedWard, setSelectedWard] = useState([]);
+  const [selectedMaritalStatus, setSelectedMaritalStatus] = useState("");
+  const [selectedReligion, setSelectedReligion] = useState("");
+  const [selectedNationality, setSelectedNationality] = useState("");
+  const [selectedEmployment, setSelectedEmployment] = useState("");
+  const [selectedProvince, setSelectedProvince] = useState("");
+  const [selectedCity, setSelectedCity] = useState("");
+  const [selectedSubdistrict, setSelectedSubdistrict] = useState("");
+  const [selectedWard, setSelectedWard] = useState("");
+  const [selectedBlood, setSelectedBlood] = useState("");
 
   const [selectProvince, setSelectProvince] = useState([]);
   const [selectCity, setSelectCity] = useState([]);
   const [selectSubdistrict, setSelectSubdistrict] = useState([]);
   const [selectWard, setSelectWard] = useState([]);
+  
+  const [tipe_kitas, setTipeKITAS] = useState("");
+  const [nomor_kitas, setNomorKITAS] = useState("");
+
+  const [nama_lengkap, setNamaLengkap] = useState("");
+  const [nomor_hp, setNomorHP] = useState("");
+  const [tempat_lahir, setTempatLahir] = useState("");
+  const [tanggal_lahir, setTanggalLahir] = useState("");
+  const [alamat, setAlamat] = useState("");
+  const [kode_pos, setKodePos] = useState("");
+  
+  const [agama, setAgama] = useState("");
+  const [pekerjaan, setPekerjaan] = useState("");
+  const [golongan_darah, setGolonganDarah] = useState("");
+  const [provinsi, setProvinsi] = useState("");
+  const [kota, setKota] = useState("");
+  const [kecamatan, setKecamatan] = useState("");
+  const [kelurahan, setKelurahan] = useState("");
+  const [status_menikah, setStatusMenikah] = useState("");
+
+  const [selectedInsurance, setSelectedInsurance] = useState([]);
 
   const [currentPage, setCurrentPage] = useState(1);
-  const [totalPage, setTotalPage] = useState(3);
 
   const [asuransi, setAsuransi] = useState([
     { id: Math.random(), tipeAsuransi: "", noAsuransi: "" },
@@ -210,39 +236,38 @@ const Data = ({ match }) => {
     setAsuransi(data);
   };
 
-  const [patientData, setPatientData] = useState([]);
-
-  const [page, setPage] = useState("1");
-  const [limit, setLimit] = useState("5");
-  const [sortBy, setSortBy] = useState("nama");
-  const [sortOrder, setSortOrder] = useState("desc");
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(10);
+  const [sortBy, setSortBy] = useState("");
+  const [sortOrder, setSortOrder] = useState("");
   const [search, setSearch] = useState("");
 
-  const getPatient = async (url) => {
+  const getPatient = async (params) => {
     try {
-      const res = await axios.get(url);
-      setPatientData(res.data.data);
-      console.log("Get patient", res.data.data);
-    } catch (err) {
-      console.log(err);
+      const res = await patientAPI.get("", params);
+      dispatch({type: "GET_PATIENT", payload: res.data.data});
+      dispatch({type: "GET_TOTAL_PAGE_PATIENT", payload: res.data.pagination.totalPage});
+    } catch (e) {
+      console.log(e);
     }
   };
 
   useEffect(() => {
-    let url = `https://medeva-backend-production.up.railway.app/api/v1/pasien`;
+    let params = "";
+    
     if (limit !== "10") {
-      url = `${url}?limit=${limit}`;
+      params = `${params}?limit=${limit}`;
     } else {
-      url = `${url}?limit=5`;
+      params = `${params}?limit=10`;
     }
     if (search !== "") {
-      url = `${url}&search=${search}`;
+      params = `${params}&searchName=${search}`;
     }
     if (currentPage !== "1") {
-      url = `${url}&page=${currentPage}`;
+      params = `${params}&page=${currentPage}`;
     }
-    getPatient(url);
 
+    getPatient(params);
     onLoadProvinsi();
 
   }, [limit, search, sortBy, sortOrder, page]);
@@ -250,7 +275,7 @@ const Data = ({ match }) => {
   let startNumber = 1;
 
   if (currentPage !== 1) {
-    startNumber = (currentPage - 1) * 5 + 1;
+    startNumber = (currentPage - 1) * 10 + 1;
   }
 
   const handleChangeProv = (event) => {
@@ -365,42 +390,37 @@ const Data = ({ match }) => {
 
   const resetForm = (e) => {
     e.preventDefault();
-    // setUsername("");
-    // setNama("");
-    // setEmail("");
-    // setPassword("");
-    // setIsDev(0);
-    // setIsManager(0);
-    // setIsAdmin(0);
-    // setIsResepsionis(0);
-    // setIsPerawat(0);
-    // setIsDokter(0);
-    // setIsManajemen(0);
-    // setJenisKelamin("");
-    // setNoKITAS("");
-    // setTipeIzin("");
-    // setNoIzin("");
-    // setKadaluarsaIzin("");
-    // setNoHP("");
-    // setTempatLahir("");
-    // setTanggalLahir("");
-    // setAlamat("");
-    // setKodePos("");
-    // setProvinsi([]);
-    // setKota([]);
-    // setKecamatan([]);
-    // setKelurahan([]);
-    // setStatus("");
-    // setSelectedRole([]);
-    // setSelectedWP([]);
-    // setSelectedProvince([]);
-    // setSelectedCity([]);
-    // setSelectedSubdistrict([]);
-    // setSelectedWard([]);
-    // setSelectProvince([]);
-    // setSelectCity([]);
-    // setSelectSubdistrict([]);
-    // setSelectWard([]);
+    
+    setTipeKITAS("");
+    setNomorKITAS("");
+    setNamaLengkap("");
+    setNomorHP("");
+    setTempatLahir("");
+    setTanggalLahir("");
+    setAlamat("");
+    setKodePos("");
+    setAgama("");
+    setPekerjaan("");
+    setGolonganDarah("");
+    setProvinsi("");
+    setKota("");
+    setKecamatan("");
+    setKelurahan("");
+    setStatusMenikah("");
+    setSelectedInsurance([]);
+    setSelectedMaritalStatus("");
+    setSelectedReligion("");
+    setSelectedNationality("");
+    setSelectedEmployment("");
+    setSelectedProvince("");
+    setSelectedCity("");
+    setSelectedSubdistrict("");
+    setSelectedWard("");
+    setSelectedBlood("");
+    setSelectProvince([]);
+    setSelectCity([]);
+    setSelectSubdistrict([]);
+    setSelectWard([]);
     onLoadProvinsi();
   };
 
@@ -439,34 +459,36 @@ const Data = ({ match }) => {
                   <tr>
                     <th style={{ textAlign: "center" }}>No</th>
                     <th>Nama</th>
-                    <th style={{ textAlign: "center" }}>Jenis Kelamin</th>
-                    <th style={{ textAlign: "center" }}>Nomor HP</th>
+                    <th style={{ textAlign: "center" }}>JK</th>
+                    <th style={{ textAlign: "center" }}>No. HP</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {patientData ? (
-                    patientData.map((data) => (
+                  {patientAll ? (
+                    patientAll.map((data) => (
                       <tr key={data.id}>
                         <th scope="row" style={{ textAlign: "center" }}>
                           {startNumber++}
                         </th>
                         <td>{data.nama_lengkap}</td>
                         <td style={{ textAlign: "center" }}>
-                          {data.jenis_kelamin}
+                          {data.jenis_kelamin.substring(0,1)}
                         </td>
                         <td style={{ textAlign: "center" }}>{data.nomor_hp}</td>
                       </tr>
                     ))
                   ) : (
-                    <>
-                      <b2>Loading data</b2>
-                    </>
+                    <tr>
+                      <td>
+                        <p>Loading data</p>
+                      </td>
+                    </tr>
                   )}
                 </tbody>
               </Table>
               <Pagination
                 currentPage={currentPage}
-                totalPage={totalPage}
+                totalPage={patientTotalPage}
                 onChangePage={(i) => setCurrentPage(i)}
               />
             </CardBody>
@@ -497,8 +519,8 @@ const Data = ({ match }) => {
                           className="react-select select-KITAS"
                           classNamePrefix="react-select"
                           name="tipeKITAS"
-                          value={selectedKITAS}
-                          onChange={setSelectedKITAS}
+                          value={tipe_kitas}
+                          onChange={setTipeKITAS}
                           options={selectKITAS}
                         />
                         <Input
@@ -507,6 +529,7 @@ const Data = ({ match }) => {
                           id="noKITAS"
                           placeholder="No. KITAS"
                           className="input-KITAS"
+                          value={nomor_kitas}
                         />
                       </InputGroup>
                     </FormGroup>
@@ -529,6 +552,7 @@ const Data = ({ match }) => {
                         name="namaLengkap"
                         id="namaLengkap"
                         placeholder="Nama Lengkap"
+                        value={nama_lengkap}
                       />
                     </FormGroup>
                   </Colxx>
@@ -546,7 +570,7 @@ const Data = ({ match }) => {
                         </span>
                       </Label>
                       <Row>
-                        <Colxx sm={6} md={4} xl={3}>
+                        <Colxx sm={6} md={4} xl={4}>
                           <CustomInput
                             type="radio"
                             id="laki"
@@ -554,7 +578,7 @@ const Data = ({ match }) => {
                             label="Laki-laki"
                           />
                         </Colxx>
-                        <Colxx sm={6} md={8} xl={9}>
+                        <Colxx sm={6} md={8} xl={8}>
                           <CustomInput
                             type="radio"
                             id="perempuan"
@@ -574,6 +598,7 @@ const Data = ({ match }) => {
                         name="noHP"
                         id="noHP"
                         placeholder="No. HP"
+                        value={nomor_hp}
                       />
                     </FormGroup>
                   </Colxx>
@@ -586,6 +611,7 @@ const Data = ({ match }) => {
                         name="tempatLahir"
                         id="tempatLahir"
                         placeholder="Tempat Lahir"
+                        value={tempat_lahir}
                       />
                     </FormGroup>
                   </Colxx>
@@ -598,6 +624,7 @@ const Data = ({ match }) => {
                         name="tanggalLahir"
                         id="tanggalLahir"
                         placeholder="Tanggal Lahir"
+                        value={tanggal_lahir}
                       />
                     </FormGroup>
                   </Colxx>
@@ -611,6 +638,7 @@ const Data = ({ match }) => {
                         id="alamat"
                         placeholder="Alamat"
                         style={{ minHeight: "100" }}
+                        value={alamat}
                       />
                     </FormGroup>
                   </Colxx>
@@ -623,6 +651,7 @@ const Data = ({ match }) => {
                         name="kodePos"
                         id="kodePos"
                         placeholder="Kode Pos"
+                        value={kode_pos}
                       />
                     </FormGroup>
                   </Colxx>
@@ -711,9 +740,9 @@ const Data = ({ match }) => {
                         className="react-select"
                         classNamePrefix="react-select"
                         name="kewarganegaraan"
+                        options={selectNationality}
                         value={selectedNationality}
                         onChange={setSelectedNationality}
-                        options={selectNationality}
                       />
                     </FormGroup>
                   </Colxx>
@@ -726,9 +755,9 @@ const Data = ({ match }) => {
                         className="react-select"
                         classNamePrefix="react-select"
                         name="agama"
+                        options={selectReligion}
                         value={selectedReligion}
                         onChange={setSelectedReligion}
-                        options={selectReligion}
                       />
                     </FormGroup>
                   </Colxx>
@@ -741,9 +770,9 @@ const Data = ({ match }) => {
                         className="react-select"
                         classNamePrefix="react-select"
                         name="pekerjaan"
+                        options={selectEmployment}
                         value={selectedEmployment}
                         onChange={setSelectedEmployment}
-                        options={selectEmployment}
                       />
                     </FormGroup>
                   </Colxx>
@@ -751,24 +780,15 @@ const Data = ({ match }) => {
                   <Colxx sm={3}>
                     <FormGroup>
                       <Label for="statusMenikah">Status Menikah</Label>
-                      <Row>
-                        <Colxx md={12} xl={4}>
-                          <CustomInput
-                            type="radio"
-                            id="menikah"
-                            name="menikah"
-                            label="Menikah"
-                          />
-                        </Colxx>
-                        <Colxx md={12} xl={8}>
-                          <CustomInput
-                            type="radio"
-                            id="belumMenikah"
-                            name="menikah"
-                            label="Belum Menikah"
-                          />
-                        </Colxx>
-                      </Row>
+                      <Select
+                        components={{ Input: CustomSelectInput }}
+                        className="react-select"
+                        classNamePrefix="react-select"
+                        name="status_menikah"
+                        options={selectMaritalStatus}
+                        value={selectedMaritalStatus}
+                        onChange={setSelectedMaritalStatus}
+                      />
                     </FormGroup>
                   </Colxx>
 
@@ -789,9 +809,9 @@ const Data = ({ match }) => {
                         className="react-select"
                         classNamePrefix="react-select"
                         name="golonganDarah"
+                        options={selectBlood}
                         value={selectedBlood}
                         onChange={setSelectedBlood}
-                        options={selectBlood}
                       />
                     </FormGroup>
                   </Colxx>

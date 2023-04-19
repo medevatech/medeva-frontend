@@ -58,6 +58,55 @@ const selectWP = [
   { label: "STR", value: "STR", key: 1 },
 ];
 
+const selectSpecialist = [
+  { label: "Anak", value: "anak", key: 0 },
+  { label: "Andrologi", value: "andrologi", key: 1 },
+  { label: "Anestesiologi dan Terapi Intensif", value: "anestesiologi", key: 2 },
+  { label: "Akupunktur Medik", value: "akupunktur", key: 3 },
+  { label: "Bedah", value: "bedah", key: 4 },
+  { label: "Bedah Anak", value: "bedah plastik", key: 5 },
+  { label: "Bedah Plastik, Rekonstruksi, dan Estetik", value: "bedah plastik", key: 6 },
+  { label: "Bedah Saraf", value: "bedah saraf", key: 7 },
+  { label: "Bedah Toraks, Kardiak, dan Vaskular", value: "bedah toraks", key: 8 },
+  { label: "Dermatologi dan Venereologi", value: "dermatologi", key: 9 },
+  { label: "Kegawatdaruratan Medik", value: "kegawatdaruratan", key: 10 },
+  { label: "Farmakologi Klinik", value: "farmakologi", key: 11 },
+  { label: "Forensik dan Medikolegal", value: "forensik", key: 12 },
+  { label: "Gizi Klinik", value: "gizi", key: 13 },
+  { label: "Jantung dan Pembuluh Darah", value: "jantung", key: 14 },
+  { label: "Kedokteran Fisik dan Rehabilitasi", value: "rehabilitasi", key: 15 },
+  { label: "Kedokteran Jiwa", value: "jiwa", key: 16 },
+  { label: "Kedokteran Kelautan", value: "kelautan", key: 17 },
+  { label: "Kedokteran Keluarga Layanan Primer", value: "primer", key: 18 },
+  { label: "Kedokteran Nuklir dan Teranostik Molekuler", value: "nuklir", key: 19 },
+  { label: "Kedokteran Okupasi", value: "okupasi", key: 20 },
+  { label: "Kedokteran Olahraga", value: "olahraga", key: 21 },
+  { label: "Kedokteran Penerbangan", value: "penerbangan", key: 22 },
+  { label: "Mikrobiologi Klinik", value: "mikrobiologi", key: 23 },
+  { label: "Neurologi", value: "neurologi", key: 24 },
+  { label: "Obstetri dan Ginekologi", value: "obstetri", key: 25 },
+  { label: "Oftalmologi", value: "oftalmologi", key: 26 },
+  { label: "Onkologi Radiasi", value: "onkologi", key: 27 },
+  { label: "Orthopaedi dan Traumatologi", value: "orthopaedi", key: 28 },
+  { label: "Parasitologi Klinik", value: "parasitologi", key: 29 },
+  { label: "Patologi Anatomi", value: "patologi anatomi", key: 30 },
+  { label: "Patologi Klinik", value: "patologi klinik", key: 31 },
+  { label: "Penyakit Dalam", value: "penyakit dalam", key: 32 },
+  { label: "Pulmonologi dan Kedokteran Respirasi", value: "pulmonologi", key: 33 },
+  { label: "Radiologi", value: "radiologi", key: 34 },
+  { label: "Telinga Hidung Tenggorok Bedah Kepala Leher", value: "bedah kepala leher", key: 35 },
+  { label: "Urologi", value: "urologi", key: 36 },
+  { label: "Bedah Mulut dan Maksilofasial (Dokter Gigi)", value: "bedah mulut", key: 37 },
+  { label: "Kedokteran Gigi Anak (Dokter Gigi)", value: "gigi anak", key: 38 },
+  { label: "Konservasi Gigi (Dokter Gigi)", value: "konservasi gigi", key: 39 },
+  { label: "Ortodonsia (Dokter Gigi)", value: "ortodonsia", key: 40 },
+  { label: "Odontologi Forensik (Dokter Gigi)", value: "odontologi", key: 41 },
+  { label: "Penyakit Mulut (Dokter Gigi)", value: "penyakit mulut", key: 43 },
+  { label: "Periodonsia (Dokter Gigi)", value: "periodonsia", key: 44 },
+  { label: "Prostodonsia (Dokter Gigi)", value: "prostodonsia", key: 45 },
+  { label: "Radiologi Kedokteran Gigi (Dokter Gigi)", value: "radiologi gigi", key: 46 },
+];
+
 var urlProvinsi = "https://ibnux.github.io/data-indonesia/provinsi.json";
 var urlKabupaten = "https://ibnux.github.io/data-indonesia/kabupaten/";
 var urlKecamatan = "https://ibnux.github.io/data-indonesia/kecamatan/";
@@ -66,10 +115,14 @@ var urlKelurahan = "https://ibnux.github.io/data-indonesia/kelurahan/";
 const Data = ({ match, history, loading, error }) => {
   const dispatch = useDispatch();
   const employeeAll = useSelector(state => state.employee);
+  const employeeTotalPage = useSelector(state => state.employeeTotalPage);
+  const [selectedTypeF, setSelectedTypeF] = useState([]);
+  const [selectedSpecialistF, setSelectedSpecialistF] = useState([]);
 
   const [selectedRole, setSelectedRole] = useState([]);
   const [selectedWP, setSelectedWP] = useState([]);
   const [selectedType, setSelectedType] = useState([]);
+  const [selectedSpecialist, setSelectedSpecialist] = useState([]);
 
   const [selectedProvince, setSelectedProvince] = useState([]);
   const [selectedCity, setSelectedCity] = useState([]);
@@ -82,7 +135,6 @@ const Data = ({ match, history, loading, error }) => {
   const [selectWard, setSelectWard] = useState([]);
 
   const [currentPage, setCurrentPage] = useState(1);
-  const [totalPage, setTotalPage] = useState(0);
 
   const [username, setUsername] = useState("medeva1");
   const [nama, setNama] = useState("Medeva Tech");
@@ -108,7 +160,7 @@ const Data = ({ match, history, loading, error }) => {
   const [tanggal_lahir, setTanggalLahir] = useState("");
   const [alamat, setAlamat] = useState("");
   const [tipe, setTipe] = useState("");
-  const [spesialisasi, setSpesialisasi] = useState("");
+  const [spesialis, setSpesialis] = useState("");
   const [kode_pos, setKodePos] = useState("");
   const [provinsi, setProvinsi] = useState([]);
   const [kota, setKota] = useState([]);
@@ -254,6 +306,11 @@ const Data = ({ match, history, loading, error }) => {
     setTipe(event.value);
   };
 
+  const handleChangeSpecialist = (event) => {
+    setSelectedSpecialist(event);
+    setSpesialis(event.value);
+  };
+
   const handleChangeRole = (event) => {
     setSelectedRole(event); // is_dev, is_manager, is_admin, is_resepsionis, is_perawat, is_dokter, is_manajemen
     // console.log(event);
@@ -313,7 +370,7 @@ const Data = ({ match, history, loading, error }) => {
         tanggal_lahir,
         alamat,
         tipe,
-        spesialisasi,
+        spesialis,
         kode_pos,
         provinsi,
         kota,
@@ -323,7 +380,7 @@ const Data = ({ match, history, loading, error }) => {
       };
       // console.log(data);
 
-      const response = await employee.create(data);
+      const response = await employeeAPI.add(data);
       // console.log(response);
 
       if (response.status == 200) {
@@ -385,7 +442,7 @@ const Data = ({ match, history, loading, error }) => {
     setTanggalLahir("");
     setAlamat("");
     setTipe("");
-    setSpesialisasi("");
+    setSpesialis("");
     setKodePos("");
     setProvinsi([]);
     setKota([]);
@@ -411,10 +468,12 @@ const Data = ({ match, history, loading, error }) => {
 
     try {
       const res = await employeeAPI.get("", params);
-      setEmployeeData(res.data.data.result);
-      setTotalPage(res.data.data.pagination.totalPage)
-      // console.log("Get employee", res.data.data.result);
-      dispatch({type: "GET_EMPLOYEE", payload: res.data.data.result});
+      // setEmployeeData(res.data.data.result);
+      // setTotalPage(res.data.data.pagination.totalPage)
+      
+      dispatch({type: "GET_EMPLOYEE", payload: res.data.data});
+      dispatch({type: "GET_TOTAL_PAGE_EMPLOYEE", payload: res.data.pagination.totalPage});
+      
     } catch (e) {
       console.log(e);
     }
@@ -462,28 +521,58 @@ const Data = ({ match, history, loading, error }) => {
                 >
                   Tambah
                 </Button>
-                <InputGroup className="my-4">
-                  <Input
-                    type="search"
-                    name="search"
-                    id="search"
-                    placeholder="Pencarian"
-                    onChange={(e) => setSearch(e.target.value.toLowerCase())}
-                  />
-                  <InputGroupAddon addonType="append">
-                    <Button outline color="theme-3" className="button-search">
-                      <i className="simple-icon-magnifier"></i>
-                    </Button>
-                  </InputGroupAddon>
-                </InputGroup>
               </CardTitle>
+              <FormGroup row style={{ margin: '0px', width: '100%' }}>
+                <Colxx sm="12" md="6" style={{ paddingLeft: '0px' }}>
+                  <Label for="tipe">
+                    Tipe
+                  </Label>
+                  <Select
+                    components={{ Input: CustomSelectInput }}
+                    className="react-select"
+                    classNamePrefix="react-select"
+                    name="tipe"
+                    value={selectedTypeF}
+                    onChange={setSelectedTypeF}
+                    options={selectType}
+                  />
+                </Colxx>
+                <Colxx sm="12" md="6" style={{ paddingRight: '0px' }}>
+                  <Label for="spesialis">
+                    Spesialisasi
+                  </Label>
+                  <Select
+                    components={{ Input: CustomSelectInput }}
+                    className="react-select"
+                    classNamePrefix="react-select"
+                    name="spesialis"
+                    value={selectedSpecialistF}
+                    onChange={setSelectedSpecialistF}
+                    options={selectSpecialist}
+                  />
+                </Colxx>
+              </FormGroup>
+              <InputGroup className="my-4">
+                <Input
+                  type="search"
+                  name="search"
+                  id="search"
+                  placeholder="Pencarian"
+                  onChange={(e) => setSearch(e.target.value.toLowerCase())}
+                />
+                <InputGroupAddon addonType="append">
+                  <Button outline color="theme-3" className="button-search">
+                    <i className="simple-icon-magnifier"></i>
+                  </Button>
+                </InputGroupAddon>
+              </InputGroup>
               <Table className="overflow-table-employee">
                 <thead>
                   <tr>
                     <th style={{ textAlign: "center" }}>No</th>
                     {/* <th>ID</th> */}
                     <th>Nama Lengkap</th>
-                    <th style={{ textAlign: "center" }}>Tipe</th>
+                    <th>Tipe</th>
                     {/* <th style={{ textAlign: "center" }}>Email</th> */}
                   </tr>
                 </thead>
@@ -498,7 +587,7 @@ const Data = ({ match, history, loading, error }) => {
                         </th>
                         {/* <td>{data.id}</td> */}
                         <td>{data.nama}</td>
-                        <td style={{ textAlign: "center" }}>{data.tipe ? data.tipe : "-"}</td>
+                        <td>{data.tipe ? data.tipe : "-"}</td>
                         {/* <td style={{ textAlign: "center" }}>{data.email}</td> */}
                       </tr>
                     ))
@@ -513,7 +602,7 @@ const Data = ({ match, history, loading, error }) => {
               </Table>
               <Pagination
                 currentPage={currentPage}
-                totalPage={totalPage}
+                totalPage={employeeTotalPage}
                 onChangePage={(i) => setCurrentPage(i)}
               />
             </CardBody>
@@ -677,14 +766,17 @@ const Data = ({ match, history, loading, error }) => {
 
                   <Colxx sm={6}>
                     <FormGroup>
-                      <Label for="spesialisasi">Spesialisasi</Label>
-                      <Input
-                        type="text"
-                        name="spesialisasi"
-                        id="spesialisasi"
-                        value={spesialisasi}
-                        onChange={(e) => setSpesialisasi(e.target.value)}
-                      />
+                      <Label for="spesialis">Spesialisasi</Label>
+                        <Select
+                          components={{ Input: CustomSelectInput }}
+                          className="react-select"
+                          classNamePrefix="react-select"
+                          name="spesialis"
+                          id="spesialis"
+                          value={selectedSpecialist}
+                          options={selectSpecialist}
+                          onChange={(event) => handleChangeSpecialist(event)}
+                        />
                     </FormGroup>
                   </Colxx>
 
@@ -816,7 +908,7 @@ const Data = ({ match, history, loading, error }) => {
                         </span>
                       </Label>
                       <Row>
-                        <Colxx sm={12} md={12} xl={4}>
+                        <Colxx sm={12} md={12} xl={5}>
                           <CustomInput
                             type="radio"
                             id="laki"
@@ -826,7 +918,7 @@ const Data = ({ match, history, loading, error }) => {
                             onChange={(e) => handleChangeGender(e, "Laki-laki")}
                           />
                         </Colxx>
-                        <Colxx sm={12} md={12} xl={8}>
+                        <Colxx sm={12} md={12} xl={7}>
                           <CustomInput
                             type="radio"
                             id="perempuan"

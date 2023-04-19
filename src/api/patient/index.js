@@ -3,8 +3,8 @@ import { getAuthHeader, getOriginHeader, serializeQueryParams, getJSONHeader } f
 import baseApi from 'service/api-general'
 
 const patient = {
-  get: (payloads) => {
-    const url = api.patient.all
+  get: (payloads, options) => {
+    const url = api.patient.all + options
     return baseApi.get(url, payloads, { headers: getOriginHeader() })
   },
   add: (payloads) => {

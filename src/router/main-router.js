@@ -8,9 +8,6 @@ import {
 // import PrivateRoute from './components/PrivateRoute';
 import { ProtectedRoute } from '../helpers/authHelper';
 
-import { Provider } from 'react-redux';
-import store from '../store';
-
 const Error = React.lazy(() =>
   import(/* webpackChunkName: "views-error" */ '../views/error')
 );
