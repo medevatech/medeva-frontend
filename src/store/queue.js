@@ -1,6 +1,6 @@
-const vitalSigns = (state = [], action) => {
+const queue = (state = [], action) => {
     switch (action.type) {
-        case "READ_VITALSIGNS":
+        case "READ_QUEUE":
             return action.payload;
             break;
         default:
@@ -9,9 +9,9 @@ const vitalSigns = (state = [], action) => {
     }
 }
 
-const vitalSignsTotalPage = (state = 0, action) => {
+const queueTotalPage = (state = 0, action) => {
     switch (action.type) {
-        case "GET_TOTAL_PAGE_VITALSIGNS":
+        case "GET_TOTAL_PAGE_QUEUE":
             return action.payload;
             break;
         default:
@@ -20,4 +20,4 @@ const vitalSignsTotalPage = (state = 0, action) => {
     }
 }
 
-export { vitalSigns, vitalSignsTotalPage } ;
+export { queue, queueTotalPage } ;

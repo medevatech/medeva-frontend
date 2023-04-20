@@ -40,12 +40,12 @@ const data = [
     to: `/employee`,
     roles: [ "isDev", "isManager", "isAdmin" ],
   },
-  {
-    id: 'schedule',
-    icon: 'iconsminds-calendar-4',
-    label: 'Jadwal',
-    to: `/schedule`,
-    roles: [ "isDev", "isManager", "isAdmin", "isResepsionis", "isPerawat", "isDokter" ],
-  },
+  // {
+  //   id: 'schedule',
+  //   icon: 'iconsminds-calendar-4',
+  //   label: 'Jadwal',
+  //   to: `/schedule`,
+  //   roles: [ "isDev", "isManager", "isAdmin", "isResepsionis", "isPerawat", "isDokter" ],
+  // },
 ];
 export default data;

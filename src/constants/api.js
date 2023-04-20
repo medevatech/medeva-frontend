@@ -20,6 +20,7 @@ const api = {
   insurance: '/asuransi',
   allergy: '/alergi', // MASTER OF 'ALERGI' FIELD
   patientAllergy: '/alergi-pasien', // JOIN TABLE ID ALERGY TO ID PATIENT AND ID RECORD
+  queue: '/antrian',
   vitalSigns: '/vital-signs',
   record: '/kunjungan',
   tempRecord: '/temp-kunjungan', // JOIN TABLE ID RECORD TO ID VITAL SIGNS

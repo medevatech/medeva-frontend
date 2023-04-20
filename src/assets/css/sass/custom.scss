@@ -88,6 +88,14 @@ label {
     height: 30px;
 }
 
+.button-xs {
+    padding: 0.15rem 0.5rem 0.15rem 0.5rem
+}
+
+.queue-icon {
+    font-size: 1.75em;
+}
+
 @media (max-width: 768px) {
     .schedule-row-col-1 {
         display: none;

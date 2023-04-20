@@ -6,7 +6,8 @@ import { employee, employeeTotalPage } from "../store/employee";
 import { patient, patientTotalPage } from "../store/patient";
 import record from "../store/record";
 import schedule from "../store/schedule";
-import vitalSigns from "../store/vital-signs";
+import { vitalSigns, vitalSignsTotalPage } from "../store/vital-signs";
+import { queue, queueTotalPage } from "../store/queue";
 
 const reducers = combineReducers({
   menu,
@@ -17,7 +18,10 @@ const reducers = combineReducers({
   patientTotalPage,
   record,
   schedule,
-  vitalSigns
+  vitalSigns,
+  vitalSignsTotalPage,
+  queue,
+  queueTotalPage
 });
 
 export default reducers;

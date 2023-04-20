@@ -33,24 +33,24 @@ import Swal from "sweetalert2";
 const selectRole = [
   // { label: 'Developer', value: 'DEVELOPER', key: 0 },
   // { label: 'Manager', value: 'MANAGER', key: 1 },
-  { label: "Admin", value: "ADMIN", key: 2 },
-  { label: "Resepsionis", value: "RESEPSIONIS", key: 3 },
-  { label: "Perawat", value: "PERAWAT", key: 4 },
-  { label: "Dokter", value: "DOKTER", key: 5 },
-  { label: "Manajemen", value: "MANAJEMEN", key: 6 },
+  { label: "Admin", value: "Admin", key: 2 },
+  { label: "Resepsionis", value: "Resepsionis", key: 3 },
+  { label: "Perawat", value: "Perawat", key: 4 },
+  { label: "Dokter", value: "Dokter", key: 5 },
+  { label: "Manajemen", value: "Manajemen", key: 6 },
 ];
 
 const selectType = [
-  { label: "Admin", value: "ADMIN", key: 1 },
-  { label: "Resepsionis", value: "RESEPSIONIS", key: 2 },
-  { label: "Perawat", value: "PERAWAT", key: 3 },
-  { label: "Dokter", value: "DOKTER", key: 4 },
-  { label: "Manajemen", value: "MANAJEMEN", key: 5 },
+  { label: "Admin", value: "Admin", key: 1 },
+  { label: "Resepsionis", value: "Resepsionis", key: 2 },
+  { label: "Perawat", value: "Perawat", key: 3 },
+  { label: "Dokter", value: "Dokter", key: 4 },
+  { label: "Manajemen", value: "Manajemen", key: 5 },
 ];
 
 const selectDivision = [
-  { label: "Poli Umum", value: "umum", key: 0 },
-  { label: "Poli Gigi", value: "gigi", key: 1 },
+  { label: "Poli Umum", value: "Poli Umum", key: 0 },
+  { label: "Poli Gigi", value: "Poli Gigi", key: 1 },
 ];
 
 const selectWP = [
@@ -59,52 +59,52 @@ const selectWP = [
 ];
 
 const selectSpecialist = [
-  { label: "Anak", value: "anak", key: 0 },
-  { label: "Andrologi", value: "andrologi", key: 1 },
-  { label: "Anestesiologi dan Terapi Intensif", value: "anestesiologi", key: 2 },
-  { label: "Akupunktur Medik", value: "akupunktur", key: 3 },
-  { label: "Bedah", value: "bedah", key: 4 },
-  { label: "Bedah Anak", value: "bedah plastik", key: 5 },
-  { label: "Bedah Plastik, Rekonstruksi, dan Estetik", value: "bedah plastik", key: 6 },
-  { label: "Bedah Saraf", value: "bedah saraf", key: 7 },
-  { label: "Bedah Toraks, Kardiak, dan Vaskular", value: "bedah toraks", key: 8 },
-  { label: "Dermatologi dan Venereologi", value: "dermatologi", key: 9 },
-  { label: "Kegawatdaruratan Medik", value: "kegawatdaruratan", key: 10 },
-  { label: "Farmakologi Klinik", value: "farmakologi", key: 11 },
-  { label: "Forensik dan Medikolegal", value: "forensik", key: 12 },
-  { label: "Gizi Klinik", value: "gizi", key: 13 },
-  { label: "Jantung dan Pembuluh Darah", value: "jantung", key: 14 },
-  { label: "Kedokteran Fisik dan Rehabilitasi", value: "rehabilitasi", key: 15 },
-  { label: "Kedokteran Jiwa", value: "jiwa", key: 16 },
-  { label: "Kedokteran Kelautan", value: "kelautan", key: 17 },
-  { label: "Kedokteran Keluarga Layanan Primer", value: "primer", key: 18 },
-  { label: "Kedokteran Nuklir dan Teranostik Molekuler", value: "nuklir", key: 19 },
-  { label: "Kedokteran Okupasi", value: "okupasi", key: 20 },
-  { label: "Kedokteran Olahraga", value: "olahraga", key: 21 },
-  { label: "Kedokteran Penerbangan", value: "penerbangan", key: 22 },
-  { label: "Mikrobiologi Klinik", value: "mikrobiologi", key: 23 },
-  { label: "Neurologi", value: "neurologi", key: 24 },
-  { label: "Obstetri dan Ginekologi", value: "obstetri", key: 25 },
-  { label: "Oftalmologi", value: "oftalmologi", key: 26 },
-  { label: "Onkologi Radiasi", value: "onkologi", key: 27 },
-  { label: "Orthopaedi dan Traumatologi", value: "orthopaedi", key: 28 },
-  { label: "Parasitologi Klinik", value: "parasitologi", key: 29 },
-  { label: "Patologi Anatomi", value: "patologi anatomi", key: 30 },
-  { label: "Patologi Klinik", value: "patologi klinik", key: 31 },
-  { label: "Penyakit Dalam", value: "penyakit dalam", key: 32 },
-  { label: "Pulmonologi dan Kedokteran Respirasi", value: "pulmonologi", key: 33 },
-  { label: "Radiologi", value: "radiologi", key: 34 },
-  { label: "Telinga Hidung Tenggorok Bedah Kepala Leher", value: "bedah kepala leher", key: 35 },
-  { label: "Urologi", value: "urologi", key: 36 },
-  { label: "Bedah Mulut dan Maksilofasial (Dokter Gigi)", value: "bedah mulut", key: 37 },
-  { label: "Kedokteran Gigi Anak (Dokter Gigi)", value: "gigi anak", key: 38 },
-  { label: "Konservasi Gigi (Dokter Gigi)", value: "konservasi gigi", key: 39 },
-  { label: "Ortodonsia (Dokter Gigi)", value: "ortodonsia", key: 40 },
-  { label: "Odontologi Forensik (Dokter Gigi)", value: "odontologi", key: 41 },
-  { label: "Penyakit Mulut (Dokter Gigi)", value: "penyakit mulut", key: 43 },
-  { label: "Periodonsia (Dokter Gigi)", value: "periodonsia", key: 44 },
-  { label: "Prostodonsia (Dokter Gigi)", value: "prostodonsia", key: 45 },
-  { label: "Radiologi Kedokteran Gigi (Dokter Gigi)", value: "radiologi gigi", key: 46 },
+  { label: "Anak", value: "Anak", key: 0 },
+  { label: "Andrologi", value: "Andrologi", key: 1 },
+  { label: "Anestesiologi dan Terapi Intensif", value: "Anestesiologi dan Terapi Intensif", key: 2 },
+  { label: "Akupunktur Medik", value: "Akupunktur Medik", key: 3 },
+  { label: "Bedah", value: "Bedah", key: 4 },
+  { label: "Bedah Anak", value: "Bedah Anak", key: 5 },
+  { label: "Bedah Plastik, Rekonstruksi, dan Estetik", value: "Bedah Plastik, Rekonstruksi, dan Estetik", key: 6 },
+  { label: "Bedah Saraf", value: "Bedah Saraf", key: 7 },
+  { label: "Bedah Toraks, Kardiak, dan Vaskular", value: "Bedah Toraks, Kardiak, dan Vaskular", key: 8 },
+  { label: "Dermatologi dan Venereologi", value: "Dermatologi dan Venereologi", key: 9 },
+  { label: "Kegawatdaruratan Medik", value: "Kegawatdaruratan Medik", key: 10 },
+  { label: "Farmakologi Klinik", value: "Farmakologi Klinik", key: 11 },
+  { label: "Forensik dan Medikolegal", value: "Forensik dan Medikolegal", key: 12 },
+  { label: "Gizi Klinik", value: "Gizi Klinik", key: 13 },
+  { label: "Jantung dan Pembuluh Darah", value: "Jantung dan Pembuluh Darah", key: 14 },
+  { label: "Kedokteran Fisik dan Rehabilitasi", value: "Kedokteran Fisik dan Rehabilitasi", key: 15 },
+  { label: "Kedokteran Jiwa", value: "Kedokteran Jiwa", key: 16 },
+  { label: "Kedokteran Kelautan", value: "Kedokteran Kelautan", key: 17 },
+  { label: "Kedokteran Keluarga Layanan Primer", value: "Kedokteran Keluarga Layanan Primer", key: 18 },
+  { label: "Kedokteran Nuklir dan Teranostik Molekuler", value: "Kedokteran Nuklir dan Teranostik Molekuler", key: 19 },
+  { label: "Kedokteran Okupasi", value: "Kedokteran Okupasi", key: 20 },
+  { label: "Kedokteran Olahraga", value: "Kedokteran Olahraga", key: 21 },
+  { label: "Kedokteran Penerbangan", value: "Kedokteran Penerbangan", key: 22 },
+  { label: "Mikrobiologi Klinik", value: "Mikrobiologi Klinik", key: 23 },
+  { label: "Neurologi", value: "Neurologi", key: 24 },
+  { label: "Obstetri dan Ginekologi", value: "Obstetri dan Ginekologi", key: 25 },
+  { label: "Oftalmologi", value: "Oftalmologi", key: 26 },
+  { label: "Onkologi Radiasi", value: "Onkologi Radiasi", key: 27 },
+  { label: "Orthopaedi dan Traumatologi", value: "Orthopaedi dan Traumatologi", key: 28 },
+  { label: "Parasitologi Klinik", value: "Parasitologi Klinik", key: 29 },
+  { label: "Patologi Anatomi", value: "Patologi Anatomi", key: 30 },
+  { label: "Patologi Klinik", value: "Patologi Klinik", key: 31 },
+  { label: "Penyakit Dalam", value: "Penyakit Dalam", key: 32 },
+  { label: "Pulmonologi dan Kedokteran Respirasi", value: "Pulmonologi dan Kedokteran Respirasi", key: 33 },
+  { label: "Radiologi", value: "Radiologi", key: 34 },
+  { label: "Telinga Hidung Tenggorok Bedah Kepala Leher", value: "Telinga Hidung Tenggorok Bedah Kepala Leher", key: 35 },
+  { label: "Urologi", value: "Urologi", key: 36 },
+  { label: "Bedah Mulut dan Maksilofasial (Dokter Gigi)", value: "Bedah Mulut dan Maksilofasial (Dokter Gigi)", key: 37 },
+  { label: "Kedokteran Gigi Anak (Dokter Gigi)", value: "Kedokteran Gigi Anak (Dokter Gigi)", key: 38 },
+  { label: "Konservasi Gigi (Dokter Gigi)", value: "Konservasi Gigi (Dokter Gigi)", key: 39 },
+  { label: "Ortodonsia (Dokter Gigi)", value: "Ortodonsia (Dokter Gigi)", key: 40 },
+  { label: "Odontologi Forensik (Dokter Gigi)", value: "Odontologi Forensik (Dokter Gigi)", key: 41 },
+  { label: "Penyakit Mulut (Dokter Gigi)", value: "Penyakit Mulut (Dokter Gigi)", key: 43 },
+  { label: "Periodonsia (Dokter Gigi)", value: "Periodonsia (Dokter Gigi)", key: 44 },
+  { label: "Prostodonsia (Dokter Gigi)", value: "Prostodonsia (Dokter Gigi)", key: 45 },
+  { label: "Radiologi Kedokteran Gigi (Dokter Gigi)", value: "Radiologi Kedokteran Gigi (Dokter Gigi)", key: 46 },
 ];
 
 var urlProvinsi = "https://ibnux.github.io/data-indonesia/provinsi.json";
@@ -124,7 +124,7 @@ const Data = ({ match, history, loading, error }) => {
   const [selectedType, setSelectedType] = useState("");
   const [selectedSpecialist, setSelectedSpecialist] = useState("");
 
-  const [selectedProvince, setSelectedProvince] = useState();
+  const [selectedProvince, setSelectedProvince] = useState("");
   const [selectedCity, setSelectedCity] = useState("");
   const [selectedSubdistrict, setSelectedSubdistrict] = useState("");
   const [selectedWard, setSelectedWard] = useState("");
@@ -563,11 +563,9 @@ const Data = ({ match, history, loading, error }) => {
               <Table className="overflow-table-employee">
                 <thead>
                   <tr>
-                    <th style={{ textAlign: "center" }}>No</th>
-                    {/* <th>ID</th> */}
-                    <th>Nama Lengkap</th>
-                    <th>Tipe</th>
-                    {/* <th style={{ textAlign: "center" }}>Email</th> */}
+                    <th style={{ textAlign: "center", verticalAlign: 'middle' }}>#</th>
+                    <th>Karyawan / Tenaga Kesehatan</th>
+                    <th style={{ textAlign: "center", width: '150px' }}>Aksi</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -576,13 +574,26 @@ const Data = ({ match, history, loading, error }) => {
                   {employeeAll ? (
                     employeeAll.map((data) => (
                       <tr key={data.id}>
-                        <th scope="row" style={{ textAlign: "center" }}>
+                        <th scope="row" style={{ textAlign: "center", verticalAlign: 'middle' }}>
                           {startNumber++}
                         </th>
-                        {/* <td>{data.id}</td> */}
-                        <td>{data.nama}</td>
-                        <td>{data.tipe ? data.tipe : "-"}</td>
-                        {/* <td style={{ textAlign: "center" }}>{data.email}</td> */}
+                        <td>
+                          <h6 style={{ fontWeight: 'bold' }}>{data.nama}</h6>
+                          {data.tipe ? data.tipe : "-"}  
+                        </td>
+                        <td style={{ textAlign: "center", verticalAlign: 'middle' }}>
+                          <Button color="secondary" size="xs"
+                            // onClick={}
+                            >
+                            <i className="simple-icon-note"></i>
+                          </Button>
+                          {' '}
+                          <Button color="warning" size="xs"
+                            // onClick={}
+                            >
+                            <i className="simple-icon-drawer"></i>
+                          </Button>
+                        </td>
                       </tr>
                     ))
                   ) : (
@@ -791,10 +802,11 @@ const Data = ({ match, history, loading, error }) => {
                     <FormGroup>
                       <Label for="kodePos">Kode Pos</Label>
                       <Input
-                        type="text"
+                        type="number"
                         name="kodePos"
                         id="kodePos"
                         value={kode_pos}
+                        pattern="[0-9]*"
                         onChange={(e) => setKodePos(e.target.value)}
                       />
                     </FormGroup>
@@ -880,10 +892,11 @@ const Data = ({ match, history, loading, error }) => {
                     <FormGroup>
                       <Label for="noHP">No. HP</Label>
                       <Input
-                        type="text"
+                        type="number"
                         name="noHP"
                         id="noHP"
                         value={nomor_hp}
+                        pattern="[0-9]*"
                         onChange={(e) => setNoHP(e.target.value)}
                       />
                     </FormGroup>

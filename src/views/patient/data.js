@@ -42,15 +42,15 @@ const selectKITAS = [
 
 const selectInsurance = [
   { label: "BPJS", value: "BPJS", key: 0, target: { name: "tipe_asuransi" } },
-  { label: "Lainnya", value: "lainnya", key: 1, target: { name: "tipe_asuransi" } },
+  { label: "Lainnya", value: "Lainnya", key: 1, target: { name: "tipe_asuransi" } },
 ];
 
 const selectAllergy = [
-  { label: "Alergi Obat", value: "obat", key: 0, target: { name: "kategori" } },
-  { label: "Alergi Makanan", value: "makanan", key: 1, target: { name: "kategori" } },
-  { label: "Alergi Kulit", value: "kulit", key: 2, target: { name: "kategori" } },
-  { label: "Alergi Debu", value: "debu", key: 3, target: { name: "kategori" } },
-  { label: "Lainnya", value: "lainnya", key: 4, target: { name: "kategori" } },
+  { label: "Alergi Obat", value: "Alergi Obat", key: 0, target: { name: "kategori" } },
+  { label: "Alergi Makanan", value: "Alergi Makanan", key: 1, target: { name: "kategori" } },
+  { label: "Alergi Kulit", value: "Alergi Kulit", key: 2, target: { name: "kategori" } },
+  { label: "Alergi Debu", value: "Alergi Debu", key: 3, target: { name: "kategori" } },
+  { label: "Lainnya", value: "Lainnya", key: 4, target: { name: "kategori" } },
 ];
 
 const selectNationality = [
@@ -59,110 +59,110 @@ const selectNationality = [
 ];
 
 const selectMaritalStatus = [
-  { label: "Kawin", value: "kawin", key: 0 },
-  { label: "Belum Kawin", value: "belum kawin", key: 1 },
-  { label: "Cerai Hidup", value: "cerai hidup", key: 2 },
-  { label: "Cerai Mati", value: "cerai mati", key: 3 },
+  { label: "Kawin", value: "Kawin", key: 0 },
+  { label: "Belum Kawin", value: "Belum Kawin", key: 1 },
+  { label: "Cerai Hidup", value: "Cerai Hidup", key: 2 },
+  { label: "Cerai Mati", value: "Cerai Mati", key: 3 },
 ];
 
 const selectReligion = [
-  { label: "Islam", value: "ISLAM", key: 0 },
-  { label: "Protestan", value: "PROTESTAN", key: 1 },
-  { label: "Katolik", value: "KATOLIK", key: 2 },
-  { label: "Hindu", value: "HINDU", key: 3 },
-  { label: "Budha", value: "BUDHA", key: 4 },
+  { label: "Islam", value: "Islam", key: 0 },
+  { label: "Protestan", value: "Protestan", key: 1 },
+  { label: "Katolik", value: "Katolik", key: 2 },
+  { label: "Hindu", value: "Hindu", key: 3 },
+  { label: "Budha", value: "Budha", key: 4 },
 ];
 
 const selectEmployment = [
-  { label: "Belum/Tidak Bekerja", value: "belum", key: 0 },
-  { label: "Pegawai Negeri Sipil", value: "pns", key: 1 },
-  { label: "Tentara Nasional Indonesia", value: "tni", key: 2 },
-  { label: "Kepolisian RI", value: "polisi", key: 3 },
-  { label: "Karyawan BUMN", value: "bumn", key: 4 },
-  { label: "Karyawan BUMD", value: "bumd", key: 5 },
-  { label: "Anggota DPR-RI", value: "dpr", key: 6 },
-  { label: "Anggota DPD", value: "dpd", key: 7 },
-  { label: "Anggota BPK", value: "bpk", key: 8 },
-  { label: "Presiden", value: "presiden", key: 9 },
-  { label: "Wakil Presiden", value: "wapres", key: 10 },
-  { label: "Anggota MK", value: "mk", key: 11 },
-  { label: "Anggota Kabinet/Kementerian", value: "kabinet", key: 12 },
-  { label: "Duta Besar", value: "dubes", key: 13 },
-  { label: "Gubernur", value: "gubernur", key: 14 },
-  { label: "Wakil Gubernur", value: "wagub", key: 15 },
-  { label: "Bupati", value: "bupati", key: 16 },
-  { label: "Wakil Bupati", value: "wabup", key: 17 },
-  { label: "Walikota", value: "walikota", key: 18 },
-  { label: "Wakil Walikota", value: "wawali", key: 19 },
-  { label: "Anggota DPRD Provinsi", value: "dprdprov", key: 20 },
-  { label: "Anggota DPRD Kabupaten/Kota", value: "dprdkotakab", key: 21 },
-  { label: "Pengacara", value: "pengacara", key: 22 },
-  { label: "Notaris", value: "notaris", key: 23 },
-  { label: "Peneliti", value: "peneliti", key: 24 },
-  { label: "Perangkat Desa", value: "prgdesa", key: 25 },
-  { label: "Kepala Desa", value: "kades", key: 26 },
-  { label: "Dosen", value: "dosen", key: 27 },
-  { label: "Guru", value: "guru", key: 28 },
-  { label: "Perdagangan", value: "perdagangan", key: 29 },
-  { label: "Industri", value: "industri", key: 30 },
-  { label: "Konstruksi", value: "konstruksi", key: 31 },
-  { label: "Transportasi", value: "transportasi", key: 32 },
-  { label: "Karyawan Swasta", value: "swasta", key: 33 },
-  { label: "Karyawan Honorer", value: "honorer", key: 34 },
-  { label: "Buruh Harian Lepas", value: "buruh", key: 35 },
-  { label: "Pembantu Rumah Tangga", value: "prt", key: 36 },
-  { label: "Tukang Cukur", value: "cukur", key: 37 },
-  { label: "Tukang Listrik", value: "listrik", key: 38 },
-  { label: "Tukang Batu", value: "batu", key: 39 },
-  { label: "Tukang Kayu", value: "kayu", key: 40 },
-  { label: "Tukang Sol Sepatu", value: "solsepatu", key: 41 },
-  { label: "Tukang Las/Pandai Besi", value: "las", key: 42 },
-  { label: "Tukang Jahit", value: "jahit", key: 43 },
-  { label: "Tukang Gigi", value: "gigi", key: 44 },
-  { label: "Penata Rias", value: "rias", key: 45 },
-  { label: "Penata Busana", value: "tatabusana", key: 46 },
-  { label: "Penata Rambut", value: "rambut", key: 47 },
-  { label: "Mekanik", value: "mekanik", key: 48 },
-  { label: "Seniman", value: "seniman", key: 49 },
-  { label: "Tabib", value: "tabib", key: 50 },
-  { label: "Paraji", value: "paraji", key: 51 },
-  { label: "Perancang Busana", value: "rancangbusana", key: 52 },
-  { label: "Penterjemah", value: "terjemah", key: 53 },
-  { label: "Wartawan", value: "wartawan", key: 54 },
-  { label: "Juru Masak", value: "masak", key: 55 },
-  { label: "Promotor Acara", value: "promotor", key: 56 },
-  { label: "Pilot", value: "pilot", key: 57 },
-  { label: "Arsitek", value: "arsitek", key: 58 },
-  { label: "Akuntan", value: "akuntan", key: 59 },
-  { label: "Konsultan", value: "konsultan", key: 60 },
-  { label: "Penyiar Televisi", value: "televisi", key: 61 },
-  { label: "Penyiar Radio", value: "radio", key: 62 },
-  { label: "Pelaut", value: "pelaut", key: 63 },
-  { label: "Sopir", value: "sopir", key: 64 },
-  { label: "Pialang", value: "pialang", key: 65 },
-  { label: "Paranormal", value: "paranormal", key: 66 },
+  { label: "Belum/Tidak Bekerja", value: "Belum/Tidak Bekerja", key: 0 },
+  { label: "Pegawai Negeri Sipil", value: "Pegawai Negeri Sipil", key: 1 },
+  { label: "Tentara Nasional Indonesia", value: "Tentara Nasional Indonesia", key: 2 },
+  { label: "Kepolisian RI", value: "Kepolisian RI", key: 3 },
+  { label: "Karyawan BUMN", value: "Karyawan BUMN", key: 4 },
+  { label: "Karyawan BUMD", value: "Karyawan BUMD", key: 5 },
+  { label: "Anggota DPR-RI", value: "Anggota DPR-RI", key: 6 },
+  { label: "Anggota DPD", value: "Anggota DPD", key: 7 },
+  { label: "Anggota BPK", value: "Anggota BPK", key: 8 },
+  { label: "Presiden", value: "Presiden", key: 9 },
+  { label: "Wakil Presiden", value: "Wakil Presiden", key: 10 },
+  { label: "Anggota MK", value: "Anggota MK", key: 11 },
+  { label: "Anggota Kabinet/Kementerian", value: "Anggota Kabinet/Kementerian", key: 12 },
+  { label: "Duta Besar", value: "Duta Besar", key: 13 },
+  { label: "Gubernur", value: "Gubernur", key: 14 },
+  { label: "Wakil Gubernur", value: "Wakil Gubernur", key: 15 },
+  { label: "Bupati", value: "Bupati", key: 16 },
+  { label: "Wakil Bupati", value: "Wakil Bupati", key: 17 },
+  { label: "Walikota", value: "Walikota", key: 18 },
+  { label: "Wakil Walikota", value: "Wakil Walikota", key: 19 },
+  { label: "Anggota DPRD Provinsi", value: "Anggota DPRD Provinsi", key: 20 },
+  { label: "Anggota DPRD Kabupaten/Kota", value: "Anggota DPRD Kabupaten/Kota", key: 21 },
+  { label: "Pengacara", value: "Pengacara", key: 22 },
+  { label: "Notaris", value: "Notaris", key: 23 },
+  { label: "Peneliti", value: "Peneliti", key: 24 },
+  { label: "Perangkat Desa", value: "Perangkat Desa", key: 25 },
+  { label: "Kepala Desa", value: "Kepala Desa", key: 26 },
+  { label: "Dosen", value: "Dosen", key: 27 },
+  { label: "Guru", value: "Guru", key: 28 },
+  { label: "Perdagangan", value: "Perdagangan", key: 29 },
+  { label: "Industri", value: "Industri", key: 30 },
+  { label: "Konstruksi", value: "Konstruksi", key: 31 },
+  { label: "Transportasi", value: "Transportasi", key: 32 },
+  { label: "Karyawan Swasta", value: "Karyawan Swasta", key: 33 },
+  { label: "Karyawan Honorer", value: "Karyawan Honorer", key: 34 },
+  { label: "Buruh Harian Lepas", value: "Buruh Harian Lepas", key: 35 },
+  { label: "Pembantu Rumah Tangga", value: "Pembantu Rumah Tangga", key: 36 },
+  { label: "Tukang Cukur", value: "Tukang Cukur", key: 37 },
+  { label: "Tukang Listrik", value: "Tukang Listrik", key: 38 },
+  { label: "Tukang Batu", value: "Tukang Batu", key: 39 },
+  { label: "Tukang Kayu", value: "Tukang Kayu", key: 40 },
+  { label: "Tukang Sol Sepatu", value: "Tukang Sol Sepatu", key: 41 },
+  { label: "Tukang Las/Pandai Besi", value: "Tukang Las/Pandai Besi", key: 42 },
+  { label: "Tukang Jahit", value: "Tukang Jahit", key: 43 },
+  { label: "Tukang Gigi", value: "Tukang Gigi", key: 44 },
+  { label: "Penata Rias", value: "Penata Rias", key: 45 },
+  { label: "Penata Busana", value: "Penata Busana", key: 46 },
+  { label: "Penata Rambut", value: "Penata Rambut", key: 47 },
+  { label: "Mekanik", value: "Mekanik", key: 48 },
+  { label: "Seniman", value: "Seniman", key: 49 },
+  { label: "Tabib", value: "Tabib", key: 50 },
+  { label: "Paraji", value: "Paraji", key: 51 },
+  { label: "Perancang Busana", value: "Perancang Busana", key: 52 },
+  { label: "Penterjemah", value: "Penterjemah", key: 53 },
+  { label: "Wartawan", value: "Wartawan", key: 54 },
+  { label: "Juru Masak", value: "Juru Masak", key: 55 },
+  { label: "Promotor Acara", value: "Promotor Acara", key: 56 },
+  { label: "Pilot", value: "Pilot", key: 57 },
+  { label: "Arsitek", value: "Arsitek", key: 58 },
+  { label: "Akuntan", value: "Akuntan", key: 59 },
+  { label: "Konsultan", value: "Konsultan", key: 60 },
+  { label: "Penyiar Televisi", value: "Penyiar Televisi", key: 61 },
+  { label: "Penyiar Radio", value: "Penyiar Radio", key: 62 },
+  { label: "Pelaut", value: "Pelaut", key: 63 },
+  { label: "Sopir", value: "Sopir", key: 64 },
+  { label: "Pialang", value: "Pialang", key: 65 },
+  { label: "Paranormal", value: "Paranormal", key: 66 },
   { label: "Pedagang", value: "Pedagang", key: 67 },
-  { label: "Wiraswasta", value: "wiraswasta", key: 68 },
-  { label: "Petani/Pekebun", value: "petani", key: 69 },
-  { label: "Peternak", value: "peternak", key: 70 },
-  { label: "Buruh Tani/Perkebunan Swasta", value: "buruhtani", key: 71 },
-  { label: "Buruh Peternakan", value: "buruhternak", key: 72 },
-  { label: "Nelayan/Perikanan", value: "nelayan", key: 73 },
-  { label: "Buruh Nelayan/Perikanan", value: "buruhnelayan", key: 74 },
-  { label: "Imam Masjid", value: "imam", key: 75 },
-  { label: "Pendeta", value: "pendeta", key: 76 },
-  { label: "Pastor", value: "pastor", key: 77 },
-  { label: "Ustadz/Mubaligh", value: "ustadz", key: 78 },
-  { label: "Biarawati", value: "biarawati", key: 79 },
-  { label: "Pelajar/Mahasiswa", value: "pelajar", key: 80 },
-  { label: "Dokter", value: "dokter", key: 81 },
-  { label: "Bidan", value: "bidan", key: 82 },
-  { label: "Perawat", value: "perawat", key: 83 },
-  { label: "Apoteker", value: "apoteker", key: 84 },
-  { label: "Psikiater/Psikolog", value: "psikolog", key: 85 },
-  { label: "Pensiunan", value: "pensiunan", key: 86 },
-  { label: "Mengurus Rumah Tangga", value: "rumahtangga", key: 87 },
-  { label: "Lainnya", value: "lainnya", key: 88 },
+  { label: "Wiraswasta", value: "Wiraswasta", key: 68 },
+  { label: "Petani/Pekebun", value: "Petani/Pekebun", key: 69 },
+  { label: "Peternak", value: "Peternak", key: 70 },
+  { label: "Buruh Tani/Perkebunan Swasta", value: "Buruh Tani/Perkebunan Swasta", key: 71 },
+  { label: "Buruh Peternakan", value: "Buruh Peternakan", key: 72 },
+  { label: "Nelayan/Perikanan", value: "Nelayan/Perikanan", key: 73 },
+  { label: "Buruh Nelayan/Perikanan", value: "Buruh Nelayan/Perikanan", key: 74 },
+  { label: "Imam Masjid", value: "Imam Masjid", key: 75 },
+  { label: "Pendeta", value: "Pendeta", key: 76 },
+  { label: "Pastor", value: "Pastor", key: 77 },
+  { label: "Ustadz/Mubaligh", value: "Ustadz/Mubaligh", key: 78 },
+  { label: "Biarawati", value: "Biarawati", key: 79 },
+  { label: "Pelajar/Mahasiswa", value: "Pelajar/Mahasiswa", key: 80 },
+  { label: "Dokter", value: "Dokter", key: 81 },
+  { label: "Bidan", value: "Bidan", key: 82 },
+  { label: "Perawat", value: "Perawat", key: 83 },
+  { label: "Apoteker", value: "Apoteker", key: 84 },
+  { label: "Psikiater/Psikolog", value: "Psikiater/Psikolog", key: 85 },
+  { label: "Pensiunan", value: "Pensiunan", key: 86 },
+  { label: "Mengurus Rumah Tangga", value: "Mengurus Rumah Tangga", key: 87 },
+  { label: "Lainnya", value: "Lainnya", key: 88 },
 ];
 
 const selectBlood = [
@@ -610,24 +610,36 @@ const Data = ({ match }) => {
               <Table>
                 <thead>
                   <tr>
-                    <th style={{ textAlign: "center" }}>No</th>
-                    <th>Nama</th>
-                    <th style={{ textAlign: "center" }}>JK</th>
-                    <th style={{ textAlign: "center" }}>No. HP</th>
+                    <th style={{ textAlign: "center", verticalAlign: 'middle' }}>#</th>
+                    <th colSpan="1">Pasien</th>
+                    <th style={{ textAlign: "center", width: '150px' }}>Aksi</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {patientAll ? (
+                  {/* {patientAll ? (
                     patientAll.map((data) => (
                       <tr key={data.id}>
-                        <th scope="row" style={{ textAlign: "center" }}>
+                        <th scope="row" style={{ textAlign: "center", verticalAlign: 'middle' }}>
                           {startNumber++}
                         </th>
-                        <td>{data.nama_lengkap}</td>
-                        <td style={{ textAlign: "center" }}>
-                          {data.jenis_kelamin.substring(0,1)}
+                        <td>
+                          <h6 style={{ fontWeight: 'bold' }}>{data.nama_lengkap}</h6>
+                          {data.jenis_kelamin}, Umur<br/>
+                          {data.tipe_kitas}, {data.nomor_hp}
                         </td>
-                        <td style={{ textAlign: "center" }}>{data.nomor_hp}</td>
+                        <td style={{ textAlign: "center", verticalAlign: 'middle' }}>
+                          <Button color="secondary" size="xs"
+                            // onClick={}
+                            >
+                            <i className="simple-icon-note"></i>
+                          </Button>
+                          {' '}
+                          <Button color="warning" size="xs"
+                            // onClick={}
+                            >
+                            <i className="simple-icon-drawer"></i>
+                          </Button>
+                        </td>
                       </tr>
                     ))
                   ) : (
@@ -636,7 +648,45 @@ const Data = ({ match }) => {
                         <p>Loading data</p>
                       </td>
                     </tr>
-                  )}
+                  )} */}
+                  <tr>
+                      <th scope="row" style={{ textAlign: "center", verticalAlign: 'middle' }}>
+                        1
+                      </th>
+                      <td>
+                        <h6 style={{ fontWeight: 'bold' }}>Pasien A</h6>
+                        Jenis Kelamin, Umur<br/>
+                        Tipe KITAS, Nomor KITAS
+                      </td>
+                      <td style={{ textAlign: "center", verticalAlign: 'middle' }}>
+                        <Button color="secondary" size="xs">
+                          <i className="simple-icon-note"></i>
+                        </Button>
+                        {' '}
+                        <Button color="warning" size="xs">
+                          <i className="simple-icon-drawer"></i>
+                        </Button>
+                      </td>
+                    </tr>
+                  <tr>
+                      <th scope="row" style={{ textAlign: "center", verticalAlign: 'middle' }}>
+                        2
+                      </th>
+                      <td>
+                        <h6 style={{ fontWeight: 'bold' }}>Pasien B</h6>
+                        Jenis Kelamin, Umur<br/>
+                        Tipe KITAS, Nomor KITAS
+                      </td>
+                      <td style={{ textAlign: "center", verticalAlign: 'middle' }}>
+                        <Button color="secondary" size="xs">
+                          <i className="simple-icon-note"></i>
+                        </Button>
+                        {' '}
+                        <Button color="warning" size="xs">
+                          <i className="simple-icon-drawer"></i>
+                        </Button>
+                      </td>
+                    </tr>
                 </tbody>
               </Table>
               <Pagination
@@ -753,11 +803,12 @@ const Data = ({ match }) => {
                     <FormGroup>
                       <Label for="noHP">No. HP</Label>
                       <Input
-                        type="text"
+                        type="number"
                         name="noHP"
                         id="noHP"
                         placeholder="No. HP"
                         value={nomor_hp}
+                        pattern="[0-9]*"
                         onChange={(e) => setNomorHP(e.target.value)}
                       />
                     </FormGroup>
@@ -970,7 +1021,7 @@ const Data = ({ match }) => {
 
                   <Colxx sm={6}>
                     <FormGroup>
-                      <Label>Asuransi</Label>
+                      <Label style={{ lineHeight: '3' }}>Asuransi</Label>
                       <Button
                         color="primary"
                         style={{ float: "right" }}
@@ -1027,7 +1078,7 @@ const Data = ({ match }) => {
 
                   <Colxx sm={6}>
                     <FormGroup>
-                      <Label>Alergi</Label>
+                      <Label style={{ lineHeight: '3' }}>Alergi</Label>
                       <Button
                         color="primary"
                         style={{ float: "right" }}
