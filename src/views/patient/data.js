@@ -521,7 +521,7 @@ const Data = ({ match }) => {
           confirmButtonText: "Coba lagi",
         });
 
-        throw Error(`Error status: ${response.status}`);
+        throw Error(`Error status: ${response.statusCode}`);
       }
     } catch (e) {
       Swal.fire({

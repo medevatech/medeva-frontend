@@ -142,7 +142,7 @@ const Home = ({ history, loading, error, loginUserAction }) => {
                     confirmButtonText: 'Coba lagi',
                 })
 
-                throw Error(`Error status: ${response.status}`);
+                throw Error(`Error status: ${response.statusCode}`);
               }
           } catch (e) {
               Swal.fire({

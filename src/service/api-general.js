@@ -17,7 +17,7 @@ const responseHandler = (response) => {
   return response
 }
 const errorHandler = (error) => {
-  if (error.response.status === 401) {
+  if (error.status === 401) {
     // store.dispatch('auth/showUnauthorizedModal')
   }
   return Promise.reject(error)

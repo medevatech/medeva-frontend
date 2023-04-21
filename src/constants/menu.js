@@ -28,7 +28,7 @@ const data = [
       {
         icon: 'iconsminds-notepad',
         label: 'Rekam Medis',
-        to: `/record/data`,
+        to: `/record`,
         roles: [ "isDev", "isDokter" ],
       },
     ]

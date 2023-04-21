@@ -61,7 +61,7 @@ const VitalSigns = ({ match }) => {
   const [selectedDivision, setSelectedDivision] = useState([]);
   const [selectedAwareness, setSelectedAwareness] = useState([]);
 
-  const [ newVitalSigns, setNewVitalSigns ] = useState({
+  const [ vitalSigns, setVitalSigns ] = useState({
     keluhan: '',
     kesadaran: '',
     temperatur: '',
@@ -78,10 +78,9 @@ const VitalSigns = ({ match }) => {
 
   const onVitalSignsAdd = async (e) => {
     e.preventDefault();
-    // console.log(newVitalSigns);
 
     // try {
-    //   const response = await vitalSignsAPI.add(newVitalSigns);
+    //   const response = await vitalSignsAPI.add(vitalSigns);
     //   // console.log(response);
 
     //   if (response.status == 200) {
@@ -105,7 +104,7 @@ const VitalSigns = ({ match }) => {
     //       confirmButtonText: "Coba lagi",
     //     });
 
-    //     throw Error(`Error status: ${response.status}`);
+    //     throw Error(`Error status: ${response.statusCode}`);
     //   }
     // } catch (e) {
     //   Swal.fire({
@@ -123,7 +122,7 @@ const VitalSigns = ({ match }) => {
   const resetForm = (e) => {
     e.preventDefault();
 
-    setNewVitalSigns({
+    setVitalSigns({
       keluhan: '',
       kesadaran: '',
       temperatur: 0,
@@ -151,18 +150,18 @@ const VitalSigns = ({ match }) => {
 
   const onChange = (e) => {
     if (e.name === 'kesadaran') {
-      setNewVitalSigns(currState => {
-          return { ...currState, 'kesadaran': e.value }
+      setVitalSigns(current => {
+          return { ...current, 'kesadaran': e.value }
       })
 
       setSelectedAwareness(e);
     } else {
-      setNewVitalSigns(current => {
+      setVitalSigns(current => {
           return { ...current, [e.target.name]: e.target.value }
       })
     }
 
-    // console.log(newVitalSigns);
+    // console.log(vitalSigns);
 }
 
   useEffect(() => {
@@ -207,14 +206,14 @@ const VitalSigns = ({ match }) => {
               <CardBody>
                 <CardTitle className="mb-4">
                   Data Antrian
-                  <Button
+                  {/* <Button
                     color="primary"
                     style={{ float: "right" }}
                     className="mb-4"
                     onClick={resetForm}
                   >
                     Tambah
-                  </Button>
+                  </Button> */}
                 </CardTitle>
                 <FormGroup row style={{ margin: '0px', width: '100%' }}>
                   <Colxx sm="12" md="6" style={{ paddingLeft: '0px' }}>
@@ -391,7 +390,7 @@ const VitalSigns = ({ match }) => {
                           id="keluhan"
                           placeholder="Keluhan"
                           style={{minHeight: '100'}}
-                          value={newVitalSigns.keluhan}
+                          value={vitalSigns.keluhan}
                           onChange={onChange}
                         />
                       </FormGroup>
@@ -428,7 +427,7 @@ const VitalSigns = ({ match }) => {
                             placeholder="Temperatur"
                             required={true}
                             pattern="[0-9]*"
-                            value={newVitalSigns.temperatur}
+                            value={vitalSigns.temperatur}
                             onChange={onChange}
                           />
                           <InputGroupAddon addonType="append"><span className="input-group-text"><sup>0</sup>C</span></InputGroupAddon>
@@ -449,7 +448,7 @@ const VitalSigns = ({ match }) => {
                             placeholder="Tinggi Badan"
                             required={true}
                             pattern="[0-9]*"
-                            value={newVitalSigns.tinggi_badan}
+                            value={vitalSigns.tinggi_badan}
                             onChange={onChange}
                           />
                           <InputGroupAddon addonType="append">cm</InputGroupAddon>
@@ -470,7 +469,7 @@ const VitalSigns = ({ match }) => {
                             placeholder="Berat Badan"
                             required={true}
                             pattern="[0-9]*"
-                            value={newVitalSigns.berat_badan}
+                            value={vitalSigns.berat_badan}
                             onChange={onChange}
                           />
                           <InputGroupAddon addonType="append">kg</InputGroupAddon>
@@ -491,7 +490,7 @@ const VitalSigns = ({ match }) => {
                             placeholder="Lingkar Perut"
                             required={true}
                             pattern="[0-9]*"
-                            value={newVitalSigns.lingkar_perut}
+                            value={vitalSigns.lingkar_perut}
                             onChange={onChange}
                           />
                           <InputGroupAddon addonType="append">cm</InputGroupAddon>
@@ -512,7 +511,7 @@ const VitalSigns = ({ match }) => {
                             placeholder="IMT"
                             required={true}
                             pattern="[0-9]*"
-                            value={newVitalSigns.imt}
+                            value={vitalSigns.imt}
                             onChange={onChange}
                           />
                           <InputGroupAddon addonType="append"><span className="input-group-text">kg/m<sup>2</sup></span></InputGroupAddon>
@@ -536,7 +535,7 @@ const VitalSigns = ({ match }) => {
                                 // style={{ maxWidth: '75px' }}
                                 required={true}
                                 pattern="[0-9]*"
-                                value={newVitalSigns.sistole}
+                                value={vitalSigns.sistole}
                                 onChange={onChange}
                               />
                               <InputGroupAddon addonType="append">mmHg</InputGroupAddon>
@@ -553,7 +552,7 @@ const VitalSigns = ({ match }) => {
                                 // style={{ maxWidth: '75px' }}
                                 required={true}
                                 pattern="[0-9]*"
-                                value={newVitalSigns.diastole}
+                                value={vitalSigns.diastole}
                                 onChange={onChange}
                               />
                               <InputGroupAddon addonType="append">mmHg</InputGroupAddon>
@@ -576,7 +575,7 @@ const VitalSigns = ({ match }) => {
                             placeholder="Tingkat Pernapasan"
                             required={true}
                             pattern="[0-9]*"
-                            value={newVitalSigns.respiratory_rate}
+                            value={vitalSigns.respiratory_rate}
                             onChange={onChange}
                           />
                           <InputGroupAddon addonType="append">/menit</InputGroupAddon>
@@ -597,7 +596,7 @@ const VitalSigns = ({ match }) => {
                             placeholder="Detak Jantung"
                             required={true}
                             pattern="[0-9]*"
-                            value={newVitalSigns.heart_rate}
+                            value={vitalSigns.heart_rate}
                             onChange={onChange}
                           />
                           <InputGroupAddon addonType="append">bpm</InputGroupAddon>
@@ -616,7 +615,7 @@ const VitalSigns = ({ match }) => {
                           id="catatan_tambahan"
                           placeholder="Catatan Tambahan"
                           style={{minHeight: '100px'}}
-                          value={newVitalSigns.catatan_tambahan}
+                          value={vitalSigns.catatan_tambahan}
                           onChange={onChange}
                         />
                       </FormGroup>

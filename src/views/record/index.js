@@ -18,7 +18,7 @@ const App = ({ match }) => {
       <div className="dashboard-wrapper">
         <Suspense fallback={<div className="loading" />}>
           <Switch>
-            <Redirect exact from={`${match.url}/`} to={`${match.url}/vital-signs`} />
+            {/* <Redirect exact from={`${match.url}`} to={`${match.url}/vital-signs`} /> */}
             {/* <Route
               path={`${match.url}/vital-signs`}
               render={(props) => <VitalSigns {...props} />}
@@ -37,7 +37,7 @@ const App = ({ match }) => {
               roles={[ "isDev", "isPerawat" ]}
             />
             <ProtectedRoute
-              path={`${match.url}/data`}
+              path={`${match.url}`}
               component={Data}
               roles={[ "isDev", "isDokter" ]}
             />

@@ -91,9 +91,9 @@ const Data = ({ match }) => {
               <CardBody>
                 <CardTitle className="mb-4">
                   Data Antrian
-                  <Button color="primary" style={{float: 'right'}} className="mb-4">
+                  {/* <Button color="primary" style={{float: 'right'}} className="mb-4">
                     Tambah
-                  </Button>
+                  </Button> */}
                 </CardTitle>
                 <FormGroup row style={{ margin: '0px', width: '100%' }}>
                   <Colxx sm="12" md="6" style={{ paddingLeft: '0px' }}>
@@ -139,34 +139,71 @@ const Data = ({ match }) => {
                 <Table>
                   <thead>
                     <tr>
-                      <th style={{textAlign: 'center'}}>#</th>
-                      <th>No. Antrian</th>
-                      <th>Nama</th>
-                      <th style={{textAlign: 'center'}}>Jenis Kelamin</th>
-                      <th style={{textAlign: 'center'}}>Umur</th>
+                    <th style={{ textAlign: "center", verticalAlign: 'middle' }}>#</th>
+                      <th colSpan={2}>Antrian</th>
+                    <th style={{ textAlign: "center", width: '150px' }}>Aksi</th>
                     </tr>
                   </thead>
                   <tbody>
                     <tr>
-                      <th scope="row" style={{textAlign: 'center'}}>1</th>
-                      <td>0001</td>
-                      <td>Otto</td>
-                      <td style={{textAlign: 'center'}}>Laki-laki</td>
-                      <td style={{textAlign: 'center'}}>32</td>
+                      <th scope="row" style={{textAlign: 'center', verticalAlign: 'middle'}}>1</th>
+                      <td style={{ textAlign: "center", verticalAlign: 'middle' }}>
+                        <i className="simple-icon-magnifier queue-icon"></i><br/>
+                        0001
+                      </td>
+                      <td>
+                        <h6 style={{ fontWeight: 'bold' }}>Otto</h6>
+                        Laki-laki, 32
+                      </td>
+                      <td style={{ textAlign: "center", verticalAlign: 'middle' }}>
+                        <Button color="secondary" size="xs">
+                          <i className="simple-icon-note"></i>
+                        </Button>
+                        {' '}
+                        <Button color="warning" size="xs">
+                          <i className="simple-icon-drawer"></i>
+                        </Button>
+                      </td>
                     </tr>
                     <tr>
-                      <th scope="row" style={{textAlign: 'center'}}>2</th>
-                      <td>0002</td>
-                      <td>Jacob</td>
-                      <td style={{textAlign: 'center'}}>Laki-laki</td>
-                      <td style={{textAlign: 'center'}}>26</td>
+                      <th scope="row" style={{textAlign: 'center', verticalAlign: 'middle'}}>2</th>
+                      <td style={{ textAlign: "center", verticalAlign: 'middle' }}>
+                        <i className="simple-icon-magnifier queue-icon"></i><br/>
+                        0002
+                      </td>
+                      <td>
+                        <h6 style={{ fontWeight: 'bold' }}>Jacob</h6>
+                        Laki-laki, 26
+                      </td>
+                      <td style={{ textAlign: "center", verticalAlign: 'middle' }}>
+                        <Button color="secondary" size="xs">
+                          <i className="simple-icon-note"></i>
+                        </Button>
+                        {' '}
+                        <Button color="warning" size="xs">
+                          <i className="simple-icon-drawer"></i>
+                        </Button>
+                      </td>
                     </tr>
                     <tr>
-                      <th scope="row" style={{textAlign: 'center'}}>3</th>
-                      <td>0003</td>
-                      <td>Larry</td>
-                      <td style={{textAlign: 'center'}}>Laki-laki</td>
-                      <td style={{textAlign: 'center'}}>57</td>
+                      <th scope="row" style={{textAlign: 'center', verticalAlign: 'middle'}}>3</th>
+                      <td style={{ textAlign: "center", verticalAlign: 'middle' }}>
+                        <i className="simple-icon-magnifier queue-icon"></i><br/>
+                        0003
+                      </td>
+                      <td>
+                        <h6 style={{ fontWeight: 'bold' }}>Larry</h6>
+                        Laki-laki, 57
+                      </td>
+                      <td style={{ textAlign: "center", verticalAlign: 'middle' }}>
+                        <Button color="secondary" size="xs">
+                          <i className="simple-icon-note"></i>
+                        </Button>
+                        {' '}
+                        <Button color="warning" size="xs">
+                          <i className="simple-icon-drawer"></i>
+                        </Button>
+                      </td>
                     </tr>
                   </tbody>
                 </Table>
@@ -327,7 +364,7 @@ const Data = ({ match }) => {
                     <Colxx sm={6}>
                       <FormGroup>
                         <Label for="kll">
-                          Kasus KLL
+                          Kasus Kecelakaan Lalu Lintas
                         </Label>
                         <CustomInput
                           type="checkbox"

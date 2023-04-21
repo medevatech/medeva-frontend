@@ -21,12 +21,6 @@ const Login = React.lazy(() =>
 // const Login2 = React.lazy(() =>
 //   import(/* webpackChunkName: "user-login2" */ '../views/authorization/login2')
 // );
-const Register = React.lazy(() =>
-  import(/* webpackChunkName: "user-registration" */ '../views/authorization/register')
-);
-// const Register2 = React.lazy(() =>
-//   import(/* webpackChunkName: "user-registration2" */ '../views/authorization/register2')
-// );
 
 const Dashboard = React.lazy(() =>
   import(/* webpackChunkName: "views-dashboard" */ '../views/dashboard')
@@ -89,10 +83,6 @@ const MainRouter = () => {
                     exact
                     render={(props) => <Unauthorized {...props} />}
                 />
-                {/* <Route
-                    path="/register"
-                    render={(props) => <Register {...props} />}
-                /> */}
                 <Route
                     path="/"
                     render={(props) => <Login {...props} />}

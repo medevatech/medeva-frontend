@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import {
   Row,
   Card,
@@ -14,7 +14,7 @@ import {
   Form,
   Table,
 } from "reactstrap";
-import axios from "axios";
+import { useDispatch, useSelector } from 'react-redux';
 import "react-tagsinput/react-tagsinput.css";
 import "react-datepicker/dist/react-datepicker.css";
 import "rc-switch/assets/index.css";
@@ -27,27 +27,79 @@ import Pagination from "components/common/Pagination";
 
 import CustomSelectInput from "components/common/CustomSelectInput";
 
-import auth from "api/authorization";
+import employeeAPI from "api/employee";
 import Swal from "sweetalert2";
 
 const selectRole = [
-  // { label: 'Developer', value: 'DEVELOPER', key: 0 },
-  // { label: 'Manager', value: 'MANAGER', key: 1 },
-  { label: "Admin", value: "ADMIN", key: 2 },
-  { label: "Resepsionis", value: "RESEPSIONIS", key: 3 },
-  { label: "Perawat", value: "PERAWAT", key: 4 },
-  { label: "Dokter", value: "DOKTER", key: 5 },
-  { label: "Manajemen", value: "MANAJEMEN", key: 6 },
+  // { label: 'Developer', value: 'Developer', key: 0 },
+  // { label: 'Manager', value: 'Manager', key: 1 },
+  { label: "Admin", value: "Admin", key: 2, name: "peran" },
+  { label: "Resepsionis", value: "Resepsionis", key: 3, name: "peran" },
+  { label: "Perawat", value: "Perawat", key: 4, name: "peran" },
+  { label: "Dokter", value: "Dokter", key: 5, name: "peran" },
+  { label: "Manajemen", value: "Manajemen", key: 6, name: "peran" },
 ];
 
-const selectDivision = [
-  { label: "Poli Umum", value: "umum", key: 0 },
-  { label: "Poli Gigi", value: "gigi", key: 1 },
+const selectType = [
+  { label: "Admin", value: "Admin", key: 1, name: "tipe" },
+  { label: "Resepsionis", value: "Resepsionis", key: 2, name: "tipe" },
+  { label: "Perawat", value: "Perawat", key: 3, name: "tipe" },
+  { label: "Dokter", value: "Dokter", key: 4, name: "tipe" },
+  { label: "Manajemen", value: "Manajemen", key: 5, name: "tipe" },
 ];
 
 const selectWP = [
-  { label: "SIP", value: "SIP", key: 0 },
-  { label: "STR", value: "STR", key: 1 },
+  { label: "SIP", value: "SIP", key: 0, name: 'tipe_izin' },
+  { label: "STR", value: "STR", key: 1, name: 'tipe_izin' },
+];
+
+const selectSpecialist = [
+  { label: "Anak", value: "Anak", key: 0, name: 'spesialis' },
+  { label: "Andrologi", value: "Andrologi", key: 1, name: 'spesialis' },
+  { label: "Anestesiologi dan Terapi Intensif", value: "Anestesiologi dan Terapi Intensif", key: 2, name: 'spesialis' },
+  { label: "Akupunktur Medik", value: "Akupunktur Medik", key: 3, name: 'spesialis' },
+  { label: "Bedah", value: "Bedah", key: 4, name: 'spesialis' },
+  { label: "Bedah Anak", value: "Bedah Anak", key: 5, name: 'spesialis' },
+  { label: "Bedah Plastik, Rekonstruksi, dan Estetik", value: "Bedah Plastik, Rekonstruksi, dan Estetik", key: 6, name: 'spesialis' },
+  { label: "Bedah Saraf", value: "Bedah Saraf", key: 7, name: 'spesialis' },
+  { label: "Bedah Toraks, Kardiak, dan Vaskular", value: "Bedah Toraks, Kardiak, dan Vaskular", key: 8, name: 'spesialis' },
+  { label: "Dermatologi dan Venereologi", value: "Dermatologi dan Venereologi", key: 9, name: 'spesialis' },
+  { label: "Kegawatdaruratan Medik", value: "Kegawatdaruratan Medik", key: 10, name: 'spesialis' },
+  { label: "Farmakologi Klinik", value: "Farmakologi Klinik", key: 11, name: 'spesialis' },
+  { label: "Forensik dan Medikolegal", value: "Forensik dan Medikolegal", key: 12, name: 'spesialis' },
+  { label: "Gizi Klinik", value: "Gizi Klinik", key: 13, name: 'spesialis' },
+  { label: "Jantung dan Pembuluh Darah", value: "Jantung dan Pembuluh Darah", key: 14, name: 'spesialis' },
+  { label: "Kedokteran Fisik dan Rehabilitasi", value: "Kedokteran Fisik dan Rehabilitasi", key: 15, name: 'spesialis' },
+  { label: "Kedokteran Jiwa", value: "Kedokteran Jiwa", key: 16, name: 'spesialis' },
+  { label: "Kedokteran Kelautan", value: "Kedokteran Kelautan", key: 17, name: 'spesialis' },
+  { label: "Kedokteran Keluarga Layanan Primer", value: "Kedokteran Keluarga Layanan Primer", key: 18, name: 'spesialis' },
+  { label: "Kedokteran Nuklir dan Teranostik Molekuler", value: "Kedokteran Nuklir dan Teranostik Molekuler", key: 19, name: 'spesialis' },
+  { label: "Kedokteran Okupasi", value: "Kedokteran Okupasi", key: 20, name: 'spesialis' },
+  { label: "Kedokteran Olahraga", value: "Kedokteran Olahraga", key: 21, name: 'spesialis' },
+  { label: "Kedokteran Penerbangan", value: "Kedokteran Penerbangan", key: 22, name: 'spesialis' },
+  { label: "Mikrobiologi Klinik", value: "Mikrobiologi Klinik", key: 23, name: 'spesialis' },
+  { label: "Neurologi", value: "Neurologi", key: 24, name: 'spesialis' },
+  { label: "Obstetri dan Ginekologi", value: "Obstetri dan Ginekologi", key: 25, name: 'spesialis' },
+  { label: "Oftalmologi", value: "Oftalmologi", key: 26, name: 'spesialis' },
+  { label: "Onkologi Radiasi", value: "Onkologi Radiasi", key: 27, name: 'spesialis' },
+  { label: "Orthopaedi dan Traumatologi", value: "Orthopaedi dan Traumatologi", key: 28, name: 'spesialis' },
+  { label: "Parasitologi Klinik", value: "Parasitologi Klinik", key: 29, name: 'spesialis' },
+  { label: "Patologi Anatomi", value: "Patologi Anatomi", key: 30, name: 'spesialis' },
+  { label: "Patologi Klinik", value: "Patologi Klinik", key: 31, name: 'spesialis' },
+  { label: "Penyakit Dalam", value: "Penyakit Dalam", key: 32, name: 'spesialis' },
+  { label: "Pulmonologi dan Kedokteran Respirasi", value: "Pulmonologi dan Kedokteran Respirasi", key: 33, name: 'spesialis' },
+  { label: "Radiologi", value: "Radiologi", key: 34, name: 'spesialis' },
+  { label: "Telinga Hidung Tenggorok Bedah Kepala Leher", value: "Telinga Hidung Tenggorok Bedah Kepala Leher", key: 35, name: 'spesialis' },
+  { label: "Urologi", value: "Urologi", key: 36, name: 'spesialis' },
+  { label: "Bedah Mulut dan Maksilofasial (Dokter Gigi)", value: "Bedah Mulut dan Maksilofasial (Dokter Gigi)", key: 37, name: 'spesialis' },
+  { label: "Kedokteran Gigi Anak (Dokter Gigi)", value: "Kedokteran Gigi Anak (Dokter Gigi)", key: 38, name: 'spesialis' },
+  { label: "Konservasi Gigi (Dokter Gigi)", value: "Konservasi Gigi (Dokter Gigi)", key: 39, name: 'spesialis' },
+  { label: "Ortodonsia (Dokter Gigi)", value: "Ortodonsia (Dokter Gigi)", key: 40, name: 'spesialis' },
+  { label: "Odontologi Forensik (Dokter Gigi)", value: "Odontologi Forensik (Dokter Gigi)", key: 41, name: 'spesialis' },
+  { label: "Penyakit Mulut (Dokter Gigi)", value: "Penyakit Mulut (Dokter Gigi)", key: 43, name: 'spesialis' },
+  { label: "Periodonsia (Dokter Gigi)", value: "Periodonsia (Dokter Gigi)", key: 44, name: 'spesialis' },
+  { label: "Prostodonsia (Dokter Gigi)", value: "Prostodonsia (Dokter Gigi)", key: 45, name: 'spesialis' },
+  { label: "Radiologi Kedokteran Gigi (Dokter Gigi)", value: "Radiologi Kedokteran Gigi (Dokter Gigi)", key: 46, name: 'spesialis' },
 ];
 
 var urlProvinsi = "https://ibnux.github.io/data-indonesia/provinsi.json";
@@ -56,47 +108,20 @@ var urlKecamatan = "https://ibnux.github.io/data-indonesia/kecamatan/";
 var urlKelurahan = "https://ibnux.github.io/data-indonesia/kelurahan/";
 
 const Data = ({ match, history, loading, error }) => {
-  const [ userLogin, setUserLogin ] = useState({
-    username: "medeva1", nama: "Medeva Tech", email: "dev@medeva.tech1", password: "medeva123",
-    is_dev: 0, is_manager: 0, is_admin: 0, is_resepsionis: 0, is_perawat: 0, is_dokter: 0, is_manajemen: 0,
-    jenis_kelamin: "", nomor_kitas: "", tipe_izin: "", nomor_izin: "", kadaluarsa_izin: "",
-    nomor_hp: "", tempat_lahir: "", tanggal_lahir: "",
-    alamat: "", kode_pos: "", provinsi: "", kota: "", kecamatan: "", kelurahan: "",
-    status_menikah: ""
-  });
+  const dispatch = useDispatch();
+  const employeeData = useSelector(state => state.employee);
+  const employeeTotalPage = useSelector(state => state.employeeTotalPage);
+  const [dataStatus, setDataStatus] = useState("add");
 
-  // const [username, setUsername] = useState("medeva1");
-  // const [nama, setNama] = useState("Medeva Tech");
-  // const [email, setEmail] = useState("dev@medeva.tech1");
-  // const [password, setPassword] = useState("medeva123");
-
-  // const [is_dev, setIsDev] = useState(0);
-  // const [is_manager, setIsManager] = useState(0);
-  // const [is_admin, setIsAdmin] = useState(0);
-  // const [is_resepsionis, setIsResepsionis] = useState(0);
-  // const [is_perawat, setIsPerawat] = useState(0);
-  // const [is_dokter, setIsDokter] = useState(0);
-  // const [is_manajemen, setIsManajemen] = useState(0);
-
-  // const [divisi, setDivisi] = useState("");
-  // const [jenis_kelamin, setJenisKelamin] = useState("");
-  // const [nomor_kitas, setNoKITAS] = useState("");
-  // const [tipe_izin, setTipeIzin] = useState("");
-  // const [nomor_izin, setNoIzin] = useState("");
-  // const [kadaluarsa_izin, setKadaluarsaIzin] = useState("");
-  // const [nomor_hp, setNoHP] = useState("");
-  // const [tempat_lahir, setTempatLahir] = useState("");
-  // const [tanggal_lahir, setTanggalLahir] = useState("");
-  // const [alamat, setAlamat] = useState("");
-  // const [kode_pos, setKodePos] = useState("");
-  // const [provinsi, setProvinsi] = useState([]);
-  // const [kota, setKota] = useState([]);
-  // const [kecamatan, setKecamatan] = useState([]);
-  // const [kelurahan, setKelurahan] = useState([]);
-  // const [status_menikah, setStatus] = useState("");
+  const [selectedTypeF, setSelectedTypeF] = useState("");
+  const [selectedSpecialistF, setSelectedSpecialistF] = useState("");
 
   const [selectedRole, setSelectedRole] = useState([]);
-  const [selectedWP, setSelectedWP] = useState([]);
+  const [selectedWP, setSelectedWP] = useState("");
+  const [selectedType, setSelectedType] = useState("");
+  const [selectedSpecialist, setSelectedSpecialist] = useState("");
+  const [selectedGender, setSelectedGender] = useState("");
+  const [selectedMaritalStatus, setSelectedMaritalStatus] = useState("");
 
   const [selectedProvince, setSelectedProvince] = useState([]);
   const [selectedCity, setSelectedCity] = useState([]);
@@ -108,39 +133,36 @@ const Data = ({ match, history, loading, error }) => {
   const [selectSubdistrict, setSelectSubdistrict] = useState([]);
   const [selectWard, setSelectWard] = useState([]);
 
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPage, setTotalPage] = useState(0);
-
-  const [employeeData, setEmployeeData] = useState([]);
-
-  // const [page, setPage] = useState("1");
-  const [limit, setLimit] = useState("5");
-  const [sortBy, setSortBy] = useState("nama");
-  const [sortOrder, setSortOrder] = useState("desc");
-  const [search, setSearch] = useState("");
-
-  const handleChangeProv = (event) => {
-    setSelectProvince(event);
-    setProvinsi(event.value);
-    changeKota(event.key);
-  };
-
-  const handleChangeCity = (event) => {
-    setSelectCity(event);
-    setKota(event.value);
-    changeKecamatan(event.key);
-  };
-
-  const handleChangeSubdistrict = (event) => {
-    setSelectSubdistrict(event);
-    setKecamatan(event.value);
-    changeKelurahan(event.key);
-  };
-
-  const handleChangeWard = (event) => {
-    setSelectWard(event);
-    setKelurahan(event.value);
-  };
+  const [ employee, setEmployee ] = useState({
+    username: '',
+    nama: '',
+    email: '',
+    password: '',
+    is_dev: 0,
+    is_manager: 0,
+    is_admin: 0,
+    is_resepsionis: 0,
+    is_perawat: 0,
+    is_dokter: 0,
+    is_manajemen: 0,
+    jenis_kelamin: '',
+    nomor_kitas: '',
+    tipe_izin: '',
+    nomor_izin: '',
+    kadaluarsa_izin: '',
+    nomor_hp: '',
+    tempat_lahir: '',
+    tanggal_lahir: '',
+    alamat: '',
+    kode_pos: '',
+    provinsi: '',
+    kota: '',
+    kecamatan: '',
+    kelurahan: '',
+    status_menikah: '',
+    tipe: '',
+    spesialis: ''
+  });
 
   const onLoadProvinsi = async () => {
     try {
@@ -152,7 +174,7 @@ const Data = ({ match, history, loading, error }) => {
         for (var i = 0; i < data.length; i++) {
           setSelectedProvince((current) => [
             ...current,
-            { label: data[i].nama, value: data[i].nama, key: data[i].id },
+            { label: data[i].nama, value: data[i].nama, key: data[i].id, name: 'provinsi' },
           ]);
         }
       } else {
@@ -163,7 +185,7 @@ const Data = ({ match, history, loading, error }) => {
     }
   };
 
-  const changeKota = async (id_prov) => {
+  const changeKota = async (id_prov, eA = null) => {
     try {
       const response = await fetch(`${urlKabupaten}/${id_prov}.json`);
       // console.log(response);
@@ -174,8 +196,14 @@ const Data = ({ match, history, loading, error }) => {
         for (var i = 0; i < data.length; i++) {
           setSelectedCity((current) => [
             ...current,
-            { label: data[i].nama, value: data[i].nama, key: data[i].id },
+            { label: data[i].nama, value: data[i].nama, key: data[i].id, name: 'kota' },
           ]);
+        }
+
+        if(eA) {
+          setEditAddress(current => {
+              return { ...current, status: 2 }
+          })
         }
       } else {
         throw Error(`Error status: ${response.status}`);
@@ -185,7 +213,7 @@ const Data = ({ match, history, loading, error }) => {
     }
   };
 
-  const changeKecamatan = async (id_kota) => {
+  const changeKecamatan = async (id_kota, eA = null) => {
     try {
       const response = await fetch(`${urlKecamatan}/${id_kota}.json`);
       // console.log(response);
@@ -196,18 +224,24 @@ const Data = ({ match, history, loading, error }) => {
         for (var i = 0; i < data.length; i++) {
           setSelectedSubdistrict((current) => [
             ...current,
-            { label: data[i].nama, value: data[i].nama, key: data[i].id },
+            { label: data[i].nama, value: data[i].nama, key: data[i].id, name: 'kecamatan' },
           ]);
         }
       } else {
         throw Error(`Error status: ${response.status}`);
+      }
+
+      if(eA) {
+        setEditAddress(current => {
+            return { ...current, status: 3 }
+        })
       }
     } catch (e) {
       console.log(e);
     }
   };
 
-  const changeKelurahan = async (id_kecamatan) => {
+  const changeKelurahan = async (id_kecamatan, eA = null) => {
     try {
       const response = await fetch(`${urlKelurahan}/${id_kecamatan}.json`);
       // console.log(response);
@@ -218,8 +252,14 @@ const Data = ({ match, history, loading, error }) => {
         for (var i = 0; i < data.length; i++) {
           setSelectedWard((current) => [
             ...current,
-            { label: data[i].nama, value: data[i].nama, key: data[i].id },
+            { label: data[i].nama, value: data[i].nama, key: data[i].id, name: 'kelurahan' },
           ]);
+        }
+
+        if(eA) {
+          setEditAddress(current => {
+              return { ...current, status: 4 }
+          })
         }
       } else {
         throw Error(`Error status: ${response.status}`);
@@ -229,166 +269,248 @@ const Data = ({ match, history, loading, error }) => {
     }
   };
 
-  const handleChangeGender = (e, jns) => {
-    setJenisKelamin(jns);
-    // console.log(e.target);
-    // console.log(jns);
-  };
+  const onChange = (e) => {
+    if (e.length > 0) {
+      for (var i = 0; i < e.length; i++) {
+        if (e[i].value === "Developer") {
+          setEmployee(current => {
+              return { ...current, 'is_dev': 1 }
+          })
+        } else if (e[i].value === "Manager") {
+          setEmployee(current => {
+              return { ...current, 'is_manager': 1 }
+          })
+        } else if (e[i].value === "Admin") {
+          setEmployee(current => {
+              return { ...current, 'is_admin': 1 }
+          })
+        } else if (e[i].value === "Resepsionis") {
+          setEmployee(current => {
+              return { ...current, 'is_resepsionis': 1 }
+          })
+        } else if (e[i].value === "Perawat") {
+          setEmployee(current => {
+              return { ...current, 'is_perawat': 1 }
+          })
+        } else if (e[i].value === "Dokter") {
+          setEmployee(current => {
+              return { ...current, 'is_dokter': 1 }
+          })
+        } else if (e[i].value === "Manajemen") {
+          setEmployee(current => {
+              return { ...current, 'is_manajemen': 1 }
+          })
+        }
+      }
 
-  const handleChangeMarital = (e, nkh) => {
-    setStatus(nkh);
-    // setUserLogin(current) => {
-    //   set
-    // }
-  };
-
-  const handleChangePermissionType = (event) => {
-    setSelectedWP(event);
-    setTipeIzin(event.value);
-  };
-
-  const handleChangeRole = (event) => {
-    setSelectedRole(event); // is_dev, is_manager, is_admin, is_resepsionis, is_perawat, is_dokter, is_manajemen
-    // console.log(event);
-
-    for (var i = 0; i < event.length; i++) {
-      if (event[i].value === "DEVELOPER") {
-        setIsDev(1);
-      } else if (event[i].value === "MANAGER") {
-        setIsManager(1);
-      } else if (event[i].value === "ADMIN") {
-        setIsAdmin(1);
-      } else if (event[i].value === "RESEPSIONIS") {
-        setIsResepsionis(1);
-      } else if (event[i].value === "PERAWAT") {
-        setIsPerawat(1);
-      } else if (event[i].value === "DOKTER") {
-        setIsDokter(1);
-      } else if (event[i].value === "MANAJEMEN") {
-        setIsManajemen(1);
+      setSelectedRole(e);
+      // setSelectedRole({ peran: e ? e.map(x => x.value) : [] })
+      // console.log(selectedRole);
+    } else {
+      if (e.name === 'provinsi') {
+        setEmployee(current => {
+            // return { ...current, provinsi: e.value }
+            return { ...current, provinsi: e ? e.value : ''}
+        })
+        setSelectProvince(e); changeKota(e.key, "");
+      } else if (e.name === 'kota') {
+        setEmployee(current => {
+            // return { ...current, kota: e.value }
+            return { ...current, kota: e ? e.value : ''}
+        })
+        setSelectCity(e); changeKecamatan(e.key);
+      } else if (e.name === 'kecamatan') {
+        setEmployee(current => {
+            // return { ...current, kecamatan: e.value }
+            return { ...current, kecamatan: e ? e.value : ''}
+        })
+        setSelectSubdistrict(e); changeKelurahan(e.key);
+      } else if (e.name === 'kelurahan') {
+        setEmployee(current => {
+            // return { ...current, kelurahan: e.value }
+            return { ...current, kelurahan: e ? e.value : ''}
+        })
+        setSelectWard(e);
+      } else if (e.name === 'tipe_izin') {
+        setEmployee(current => {
+            // return { ...current, tipe_izin: e.value }
+            return { ...current, tipe_izin: e ? e.value : ''}
+        })
+        setSelectedWP(e);
+      } else if (e.name === 'tipe') {
+        setEmployee(current => {
+            // return { ...current, tipe: e.value }
+            return { ...current, tipe: e ? e.value : ''}
+        })
+        setSelectedType(e);
+      } else if (e.name === 'spesialis') {
+        setEmployee(current => {
+            // return { ...current, spesialis: e.value }
+            return { ...current, spesialis: e ? e.value : ''}
+        })
+        setSelectedSpecialist(e);
       } else {
-        // setIsDev(0);
-        // setIsManager(0);
-        // setIsAdmin(0);
-        // setIsResepsionis(0);
-        // setIsPerawat(0);
-        // setIsDokter(0);
-        // setIsManajemen(0);
+        if (e.target.name && e.target.name === 'jenis_kelamin') {
+          if(e.target.id === 'laki') {
+            setEmployee(current => {
+              return { ...current, jenis_kelamin: 'Laki-laki' }
+            })
+          } else if(e.target.id === 'perempuan') {
+            setEmployee(current => {
+              return { ...current, jenis_kelamin: 'Perempuan' }
+            })
+          }
+        } else if (e.target.name && e.target.name === 'status_menikah') {
+          if(e.target.id === 'menikah') {
+            setEmployee(current => {
+              return { ...current, status_menikah: 'Menikah' }
+            })
+          } else if(e.target.id === 'belumMenikah') {
+            setEmployee(current => {
+              return { ...current, status_menikah: 'Belum Menikah' }
+            })
+          }
+        } else if (e.target.name && e.target.name !== 'jenis_kelamin' && e.target.name !== 'status_menikah') {
+          setEmployee(current => {
+              return { ...current, [e.target.name]: e.target.value }
+          })
+        } else {
+          console.log(e);
+        }
       }
     }
-  };
 
-  useEffect(() => {
-    onLoadProvinsi();
-  }, []);
+    // console.log(e);
+    console.log(employee);
+  }
 
-  const onUserRegister = async (e) => {
-    // if (email !== '' && password !== '') {
-    //   history.push("./login");
-    // }
+  const onEmployeeSubmit = async (e) => {
+    e.preventDefault();
 
-    try {
-      let data = {
-        nama,
-        username,
-        email,
-        password,
-        is_dev,
-        is_manager,
-        is_admin,
-        is_resepsionis,
-        is_perawat,
-        is_dokter,
-        is_manajemen,
-        jenis_kelamin,
-        nomor_kitas,
-        tipe_izin,
-        nomor_izin,
-        kadaluarsa_izin,
-        nomor_hp,
-        tempat_lahir,
-        tanggal_lahir,
-        alamat,
-        kode_pos,
-        provinsi,
-        kota,
-        kecamatan,
-        kelurahan,
-        status_menikah,
-      };
-      console.log(data);
-
-      const response = await auth.register(data);
-      // console.log(response);
-
-      if (response.status == 200) {
-        let data = await response.data.data;
-        // console.log(data);
-
-        Swal.fire({
-          title: "Sukses!",
-          html: `Tambah karyawan sukses`,
-          icon: "success",
-          confirmButtonColor: "#008ecc",
-        });
-
-        resetForm(e);
-      } else {
+    if(dataStatus === 'add') {
+      try {
+        const response = await employeeAPI.add(employee);
+        // console.log(response);
+  
+        if (response.status == 200) {
+          let data = await response.data.data;
+          // console.log(data);
+  
+          Swal.fire({
+            title: "Sukses!",
+            html: `Tambah karyawan sukses`,
+            icon: "success",
+            confirmButtonColor: "#008ecc",
+          });
+  
+          resetForm(e);
+        } else {
+          Swal.fire({
+            title: "Gagal!",
+            html: `Tambah karyawan gagal: ${response.message}`,
+            icon: "error",
+            confirmButtonColor: "#008ecc",
+            confirmButtonText: "Coba lagi",
+          });
+  
+          throw Error(`Error status: ${response.statusCode}`);
+        }
+      } catch (e) {
         Swal.fire({
           title: "Gagal!",
-          html: `Tambah karyawan gagal`,
+          html: `Tambah karyawan gagal: ${response.message}`,
           icon: "error",
           confirmButtonColor: "#008ecc",
           confirmButtonText: "Coba lagi",
         });
-
-        throw Error(`Error status: ${response.status}`);
+  
+        console.log(e);
       }
-    } catch (e) {
-      Swal.fire({
-        title: "Error!",
-        html: `Tambah karyawan gagal`,
-        icon: "error",
-        confirmButtonColor: "#008ecc",
-        confirmButtonText: "Coba lagi",
-      });
-
-      console.log(e);
+    } else if (dataStatus === 'update') {
+      try {
+        const response = await employeeAPI.update(employee);
+        // console.log(response);
+  
+        if (response.status == 200) {
+          let data = await response.data.data;
+          // console.log(data);
+  
+          Swal.fire({
+            title: "Sukses!",
+            html: `Tambah karyawan sukses`,
+            icon: "success",
+            confirmButtonColor: "#008ecc",
+          });
+  
+          resetForm(e);
+        } else {
+          Swal.fire({
+            title: "Gagal!",
+            html: `Tambah karyawan gagal: ${response.message}`,
+            icon: "error",
+            confirmButtonColor: "#008ecc",
+            confirmButtonText: "Coba lagi",
+          });
+  
+          throw Error(`Error status: ${response.statusCode}`);
+        }
+      } catch (e) {
+        Swal.fire({
+          title: "Gagal!",
+          html: `Tambah karyawan gagal: ${response.message}`,
+          icon: "error",
+          confirmButtonColor: "#008ecc",
+          confirmButtonText: "Coba lagi",
+        });
+  
+        console.log(e);
+      }
+    } else {
+      console.log('dataStatus undefined')
     }
   };
 
   const resetForm = (e) => {
     e.preventDefault();
-    
-    setUsername("");
-    setNama("");
-    setEmail("");
-    setPassword("");
-    setIsDev(0);
-    setIsManager(0);
-    setIsAdmin(0);
-    setIsResepsionis(0);
-    setIsPerawat(0);
-    setIsDokter(0);
-    setIsManajemen(0);
-    setJenisKelamin("");
-    setNoKITAS("");
-    setTipeIzin("");
-    setNoIzin("");
-    setKadaluarsaIzin("");
-    setNoHP("");
-    setTempatLahir("");
-    setTanggalLahir("");
-    setAlamat("");
-    setKodePos("");
-    setProvinsi([]);
-    setKota([]);
-    setKecamatan([]);
-    setKelurahan([]);
-    setStatus("");
+
+    setEmployee({
+      username: '',
+      nama: '',
+      email: '',
+      password: '',
+      is_dev: 0,
+      is_manager: 0,
+      is_admin: 0,
+      is_resepsionis: 0,
+      is_perawat: 0,
+      is_dokter: 0,
+      is_manajemen: 0,
+      jenis_kelamin: '',
+      nomor_kitas: '',
+      tipe_izin: '',
+      nomor_izin: '',
+      kadaluarsa_izin: '',
+      nomor_hp: '',
+      tempat_lahir: '',
+      tanggal_lahir: '',
+      alamat: '',
+      kode_pos: '',
+      provinsi: '',
+      kota: '',
+      kecamatan: '',
+      kelurahan: '',
+      status_menikah: '',
+      tipe: '',
+      spesialis: ''
+    });
+
     setSelectedRole([]);
-    // setSelectedDivision([]);
-    setSelectedWP([]);
+    setSelectedWP("");
+    setSelectedType("");
+    setSelectedSpecialist("");
+    setSelectedGender("");
+    setSelectedMaritalStatus("");
+
     setSelectedProvince([]);
     setSelectedCity([]);
     setSelectedSubdistrict([]);
@@ -397,42 +519,216 @@ const Data = ({ match, history, loading, error }) => {
     setSelectCity([]);
     setSelectSubdistrict([]);
     setSelectWard([]);
-
+    setDataStatus("add");
     onLoadProvinsi();
   };
 
-  const getEmployee = async (url) => {
+  const getEmployee = async (params) => {
     try {
-      const res = await axios.get(url);
-      setEmployeeData(res.data.data.result);
-      console.log("Get employee", res.data.data.result);
-    } catch (err) {
-      console.log(err);
+      const res = await employeeAPI.get("", params);
+      dispatch({type: "GET_EMPLOYEE", payload: res.data.data});
+      dispatch({type: "GET_TOTAL_PAGE_EMPLOYEE", payload: res.data.pagination.totalPage});
+    } catch (e) {
+      console.log(e);
     }
   };
+
+  const [ editAddress, setEditAddress ] = useState({
+    status: 0,
+    nama_kota: '',
+    nama_kecamatan: '',
+    nama_kelurahan: ''
+  });
+
+  const getEmployeeById = async (e, id) => {
+    e.preventDefault();
+    resetForm(e);
+
+    try {
+      const res = await employeeAPI.get("", id);
+      let data = res.data.data.result[0];
+
+      // console.log(data);
+
+      setEmployee({
+        username: data.username,
+        nama: data.nama,
+        email: data.email,
+        password: '',
+        is_dev: data.is_dev,
+        is_manager: data.is_manager,
+        is_admin: data.is_admin,
+        is_resepsionis: data.is_resepsionis,
+        is_perawat: data.is_perawat,
+        is_dokter: data.is_dokter,
+        is_manajemen: data.is_manajemen,
+        jenis_kelamin: data.jenis_kelamin,
+        nomor_kitas: data.nomor_kitas,
+        tipe_izin: data.tipe_izin,
+        nomor_izin: data.nomor_izin,
+        kadaluarsa_izin: data.kadaluarsa_izin.substring(0, 10),
+        nomor_hp: data.nomor_hp,
+        tempat_lahir: data.tempat_lahir,
+        tanggal_lahir: data.tanggal_lahir.substring(0, 10),
+        alamat: data.alamat,
+        kode_pos: data.kode_pos,
+        provinsi: data.provinsi,
+        kota: data.kota,
+        kecamatan: data.kecamatan,
+        kelurahan: data.kelurahan,
+        status_menikah: data.status_menikah,
+        tipe: data.tipe,
+        spesialis: data.spesialis
+      });
+
+      console.log(employee);
+
+      if (data.is_dev === 1) {
+        setSelectedRole(current => {
+          return { ...current,
+            item : function(i){
+              return { label: 'Developer', value: 'Developer', key: 0, name: 'peran'}
+            }
+          }
+        })
+      } else if (data.is_manager === 1) {
+        setSelectedRole(current => {
+          return { ...current,
+            item : function(i){
+              return { label: 'Manager', value: 'Manager', key: 1, name: 'peran'}
+            }
+          }
+        })
+      } else if (data.is_admin === 1) {
+        setSelectedRole(current => {
+          return { ...current,
+            item : function(i){
+              return { label: 'Admin', value: 'Admin', key: 2, name: 'peran'}
+            }
+          }
+        })
+      } else if (data.is_resepsionis === 1) {
+        setSelectedRole(current => {
+          return { ...current,
+            item : function(i){
+              return { label: 'Resepsionis', value: 'Resepsionis', key: 3, name: 'peran'}
+            }
+          }
+        })
+      } else if (data.is_perawat === 1) {
+        setSelectedRole(current => {
+          return { ...current,
+            item : function(i){
+              return { label: 'Perawat', value: 'Perawat', key: 4, name: 'peran'}
+            }
+          }
+        })
+      } else if (data.is_dokter === 1) {
+        setSelectedRole(current => {
+          return { ...current,
+            item : function(i){
+              return { label: 'Dokter', value: 'Dokter', key: 5, name: 'peran'}
+            }
+          }
+        })
+      } else if (data.is_manajemen === 1) {
+        setSelectedRole(current => {
+          return { ...current,
+            item : function(i){
+              return { label: 'Manajemen', value: 'Manajemen', key: 6, name: 'peran'}
+            }
+          }
+        })
+      }
+
+      // // setSelectedRole([]);
+      setSelectedWP({tipe_izin: data.tipe_izin ? e.value : ''});
+      setSelectedType({tipe: data.tipe ? e.value : ''});
+      setSelectedSpecialist({spesialis: data.spesialis ? e.value : ''});
+      setSelectedGender(data.jenis_kelamin);
+      setSelectedMaritalStatus(data.status_menikah);
+
+      setSelectProvince({provinsi: data.provinsi ? e.value : ''});
+      setSelectCity({kota: data.kota ? e.value : ''});
+      setSelectSubdistrict({kecamatan: data.kecamatan ? e.value : ''});
+      setSelectWard({kelurahan: data.kelurahan ? e.value : ''});
+
+      setEditAddress(current => {
+        return { ...current,
+          status: 1,
+          nama_kota: data.kota,
+          nama_kecamatan: data.kecamatan,
+          nama_kelurahan: data.kelurahan
+        }
+      })
+
+      let id_provinsi = selectedProvince.find(item => item.value === data.provinsi).key;
+      changeKota(id_provinsi, editAddress);
+
+      // let id_kota = selectedCity.find(item => item.value === data.kota).key;
+      // console.log('id_kota: ', id_kota);
+      // changeKecamatan(id_kota);
+
+      // let id_kecamatan = selectedSubdistrict.find(item => item.value === data.kecamatan).key;
+      // console.log('id_kecamatan ', id_kecamatan);
+      // changeKelurahan(id_kecamatan);
+
+      setDataStatus("update");
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  const [currentPage, setCurrentPage] = useState(1);
+
+  let id_kota = null;  let id_kecamatan = null; let id_kelurahan = null;
 
   useEffect(() => {
-    let url = `https://medv.vercel.app/api/v1/karyawan`;
-    if (limit !== "10") {
-      url = `${url}?limit=${limit}`;
+    let params = "";
+    
+    if (limit !== 10) {
+      params = `${params}?limit=${limit}`;
     } else {
-      url = `${url}?limit=5`;
+      params = `${params}?limit=10`;
     }
     if (search !== "") {
-      url = `${url}&searchName=${search}`;
+      params = `${params}&searchName=${search}`;
     }
-    if (currentPage !== "1") {
-      url = `${url}&page=${currentPage}`;
+    if (currentPage !== 1) {
+      params = `${params}&page=${currentPage}`;
     }
-    getEmployee(url);
+
+    getEmployee(params);
     onLoadProvinsi();
-  }, [limit, search, sortBy, sortOrder, currentPage]);
+
+    if(selectedCity.length > 0 && editAddress.status === 2) {
+      // console.log('changeKecamatan', selectedCity);
+      // console.log('status', editAddress.status);
+
+      let id_kota = selectedCity.find(item => item.value === editAddress.nama_kota).key;
+      changeKecamatan(id_kota, editAddress);
+    }
+
+    if(selectedSubdistrict.length > 0 && editAddress.status === 3) {
+      // console.log('changeKelurahan', selectedSubdistrict);
+      // console.log('status', editAddress.status);
+
+      let id_kecamatan = selectedSubdistrict.find(item => item.value === editAddress.nama_kecamatan).key;
+      changeKelurahan(id_kecamatan, editAddress);
+    }
+  }, [limit, search, sortBy, sortOrder, currentPage, editAddress ]);
 
   let startNumber = 1;
 
   if (currentPage !== 1) {
-    startNumber = (currentPage - 1) * 5 + 1;
+    startNumber = (currentPage - 1) * 10 + 1;
   }
+
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(10);
+  const [sortBy, setSortBy] = useState("");
+  const [sortOrder, setSortOrder] = useState("");
+  const [search, setSearch] = useState("");
 
   return (
     <>
@@ -450,54 +746,97 @@ const Data = ({ match, history, loading, error }) => {
                 >
                   Tambah
                 </Button>
-                <InputGroup className="my-4">
-                  <Input
-                    type="search"
-                    name="search"
-                    id="search"
-                    placeholder="Pencarian"
-                    onChange={(e) => setSearch(e.target.value.toLowerCase())}
-                  />
-                  <InputGroupAddon addonType="append">
-                    <Button outline color="theme-3" className="button-search">
-                      <i className="simple-icon-magnifier"></i>
-                    </Button>
-                  </InputGroupAddon>
-                </InputGroup>
               </CardTitle>
+              <FormGroup row style={{ margin: '0px', width: '100%' }}>
+                <Colxx sm="12" md="6" style={{ paddingLeft: '0px' }}>
+                  <Label for="tipe">
+                    Tipe
+                  </Label>
+                  <Select
+                    components={{ Input: CustomSelectInput }}
+                    className="react-select"
+                    classNamePrefix="react-select"
+                    name="tipe"
+                    value={selectedTypeF}
+                    onChange={setSelectedTypeF}
+                    options={selectType}
+                  />
+                </Colxx>
+                <Colxx sm="12" md="6" style={{ paddingRight: '0px' }}>
+                  <Label for="spesialis">
+                    Spesialisasi
+                  </Label>
+                  <Select
+                    components={{ Input: CustomSelectInput }}
+                    className="react-select"
+                    classNamePrefix="react-select"
+                    name="spesialis"
+                    value={selectedSpecialistF}
+                    onChange={setSelectedSpecialistF}
+                    options={selectSpecialist}
+                  />
+                </Colxx>
+              </FormGroup>
+              <InputGroup className="my-4">
+                <Input
+                  type="search"
+                  name="search"
+                  id="search"
+                  placeholder="Pencarian"
+                  onChange={(e) => setSearch(e.target.value.toLowerCase())}
+                />
+                <InputGroupAddon addonType="append">
+                  <Button outline color="theme-3" className="button-search">
+                    <i className="simple-icon-magnifier"></i>
+                  </Button>
+                </InputGroupAddon>
+              </InputGroup>
               <Table className="overflow-table-employee">
                 <thead>
                   <tr>
-                    <th style={{ textAlign: "center" }}>No</th>
-                    <th>ID</th>
-                    <th>Nama</th>
-                    <th style={{ textAlign: "center" }}>Username</th>
-                    {/* <th style={{ textAlign: "center" }}>Email</th> */}
+                    <th style={{ textAlign: "center", verticalAlign: 'middle' }}>#</th>
+                    <th>Karyawan / Tenaga Kesehatan</th>
+                    <th style={{ textAlign: "center", width: '150px' }}>Aksi</th>
                   </tr>
                 </thead>
                 <tbody>
                   {employeeData ? (
                     employeeData.map((data) => (
                       <tr key={data.id}>
-                        <th scope="row" style={{ textAlign: "center" }}>
+                        <th scope="row" style={{ textAlign: "center", verticalAlign: 'middle' }}>
                           {startNumber++}
                         </th>
-                        <td>{data.id}</td>
-                        <td>{data.nama}</td>
-                        <td style={{ textAlign: "center" }}>{data.username}</td>
-                        {/* <td style={{ textAlign: "center" }}>{data.email}</td> */}
+                        <td>
+                          <h6 style={{ fontWeight: 'bold' }}>{data.nama}</h6>
+                          {data.tipe ? data.tipe : "-"}  
+                        </td>
+                        <td style={{ textAlign: "center", verticalAlign: 'middle' }}>
+                          <Button color="secondary" size="xs"
+                            onClick={(e) => getEmployeeById(e, data.id)}
+                            >
+                            <i className="simple-icon-note"></i>
+                          </Button>
+                          {' '}
+                          <Button color="warning" size="xs"
+                            // onClick={}
+                            >
+                            <i className="simple-icon-drawer"></i>
+                          </Button>
+                        </td>
                       </tr>
                     ))
                   ) : (
-                    <>
-                      <b2>Loading data</b2>
-                    </>
+                    <tr>
+                      <td>
+                        <p>Loading data</p>
+                      </td>
+                    </tr>
                   )}
                 </tbody>
               </Table>
               <Pagination
                 currentPage={currentPage}
-                totalPage={totalPage}
+                totalPage={employeeTotalPage}
                 onChangePage={(i) => setCurrentPage(i)}
               />
             </CardBody>
@@ -525,8 +864,9 @@ const Data = ({ match, history, loading, error }) => {
                         type="text"
                         name="username"
                         id="username"
-                        value={username}
-                        onChange={(e) => setUsername(e.target.value)}
+                        value={employee.username}
+                        onChange={onChange}
+                        // defaultValue={employee.username}
                       />
                     </FormGroup>
                   </Colxx>
@@ -538,8 +878,8 @@ const Data = ({ match, history, loading, error }) => {
                         type="email"
                         name="email"
                         id="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
+                        value={employee.email}
+                        onChange={onChange}
                       />
                     </FormGroup>
                   </Colxx>
@@ -560,15 +900,15 @@ const Data = ({ match, history, loading, error }) => {
                         type="password"
                         name="password"
                         id="password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
+                        value={employee.password}
+                        onChange={onChange}
                       />
                     </FormGroup>
                   </Colxx>
 
                   <Colxx sm={6}>
                     <FormGroup>
-                      <Label for="noKITAS">
+                      <Label for="nomor_kitas">
                         No. KITAS
                         <span
                           className="required text-danger"
@@ -580,10 +920,10 @@ const Data = ({ match, history, loading, error }) => {
                       </Label>
                       <Input
                         type="text"
-                        name="noKITAS"
-                        id="noKITAS"
-                        value={nomor_kitas}
-                        onChange={(e) => setNoKITAS(e.target.value)}
+                        name="nomor_kitas"
+                        id="nomor_kitas"
+                        value={employee.nomor_kitas}
+                        onChange={onChange}
                       />
                     </FormGroup>
                   </Colxx>
@@ -604,13 +944,343 @@ const Data = ({ match, history, loading, error }) => {
                         type="text"
                         name="nama"
                         id="nama"
-                        value={nama}
-                        onChange={(e) => setNama(e.target.value)}
+                        value={employee.nama}
+                        onChange={onChange}
                       />
                     </FormGroup>
                   </Colxx>
 
                   <Colxx sm={6}>
+                    <FormGroup>
+                      <Label for="peran">
+                          Tipe
+                          <span
+                            className="required text-danger"
+                            aria-required="true"
+                          >
+                            {" "}
+                            *
+                          </span>
+                        </Label>
+                        <Select
+                          components={{ Input: CustomSelectInput }}
+                          className="react-select"
+                          classNamePrefix="react-select"
+                          name="tipe"
+                          id="tipe"
+                          value={selectType.find(item => item.value === employee.tipe)}
+                          // value={selectedType}
+                          options={selectType}
+                          onChange={onChange}
+                        />
+                    </FormGroup>
+                  </Colxx>
+
+                  <Colxx sm={6}>
+                    <FormGroup>
+                      <Label for="spesialis">Spesialisasi</Label>
+                        <Select
+                          components={{ Input: CustomSelectInput }}
+                          className="react-select"
+                          classNamePrefix="react-select"
+                          name="spesialis"
+                          id="spesialis"
+                          value={selectSpecialist.find(item => item.value === employee.spesialis)}
+                          // value={selectedSpecialist}
+                          options={selectSpecialist}
+                          onChange={onChange}
+                        />
+                    </FormGroup>
+                  </Colxx>
+
+                  <Colxx sm={6}>
+                    <FormGroup>
+                      <Label for="alamat">Alamat</Label>
+                      <Input
+                        type="text"
+                        name="alamat"
+                        id="alamat"
+                        value={employee.alamat}
+                        onChange={onChange}
+                      />
+                    </FormGroup>
+                  </Colxx>
+
+                  <Colxx sm={6}>
+                    <FormGroup>
+                      <Label for="kode_pos">Kode Pos</Label>
+                      <Input
+                        type="number"
+                        name="kode_pos"
+                        id="kode_pos"
+                        value={employee.kode_pos}
+                        pattern="[0-9]*"
+                        onChange={onChange}
+                      />
+                    </FormGroup>
+                  </Colxx>
+
+                  <Colxx sm={3}>
+                    <FormGroup>
+                      <Label for="provinsi">Provinsi</Label>
+                      <Select
+                        components={{ Input: CustomSelectInput }}
+                        className="react-select"
+                        classNamePrefix="react-select"
+                        name="provinsi"
+                        id="provinsi"
+                        // value={selectedProvince}
+                        // onChange={setSelectedProvince}
+                        // options={selectProvince}
+                        options={selectedProvince}
+                        // value={selectProvince}
+                        value={selectedProvince.find(item => item.value === employee.provinsi)}
+                        onChange={onChange}
+                      />
+                    </FormGroup>
+                  </Colxx>
+
+                  <Colxx sm={3}>
+                    <FormGroup>
+                      <Label for="kotakab">Kota / Kabupaten</Label>
+                      <Select
+                        components={{ Input: CustomSelectInput }}
+                        className="react-select"
+                        classNamePrefix="react-select"
+                        name="kotakab"
+                        id="kotakab"
+                        // value={selectedCity}
+                        // onChange={setSelectedCity}
+                        // options={selectCity}
+                        options={selectedCity}
+                        // value={selectCity}
+                        value={selectedCity.find(item => item.value === employee.kota)}
+                        onChange={onChange}
+                      />
+                    </FormGroup>
+                  </Colxx>
+
+                  <Colxx sm={3}>
+                    <FormGroup>
+                      <Label for="kecamatan">Kecamatan</Label>
+                      <Select
+                        components={{ Input: CustomSelectInput }}
+                        className="react-select"
+                        classNamePrefix="react-select"
+                        name="kecamatan"
+                        id="kecamatan"
+                        // value={selectedSubdistrict}
+                        // onChange={setSelectedSubdistrict}
+                        // options={selectSubdistrict}
+                        options={selectedSubdistrict}
+                        // value={selectSubdistrict}
+                        value={selectedSubdistrict.find(item => item.value === employee.kecamatan)}
+                        onChange={onChange}
+                      />
+                    </FormGroup>
+                  </Colxx>
+
+                  <Colxx sm={3}>
+                    <FormGroup>
+                      <Label for="kelurahan">Kelurahan</Label>
+                      <Select
+                        components={{ Input: CustomSelectInput }}
+                        className="react-select"
+                        classNamePrefix="react-select"
+                        name="kelurahan"
+                        id="kelurahan"
+                        // value={selectedWard}
+                        // onChange={setSelectedWard}
+                        // options={selectWard}
+                        options={selectedWard}
+                        // value={selectWard}
+                        value={selectedWard.find(item => item.value === employee.kelurahan)}
+                        onChange={onChange}
+                      />
+                    </FormGroup>
+                  </Colxx>
+
+                  <Colxx sm={4}>
+                    <FormGroup>
+                      <Label for="noHP">No. HP</Label>
+                      <Input
+                        type="number"
+                        name="nomor_hp"
+                        id="nomor_hp"
+                        value={employee.nomor_hp}
+                        pattern="[0-9]*"
+                        onChange={onChange}
+                      />
+                    </FormGroup>
+                  </Colxx>
+
+                  <Colxx sm={4}>
+                    <FormGroup>
+                      <Label for="jenis_kelamin">
+                        Jenis Kelamin
+                        <span
+                          className="required text-danger"
+                          aria-required="true"
+                        >
+                          {" "}
+                          *
+                        </span>
+                      </Label>
+                      <Row>
+                        <Colxx sm={12} md={12} xl={5}>
+                          <CustomInput
+                            type="radio"
+                            id="laki"
+                            name="jenis_kelamin"
+                            label="Laki-laki"
+                            checked={employee.jenis_kelamin === 'Laki-laki'}
+                            value={selectedGender}
+                            onChange={onChange}
+                          />
+                        </Colxx>
+                        <Colxx sm={12} md={12} xl={7}>
+                          <CustomInput
+                            type="radio"
+                            id="perempuan"
+                            name="jenis_kelamin"
+                            label="Perempuan"
+                            checked={employee.jenis_kelamin === 'Perempuan'}
+                            value={selectedGender}
+                            onChange={onChange}
+                          />
+                        </Colxx>
+                      </Row>
+                    </FormGroup>
+                  </Colxx>
+
+                  <Colxx sm={4}>
+                    <FormGroup>
+                      <Label for="status_menikah">Status Menikah</Label>
+                      <Row>
+                        <Colxx sm={12} md={12} xl={4}>
+                          <CustomInput
+                            type="radio"
+                            id="menikah"
+                            name="status_menikah"
+                            label="Menikah"
+                            checked={employee.status_menikah === 'Menikah'}
+                            value={selectedMaritalStatus}
+                            onChange={onChange}
+                          />
+                        </Colxx>
+                        <Colxx sm={12} md={12} xl={8}>
+                          <CustomInput
+                            type="radio"
+                            id="belumMenikah"
+                            name="status_menikah"
+                            label="Belum Menikah"
+                            checked={employee.status_menikah === 'Belum Menikah'}
+                            value={selectedMaritalStatus}
+                            onChange={onChange}
+                          />
+                        </Colxx>
+                      </Row>
+                    </FormGroup>
+                  </Colxx>
+
+                  <Colxx sm={6}>
+                    <FormGroup>
+                      <Label for="tempat_lahir">Tempat Lahir</Label>
+                      <Input
+                        type="text"
+                        name="tempat_lahir"
+                        id="tempat_lahir"
+                        value={employee.tempat_lahir}
+                        onChange={onChange}
+                      />
+                    </FormGroup>
+                  </Colxx>
+
+                  <Colxx sm={6}>
+                    <FormGroup>
+                      <Label for="tanggal_lahir">Tanggal Lahir</Label>
+                      <Input
+                        type="date"
+                        name="tanggal_lahir"
+                        id="tanggal_lahir"
+                        value={employee.tanggal_lahir}
+                        onChange={onChange}
+                      />
+                    </FormGroup>
+                  </Colxx>
+
+                  <Colxx sm={4}>
+                    <FormGroup>
+                      <Label for="tipe_izin">
+                        Tipe Izin
+                        <span
+                          className="required text-danger"
+                          aria-required="true"
+                        >
+                          {" "}
+                          *
+                        </span>
+                      </Label>
+                      <Select
+                        components={{ Input: CustomSelectInput }}
+                        className="react-select"
+                        classNamePrefix="react-select"
+                        name="tipe_izin"
+                        id="tipe_izin"
+                        options={selectWP}
+                        value={selectWP.find(item => item.value === employee.tipe_izin)}
+                        // value={selectedWP}
+                        onChange={onChange}
+                      />
+                    </FormGroup>
+                  </Colxx>
+
+                  <Colxx sm={4}>
+                    <FormGroup>
+                      <Label for="nomor_izin">
+                        No. Izin
+                        <span
+                          className="required text-danger"
+                          aria-required="true"
+                        >
+                          {" "}
+                          *
+                        </span>
+                      </Label>
+                      <Input
+                        type="text"
+                        name="nomor_izin"
+                        id="nomor_izin"
+                        value={employee.nomor_izin}
+                        onChange={onChange}
+                      />
+                    </FormGroup>
+                  </Colxx>
+
+                  <Colxx sm={4}>
+                    <FormGroup>
+                      <Label for="kadaluarsa_izin">
+                        Kadaluarsa Izin
+                        <span
+                          className="required text-danger"
+                          aria-required="true"
+                        >
+                          {" "}
+                          *
+                        </span>
+                      </Label>
+                      <Input
+                        type="date"
+                        name="kadaluarsa_izin"
+                        id="kadaluarsa_izin"
+                        placeholder="Kadaluarsa Izin"
+                        value={employee.kadaluarsa_izin}
+                        onChange={onChange}
+                      />
+                    </FormGroup>
+                  </Colxx>
+
+                  <Colxx sm={12}>
                     <FormGroup>
                       <Label for="peran">
                         Peran
@@ -630,313 +1300,9 @@ const Data = ({ match, history, loading, error }) => {
                         name="peran"
                         id="peran"
                         value={selectedRole}
-                        // onChange={setSelectedRole}
+                        // value={selectedRole.filter(item => peran.includes(item.value))}
                         options={selectRole}
-                        onChange={(event) => handleChangeRole(event)}
-                      />
-                    </FormGroup>
-                  </Colxx>
-
-                  {/* <Colxx sm={6}>
-                    <FormGroup>
-                      <Label for="divisi">
-                        Divisi
-                        <span
-                          className="required text-danger"
-                          aria-required="true"
-                        >
-                          {" "}
-                          *
-                        </span>
-                      </Label>
-                      <Select
-                        components={{ Input: CustomSelectInput }}
-                        className="react-select"
-                        classNamePrefix="react-select"
-                        name="divisi"
-                        value={selectedDivision}
-                        onChange={setSelectedDivision}
-                        options={selectDivision}
-                      />
-                    </FormGroup>
-                  </Colxx> */}
-
-                  <Colxx sm={6}>
-                    <FormGroup>
-                      <Label for="alamat">Alamat</Label>
-                      <Input
-                        type="text"
-                        name="alamat"
-                        id="alamat"
-                        value={alamat}
-                        onChange={(e) => setAlamat(e.target.value)}
-                      />
-                    </FormGroup>
-                  </Colxx>
-
-                  <Colxx sm={6}>
-                    <FormGroup>
-                      <Label for="kodePos">Kode Pos</Label>
-                      <Input
-                        type="text"
-                        name="kodePos"
-                        id="kodePos"
-                        value={kode_pos}
-                        onChange={(e) => setKodePos(e.target.value)}
-                      />
-                    </FormGroup>
-                  </Colxx>
-
-                  <Colxx sm={3}>
-                    <FormGroup>
-                      <Label for="provinsi">Provinsi</Label>
-                      <Select
-                        components={{ Input: CustomSelectInput }}
-                        className="react-select"
-                        classNamePrefix="react-select"
-                        name="provinsi"
-                        id="provinsi"
-                        // value={selectedProvince}
-                        // onChange={setSelectedProvince}
-                        // options={selectProvince}
-                        options={selectedProvince}
-                        value={selectProvince}
-                        onChange={(event) => handleChangeProv(event)}
-                      />
-                    </FormGroup>
-                  </Colxx>
-
-                  <Colxx sm={3}>
-                    <FormGroup>
-                      <Label for="kotakab">Kota / Kabupaten</Label>
-                      <Select
-                        components={{ Input: CustomSelectInput }}
-                        className="react-select"
-                        classNamePrefix="react-select"
-                        name="kotakab"
-                        id="kotakab"
-                        // value={selectedCity}
-                        // onChange={setSelectedCity}
-                        // options={selectCity}
-                        options={selectedCity}
-                        value={selectCity}
-                        onChange={(event) => handleChangeCity(event)}
-                      />
-                    </FormGroup>
-                  </Colxx>
-
-                  <Colxx sm={3}>
-                    <FormGroup>
-                      <Label for="kecamatan">Kecamatan</Label>
-                      <Select
-                        components={{ Input: CustomSelectInput }}
-                        className="react-select"
-                        classNamePrefix="react-select"
-                        name="kecamatan"
-                        id="kecamatan"
-                        // value={selectedSubdistrict}
-                        // onChange={setSelectedSubdistrict}
-                        // options={selectSubdistrict}
-                        options={selectedSubdistrict}
-                        value={selectSubdistrict}
-                        onChange={(event) => handleChangeSubdistrict(event)}
-                      />
-                    </FormGroup>
-                  </Colxx>
-
-                  <Colxx sm={3}>
-                    <FormGroup>
-                      <Label for="kelurahan">Kelurahan</Label>
-                      <Select
-                        components={{ Input: CustomSelectInput }}
-                        className="react-select"
-                        classNamePrefix="react-select"
-                        name="kelurahan"
-                        id="kelurahan"
-                        // value={selectedWard}
-                        // onChange={setSelectedWard}
-                        // options={selectWard}
-                        options={selectedWard}
-                        value={selectWard}
-                        onChange={(event) => handleChangeWard(event)}
-                      />
-                    </FormGroup>
-                  </Colxx>
-
-                  <Colxx sm={4}>
-                    <FormGroup>
-                      <Label for="noHP">No. HP</Label>
-                      <Input
-                        type="text"
-                        name="noHP"
-                        id="noHP"
-                        value={nomor_hp}
-                        onChange={(e) => setNoHP(e.target.value)}
-                      />
-                    </FormGroup>
-                  </Colxx>
-
-                  <Colxx sm={4}>
-                    <FormGroup>
-                      <Label for="jenisKelamin">
-                        Jenis Kelamin
-                        <span
-                          className="required text-danger"
-                          aria-required="true"
-                        >
-                          {" "}
-                          *
-                        </span>
-                      </Label>
-                      <Row>
-                        <Colxx sm={12} md={12} xl={4}>
-                          <CustomInput
-                            type="radio"
-                            id="laki"
-                            name="jenisKelamin"
-                            label="Laki-laki"
-                            value={jenis_kelamin}
-                            onChange={(e) => handleChangeGender(e, "Laki-laki")}
-                          />
-                        </Colxx>
-                        <Colxx sm={12} md={12} xl={8}>
-                          <CustomInput
-                            type="radio"
-                            id="perempuan"
-                            name="jenisKelamin"
-                            label="Perempuan"
-                            value={jenis_kelamin}
-                            onChange={(e) => handleChangeGender(e, "Perempuan")}
-                          />
-                        </Colxx>
-                      </Row>
-                    </FormGroup>
-                  </Colxx>
-
-                  <Colxx sm={4}>
-                    <FormGroup>
-                      <Label for="statusMenikah">Status Menikah</Label>
-                      <Row>
-                        <Colxx sm={12} md={12} xl={4}>
-                          <CustomInput
-                            type="radio"
-                            id="menikah"
-                            name="menikah"
-                            label="Menikah"
-                            value={status_menikah}
-                            onChange={(e) => handleChangeMarital(e, "Menikah")}
-                          />
-                        </Colxx>
-                        <Colxx sm={12} md={12} xl={8}>
-                          <CustomInput
-                            type="radio"
-                            id="belumMenikah"
-                            name="menikah"
-                            label="Belum Menikah"
-                            value={status_menikah}
-                            onChange={(e) =>
-                              handleChangeMarital(e, "Belum Menikah")
-                            }
-                          />
-                        </Colxx>
-                      </Row>
-                    </FormGroup>
-                  </Colxx>
-
-                  <Colxx sm={6}>
-                    <FormGroup>
-                      <Label for="tempatLahir">Tempat Lahir</Label>
-                      <Input
-                        type="text"
-                        name="tempatLahir"
-                        id="tempatLahir"
-                        value={tempat_lahir}
-                        onChange={(e) => setTempatLahir(e.target.value)}
-                      />
-                    </FormGroup>
-                  </Colxx>
-
-                  <Colxx sm={6}>
-                    <FormGroup>
-                      <Label for="tanggalLahir">Tanggal Lahir</Label>
-                      <Input
-                        type="date"
-                        name="tanggalLahir"
-                        id="tanggalLahir"
-                        value={tanggal_lahir}
-                        onChange={(e) => setTanggalLahir(e.target.value)}
-                      />
-                    </FormGroup>
-                  </Colxx>
-
-                  <Colxx sm={4}>
-                    <FormGroup>
-                      <Label for="izin">
-                        Tipe Izin
-                        <span
-                          className="required text-danger"
-                          aria-required="true"
-                        >
-                          {" "}
-                          *
-                        </span>
-                      </Label>
-                      <Select
-                        components={{ Input: CustomSelectInput }}
-                        className="react-select"
-                        classNamePrefix="react-select"
-                        name="tipe_izin"
-                        id="tipe_izin"
-                        // value={selectedWP}
-                        // onChange={setSelectedWP}
-                        options={selectWP}
-                        value={selectedWP}
-                        onChange={(event) => handleChangePermissionType(event)}
-                      />
-                    </FormGroup>
-                  </Colxx>
-
-                  <Colxx sm={4}>
-                    <FormGroup>
-                      <Label for="noIzin">
-                        No. Izin
-                        <span
-                          className="required text-danger"
-                          aria-required="true"
-                        >
-                          {" "}
-                          *
-                        </span>
-                      </Label>
-                      <Input
-                        type="text"
-                        name="noIzin"
-                        id="noIzin"
-                        value={nomor_izin}
-                        onChange={(e) => setNoIzin(e.target.value)}
-                      />
-                    </FormGroup>
-                  </Colxx>
-
-                  <Colxx sm={4}>
-                    <FormGroup>
-                      <Label for="kadaluarsaIzin">
-                        Kadaluarsa Izin
-                        <span
-                          className="required text-danger"
-                          aria-required="true"
-                        >
-                          {" "}
-                          *
-                        </span>
-                      </Label>
-                      <Input
-                        type="date"
-                        name="kadaluarsaIzin"
-                        id="kadaluarsaIzin"
-                        placeholder="Kadaluarsa Izin"
-                        value={kadaluarsa_izin}
-                        onChange={(e) => setKadaluarsaIzin(e.target.value)}
+                        onChange={onChange}
                       />
                     </FormGroup>
                   </Colxx>
@@ -948,7 +1314,7 @@ const Data = ({ match, history, loading, error }) => {
                   </Colxx>
                   <Colxx sm={6} className="text-right">
                     <Button
-                      type="submit"
+                      type="button"
                       onClick={resetForm}
                       outline
                       color="danger"
@@ -958,7 +1324,7 @@ const Data = ({ match, history, loading, error }) => {
                     &nbsp;&nbsp;
                     <Button
                       color="primary"
-                      onClick={(e) => onUserRegister(e)}
+                      onClick={(e) => onEmployeeSubmit(e)}
                     >
                       Simpan
                     </Button>

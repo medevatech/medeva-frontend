@@ -392,18 +392,18 @@ const Data = ({ match, history, loading, error }) => {
       } else {
         Swal.fire({
           title: "Gagal!",
-          html: `Tambah karyawan gagal`,
+          html: `Tambah karyawan gagal: ${response.message}`,
           icon: "error",
           confirmButtonColor: "#008ecc",
           confirmButtonText: "Coba lagi",
         });
 
-        throw Error(`Error status: ${response.status}`);
+        throw Error(`Error status: ${response.statusCode}`);
       }
     } catch (e) {
       Swal.fire({
         title: "Gagal!",
-        html: `Tambah karyawan gagal`,
+        html: `Tambah karyawan gagal: ${response.message}`,
         icon: "error",
         confirmButtonColor: "#008ecc",
         confirmButtonText: "Coba lagi",

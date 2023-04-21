@@ -4,6 +4,8 @@ import { truncate, capitalize } from './string'
 import { currencyFormat } from './currency'
 import { formatDate, formatFullDate, formatFullDateMinusDay } from './date'
 import { twoDigits } from './digit'
+// import Address from './address'
+// import { onLoadProvinsi, changeKota, changeKecamatan, changeKelurahan } from './address'
 
 export {
   getAuthHeader,
@@ -17,5 +19,10 @@ export {
   formatDate,
   formatFullDate,
   formatFullDateMinusDay,
-  twoDigits
+  twoDigits,
+  // Address,
+  // onLoadProvinsi,
+  // changeKota,
+  // changeKecamatan,
+  // changeKelurahan
 }

@@ -8,6 +8,9 @@ import { ProtectedRoute } from 'helpers/authHelper';
 const Data = React.lazy(() =>
   import(/* webpackChunkName: "views-employee-data" */ './data')
 );
+const DataSingleState = React.lazy(() =>
+  import(/* webpackChunkName: "views-employee-data-singlestate" */ './data-singlestate')
+);
 
 const App = ({ match }) => {
   return (
@@ -15,11 +18,16 @@ const App = ({ match }) => {
       <div className="dashboard-wrapper">
         <Suspense fallback={<div className="loading" />}>
           <Switch>
-            <Redirect exact from={`${match.url}/`} to={`${match.url}/data`} />
+            {/* <Redirect exact from={`${match.url}`} to={`${match.url}`} /> */}
             {/* <Route
               path={`${match.url}/data`}
               render={(props) => <Data {...props} />}
             /> */}
+            <ProtectedRoute
+              path={`${match.url}`}
+              component={DataSingleState}
+              roles={[ "isDev", "isManager", "isAdmin" ]}
+            />
             <ProtectedRoute
               path={`${match.url}/data`}
               component={Data}

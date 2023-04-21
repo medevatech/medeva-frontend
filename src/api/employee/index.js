@@ -8,7 +8,7 @@ const employee = {
     return baseApi.get(url, payloads, { headers: getOriginHeader() })
   },
   add: (payloads) => {
-    const url = api.employee.create
+    const url = api.employee.all + 'add'
     return baseApi.post(url, payloads, { headers: getOriginHeader() })
   },
   update: (payloads) => {

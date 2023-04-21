@@ -15,13 +15,13 @@ const App = ({ match }) => {
       <div className="dashboard-wrapper">
         <Suspense fallback={<div className="loading" />}>
           <Switch>
-            <Redirect exact from={`${match.url}/`} to={`${match.url}/data`} />
+            <Redirect exact from={`${match.url}`} to={`${match.url}`} />
             {/* <Route
               path={`${match.url}/data`}
               render={(props) => <Data {...props} />}
             /> */}
             <ProtectedRoute
-              path={`${match.url}/data`}
+              path={`${match.url}`}
               component={Data}
               roles={[ "isDev", "isManager", "isAdmin", "isResepsionis", "isPerawat", "isDokter" ]}
             />
