@@ -53,6 +53,13 @@ const selectWP = [
   { label: "STR", value: "STR", key: 1, name: 'tipe_izin' },
 ];
 
+const selectMaritalStatus = [
+  { label: "Kawin", value: "Kawin", key: 0, name: 'status_menikah' },
+  { label: "Belum Kawin", value: "Belum Kawin", key: 1, name: 'status_menikah' },
+  { label: "Cerai Hidup", value: "Cerai Hidup", key: 2, name: 'status_menikah' },
+  { label: "Cerai Mati", value: "Cerai Mati", key: 3, name: 'status_menikah' },
+];
+
 const selectSpecialist = [
   { label: "Anak", value: "Anak", key: 0, name: 'spesialis' },
   { label: "Andrologi", value: "Andrologi", key: 1, name: 'spesialis' },
@@ -136,7 +143,7 @@ const Data = ({ match, history, loading, error }) => {
   const [disabledSpecialist, setDisabledSpecialist] = useState(true);
   const [employeeID, setEmployeeID] = useState('');
 
-  const [ employee, setEmployee ] = useState({
+  const [employee, setEmployee] = useState({
     username: '',
     nama: '',
     email: '',
@@ -165,6 +172,13 @@ const Data = ({ match, history, loading, error }) => {
     status_menikah: '',
     tipe: '',
     spesialis: ''
+  });
+
+  const [ editAddress, setEditAddress ] = useState({
+    status: 0,
+    nama_kota: '',
+    nama_kecamatan: '',
+    nama_kelurahan: ''
   });
 
   const onLoadProvinsi = async () => {
@@ -273,7 +287,7 @@ const Data = ({ match, history, loading, error }) => {
   };
 
   const onChange = (e) => {
-    // console.log('e', e);
+    console.log('e', e);
 
     if (e.length > 0 && e[0].name === "peran") {
       for (var i = 0; i < e.length; i++) {
@@ -375,7 +389,13 @@ const Data = ({ match, history, loading, error }) => {
             // return { ...current, spesialis: e.value }
             return { ...current, spesialis: e ? e.value : ''}
         })
-        // setSelectedSpecialist(e);
+        setSelectedSpecialist(e);
+      } else if (e.name === 'status_menikah') {
+        setEmployee(current => {
+            // return { ...current, status_menikah: e.value }
+            return { ...current, status_menikah: e ? e.value : ''}
+        })
+        setSelectedMaritalStatus(e);
       } else {
         if (e.target.name && e.target.name === 'jenis_kelamin') {
           if(e.target.id === 'laki') {
@@ -387,17 +407,17 @@ const Data = ({ match, history, loading, error }) => {
               return { ...current, jenis_kelamin: 'Perempuan' }
             })
           }
-        } else if (e.target.name && e.target.name === 'status_menikah') {
-          if(e.target.id === 'menikah') {
-            setEmployee(current => {
-              return { ...current, status_menikah: 'Menikah' }
-            })
-          } else if(e.target.id === 'belumMenikah') {
-            setEmployee(current => {
-              return { ...current, status_menikah: 'Belum Menikah' }
-            })
-          }
-        } else if (e.target.name && e.target.name !== 'jenis_kelamin' && e.target.name !== 'status_menikah') {
+        // } else if (e.target.name && e.target.name === 'status_menikah') {
+        //   if(e.target.id === 'menikah') {
+        //     setEmployee(current => {
+        //       return { ...current, status_menikah: 'Menikah' }
+        //     })
+        //   } else if(e.target.id === 'belumMenikah') {
+        //     setEmployee(current => {
+        //       return { ...current, status_menikah: 'Belum Menikah' }
+        //     })
+        //   }
+        } else if (e.target.name && e.target.name !== 'jenis_kelamin') {
           setEmployee(current => {
               return { ...current, [e.target.name]: e.target.value }
           })
@@ -483,7 +503,7 @@ const Data = ({ match, history, loading, error }) => {
       } catch (e) {
         Swal.fire({
           title: "Gagal!",
-          html: `Tambah karyawan gagal: ${e}`,
+          html: e,
           icon: "error",
           confirmButtonColor: "#008ecc",
           confirmButtonText: "Coba lagi",
@@ -561,13 +581,6 @@ const Data = ({ match, history, loading, error }) => {
       console.log(e);
     }
   };
-
-  const [ editAddress, setEditAddress ] = useState({
-    status: 0,
-    nama_kota: '',
-    nama_kecamatan: '',
-    nama_kelurahan: ''
-  });
 
   const getEmployeeById = async (e, id) => {
     e.preventDefault();
@@ -664,7 +677,8 @@ const Data = ({ match, history, loading, error }) => {
       }
       setSelectedSpecialist({spesialis: data.spesialis ? e.value : ''});
       setSelectedGender(data.jenis_kelamin);
-      setSelectedMaritalStatus(data.status_menikah);
+      // setSelectedMaritalStatus(data.status_menikah);
+      setSelectedMaritalStatus({spesialis: data.status_menikah ? e.value : ''});
 
       setSelectProvince({provinsi: data.provinsi ? e.value : ''});
       setSelectCity({kota: data.kota ? e.value : ''});
@@ -802,7 +816,6 @@ const Data = ({ match, history, loading, error }) => {
     startNumber = (currentPage - 1) * 10 + 1;
   }
 
-  const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
   const [sortBy, setSortBy] = useState("");
   const [sortOrder, setSortOrder] = useState("");
@@ -889,16 +902,22 @@ const Data = ({ match, history, loading, error }) => {
                           {data.tipe ? data.tipe : "-"}  
                         </td>
                         <td style={{ textAlign: "center", verticalAlign: 'middle' }}>
-                          <Button color="secondary" size="xs"
+                          <Button color="secondary" size="xs" className="button-xs"
                             onClick={(e) => getEmployeeById(e, data.id)}
                             >
                             <i className="simple-icon-note"></i>
                           </Button>
                           {' '}
-                          <Button color="warning" size="xs"
+                          <Button color="warning" size="xs" className="button-xs"
                             // onClick={}
                             >
                             <i className="simple-icon-drawer"></i>
+                          </Button>
+                          {' '}
+                          <Button color="danger" size="xs" className="button-xs"
+                            // onClick={}
+                            >
+                            <i className="simple-icon-trash"></i>
                           </Button>
                         </td>
                       </tr>
@@ -942,6 +961,7 @@ const Data = ({ match, history, loading, error }) => {
                         type="text"
                         name="username"
                         id="username"
+                        placeholder="Username"
                         value={employee.username}
                         onChange={onChange}
                         // defaultValue={employee.username}
@@ -956,6 +976,7 @@ const Data = ({ match, history, loading, error }) => {
                         type="email"
                         name="email"
                         id="email"
+                        placeholder="Email"
                         value={employee.email}
                         onChange={onChange}
                       />
@@ -978,6 +999,7 @@ const Data = ({ match, history, loading, error }) => {
                         type="password"
                         name="password"
                         id="password"
+                        placeholder="Password"
                         value={employee.password}
                         onChange={onChange}
                       />
@@ -1000,6 +1022,7 @@ const Data = ({ match, history, loading, error }) => {
                         type="text"
                         name="nomor_kitas"
                         id="nomor_kitas"
+                        placeholder="No. KITAS"
                         value={employee.nomor_kitas}
                         onChange={onChange}
                       />
@@ -1022,6 +1045,7 @@ const Data = ({ match, history, loading, error }) => {
                         type="text"
                         name="nama"
                         id="nama"
+                        placeholder="Nama Lengkap"
                         value={employee.nama}
                         onChange={onChange}
                       />
@@ -1079,6 +1103,7 @@ const Data = ({ match, history, loading, error }) => {
                         type="text"
                         name="alamat"
                         id="alamat"
+                        placeholder="Alamat"
                         value={employee.alamat}
                         onChange={onChange}
                       />
@@ -1092,6 +1117,7 @@ const Data = ({ match, history, loading, error }) => {
                         type="number"
                         name="kode_pos"
                         id="kode_pos"
+                        placeholder="Kode Pos"
                         value={employee.kode_pos}
                         pattern="[0-9]*"
                         onChange={onChange}
@@ -1121,13 +1147,13 @@ const Data = ({ match, history, loading, error }) => {
 
                   <Colxx sm={3}>
                     <FormGroup>
-                      <Label for="kotakab">Kota / Kabupaten</Label>
+                      <Label for="kota">Kota / Kabupaten</Label>
                       <Select
                         components={{ Input: CustomSelectInput }}
                         className="react-select"
                         classNamePrefix="react-select"
-                        name="kotakab"
-                        id="kotakab"
+                        name="kota"
+                        id="kota"
                         // value={selectedCity}
                         // onChange={setSelectedCity}
                         // options={selectCity}
@@ -1181,11 +1207,12 @@ const Data = ({ match, history, loading, error }) => {
 
                   <Colxx sm={4}>
                     <FormGroup>
-                      <Label for="noHP">No. HP</Label>
+                      <Label for="nomor_hp">No. HP</Label>
                       <Input
                         type="number"
                         name="nomor_hp"
                         id="nomor_hp"
+                        placeholder="No. HP"
                         value={employee.nomor_hp}
                         pattern="[0-9]*"
                         onChange={onChange}
@@ -1235,7 +1262,7 @@ const Data = ({ match, history, loading, error }) => {
                   <Colxx sm={4}>
                     <FormGroup>
                       <Label for="status_menikah">Status Menikah</Label>
-                      <Row>
+                      {/* <Row>
                         <Colxx sm={12} md={12} xl={4}>
                           <CustomInput
                             type="radio"
@@ -1258,7 +1285,18 @@ const Data = ({ match, history, loading, error }) => {
                             onChange={onChange}
                           />
                         </Colxx>
-                      </Row>
+                      </Row> */}
+                      <Select
+                        components={{ Input: CustomSelectInput }}
+                        className="react-select"
+                        classNamePrefix="react-select"
+                        name="status_menikah"
+                        id="status_menikah"
+                        options={selectMaritalStatus}
+                        value={selectMaritalStatus.find(item => item.value === employee.status_menikah)}
+                        // value={selectedWP}
+                        onChange={onChange}
+                      />
                     </FormGroup>
                   </Colxx>
 
@@ -1269,6 +1307,7 @@ const Data = ({ match, history, loading, error }) => {
                         type="text"
                         name="tempat_lahir"
                         id="tempat_lahir"
+                        placeholder="Tempat Lahir"
                         value={employee.tempat_lahir}
                         onChange={onChange}
                       />
@@ -1282,6 +1321,7 @@ const Data = ({ match, history, loading, error }) => {
                         type="date"
                         name="tanggal_lahir"
                         id="tanggal_lahir"
+                        placeholder="Tanggal Lahir"
                         value={employee.tanggal_lahir}
                         onChange={onChange}
                       />
@@ -1330,6 +1370,7 @@ const Data = ({ match, history, loading, error }) => {
                         type="text"
                         name="nomor_izin"
                         id="nomor_izin"
+                        placeholder="No. Izin"
                         value={employee.nomor_izin}
                         onChange={onChange}
                       />

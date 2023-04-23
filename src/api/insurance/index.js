@@ -11,8 +11,8 @@ const insurance = {
     const url = api.insurance.all
     return baseApi.post(url, payloads, { headers: getOriginHeader() })
   },
-  update: (payloads) => {
-    const url = api.insurance.all
+  update: (payloads, id) => {
+    const url = api.insurance.all + id
     return baseApi.put(url, payloads, { headers: getOriginHeader() })
   },
 }

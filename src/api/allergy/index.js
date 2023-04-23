@@ -11,8 +11,8 @@ const allergy = {
     const url = api.allergy.all
     return baseApi.post(url, payloads, { headers: getOriginHeader() })
   },
-  update: (payloads) => {
-    const url = api.allergy.all
+  update: (payloads, id) => {
+    const url = api.allergy.all + id
     return baseApi.put(url, payloads, { headers: getOriginHeader() })
   },
 }

@@ -11,8 +11,8 @@ const patient = {
     const url = api.patient
     return baseApi.post(url, payloads, { headers: getOriginHeader() })
   },
-  update: (payloads) => {
-    const url = api.patient
+  update: (payloads, id) => {
+    const url = api.patient + id
     return baseApi.put(url, payloads, { headers: getOriginHeader() })
   },
 }

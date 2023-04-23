@@ -1,10 +1,15 @@
 import React, { useEffect } from 'react';
 import { Row, Card, CardTitle } from 'reactstrap';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useHistory } from 'react-router-dom';
 import { Colxx } from 'components/common/CustomBootstrap';
-import { adminRoot } from 'constants/defaultValues';
 
-const Error = () => {
+const Error = ( ) => {
+  let history = useHistory();
+
+  function goBack() {
+    history.goBack();
+  }
+
   useEffect(() => {
     document.body.classList.add('background');
     document.body.classList.add('no-footer');
@@ -39,7 +44,8 @@ const Error = () => {
                   </p>
                   <p className="display-1 font-weight-bold mb-5">404</p>
                   <NavLink
-                    to={adminRoot}
+                    onClick={goBack}
+                    to={{}}
                     className="btn btn-primary btn-shadow btn-lg"
                   >
                     KEMBALI
