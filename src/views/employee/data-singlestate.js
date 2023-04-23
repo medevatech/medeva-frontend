@@ -133,6 +133,9 @@ const Data = ({ match, history, loading, error }) => {
   const [selectSubdistrict, setSelectSubdistrict] = useState([]);
   const [selectWard, setSelectWard] = useState([]);
 
+  const [disabledSpecialist, setDisabledSpecialist] = useState(true);
+  const [employeeID, setEmployeeID] = useState('');
+
   const [ employee, setEmployee ] = useState({
     username: '',
     nama: '',
@@ -270,42 +273,57 @@ const Data = ({ match, history, loading, error }) => {
   };
 
   const onChange = (e) => {
-    if (e.length > 0) {
+    console.log('e', e);
+
+    if (e.length > 0 && e[0].name === "peran") {
       for (var i = 0; i < e.length; i++) {
         if (e[i].value === "Developer") {
           setEmployee(current => {
               return { ...current, 'is_dev': 1 }
           })
-        } else if (e[i].value === "Manager") {
+        } 
+        
+        if (e[i].value === "Manager") {
           setEmployee(current => {
               return { ...current, 'is_manager': 1 }
           })
-        } else if (e[i].value === "Admin") {
+        } 
+        
+        if (e[i].value === "Admin") {
           setEmployee(current => {
               return { ...current, 'is_admin': 1 }
           })
-        } else if (e[i].value === "Resepsionis") {
+        } 
+        
+        if (e[i].value === "Resepsionis") {
           setEmployee(current => {
               return { ...current, 'is_resepsionis': 1 }
           })
-        } else if (e[i].value === "Perawat") {
+        } 
+        
+        if (e[i].value === "Perawat") {
           setEmployee(current => {
               return { ...current, 'is_perawat': 1 }
           })
-        } else if (e[i].value === "Dokter") {
+        } 
+        
+        if (e[i].value === "Dokter") {
           setEmployee(current => {
               return { ...current, 'is_dokter': 1 }
           })
-        } else if (e[i].value === "Manajemen") {
+        } 
+        
+        if (e[i].value === "Manajemen") {
           setEmployee(current => {
               return { ...current, 'is_manajemen': 1 }
           })
         }
       }
 
-      setSelectedRole(e);
-      // setSelectedRole({ peran: e ? e.map(x => x.value) : [] })
-      // console.log(selectedRole);
+    //   setSelectedRole(e);
+      setSelectedRole(Array.isArray(e) ? e.map(x => x.value) : []);
+
+      console.log('selectedRole onChange', selectedRole);
     } else {
       if (e.name === 'provinsi') {
         setEmployee(current => {
@@ -343,12 +361,21 @@ const Data = ({ match, history, loading, error }) => {
             return { ...current, tipe: e ? e.value : ''}
         })
         setSelectedType(e);
+
+        if (e.value === 'Dokter') {
+          setDisabledSpecialist(false);
+        } else {
+          setDisabledSpecialist(true);
+          setEmployee(current => {
+              return { ...current, spesialis: ''}
+          })
+        }
       } else if (e.name === 'spesialis') {
         setEmployee(current => {
             // return { ...current, spesialis: e.value }
             return { ...current, spesialis: e ? e.value : ''}
         })
-        setSelectedSpecialist(e);
+        // setSelectedSpecialist(e);
       } else {
         if (e.target.name && e.target.name === 'jenis_kelamin') {
           if(e.target.id === 'laki') {
@@ -380,8 +407,7 @@ const Data = ({ match, history, loading, error }) => {
       }
     }
 
-    // console.log(e);
-    console.log(employee);
+    console.log('employee', employee);
   }
 
   const onEmployeeSubmit = async (e) => {
@@ -418,7 +444,7 @@ const Data = ({ match, history, loading, error }) => {
       } catch (e) {
         Swal.fire({
           title: "Gagal!",
-          html: `Tambah karyawan gagal: ${response.message}`,
+          html: e,
           icon: "error",
           confirmButtonColor: "#008ecc",
           confirmButtonText: "Coba lagi",
@@ -428,7 +454,7 @@ const Data = ({ match, history, loading, error }) => {
       }
     } else if (dataStatus === 'update') {
       try {
-        const response = await employeeAPI.update(employee);
+        const response = await employeeAPI.update(employee, employeeID);
         // console.log(response);
   
         if (response.status == 200) {
@@ -457,7 +483,7 @@ const Data = ({ match, history, loading, error }) => {
       } catch (e) {
         Swal.fire({
           title: "Gagal!",
-          html: `Tambah karyawan gagal: ${response.message}`,
+          html: `Tambah karyawan gagal: ${e}`,
           icon: "error",
           confirmButtonColor: "#008ecc",
           confirmButtonText: "Coba lagi",
@@ -519,6 +545,9 @@ const Data = ({ match, history, loading, error }) => {
     setSelectCity([]);
     setSelectSubdistrict([]);
     setSelectWard([]);
+
+    setDisabledSpecialist(true);
+
     setDataStatus("add");
     onLoadProvinsi();
   };
@@ -543,6 +572,7 @@ const Data = ({ match, history, loading, error }) => {
   const getEmployeeById = async (e, id) => {
     e.preventDefault();
     resetForm(e);
+    setDataStatus("update");
 
     try {
       const res = await employeeAPI.get("", id);
@@ -550,6 +580,7 @@ const Data = ({ match, history, loading, error }) => {
 
       // console.log(data);
 
+      setEmployeeID(data.id);
       setEmployee({
         username: data.username,
         nama: data.nama,
@@ -581,69 +612,56 @@ const Data = ({ match, history, loading, error }) => {
         spesialis: data.spesialis
       });
 
-      console.log(employee);
+      // console.log(employee);
 
       if (data.is_dev === 1) {
-        setSelectedRole(current => {
-          return { ...current,
-            item : function(i){
-              return { label: 'Developer', value: 'Developer', key: 0, name: 'peran'}
-            }
-          }
-        })
-      } else if (data.is_manager === 1) {
-        setSelectedRole(current => {
-          return { ...current,
-            item : function(i){
-              return { label: 'Manager', value: 'Manager', key: 1, name: 'peran'}
-            }
-          }
-        })
-      } else if (data.is_admin === 1) {
-        setSelectedRole(current => {
-          return { ...current,
-            item : function(i){
-              return { label: 'Admin', value: 'Admin', key: 2, name: 'peran'}
-            }
-          }
-        })
-      } else if (data.is_resepsionis === 1) {
-        setSelectedRole(current => {
-          return { ...current,
-            item : function(i){
-              return { label: 'Resepsionis', value: 'Resepsionis', key: 3, name: 'peran'}
-            }
-          }
-        })
-      } else if (data.is_perawat === 1) {
-        setSelectedRole(current => {
-          return { ...current,
-            item : function(i){
-              return { label: 'Perawat', value: 'Perawat', key: 4, name: 'peran'}
-            }
-          }
-        })
-      } else if (data.is_dokter === 1) {
-        setSelectedRole(current => {
-          return { ...current,
-            item : function(i){
-              return { label: 'Dokter', value: 'Dokter', key: 5, name: 'peran'}
-            }
-          }
-        })
-      } else if (data.is_manajemen === 1) {
-        setSelectedRole(current => {
-          return { ...current,
-            item : function(i){
-              return { label: 'Manajemen', value: 'Manajemen', key: 6, name: 'peran'}
-            }
-          }
-        })
+        setSelectedRole((current) => [
+          ...current, 'Developer'
+        ]);
+      }
+      
+      if (data.is_manager === 1) {
+        setSelectedRole((current) => [
+          ...current, 'Manager'
+        ]);
+      }
+      
+      if (data.is_admin === 1) {
+        setSelectedRole((current) => [
+          ...current, 'Admin'
+        ]);
+      }
+      
+      if (data.is_resepsionis === 1) {
+        setSelectedRole((current) => [
+          ...current, 'Resepsionis'
+        ]);
+      }
+      
+      if (data.is_perawat === 1) {
+        setSelectedRole((current) => [
+          ...current, 'Perawat'
+        ]);
+      }
+      
+      if (data.is_dokter === 1) {
+        setSelectedRole((current) => [
+          ...current, 'Dokter'
+        ]);
+      }
+      
+      if (data.is_manajemen === 1) {
+        setSelectedRole((current) => [
+          ...current, 'Manajemen'
+        ]);
       }
 
-      // // setSelectedRole([]);
+      // console.log('selectedRole', selectedRole);
       setSelectedWP({tipe_izin: data.tipe_izin ? e.value : ''});
       setSelectedType({tipe: data.tipe ? e.value : ''});
+      if (data.tipe === 'Dokter') {
+        setDisabledSpecialist(false);
+      }
       setSelectedSpecialist({spesialis: data.spesialis ? e.value : ''});
       setSelectedGender(data.jenis_kelamin);
       setSelectedMaritalStatus(data.status_menikah);
@@ -672,16 +690,14 @@ const Data = ({ match, history, loading, error }) => {
       // let id_kecamatan = selectedSubdistrict.find(item => item.value === data.kecamatan).key;
       // console.log('id_kecamatan ', id_kecamatan);
       // changeKelurahan(id_kecamatan);
-
-      setDataStatus("update");
     } catch (e) {
       console.log(e);
     }
+
+    console.log(dataStatus);
   };
 
   const [currentPage, setCurrentPage] = useState(1);
-
-  let id_kota = null;  let id_kecamatan = null; let id_kelurahan = null;
 
   useEffect(() => {
     let params = "";
@@ -716,7 +732,69 @@ const Data = ({ match, history, loading, error }) => {
       let id_kecamatan = selectedSubdistrict.find(item => item.value === editAddress.nama_kecamatan).key;
       changeKelurahan(id_kecamatan, editAddress);
     }
-  }, [limit, search, sortBy, sortOrder, currentPage, editAddress ]);
+
+    if(dataStatus === "update") {
+      if(selectedRole) {
+        selectedRole.includes('Developer') ?
+        setEmployee(current => {
+            return { ...current, is_dev: 1 }
+        }) : 
+        setEmployee(current => {
+            return { ...current, is_dev: 0 }
+        })
+
+        selectedRole.includes('Manager') ?
+          setEmployee(current => {
+              return { ...current, is_manager: 1 }
+          }) : 
+          setEmployee(current => {
+              return { ...current, is_manager: 0 }
+          })
+
+        selectedRole.includes('Admin') ?
+          setEmployee(current => {
+              return { ...current, is_admin: 0 }
+          }) : 
+          setEmployee(current => {
+              return { ...current, is_admin: 1 }
+          })
+
+        selectedRole.includes('Resepsionis') ?
+          setEmployee(current => {
+              return { ...current, is_resepsionis: 1 }
+          }) : 
+          setEmployee(current => {
+              return { ...current, is_resepsionis: 0 }
+          })
+
+        selectedRole.includes('Perawat') ?
+          setEmployee(current => {
+              return { ...current, is_perawat: 1 }
+          }) : 
+          setEmployee(current => {
+              return { ...current, is_perawat: 0 }
+          })
+
+        selectedRole.includes('Dokter') ?
+          setEmployee(current => {
+              return { ...current, is_dokter: 1 }
+          }) : 
+          setEmployee(current => {
+              return { ...current, is_dokter: 0 }
+          })
+
+        selectedRole.includes('Manajemen') ?
+          setEmployee(current => {
+              return { ...current, is_manajemen: 1 }
+          }) : 
+          setEmployee(current => {
+              return { ...current, is_manajemen: 0 }
+          })
+
+        console.log('selectedRole onUpdate', selectedRole);
+      }
+    }
+  }, [limit, search, sortBy, sortOrder, currentPage, editAddress, selectedRole ]);
 
   let startNumber = 1;
 
@@ -952,7 +1030,7 @@ const Data = ({ match, history, loading, error }) => {
 
                   <Colxx sm={6}>
                     <FormGroup>
-                      <Label for="peran">
+                      <Label for="tipe">
                           Tipe
                           <span
                             className="required text-danger"
@@ -968,7 +1046,7 @@ const Data = ({ match, history, loading, error }) => {
                           classNamePrefix="react-select"
                           name="tipe"
                           id="tipe"
-                          value={selectType.find(item => item.value === employee.tipe)}
+                          value={selectType.find(item => item.value === employee.tipe) || ''}
                           // value={selectedType}
                           options={selectType}
                           onChange={onChange}
@@ -985,10 +1063,11 @@ const Data = ({ match, history, loading, error }) => {
                           classNamePrefix="react-select"
                           name="spesialis"
                           id="spesialis"
-                          value={selectSpecialist.find(item => item.value === employee.spesialis)}
+                          value={selectSpecialist.find(item => item.value === employee.spesialis) || ''}
                           // value={selectedSpecialist}
                           options={selectSpecialist}
                           onChange={onChange}
+                          isDisabled={disabledSpecialist}
                         />
                     </FormGroup>
                   </Colxx>
@@ -1034,7 +1113,7 @@ const Data = ({ match, history, loading, error }) => {
                         // options={selectProvince}
                         options={selectedProvince}
                         // value={selectProvince}
-                        value={selectedProvince.find(item => item.value === employee.provinsi)}
+                        value={selectedProvince.find(item => item.value === employee.provinsi) || ''}
                         onChange={onChange}
                       />
                     </FormGroup>
@@ -1054,7 +1133,7 @@ const Data = ({ match, history, loading, error }) => {
                         // options={selectCity}
                         options={selectedCity}
                         // value={selectCity}
-                        value={selectedCity.find(item => item.value === employee.kota)}
+                        value={selectedCity.find(item => item.value === employee.kota) || ''}
                         onChange={onChange}
                       />
                     </FormGroup>
@@ -1074,7 +1153,7 @@ const Data = ({ match, history, loading, error }) => {
                         // options={selectSubdistrict}
                         options={selectedSubdistrict}
                         // value={selectSubdistrict}
-                        value={selectedSubdistrict.find(item => item.value === employee.kecamatan)}
+                        value={selectedSubdistrict.find(item => item.value === employee.kecamatan) || ''}
                         onChange={onChange}
                       />
                     </FormGroup>
@@ -1094,7 +1173,7 @@ const Data = ({ match, history, loading, error }) => {
                         // options={selectWard}
                         options={selectedWard}
                         // value={selectWard}
-                        value={selectedWard.find(item => item.value === employee.kelurahan)}
+                        value={selectedWard.find(item => item.value === employee.kelurahan) || ''}
                         onChange={onChange}
                       />
                     </FormGroup>
@@ -1299,8 +1378,8 @@ const Data = ({ match, history, loading, error }) => {
                         isMulti
                         name="peran"
                         id="peran"
-                        value={selectedRole}
-                        // value={selectedRole.filter(item => peran.includes(item.value))}
+                        // value={selectedRole}
+                        value={selectRole.filter(item => selectedRole.includes(item.value)) || ''}
                         options={selectRole}
                         onChange={onChange}
                       />

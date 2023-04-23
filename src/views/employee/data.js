@@ -403,7 +403,7 @@ const Data = ({ match, history, loading, error }) => {
     } catch (e) {
       Swal.fire({
         title: "Gagal!",
-        html: `Tambah karyawan gagal: ${response.message}`,
+        html: e,
         icon: "error",
         confirmButtonColor: "#008ecc",
         confirmButtonText: "Coba lagi",

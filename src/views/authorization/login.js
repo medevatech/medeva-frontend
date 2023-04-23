@@ -105,7 +105,7 @@ const Home = ({ history, loading, error, loginUserAction }) => {
                   user.id = data.id; user.username = data.username; user.roles = roles;
 
                   localStorage.setItem('user_data', JSON.stringify(user));
-                  console.log(localStorage.getItem('user_data'));
+                  // console.log(localStorage.getItem('user_data'));
 
                   // localStorage.setItem('id', data.id);
                   // localStorage.setItem('username', data.username);
@@ -178,7 +178,7 @@ const Home = ({ history, loading, error, loginUserAction }) => {
               <p className="white mb-0">
                 Gunakan akun Anda untuk melakukan login.
                 <br />
-                Jika Andan belum terdaftar, silahkan melakukan{' '}
+                Jika Anda belum terdaftar, silahkan melakukan{' '}
                 <NavLink to="/register" className="yellowmedeva">
                   registrasi.
                 </NavLink>
