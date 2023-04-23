@@ -273,7 +273,7 @@ const Data = ({ match, history, loading, error }) => {
   };
 
   const onChange = (e) => {
-    console.log('e', e);
+    // console.log('e', e);
 
     if (e.length > 0 && e[0].name === "peran") {
       for (var i = 0; i < e.length; i++) {
