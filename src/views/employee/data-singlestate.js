@@ -323,7 +323,7 @@ const Data = ({ match, history, loading, error }) => {
     //   setSelectedRole(e);
       setSelectedRole(Array.isArray(e) ? e.map(x => x.value) : []);
 
-      console.log('selectedRole onChange', selectedRole);
+      // console.log('selectedRole onChange', selectedRole);
     } else {
       if (e.name === 'provinsi') {
         setEmployee(current => {
@@ -791,7 +791,7 @@ const Data = ({ match, history, loading, error }) => {
               return { ...current, is_manajemen: 0 }
           })
 
-        console.log('selectedRole onUpdate', selectedRole);
+        // console.log('selectedRole onUpdate', selectedRole);
       }
     }
   }, [limit, search, sortBy, sortOrder, currentPage, editAddress, selectedRole ]);
