@@ -3,7 +3,7 @@ import { Route, withRouter, Switch, Redirect } from 'react-router-dom';
 import { connect } from 'react-redux';
 
 import AppLayout from 'layout/AppLayout';
-// import { ProtectedRoute, UserRole } from 'helpers/authHelper';
+import { ProtectedRoute } from 'helpers/authHelper';
 
 const Main = React.lazy(() =>
   import(/* webpackChunkName: "views-dashboard" */ './main')
@@ -15,21 +15,16 @@ const App = ({ match }) => {
       <div className="dashboard-wrapper">
         <Suspense fallback={<div className="loading" />}>
           <Switch>
-            <Redirect exact from={`${match.url}/`} to={`${match.url}/main`} />
-            <Route
+            {/* <Redirect exact from={`${match.url}`} to={`${match.url}`} /> */}
+            {/* <Route
               path={`${match.url}/`}
               render={(props) => <Main {...props} />}
-            />
-            {/* <ProtectedRoute
-                    path={`${match.url}/patient`}
-                    component={Patient}
-                    // roles={[UserRole.Admin]}
-            />
-            <ProtectedRoute
-                    path={`${match.url}/employee`}
-                    component={Employee}
-                    // roles={[UserRole.Admin]}
             /> */}
+            <ProtectedRoute
+              path={`${match.url}`}
+              component={Main}
+              roles={[ "isDev", "isManager", "isAdmin", "isResepsionis", "isPerawat", "isDokter", "isManajemen" ]}
+            />
             <Redirect to="/error" />
           </Switch>
         </Suspense>

@@ -3,7 +3,7 @@ import { Route, withRouter, Switch, Redirect } from 'react-router-dom';
 import { connect } from 'react-redux';
 
 import AppLayout from 'layout/AppLayout';
-// import { ProtectedRoute, UserRole } from 'helpers/authHelper';
+import { ProtectedRoute } from 'helpers/authHelper';
 
 const VitalSigns = React.lazy(() =>
   import(/* webpackChunkName: "views-record-vital-signs" */ './vital-signs')
@@ -18,8 +18,8 @@ const App = ({ match }) => {
       <div className="dashboard-wrapper">
         <Suspense fallback={<div className="loading" />}>
           <Switch>
-            <Redirect exact from={`${match.url}/`} to={`${match.url}/vital-signs`} />
-            <Route
+            {/* <Redirect exact from={`${match.url}`} to={`${match.url}/vital-signs`} /> */}
+            {/* <Route
               path={`${match.url}/vital-signs`}
               render={(props) => <VitalSigns {...props} />}
             />
@@ -30,17 +30,17 @@ const App = ({ match }) => {
             <Route
               path={`${match.url}/screening`}
               render={(props) => <Screening {...props} />}
-            />
-            {/* <ProtectedRoute
-                    path={`${match.url}/patient`}
-                    component={Patient}
-                    // roles={[UserRole.Admin]}
+            /> */}
+            <ProtectedRoute
+              path={`${match.url}/vital-signs`}
+              component={VitalSigns}
+              roles={[ "isDev", "isPerawat" ]}
             />
             <ProtectedRoute
-                    path={`${match.url}/employee`}
-                    component={Employee}
-                    // roles={[UserRole.Admin]}
-            /> */}
+              path={`${match.url}`}
+              component={Data}
+              roles={[ "isDev", "isDokter" ]}
+            />
             <Redirect to="/error" />
           </Switch>
         </Suspense>

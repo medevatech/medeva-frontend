@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Row,
   Card,
@@ -15,9 +15,8 @@ import {
   Form,
   Table
 } from 'reactstrap';
-
+import { useDispatch, useSelector } from 'react-redux';
 import DatePicker from 'react-datepicker';
-
 import 'react-tagsinput/react-tagsinput.css';
 import 'react-datepicker/dist/react-datepicker.css';
 import 'rc-switch/assets/index.css';
@@ -29,6 +28,10 @@ import { Colxx, Separator } from 'components/common/CustomBootstrap';
 import Pagination from 'components/common/Pagination';
 
 import CustomSelectInput from 'components/common/CustomSelectInput';
+
+import queueAPI from "api/queue";
+import vitalSignsAPI from "api/vital-signs";
+import Swal from "sweetalert2";
 
 const selectDivision = [
   { label: 'Poli Umum', value: 'umum', key: 0 },
@@ -44,16 +47,151 @@ const selectPatient = [
 ];
 
 const selectAwareness = [
-  { label: 'Compos Mentis', value: 'composmentis', key: 0 },
-  { label: 'Somnolence', value: 'somnolence', key: 1 },
-  { label: 'Sopot', value: 'sopot', key: 2 },
-  { label: 'Coma', value: 'coma', key: 3 },
+  { label: 'Compos Mentis', value: 'Compos Mentis', key: 0, name: 'kesadaran' },
+  { label: 'Somnolence', value: 'Somnolence', name: 'kesadaran' },
+  { label: 'Sopot', value: 'Sopot', name: 'kesadaran' },
+  { label: 'Coma', value: 'Coma', name: 'kesadaran' },
 ];
 
 const VitalSigns = ({ match }) => {
+  const dispatch = useDispatch();
+  const queueAll = useSelector(state => state.queue);
+  const queueTotalPage = useSelector(state => state.queueTotalPage);
+
   const [selectedDivision, setSelectedDivision] = useState([]);
-  const [selectedPatient, setSelectedPatient] = useState([]);
   const [selectedAwareness, setSelectedAwareness] = useState([]);
+
+  const [ vitalSigns, setVitalSigns ] = useState({
+    keluhan: '',
+    kesadaran: '',
+    temperatur: '',
+    tinggi_badan: '',
+    berat_badan: '',
+    lingkar_perut: '',
+    imt: '',
+    sistole: '',
+    diastole: '',
+    respiratory_rate: '',
+    heart_rate: '',
+    catatan_tambahan: ''
+  });
+
+  const onVitalSignsAdd = async (e) => {
+    e.preventDefault();
+
+    // try {
+    //   const response = await vitalSignsAPI.add(vitalSigns);
+    //   // console.log(response);
+
+    //   if (response.status == 200) {
+    //     let data = await response.data.data;
+    //     // console.log(data);
+
+    //     Swal.fire({
+    //       title: "Sukses!",
+    //       html: `Tambah pra-konsultasi sukses`,
+    //       icon: "success",
+    //       confirmButtonColor: "#008ecc",
+    //     });
+
+    //     resetForm(e);
+    //   } else {
+    //     Swal.fire({
+    //       title: "Gagal!",
+    //       html: `Tambah pra-konsultasi gagal`,
+    //       icon: "error",
+    //       confirmButtonColor: "#008ecc",
+    //       confirmButtonText: "Coba lagi",
+    //     });
+
+    //     throw Error(`Error status: ${response.statusCode}`);
+    //   }
+    // } catch (e) {
+    //   Swal.fire({
+    //     title: "Gagal!",
+    //     html: `Tambah pra-konsultasi gagal`,
+    //     icon: "error",
+    //     confirmButtonColor: "#008ecc",
+    //     confirmButtonText: "Coba lagi",
+    //   });
+
+    //   console.log(e);
+    // }
+  };
+
+  const resetForm = (e) => {
+    e.preventDefault();
+
+    setVitalSigns({
+      keluhan: '',
+      kesadaran: '',
+      temperatur: 0,
+      tinggi_badan: 0,
+      berat_badan: 0,
+      lingkar_perut: 0,
+      imt: 0,
+      sistole: 0,
+      diastole: 0,
+      respiratory_rate: 0,
+      heart_rate: 0,
+      catatan_tambahan: ''
+    });
+  };
+
+  const getQueue = async (params) => {
+    try {
+      const res = await queueAPI.get("", params);
+      dispatch({type: "GET_QUEUE", payload: res.data.data});
+      dispatch({type: "GET_TOTAL_PAGE_QUEUE", payload: res.data.pagination.totalPage});
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  const onChange = (e) => {
+    if (e.name === 'kesadaran') {
+      setVitalSigns(current => {
+          return { ...current, 'kesadaran': e.value }
+      })
+
+      setSelectedAwareness(e);
+    } else {
+      setVitalSigns(current => {
+          return { ...current, [e.target.name]: e.target.value }
+      })
+    }
+
+    // console.log(vitalSigns);
+}
+
+  useEffect(() => {
+    let params = "";
+    if (limit !== "10") {
+      params = `${params}?limit=${limit}`;
+    } else {
+      params = `${params}?limit=10`;
+    }
+    if (search !== "") {
+      params = `${params}&searchName=${search}`;
+    }
+    if (currentPage !== "1") {
+      params = `${params}&page=${currentPage}`;
+    }
+
+    // getQueue(params);
+  }, [limit, search, sortBy, sortOrder, currentPage]);
+
+  let startNumber = 1;
+
+  if (currentPage !== 1) {
+    startNumber = (currentPage - 1) * 10 + 1;
+  }
+
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(10);
+  const [sortBy, setSortBy] = useState("");
+  const [sortOrder, setSortOrder] = useState("");
+  const [search, setSearch] = useState("");
 
   const [startDateTime, setStartDateTime] = useState(new Date());
 
@@ -67,35 +205,43 @@ const VitalSigns = ({ match }) => {
           <Card className="mb-4">
               <CardBody>
                 <CardTitle className="mb-4">
-                  Data Pasien
-                  <Button color="primary" style={{float: 'right'}} className="mb-4">
+                  Data Antrian
+                  {/* <Button
+                    color="primary"
+                    style={{ float: "right" }}
+                    className="mb-4"
+                    onClick={resetForm}
+                  >
                     Tambah
-                  </Button>
+                  </Button> */}
                 </CardTitle>
-                <FormGroup className="mt-4">
-                  <Label for="tanggalRekamCari">
-                    Tanggal
-                  </Label>
-                  <Input
-                    type="date"
-                    name="tanggalRekamCari"
-                    id="tanggalRekamCari"
-                    placeholder="Tanggal"
-                  />
-                </FormGroup>
-                <FormGroup className="mt-4">
-                  <Label for="divisi">
-                    Divisi
-                  </Label>
-                  <Select
-                    components={{ Input: CustomSelectInput }}
-                    className="react-select"
-                    classNamePrefix="react-select"
-                    name="divisi"
-                    value={selectedDivision}
-                    onChange={setSelectedDivision}
-                    options={selectDivision}
-                  />
+                <FormGroup row style={{ margin: '0px', width: '100%' }}>
+                  <Colxx sm="12" md="6" style={{ paddingLeft: '0px' }}>
+                    <Label for="tanggalRekamCari">
+                          Tanggal
+                        </Label>
+                        <Input
+                          type="date"
+                          name="tanggalRekamCari"
+                          id="tanggalRekamCari"
+                          placeholder="Tanggal"
+                          defaultValue={new Date().toISOString().substr(0, 10)}
+                        />
+                  </Colxx>
+                  <Colxx sm="12" md="6" style={{ paddingRight: '0px' }}>
+                    <Label for="divisi">
+                      Divisi
+                    </Label>
+                    <Select
+                      components={{ Input: CustomSelectInput }}
+                      className="react-select"
+                      classNamePrefix="react-select"
+                      name="divisi"
+                      value={selectedDivision}
+                      onChange={setSelectedDivision}
+                      options={selectDivision}
+                    />
+                  </Colxx>
                 </FormGroup>
                 <InputGroup className="my-4">
                   <Input
@@ -113,34 +259,71 @@ const VitalSigns = ({ match }) => {
                 <Table>
                   <thead>
                     <tr>
-                      <th style={{textAlign: 'center'}}>#</th>
-                      <th>No. Antrian</th>
-                      <th>Nama</th>
-                      <th style={{textAlign: 'center'}}>Jenis Kelamin</th>
-                      <th style={{textAlign: 'center'}}>Umur</th>
+                    <th style={{ textAlign: "center", verticalAlign: 'middle' }}>#</th>
+                      <th colSpan={2}>Antrian</th>
+                    <th style={{ textAlign: "center", width: '150px' }}>Aksi</th>
                     </tr>
                   </thead>
                   <tbody>
                     <tr>
-                      <th scope="row" style={{textAlign: 'center'}}>1</th>
-                      <td>0001</td>
-                      <td>Otto</td>
-                      <td style={{textAlign: 'center'}}>Laki-laki</td>
-                      <td style={{textAlign: 'center'}}>32</td>
+                      <th scope="row" style={{textAlign: 'center', verticalAlign: 'middle'}}>1</th>
+                      <td style={{ textAlign: "center", verticalAlign: 'middle' }}>
+                        <i className="simple-icon-magnifier queue-icon"></i><br/>
+                        0001
+                      </td>
+                      <td>
+                        <h6 style={{ fontWeight: 'bold' }}>Otto</h6>
+                        Laki-laki, 32
+                      </td>
+                      <td style={{ textAlign: "center", verticalAlign: 'middle' }}>
+                        <Button color="secondary" size="xs">
+                          <i className="simple-icon-note"></i>
+                        </Button>
+                        {' '}
+                        <Button color="warning" size="xs">
+                          <i className="simple-icon-drawer"></i>
+                        </Button>
+                      </td>
                     </tr>
                     <tr>
-                      <th scope="row" style={{textAlign: 'center'}}>2</th>
-                      <td>0002</td>
-                      <td>Jacob</td>
-                      <td style={{textAlign: 'center'}}>Laki-laki</td>
-                      <td style={{textAlign: 'center'}}>26</td>
+                      <th scope="row" style={{textAlign: 'center', verticalAlign: 'middle'}}>2</th>
+                      <td style={{ textAlign: "center", verticalAlign: 'middle' }}>
+                        <i className="simple-icon-magnifier queue-icon"></i><br/>
+                        0002
+                      </td>
+                      <td>
+                        <h6 style={{ fontWeight: 'bold' }}>Jacob</h6>
+                        Laki-laki, 26
+                      </td>
+                      <td style={{ textAlign: "center", verticalAlign: 'middle' }}>
+                        <Button color="secondary" size="xs">
+                          <i className="simple-icon-note"></i>
+                        </Button>
+                        {' '}
+                        <Button color="warning" size="xs">
+                          <i className="simple-icon-drawer"></i>
+                        </Button>
+                      </td>
                     </tr>
                     <tr>
-                      <th scope="row" style={{textAlign: 'center'}}>3</th>
-                      <td>0003</td>
-                      <td>Larry</td>
-                      <td style={{textAlign: 'center'}}>Laki-laki</td>
-                      <td style={{textAlign: 'center'}}>57</td>
+                      <th scope="row" style={{textAlign: 'center', verticalAlign: 'middle'}}>3</th>
+                      <td style={{ textAlign: "center", verticalAlign: 'middle' }}>
+                        <i className="simple-icon-magnifier queue-icon"></i><br/>
+                        0003
+                      </td>
+                      <td>
+                        <h6 style={{ fontWeight: 'bold' }}>Larry</h6>
+                        Laki-laki, 57
+                      </td>
+                      <td style={{ textAlign: "center", verticalAlign: 'middle' }}>
+                        <Button color="secondary" size="xs">
+                          <i className="simple-icon-note"></i>
+                        </Button>
+                        {' '}
+                        <Button color="warning" size="xs">
+                          <i className="simple-icon-drawer"></i>
+                        </Button>
+                      </td>
                     </tr>
                   </tbody>
                 </Table>
@@ -196,23 +379,6 @@ const VitalSigns = ({ match }) => {
                       </FormGroup>
                     </Colxx>
 
-                    <Colxx sm={12}>
-                      <FormGroup>
-                        <Label for="pasien">
-                          Pasien<span className="required text-danger" aria-required="true"> *</span>
-                        </Label>
-                        <Select
-                          components={{ Input: CustomSelectInput }}
-                          className="react-select"
-                          classNamePrefix="react-select"
-                          name="pasien"
-                          value={selectedPatient}
-                          onChange={setSelectedPatient}
-                          options={selectPatient}
-                        />
-                      </FormGroup>
-                    </Colxx>
-
                     <Colxx sm={6}>
                       <FormGroup>
                         <Label for="keluhan">
@@ -224,6 +390,8 @@ const VitalSigns = ({ match }) => {
                           id="keluhan"
                           placeholder="Keluhan"
                           style={{minHeight: '100'}}
+                          value={vitalSigns.keluhan}
+                          onChange={onChange}
                         />
                       </FormGroup>
                     </Colxx>
@@ -238,10 +406,10 @@ const VitalSigns = ({ match }) => {
                           className="react-select"
                           classNamePrefix="react-select"
                           name="kesadaran"
-                          value={selectedAwareness}
-                          onChange={setSelectedAwareness}
                           options={selectAwareness}
                           required
+                          value={selectedAwareness}
+                          onChange={onChange}
                         />
                       </FormGroup>
                     </Colxx>
@@ -258,6 +426,9 @@ const VitalSigns = ({ match }) => {
                             id="temperatur"
                             placeholder="Temperatur"
                             required={true}
+                            pattern="[0-9]*"
+                            value={vitalSigns.temperatur}
+                            onChange={onChange}
                           />
                           <InputGroupAddon addonType="append"><span className="input-group-text"><sup>0</sup>C</span></InputGroupAddon>
                         </InputGroup>
@@ -266,16 +437,19 @@ const VitalSigns = ({ match }) => {
 
                     <Colxx sm={3}>
                       <FormGroup>
-                        <Label for="tinggiBadan">
+                        <Label for="tinggi_badan">
                           Tinggi Badan<span className="required text-danger" aria-required="true"> *</span>
                         </Label>
                         <InputGroup>
                           <Input
                             type="number"
-                            name="tinggiBadan"
-                            id="tinggiBadan"
+                            name="tinggi_badan"
+                            id="tinggi_badan"
                             placeholder="Tinggi Badan"
                             required={true}
+                            pattern="[0-9]*"
+                            value={vitalSigns.tinggi_badan}
+                            onChange={onChange}
                           />
                           <InputGroupAddon addonType="append">cm</InputGroupAddon>
                         </InputGroup>
@@ -284,16 +458,19 @@ const VitalSigns = ({ match }) => {
 
                     <Colxx sm={3}>
                       <FormGroup>
-                        <Label for="beratBadan">
+                        <Label for="berat_badan">
                           Berat Badan<span className="required text-danger" aria-required="true"> *</span>
                         </Label>
                         <InputGroup>
                           <Input
                             type="number"
-                            name="beratBadan"
-                            id="beratBadan"
+                            name="berat_badan"
+                            id="berat_badan"
                             placeholder="Berat Badan"
                             required={true}
+                            pattern="[0-9]*"
+                            value={vitalSigns.berat_badan}
+                            onChange={onChange}
                           />
                           <InputGroupAddon addonType="append">kg</InputGroupAddon>
                         </InputGroup>
@@ -302,16 +479,19 @@ const VitalSigns = ({ match }) => {
 
                     <Colxx sm={3}>
                       <FormGroup>
-                        <Label for="lingkarPerut">
+                        <Label for="lingkar_perut">
                           Lingkar Perut
                         </Label>
                         <InputGroup>
                           <Input
                             type="number"
-                            name="lingkarPerut"
-                            id="lingkarPerut"
+                            name="lingkar_perut"
+                            id="lingkar_perut"
                             placeholder="Lingkar Perut"
                             required={true}
+                            pattern="[0-9]*"
+                            value={vitalSigns.lingkar_perut}
+                            onChange={onChange}
                           />
                           <InputGroupAddon addonType="append">cm</InputGroupAddon>
                         </InputGroup>
@@ -330,6 +510,9 @@ const VitalSigns = ({ match }) => {
                             id="imt"
                             placeholder="IMT"
                             required={true}
+                            pattern="[0-9]*"
+                            value={vitalSigns.imt}
+                            onChange={onChange}
                           />
                           <InputGroupAddon addonType="append"><span className="input-group-text">kg/m<sup>2</sup></span></InputGroupAddon>
                         </InputGroup>
@@ -351,6 +534,9 @@ const VitalSigns = ({ match }) => {
                                 placeholder="Sistole"
                                 // style={{ maxWidth: '75px' }}
                                 required={true}
+                                pattern="[0-9]*"
+                                value={vitalSigns.sistole}
+                                onChange={onChange}
                               />
                               <InputGroupAddon addonType="append">mmHg</InputGroupAddon>
                             </InputGroup>
@@ -365,6 +551,9 @@ const VitalSigns = ({ match }) => {
                                 placeholder="Diastole"
                                 // style={{ maxWidth: '75px' }}
                                 required={true}
+                                pattern="[0-9]*"
+                                value={vitalSigns.diastole}
+                                onChange={onChange}
                               />
                               <InputGroupAddon addonType="append">mmHg</InputGroupAddon>
                             </InputGroup>
@@ -375,16 +564,19 @@ const VitalSigns = ({ match }) => {
 
                     <Colxx sm={6}>
                       <FormGroup>
-                        <Label for="respiratory">
+                        <Label for="respiratory_rate">
                           Tingkat Pernapasan<span className="required text-danger" aria-required="true"> *</span>
                         </Label>
                         <InputGroup>
                           <Input
                             type="number"
-                            name="respiratory"
-                            id="respiratory"
+                            name="respiratory_rate"
+                            id="respiratory_rate"
                             placeholder="Tingkat Pernapasan"
                             required={true}
+                            pattern="[0-9]*"
+                            value={vitalSigns.respiratory_rate}
+                            onChange={onChange}
                           />
                           <InputGroupAddon addonType="append">/menit</InputGroupAddon>
                         </InputGroup>
@@ -393,16 +585,19 @@ const VitalSigns = ({ match }) => {
 
                     <Colxx sm={6}>
                       <FormGroup>
-                        <Label for="heart">
+                        <Label for="heart_rate">
                           Detak Jantung<span className="required text-danger" aria-required="true"> *</span>
                         </Label>
                         <InputGroup>
                           <Input
                             type="number"
-                            name="heart"
-                            id="heart"
+                            name="heart_rate"
+                            id="heart_rate"
                             placeholder="Detak Jantung"
                             required={true}
+                            pattern="[0-9]*"
+                            value={vitalSigns.heart_rate}
+                            onChange={onChange}
                           />
                           <InputGroupAddon addonType="append">bpm</InputGroupAddon>
                         </InputGroup>
@@ -411,15 +606,17 @@ const VitalSigns = ({ match }) => {
 
                     <Colxx sm={12}>
                       <FormGroup>
-                        <Label for="catatan">
+                        <Label for="catatan_tambahan">
                           Catatan Tambahan
                         </Label>
                         <Input
                           type="textarea"
-                          name="catatan"
-                          id="catatan"
+                          name="catatan_tambahan"
+                          id="catatan_tambahan"
                           placeholder="Catatan Tambahan"
                           style={{minHeight: '100px'}}
+                          value={vitalSigns.catatan_tambahan}
+                          onChange={onChange}
                         />
                       </FormGroup>
                     </Colxx>
@@ -432,11 +629,19 @@ const VitalSigns = ({ match }) => {
                       </Label>
                     </Colxx>
                     <Colxx sm={6} className="text-right">
-                      <Button outline color="danger">
+                      <Button
+                        type="button"
+                        onClick={resetForm}
+                        outline
+                        color="danger"
+                      >
                         Batal
                       </Button>
                       &nbsp;&nbsp;
-                      <Button color="primary">
+                      <Button
+                        color="primary"
+                        onClick={(e) => onVitalSignsAdd(e)}
+                      >
                         Simpan
                       </Button>
                     </Colxx>

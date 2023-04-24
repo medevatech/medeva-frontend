@@ -24,6 +24,6 @@ const auth = {
   register: (payloads) => {
     const url = api.auth.register
     return baseApi.post(url, payloads, { headers: getOriginHeader() })
-  },
+  }
 }
 export default auth

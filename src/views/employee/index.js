@@ -3,10 +3,13 @@ import { Route, withRouter, Switch, Redirect } from 'react-router-dom';
 import { connect } from 'react-redux';
 
 import AppLayout from 'layout/AppLayout';
-// import { ProtectedRoute, UserRole } from 'helpers/authHelper';
+import { ProtectedRoute } from 'helpers/authHelper';
 
 const Data = React.lazy(() =>
   import(/* webpackChunkName: "views-employee-data" */ './data')
+);
+const DataSingleState = React.lazy(() =>
+  import(/* webpackChunkName: "views-employee-data-singlestate" */ './data-singlestate')
 );
 
 const App = ({ match }) => {
@@ -15,21 +18,21 @@ const App = ({ match }) => {
       <div className="dashboard-wrapper">
         <Suspense fallback={<div className="loading" />}>
           <Switch>
-            <Redirect exact from={`${match.url}/`} to={`${match.url}/data`} />
-            <Route
+            {/* <Redirect exact from={`${match.url}`} to={`${match.url}`} /> */}
+            {/* <Route
               path={`${match.url}/data`}
               render={(props) => <Data {...props} />}
-            />
-            {/* <ProtectedRoute
-                    path={`${match.url}/patient`}
-                    component={Patient}
-                    // roles={[UserRole.Admin]}
+            /> */}
+            <ProtectedRoute
+              path={`${match.url}`}
+              component={DataSingleState}
+              roles={[ "isDev", "isManager", "isAdmin" ]}
             />
             <ProtectedRoute
-                    path={`${match.url}/employee`}
-                    component={Employee}
-                    // roles={[UserRole.Admin]}
-            /> */}
+              path={`${match.url}/data`}
+              component={Data}
+              roles={[ "isDev", "isManager", "isAdmin" ]}
+            />
             <Redirect to="/error" />
           </Switch>
         </Suspense>

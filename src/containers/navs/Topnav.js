@@ -175,6 +175,9 @@ const TopNav = ({
     clickOnMobileMenuAction(_containerClassnames);
   };
 
+
+  let username = JSON.parse(localStorage.getItem('user_data')).username;
+
   return (
     <nav className="navbar fixed-top">
       <div className="d-flex align-items-center navbar-left">
@@ -223,16 +226,16 @@ const TopNav = ({
         <div className="user d-inline-block">
           <UncontrolledDropdown className="dropdown-menu-right">
             <DropdownToggle className="p-0" color="empty">
-              <span className="name mr-1">Medeva</span>
+              <span className="name mr-1">{username ? username : "Medeva"}</span>
               <span>
-                <img alt="Profile" src="/assets/img/profiles/l-1.jpg" />
+                <img alt="Profile" src="/assets/img/profiles/avatar.webp" />
               </span>
             </DropdownToggle>
-            <DropdownMenu className="mt-3" right>
+            <DropdownMenu className="mt-3" right style={{ paddingBottom: '0px' }}>
               <DropdownItem>Edit Profil</DropdownItem>
               <DropdownItem>Jadwal Jaga</DropdownItem>
-              <DropdownItem divider />
-              <DropdownItem onClick={() => handleLogout()}>
+              <DropdownItem divider style={{ marginBottom: '0px' }}/>
+              <DropdownItem onClick={() => handleLogout()} style={{ backgroundColor: '#8aaab4', color: '#fff' }}>
                 Log out
               </DropdownItem>
             </DropdownMenu>

@@ -25,24 +25,24 @@ const Error = () => {
               <Card className="auth-card">
                 <div className="position-relative image-side ">
                   <p className="text-white h2">MEDEVA</p>
-                  <p className="white mb-0">Yes, it is indeed!</p>
+                  <p className="white mb-0">Telah terjadi error pada sistem.</p>
                 </div>
                 <div className="form-side">
                   <NavLink to="/" className="white">
                     <span className="logo-single" />
                   </NavLink>
-                  <CardTitle className="mb-4">
+                  {/* <CardTitle className="mb-4">
                     Ooops... looks like an error occurred!
-                  </CardTitle>
+                  </CardTitle> */}
                   <p className="mb-0 text-muted text-small mb-0">
-                    Error code
+                    Telah terjadi error pada sistem.
                   </p>
                   <p className="display-1 font-weight-bold mb-5">404</p>
                   <NavLink
                     to={adminRoot}
                     className="btn btn-primary btn-shadow btn-lg"
                   >
-                    GO BACK HOME
+                    KEMBALI
                   </NavLink>
                 </div>
               </Card>

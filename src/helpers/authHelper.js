@@ -13,7 +13,9 @@ const ProtectedRoute = ({
       const currentUser = getCurrentUser();
       if (currentUser) {
         if (roles) {
-          if (roles.includes(currentUser.role)) {
+          // roles.filter(element => currentUser.roles.includes(element)) ? console.log(true) : console.log(false);
+          // if (roles.includes(currentUser.roles)) {
+          if (roles.filter(element => currentUser.roles.includes(element))) {
             return <Component {...props} />;
           }
           return (
@@ -30,7 +32,7 @@ const ProtectedRoute = ({
       return (
         <Redirect
           to={{
-            pathname: '/login',
+            pathname: '/',
             state: { from: props.location },
           }}
         />
