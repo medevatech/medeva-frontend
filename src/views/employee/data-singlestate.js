@@ -54,8 +54,8 @@ const selectWP = [
 ];
 
 const selectMaritalStatus = [
-  { label: "Kawin", value: "Kawin", key: 0, name: 'status_menikah' },
-  { label: "Belum Kawin", value: "Belum Kawin", key: 1, name: 'status_menikah' },
+  { label: "Belum Kawin", value: "Belum Kawin", key: 0, name: 'status_menikah' },
+  { label: "Kawin", value: "Kawin", key: 1, name: 'status_menikah' },
   { label: "Cerai Hidup", value: "Cerai Hidup", key: 2, name: 'status_menikah' },
   { label: "Cerai Mati", value: "Cerai Mati", key: 3, name: 'status_menikah' },
 ];
@@ -483,7 +483,7 @@ const Data = ({ match, history, loading, error }) => {
   
           Swal.fire({
             title: "Sukses!",
-            html: `Tambah karyawan sukses`,
+            html: `Ubah karyawan sukses`,
             icon: "success",
             confirmButtonColor: "#008ecc",
           });
@@ -492,7 +492,7 @@ const Data = ({ match, history, loading, error }) => {
         } else {
           Swal.fire({
             title: "Gagal!",
-            html: `Tambah karyawan gagal: ${response.message}`,
+            html: `Ubah karyawan gagal: ${response.message}`,
             icon: "error",
             confirmButtonColor: "#008ecc",
             confirmButtonText: "Coba lagi",
@@ -588,8 +588,8 @@ const Data = ({ match, history, loading, error }) => {
     setDataStatus("update");
 
     try {
-      const res = await employeeAPI.get("", id);
-      let data = res.data.data.result[0];
+      const res = await employeeAPI.get("", `/${id}`);
+      let data = res.data.data;
 
       // console.log(data);
 

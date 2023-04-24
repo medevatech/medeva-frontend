@@ -33,7 +33,7 @@ import CustomSelectInput from "components/common/CustomSelectInput";
 
 import patientAPI from "api/patient";
 import insuranceAPI from "api/insurance";
-import allergyAPI from "api/allergy";
+import patientAllergyAPI from "api/patient-allergy";
 import Swal from "sweetalert2";
 
 const selectKITAS = [
@@ -61,8 +61,8 @@ const selectNationality = [
 ];
 
 const selectMaritalStatus = [
-  { label: "Kawin", value: "Kawin", key: 0, name: 'status_menikah' },
-  { label: "Belum Kawin", value: "Belum Kawin", key: 1, name: 'status_menikah' },
+  { label: "Belum Kawin", value: "Belum Kawin", key: 0, name: 'status_menikah' },
+  { label: "Kawin", value: "Kawin", key: 1, name: 'status_menikah' },
   { label: "Cerai Hidup", value: "Cerai Hidup", key: 2, name: 'status_menikah' },
   { label: "Cerai Mati", value: "Cerai Mati", key: 3, name: 'status_menikah' },
 ];
@@ -208,7 +208,8 @@ const Data = ({ match }) => {
   const [selectWard, setSelectWard] = useState([]);
 
   const [selectedInsurance, setSelectedInsurance] = useState([{ label: ""}]);
-  const [selectedAllergy, setSelectedAllergy] = useState([{ label: ""}]);
+  // const [selectedAllergy, setSelectedAllergy] = useState([{ label: ""}]);
+  const [selectedAllergy, setSelectedAllergy] = useState([]);
 
   const [patientID, setPatientID] = useState('');
   const [insuranceID, setInsuranceID] = useState('');
@@ -220,26 +221,26 @@ const Data = ({ match }) => {
     nomor_asuransi: '',
   });
 
-  const [selectInsurance, setSelectInsurance] = useState([
+  const [newInsurance, setNewInsurance] = useState([
     { id: Math.random(), tipe_asuransi: "", nomor_asuransi: "" }
   ]);
 
   const addInsuranceFields = () => {
     let newfieldInsurance = { id: Math.random(), tipe_asuransi: "", nomor_asuransi: "" };
-    setSelectInsurance([...selectInsurance, newfieldInsurance]);
+    setNewInsurance([...newInsurance, newfieldInsurance]);
 
     let newfieldDropdownInsurance = { label: "" };
     setSelectedInsurance([...selectedInsurance, newfieldDropdownInsurance]);
   };
 
   const removeInsuranceFields = (id, index) => {
-    let dataInsurance1 = [...selectInsurance];
+    let dataInsurance1 = [...newInsurance];
     dataInsurance1.splice(index, 1);
-    setSelectInsurance(dataInsurance1);
+    setNewInsurance(dataInsurance1);
   };
 
   const handleInsuranceAdd = (index, event) => {
-    let dataInsurance2 = [...selectInsurance]; let displaySelectInsurance = [...selectedInsurance];
+    let dataInsurance2 = [...newInsurance]; let displaySelectInsurance = [...selectedInsurance];
     if (event.target.name === "tipe_asuransi"){
       dataInsurance2[index][event.target.name] = event.value;
       displaySelectInsurance[index]["label"] = event.value;
@@ -247,50 +248,57 @@ const Data = ({ match }) => {
       dataInsurance2[index][event.target.name] = event.target.value;
     }
 
-    setSelectInsurance(dataInsurance2);
+    setNewInsurance(dataInsurance2);
     setSelectedInsurance(displaySelectInsurance);
 
     // console.log("data", selectInsurance);
     // console.log("displaySelectInsurance", selectedInsurance);
   };
 
+  // const [allergy, setAllergy] = useState({
+  //   id_pasien: '',
+  //   id_alergi: '',
+  //   id_kunjungan_dicatat: '',
+  //   id_kunjungan_dihapus: ''
+  // });
+
+  // const [selectAllergy, setSelectAlergi] = useState([
+  //   { id: Math.random(), nama: "", kategori: "" }
+  // ]);
+
+  // const addAllergyFields = () => {
+  //   let newfieldAllergy = { id: Math.random(), nama: "", kategori: "" };
+  //   setSelectAlergi([...selectAllergy, newfieldAllergy]);
+
+  //   let newfieldDropdownAllergy = { label: "" };
+  //   setSelectedAllergy([...selectedAllergy, newfieldDropdownAllergy]);
+  // };
+
+  // const removeAllergyFields = (id, index) => {
+  //   let dataAllergy1 = [...selectAllergy];
+  //   dataAllergy1.splice(index, 1);
+  //   setSelectAlergi(dataAllergy1);
+  // };
+
+  // const handleAllergyAdd = (index, event) => {
+  //   let dataAllergy2 = [...selectAllergy]; let displaySelectAllergy = [...selectedAllergy];
+  //   if (event.target.name === "kategori"){
+  //     dataAllergy2[index][event.target.name] = event.value;
+  //     displaySelectAllergy[index]["label"] = event.value;
+  //   } else {
+  //     dataAllergy2[index][event.target.name] = event.target.value;
+  //   }
+
+  //   setSelectAlergi(dataAllergy2);
+  //   setSelectedAllergy(displaySelectAllergy);
+  // };
+
   const [allergy, setAllergy] = useState({
     id_pasien: '',
-    id_alergi: '',
-    id_kunjungan_dicatat: '',
-    id_kunjungan_dihapus: ''
+    nama: '',
+    // id_kunjungan_dicatat: '',
+    // id_kunjungan_dihapus: ''
   });
-
-  const [selectAllergy, setSelectAlergi] = useState([
-    { id: Math.random(), nama: "", kategori: "" }
-  ]);
-
-  const addAllergyFields = () => {
-    let newfieldAllergy = { id: Math.random(), nama: "", kategori: "" };
-    setSelectAlergi([...selectAllergy, newfieldAllergy]);
-
-    let newfieldDropdownAllergy = { label: "" };
-    setSelectedAllergy([...selectedAllergy, newfieldDropdownAllergy]);
-  };
-
-  const removeAllergyFields = (id, index) => {
-    let dataAllergy1 = [...selectAllergy];
-    dataAllergy1.splice(index, 1);
-    setSelectAlergi(dataAllergy1);
-  };
-
-  const handleAllergyAdd = (index, event) => {
-    let dataAllergy2 = [...selectAllergy]; let displaySelectAllergy = [...selectedAllergy];
-    if (event.target.name === "kategori"){
-      dataAllergy2[index][event.target.name] = event.value;
-      displaySelectAllergy[index]["label"] = event.value;
-    } else {
-      dataAllergy2[index][event.target.name] = event.target.value;
-    }
-
-    setSelectAlergi(dataAllergy2);
-    setSelectedAllergy(displaySelectAllergy);
-  };
 
   const [patient, setPatient] = useState({
     tipe_kitas: '',
@@ -430,15 +438,15 @@ const Data = ({ match }) => {
   const onChange = (e) => {
     console.log('e', e);
 
-    if (e.length > 0) {
+    if (e.length > 0 && e[0].target.name === 'kategori') {
       for (var i = 0; i < e.length; i++) {
-        console.log('e = ' + i);
+        setAllergy(current => {
+            return { ...current, nama: e[i] ? e[i].value : ''}
+        })
       }
 
-    //   setSelectedRole(e);
-      // setSelectedRole(Array.isArray(e) ? e.map(x => x.value) : []);
-
-      // console.log('selectedRole onChange', selectedRole);
+      setSelectedAllergy(Array.isArray(e) ? e.map(x => x.value) : []);
+      console.log('setSelectedAllergy onChange', setSelectedAllergy);
     } else {
       if (e.name === 'provinsi') {
         setPatient(current => {
@@ -509,7 +517,7 @@ const Data = ({ match }) => {
   }
 
   const onInsuranceSubmit = async (e, status = 0) => {
-    e.preventDefault();
+    // e.preventDefault();
 
     if(dataStatus === 'add') {
       try {
@@ -565,7 +573,7 @@ const Data = ({ match }) => {
   
           Swal.fire({
             title: "Sukses!",
-            html: `Tambah asuransi pasien sukses`,
+            html: `Ubah asuransi pasien sukses`,
             icon: "success",
             confirmButtonColor: "#008ecc",
           });
@@ -578,7 +586,7 @@ const Data = ({ match }) => {
         } else {
           Swal.fire({
             title: "Gagal!",
-            html: `Tambah asuransi pasien gagal: ${response.message}`,
+            html: `Ubah asuransi pasien gagal: ${response.message}`,
             icon: "error",
             confirmButtonColor: "#008ecc",
             confirmButtonText: "Coba lagi",
@@ -603,11 +611,11 @@ const Data = ({ match }) => {
   }
 
   const onAllergySubmit = async (e, status = 0) => {
-    e.preventDefault();
+    // e.preventDefault();
 
     if(dataStatus === 'add') {
       try {
-        const response = await allergyAPI.add(allergy);
+        const response = await patientAllergyAPI.add(allergy);
         // console.log(response);
 
         if (response.status == 200) {
@@ -650,7 +658,7 @@ const Data = ({ match }) => {
       }
     } else if (dataStatus === 'update') {
       try {
-        const response = await allergyAPI.update(allergy, allergyID);
+        const response = await patientAllergyAPI.update(allergy, allergyID);
         // console.log(response);
   
         if (response.status == 200) {
@@ -659,7 +667,7 @@ const Data = ({ match }) => {
   
           Swal.fire({
             title: "Sukses!",
-            html: `Tambah alergi pasien sukses`,
+            html: `Ubah alergi pasien sukses`,
             icon: "success",
             confirmButtonColor: "#008ecc",
           });
@@ -672,7 +680,7 @@ const Data = ({ match }) => {
         } else {
           Swal.fire({
             title: "Gagal!",
-            html: `Tambah alergi pasien gagal: ${response.message}`,
+            html: `Ubah alergi pasien gagal: ${response.message}`,
             icon: "error",
             confirmButtonColor: "#008ecc",
             confirmButtonText: "Coba lagi",
@@ -752,7 +760,7 @@ const Data = ({ match }) => {
   
           Swal.fire({
             title: "Sukses!",
-            html: `Tambah pasien sukses`,
+            html: `Ubah pasien sukses`,
             icon: "success",
             confirmButtonColor: "#008ecc",
           });
@@ -764,7 +772,7 @@ const Data = ({ match }) => {
         } else {
           Swal.fire({
             title: "Gagal!",
-            html: `Tambah pasien gagal: ${response.message}`,
+            html: `Ubah pasien gagal: ${response.message}`,
             icon: "error",
             confirmButtonColor: "#008ecc",
             confirmButtonText: "Coba lagi",
@@ -828,8 +836,9 @@ const Data = ({ match }) => {
     setSelectSubdistrict([]);
     setSelectWard([]);
 
-    setSelectInsurance([{ id: Math.random(), tipe_asuransi: "", nomor_asuransi: "", target: { name: "tipe_asuransi" } }]);
-    setSelectAlergi([{ id: Math.random(), nama: "", kategori: "", target: { name: "kategori" } }]);
+    setNewInsurance([{ id: Math.random(), tipe_asuransi: "", nomor_asuransi: "", target: { name: "tipe_asuransi" } }]);
+    // setSelectedAllergy([{ id: Math.random(), nama: "", kategori: "", target: { name: "kategori" } }]);
+    setSelectedAllergy([]);
 
     setDataStatus("add");
     onLoadProvinsi();
@@ -838,7 +847,7 @@ const Data = ({ match }) => {
   const getPatient = async (params) => {
     try {
       const res = await patientAPI.get("", params);
-      console.log(res);
+      // console.log(res.data.data);
       dispatch({type: "GET_PATIENT", payload: res.data.data});
       dispatch({type: "GET_TOTAL_PAGE_PATIENT", payload: res.data.pagination.totalPage});
     } catch (e) {
@@ -852,8 +861,8 @@ const Data = ({ match }) => {
     setDataStatus("update");
 
     try {
-      const res = await patientAPI.get("", id);
-      let data = res.data.data.result[0];
+      const res = await patientAPI.get("", `/${id}`);
+      let data = res.data.data[0];
 
       // console.log(data);
 
@@ -879,7 +888,7 @@ const Data = ({ match }) => {
         kelurahan: data.kelurahan,
       });
 
-      console.log(patient);
+      // console.log(patient);
 
       setSelectedMaritalStatus({spesialis: data.status_menikah ? e.value : ''});
       setSelectedReligion({agama: data.agama ? e.value : ''});
@@ -909,7 +918,7 @@ const Data = ({ match }) => {
       console.log(e);
     }
 
-    console.log(dataStatus);
+    // console.log(dataStatus);
   };
 
   const [currentPage, setCurrentPage] = useState(1);
@@ -942,12 +951,12 @@ const Data = ({ match }) => {
       changeKelurahan(id_kecamatan, editAddress);
     }
 
-    if(setSelectInsurance.length > 0 && processPatient === 1) {
+    if(newInsurance.length > 0 && processPatient === 1) {
       onInsuranceSubmit();
     }
 
-    if(setSelectedAllergy.length > 0 && processPatient === 2) {
-      onAllergySubmit();
+    if(selectedAllergy.length > 0 && processPatient === 2) {
+      // onAllergySubmit();
     }
 
   }, [limit, search, sortBy, sortOrder, currentPage, editAddress, processPatient]);
@@ -1003,7 +1012,7 @@ const Data = ({ match }) => {
                   </tr>
                 </thead>
                 <tbody>
-                  {/* {patientAll ? (
+                  {patientAll ? (
                     patientAll.map((data) => (
                       <tr key={data.id}>
                         <th scope="row" style={{ textAlign: "center", verticalAlign: 'middle' }}>
@@ -1011,12 +1020,14 @@ const Data = ({ match }) => {
                         </th>
                         <td>
                           <h6 style={{ fontWeight: 'bold' }}>{data.nama_lengkap}</h6>
-                          {data.jenis_kelamin}, Umur<br/>
-                          {data.tipe_kitas}, {data.nomor_hp}
+                          {/* {data.jenis_kelamin.substring(0,1)}, {data.tanggal_lahir}<br/> */}
+                          {data.jenis_kelamin.substring(0,1)}, {new Date().getFullYear() - data.tanggal_lahir.substring(6,10)} tahun<br/>
+                          {data.tipe_kitas} {data.nomor_kitas}<br/>
+                          {/* {data.nomor_hp} */}
                         </td>
                         <td style={{ textAlign: "center", verticalAlign: 'middle' }}>
                           <Button color="secondary" size="xs" className="button-xs"
-                            // onClick={(e) => getEmployeeById(e, data.id)}
+                            onClick={(e) => getPatientById(e, data.id)}
                             >
                             <i className="simple-icon-note"></i>
                           </Button>
@@ -1041,65 +1052,7 @@ const Data = ({ match }) => {
                         <p>Loading data</p>
                       </td>
                     </tr>
-                  )} */}
-                  <tr>
-                      <th scope="row" style={{ textAlign: "center", verticalAlign: 'middle' }}>
-                        1
-                      </th>
-                      <td>
-                        <h6 style={{ fontWeight: 'bold' }}>Pasien A</h6>
-                        Jenis Kelamin, Umur<br/>
-                        Tipe KITAS, Nomor KITAS
-                      </td>
-                      <td style={{ textAlign: "center", verticalAlign: 'middle' }}>
-                        <Button color="secondary" size="xs" className="button-xs"
-                          // onClick={(e) => getEmployeeById(e, data.id)}
-                          >
-                          <i className="simple-icon-note"></i>
-                        </Button>
-                        {' '}
-                        <Button color="warning" size="xs" className="button-xs"
-                          // onClick={}
-                          >
-                          <i className="simple-icon-drawer"></i>
-                        </Button>
-                        {' '}
-                        <Button color="danger" size="xs" className="button-xs"
-                          // onClick={}
-                          >
-                          <i className="simple-icon-trash"></i>
-                        </Button>
-                      </td>
-                    </tr>
-                  <tr>
-                      <th scope="row" style={{ textAlign: "center", verticalAlign: 'middle' }}>
-                        2
-                      </th>
-                      <td>
-                        <h6 style={{ fontWeight: 'bold' }}>Pasien B</h6>
-                        Jenis Kelamin, Umur<br/>
-                        Tipe KITAS, Nomor KITAS
-                      </td>
-                      <td style={{ textAlign: "center", verticalAlign: 'middle' }}>
-                        <Button color="secondary" size="xs" className="button-xs"
-                          // onClick={(e) => getEmployeeById(e, data.id)}
-                          >
-                          <i className="simple-icon-note"></i>
-                        </Button>
-                        {' '}
-                        <Button color="warning" size="xs" className="button-xs"
-                          // onClick={}
-                          >
-                          <i className="simple-icon-drawer"></i>
-                        </Button>
-                        {' '}
-                        <Button color="danger" size="xs" className="button-xs"
-                          // onClick={}
-                          >
-                          <i className="simple-icon-trash"></i>
-                        </Button>
-                      </td>
-                    </tr>
+                  )}
                 </tbody>
               </Table>
               <Pagination
@@ -1280,6 +1233,7 @@ const Data = ({ match }) => {
                         name="kode_pos"
                         id="kode_pos"
                         placeholder="Kode Pos"
+                        pattern="[0-9]*"
                         value={patient.kode_pos}
                         onChange={onChange}
                       />
@@ -1380,7 +1334,7 @@ const Data = ({ match }) => {
                     </FormGroup>
                   </Colxx>
 
-                  <Colxx sm={6}>
+                  <Colxx sm={4}>
                     <FormGroup>
                       <Label for="pekerjaan">Pekerjaan</Label>
                       <Select
@@ -1395,7 +1349,7 @@ const Data = ({ match }) => {
                     </FormGroup>
                   </Colxx>
 
-                  <Colxx sm={3}>
+                  <Colxx sm={4}>
                     <FormGroup>
                       <Label for="statusMenikah">Status Menikah</Label>
                       <Select
@@ -1410,7 +1364,7 @@ const Data = ({ match }) => {
                     </FormGroup>
                   </Colxx>
 
-                  <Colxx sm={3}>
+                  <Colxx sm={4}>
                     <FormGroup>
                       <Label for="golongan_darah">
                         Golongan Darah
@@ -1434,7 +1388,24 @@ const Data = ({ match }) => {
                     </FormGroup>
                   </Colxx>
 
-                  <Colxx sm={6}>
+                  <Colxx sm={12}>
+                    <FormGroup>
+                      <Label>Alergi</Label>
+                      <Select
+                        components={{ Input: CustomSelectInput }}
+                        className="react-select"
+                        classNamePrefix="react-select"
+                        isMulti
+                        name="alergi"
+                        id="alergi"
+                        value={selectAllergy.filter(item => selectedAllergy.includes(item.value)) || ''}
+                        options={selectAllergy}
+                        onChange={onChange}
+                      />
+                    </FormGroup>
+                  </Colxx>
+
+                  <Colxx sm={12}>
                     <FormGroup>
                       <Label style={{ lineHeight: '3' }}>Asuransi</Label>
                       <Button
@@ -1448,7 +1419,7 @@ const Data = ({ match }) => {
                       {selectInsurance.map((input, index) => {
                         return (
                           <InputGroup
-                            key={input.id}
+                            key={index}
                             className="input-group-insurance"
                           >
                             <Select
@@ -1491,7 +1462,7 @@ const Data = ({ match }) => {
                     </FormGroup>
                   </Colxx>
 
-                  <Colxx sm={6}>
+                  {/* <Colxx sm={6}>
                     <FormGroup>
                       <Label style={{ lineHeight: '3' }}>Alergi</Label>
                       <Button
@@ -1546,7 +1517,7 @@ const Data = ({ match }) => {
                         );
                       })}
                     </FormGroup>
-                  </Colxx>
+                  </Colxx> */}
                 </FormGroup>
 
                 <Row>

@@ -1,6 +1,6 @@
 const patient = (state = [], action) => {
     switch (action.type) {
-        case "READ_PATIENT":
+        case "GET_PATIENT":
             return action.payload;
             break;
         default:

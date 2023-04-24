@@ -12,7 +12,7 @@ const patient = {
     return baseApi.post(url, payloads, { headers: getOriginHeader() })
   },
   update: (payloads, id) => {
-    const url = api.patient + id
+    const url = api.patient + `/${id}`
     return baseApi.put(url, payloads, { headers: getOriginHeader() })
   },
 }

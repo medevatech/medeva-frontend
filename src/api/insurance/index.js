@@ -3,8 +3,8 @@ import { getAuthHeader, getOriginHeader, serializeQueryParams, getJSONHeader } f
 import baseApi from 'service/api-general'
 
 const insurance = {
-  get: (payloads) => {
-    const url = api.insurance.all
+  get: (payloads, options) => {
+    const url = api.insurance.all + options
     return baseApi.get(url, payloads, { headers: getOriginHeader() })
   },
   add: (payloads) => {

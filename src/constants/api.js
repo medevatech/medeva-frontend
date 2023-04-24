@@ -6,7 +6,7 @@ const api = {
     updatePassword: '/karyawan/password'
   },
   employee: {
-    all: '/karyawan/',
+    all: '/karyawan',
     updatePhoto: '/karyawan/photo',
     updatePassword: '/karyawan/password'
   },
