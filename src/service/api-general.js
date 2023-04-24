@@ -3,7 +3,8 @@ import axios from "axios";
 
 const baseApi = axios.create({
   // baseURL: process.env.REACT_APP_BASE_PATHV1,
-  baseURL: `https://medv.vercel.app/api/v1`,
+  // baseURL: `https://medv.vercel.app/api/v1`,
+  baseURL: `http://localhost:8000/api/v1`,
   // baseURL: `${process.env.REACT_APP_BASE_PATHV1}`,
   headers: {
     // common: {

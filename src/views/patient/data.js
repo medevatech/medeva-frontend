@@ -171,7 +171,7 @@ const Data = ({ match }) => {
   const [selectedWard, setSelectedWard] = useState([]);
 
   const [currentPage, setCurrentPage] = useState(1);
-  const [totalPage, setTotalPage] = useState(3);
+  const [totalPage, setTotalPage] = useState("");
 
   const [asuransi, setAsuransi] = useState([
     { id: Math.random(), tipeAsuransi: "", noAsuransi: "" },
@@ -206,7 +206,9 @@ const Data = ({ match }) => {
     try {
       const res = await axios.get(url);
       setPatientData(res.data.data);
+      setTotalPage(res.data.pagination.totalPage);
       console.log("Get patient", res.data.data);
+      // console.log("JJ", res.data);
     } catch (err) {
       console.log(err);
     }
@@ -233,6 +235,9 @@ const Data = ({ match }) => {
   if (currentPage !== 1) {
     startNumber = (currentPage - 1) * 5 + 1;
   }
+
+  console.log(currentPage);
+  console.log("bob", totalPage);
 
   return (
     <>

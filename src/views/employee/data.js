@@ -70,7 +70,7 @@ const Data = ({ match, history, loading, error }) => {
   const [selectWard, setSelectWard] = useState([]);
 
   const [currentPage, setCurrentPage] = useState(1);
-  const [totalPage, setTotalPage] = useState(3);
+  const [totalPage, setTotalPage] = useState("");
 
   const [username, setUsername] = useState("medeva1");
   const [nama, setNama] = useState("Medeva Tech");
@@ -105,7 +105,7 @@ const Data = ({ match, history, loading, error }) => {
   const [employeeData, setEmployeeData] = useState([]);
 
   // const [page, setPage] = useState("1");
-  const [limit, setLimit] = useState("5");
+  const [limit, setLimit] = useState("10");
   const [sortBy, setSortBy] = useState("nama");
   const [sortOrder, setSortOrder] = useState("desc");
   const [search, setSearch] = useState("");
@@ -387,8 +387,9 @@ const Data = ({ match, history, loading, error }) => {
   const getEmployee = async (url) => {
     try {
       const res = await axios.get(url);
-      setEmployeeData(res.data.data.result);
-      console.log("Get employee", res.data.data.result);
+      setEmployeeData(res.data.data);
+      setTotalPage(res.data.pagination.totalPage);
+      console.log("Get employee", res.data.data);
     } catch (err) {
       console.log(err);
     }
@@ -396,10 +397,10 @@ const Data = ({ match, history, loading, error }) => {
 
   useEffect(() => {
     let url = `https://medv.vercel.app/api/v1/karyawan`;
-    if (limit !== "5") {
+    if (limit !== "10") {
       url = `${url}?limit=${limit}`;
     } else {
-      url = `${url}?limit=5`;
+      url = `${url}?limit=10`;
     }
     if (search !== "") {
       url = `${url}&searchName=${search}`;
@@ -413,7 +414,7 @@ const Data = ({ match, history, loading, error }) => {
   let startNumber = 1;
 
   if (currentPage !== 1) {
-    startNumber = (currentPage - 1) * 5 + 1;
+    startNumber = (currentPage - 1) * 10 + 1;
   }
 
   return (

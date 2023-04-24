@@ -1,11 +1,11 @@
-import React from 'react';
-import { Nav, NavItem, NavLink } from 'reactstrap';
-import { Colxx } from 'components/common/CustomBootstrap';
+import React from "react";
+import { Nav, NavItem, NavLink } from "reactstrap";
+import { Colxx } from "components/common/CustomBootstrap";
 
 const Pagination = ({
   totalPage = 0,
   currentPage = 1,
-  numberLimit = 5,
+  numberLimit = 3,
   lastIsActive = true,
   firstIsActive = true,
   onChangePage,
@@ -16,12 +16,12 @@ const Pagination = ({
   if (numberLimit > totalPage) {
     startPoint = 1;
     endPoint = totalPage;
-  } else if (currentPage <= parseInt(numberLimit / 2, 10)) {
+  } else if (currentPage <= parseInt(numberLimit / 2)) {
     startPoint = 1;
     endPoint = numberLimit;
-  } else if (currentPage + parseInt(numberLimit / 2, 10) <= totalPage) {
-    startPoint = currentPage - parseInt(numberLimit / 2, 10);
-    endPoint = currentPage + parseInt(numberLimit / 2, 10);
+  } else if (currentPage + parseInt(numberLimit / 2) <= totalPage) {
+    startPoint = currentPage - parseInt(numberLimit / 2);
+    endPoint = currentPage + parseInt(numberLimit / 2);
   } else {
     startPoint = totalPage - (numberLimit - 1);
     endPoint = totalPage;
@@ -32,10 +32,10 @@ const Pagination = ({
     points.push(i);
   }
 
-  const firstPageButtonClassName = currentPage <= 1 ? 'disabled' : '';
-  const lastPageButtonClassName = currentPage >= totalPage ? 'disabled' : '';
-  const prevPageButtonClassName = currentPage <= 1 ? 'disabled' : '';
-  const nextPageButtonClassName = currentPage >= totalPage ? 'disabled' : '';
+  const firstPageButtonClassName = currentPage <= 1 ? "disabled" : "";
+  const lastPageButtonClassName = currentPage >= totalPage ? "disabled" : "";
+  const prevPageButtonClassName = currentPage <= 1 ? "disabled" : "";
+  const nextPageButtonClassName = currentPage >= totalPage ? "disabled" : "";
   return totalPage > 1 ? (
     <Colxx xxs="12" className="mt-3 mb-3">
       <Nav className="pagination justify-content-center">
@@ -62,7 +62,7 @@ const Pagination = ({
           return (
             <NavItem
               key={i}
-              className={`page-item ${currentPage === i && 'active'}`}
+              className={`page-item ${currentPage === i && "active"}`}
             >
               <NavLink
                 className="page-link c-pointer"
