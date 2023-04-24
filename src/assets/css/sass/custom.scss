@@ -101,6 +101,10 @@ label {
     font-size: 1.75em;
 }
 
+.modal-backdrop.show {
+    // opacity: 0.2;
+}
+
 @media (max-width: 768px) {
     .schedule-row-col-1 {
         display: none;

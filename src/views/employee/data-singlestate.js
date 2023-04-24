@@ -7,6 +7,10 @@ import {
   CardTitle,
   InputGroup,
   InputGroupAddon,
+  Modal,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
   FormGroup,
   Label,
   CustomInput,
@@ -21,6 +25,7 @@ import "rc-switch/assets/index.css";
 import "rc-slider/assets/index.css";
 import "react-rater/lib/react-rater.css";
 
+import moment from "moment";
 import Select from "react-select";
 import { Colxx, Separator } from "components/common/CustomBootstrap";
 import Pagination from "components/common/Pagination";
@@ -141,6 +146,9 @@ const Data = ({ match, history, loading, error }) => {
   const [selectWard, setSelectWard] = useState([]);
 
   const [disabledSpecialist, setDisabledSpecialist] = useState(true);
+  const [fieldColumn, setFieldColumn] = useState({ username: 4, email: 4 });
+  const [openPassword, setOpenPassword] = useState('block');
+  const [modalPassword, setModalPassword] = useState(false);
   const [employeeID, setEmployeeID] = useState('');
 
   const [employee, setEmployee] = useState({
@@ -287,7 +295,7 @@ const Data = ({ match, history, loading, error }) => {
   };
 
   const onChange = (e) => {
-    console.log('e', e);
+    // console.log('e', e);
 
     if (e.length > 0 && e[0].name === "peran") {
       for (var i = 0; i < e.length; i++) {
@@ -417,6 +425,10 @@ const Data = ({ match, history, loading, error }) => {
         //       return { ...current, status_menikah: 'Belum Menikah' }
         //     })
         //   }
+        } else if (e.target.name && e.target.name === 'password_update') {
+          setEmployeePassword(current => {
+              return { ...current, password: e.target.value }
+          })
         } else if (e.target.name && e.target.name !== 'jenis_kelamin') {
           setEmployee(current => {
               return { ...current, [e.target.name]: e.target.value }
@@ -427,7 +439,7 @@ const Data = ({ match, history, loading, error }) => {
       }
     }
 
-    console.log('employee', employee);
+    // console.log('employee', employee);
   }
 
   const onEmployeeSubmit = async (e) => {
@@ -567,6 +579,8 @@ const Data = ({ match, history, loading, error }) => {
     setSelectWard([]);
 
     setDisabledSpecialist(true);
+    setFieldColumn({ username: 4, email: 4 });
+    setOpenPassword('block');
 
     setDataStatus("add");
     onLoadProvinsi();
@@ -586,10 +600,12 @@ const Data = ({ match, history, loading, error }) => {
     e.preventDefault();
     resetForm(e);
     setDataStatus("update");
+    setFieldColumn({ username: 6, email: 6 });
+    setOpenPassword('none');
 
     try {
       const res = await employeeAPI.get("", `/${id}`);
-      let data = res.data.data;
+      let data = res.data.data[0];
 
       // console.log(data);
 
@@ -610,10 +626,14 @@ const Data = ({ match, history, loading, error }) => {
         nomor_kitas: data.nomor_kitas,
         tipe_izin: data.tipe_izin,
         nomor_izin: data.nomor_izin,
-        kadaluarsa_izin: data.kadaluarsa_izin.substring(0, 10),
+        // kadaluarsa_izin: data.kadaluarsa_izin.substring(0, 10),
+        // kadaluarsa_izin: moment(data.kadaluarsa_izin).format("yyyy MM dd"),
+        kadaluarsa_izin: data.kadaluarsa_izin,
         nomor_hp: data.nomor_hp,
         tempat_lahir: data.tempat_lahir,
-        tanggal_lahir: data.tanggal_lahir.substring(0, 10),
+        // tanggal_lahir: data.tanggal_lahir.substring(0, 10),
+        // tanggal_lahir: moment(data.tanggal_lahir).format("yyyy MM dd"),
+        tanggal_lahir: data.tanggal_lahir,
         alamat: data.alamat,
         kode_pos: data.kode_pos,
         provinsi: data.provinsi,
@@ -708,7 +728,87 @@ const Data = ({ match, history, loading, error }) => {
       console.log(e);
     }
 
-    console.log(dataStatus);
+    // console.log(dataStatus);
+  };
+
+  const [employeePassword, setEmployeePassword] = useState({
+    // id: employeeID,
+    password: ''
+  });
+
+  const [employeeUsername, setEmployeeUsername] = useState('');
+
+  const changePasswordById = async (e, id) => {
+    e.preventDefault();
+    resetForm(e);
+    setDataStatus("update");
+    setFieldColumn({ username: 6, email: 6 });
+    setOpenPassword('none');
+    setModalPassword(true);
+
+    try {
+      const res = await employeeAPI.get("", `/${id}`);
+      let data = res.data.data[0];
+
+      // console.log(data);
+
+      setEmployeeID(data.id);
+      setEmployeeUsername(data.username);
+      setEmployeePassword({ password: '' });
+    } catch (e) {
+      console.log(e);
+    }
+
+    // console.log(dataStatus);
+  };
+
+  const onChangePasswordSubmit = async (e) => {
+    e.preventDefault();
+
+    if (dataStatus === 'update') {
+      try {
+        const response = await employeeAPI.updatePassword(employeePassword, employeeID);
+        // console.log(response);
+  
+        if (response.status == 200) {
+          let data = await response.data.data;
+          // console.log(data);
+  
+          Swal.fire({
+            title: "Sukses!",
+            html: `Ubah password karyawan sukses`,
+            icon: "success",
+            confirmButtonColor: "#008ecc",
+          });
+  
+          resetForm(e);
+          setModalPassword(false);
+          setEmployeePassword({ password: '' });
+        } else {
+          Swal.fire({
+            title: "Gagal!",
+            html: `Ubah password karyawan gagal: ${response.message}`,
+            icon: "error",
+            confirmButtonColor: "#008ecc",
+            confirmButtonText: "Coba lagi",
+          });
+  
+          throw Error(`Error status: ${response.statusCode}`);
+        }
+      } catch (e) {
+        Swal.fire({
+          title: "Gagal!",
+          html: e,
+          icon: "error",
+          confirmButtonColor: "#008ecc",
+          confirmButtonText: "Coba lagi",
+        });
+  
+        console.log(e);
+      }
+    } else {
+      console.log('dataStatus wrong')
+    }
   };
 
   const [currentPage, setCurrentPage] = useState(1);
@@ -887,7 +987,7 @@ const Data = ({ match, history, loading, error }) => {
                   <tr>
                     <th style={{ textAlign: "center", verticalAlign: 'middle' }}>#</th>
                     <th>Karyawan / Tenaga Kesehatan</th>
-                    <th style={{ textAlign: "center", width: '150px' }}>Aksi</th>
+                    <th style={{ textAlign: "center", width: '200px' }}>Aksi</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -906,6 +1006,12 @@ const Data = ({ match, history, loading, error }) => {
                             onClick={(e) => getEmployeeById(e, data.id)}
                             >
                             <i className="simple-icon-note"></i>
+                          </Button>
+                          {' '}
+                          <Button color="light" size="xs" className="button-xs"
+                            onClick={(e) => changePasswordById(e, data.id)}
+                            >
+                            <i className="simple-icon-lock"></i>
                           </Button>
                           {' '}
                           <Button color="warning" size="xs" className="button-xs"
@@ -945,7 +1051,7 @@ const Data = ({ match, history, loading, error }) => {
               <CardTitle>Form Manajemen Karyawan & Tenaga Kesehatan</CardTitle>
               <Form>
                 <FormGroup row>
-                  <Colxx sm={4}>
+                  <Colxx sm={fieldColumn.username}>
                     <FormGroup>
                       <Label for="username">
                         Username
@@ -969,7 +1075,7 @@ const Data = ({ match, history, loading, error }) => {
                     </FormGroup>
                   </Colxx>
 
-                  <Colxx sm={4}>
+                  <Colxx sm={fieldColumn.email}>
                     <FormGroup>
                       <Label for="email">Email</Label>
                       <Input
@@ -983,7 +1089,7 @@ const Data = ({ match, history, loading, error }) => {
                     </FormGroup>
                   </Colxx>
 
-                  <Colxx sm={4}>
+                  <Colxx sm={4} style={{ display: openPassword }}>
                     <FormGroup>
                       <Label for="password">
                         Password
@@ -998,7 +1104,6 @@ const Data = ({ match, history, loading, error }) => {
                       <Input
                         type="password"
                         name="password"
-                        id="password"
                         placeholder="Password"
                         value={employee.password}
                         onChange={onChange}
@@ -1454,6 +1559,50 @@ const Data = ({ match, history, loading, error }) => {
             </CardBody>
           </Card>
         </Colxx>
+        
+        <Modal
+          isOpen={modalPassword}
+          toggle={() => setModalPassword(!modalPassword)}
+        >
+          <ModalHeader>
+            Ubah Password {employeeUsername}
+          </ModalHeader>
+          <ModalBody>
+            <Label for="password">
+              Password
+              <span
+                className="required text-danger"
+                aria-required="true"
+              >
+                {" "}
+                *
+              </span>
+            </Label>
+            <Input
+              type="password"
+              name="password_update"
+              placeholder="Password"
+              value={employeePassword.password}
+              onChange={onChange}
+            />
+          </ModalBody>
+          <ModalFooter>
+            <Button
+              type="button"
+              outline
+              color="danger"
+              onClick={() => setModalPassword(false)}
+            >
+              Batal
+            </Button>
+            <Button
+              color="primary"
+              onClick={(e) => onChangePasswordSubmit(e)}
+            >
+              Simpan
+            </Button>{' '}
+          </ModalFooter>
+        </Modal>
       </Row>
     </>
   );
