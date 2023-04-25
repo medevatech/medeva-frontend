@@ -12,7 +12,7 @@ const employee = {
     return baseApi.post(url, payloads, { headers: getOriginHeader() })
   },
   update: (payloads, id) => {
-    const url = api.employee.all + `/update/${id}`
+    const url = api.employee.all + `/${id}`
     return baseApi.put(url, payloads, { headers: getOriginHeader() })
   },
   uploadPhoto: (payloads) => {

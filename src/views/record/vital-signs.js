@@ -62,6 +62,8 @@ const VitalSigns = ({ match }) => {
   const [selectedDivision, setSelectedDivision] = useState('');
   const [selectedAwareness, setSelectedAwareness] = useState('');
 
+  const [startDateTime, setStartDateTime] = useState(new Date());
+
   const [patientID, setPatientID] = useState('');
   const [vitalSignsID, setVitalSignsID] = useState('');
 
@@ -86,7 +88,7 @@ const VitalSigns = ({ match }) => {
 
     if (e.name === 'kesadaran') {
       setVitalSigns(current => {
-          return { ...current, 'kesadaran': e.value }
+          return { ...current, kesadaran: e.value }
       })
 
       setSelectedAwareness(e);
@@ -102,7 +104,7 @@ const VitalSigns = ({ match }) => {
   const onVitalSignsSubmit = async (e) => {
     e.preventDefault();
 
-    console.log(vitalSigns);
+    // console.log(vitalSigns);
     if(dataStatus === 'add') {
       try {
         const response = await vitalSignsAPI.add(vitalSigns);
@@ -294,8 +296,6 @@ const VitalSigns = ({ match }) => {
   const [sortOrder, setSortOrder] = useState("");
   const [search, setSearch] = useState("");
 
-  const [startDateTime, setStartDateTime] = useState(new Date());
-
   return (
     <>
       <Row>
@@ -357,68 +357,68 @@ const VitalSigns = ({ match }) => {
                 <Table>
                   <thead>
                     <tr>
-                    <th style={{ textAlign: "center", verticalAlign: 'middle' }}>#</th>
+                    <th className="center-xy">#</th>
                       <th colSpan={2}>Antrian</th>
                     <th style={{ textAlign: "center", width: '150px' }}>Aksi</th>
                     </tr>
                   </thead>
                   <tbody>
                     <tr>
-                      <th scope="row" style={{textAlign: 'center', verticalAlign: 'middle'}}>1</th>
-                      <td style={{ textAlign: "center", verticalAlign: 'middle' }}>
+                      <th scope="row" className="center-xy">1</th>
+                      <td className="icon-column">
                         <i className="simple-icon-magnifier queue-icon"></i><br/>
-                        0001
+                        <span className="queue-text">0001</span>
                       </td>
                       <td>
                         <h6 style={{ fontWeight: 'bold' }}>Otto</h6>
-                        Laki-laki, 32
+                        Laki-laki, 32 Tahun
                       </td>
                       <td style={{ textAlign: "center", verticalAlign: 'middle' }}>
-                        <Button color="secondary" size="xs">
+                        <Button color="secondary" size="xs" className="button-xs">
                           <i className="simple-icon-note"></i>
                         </Button>
                         {' '}
-                        <Button color="warning" size="xs">
+                        <Button color="warning" size="xs" className="button-xs">
                           <i className="simple-icon-drawer"></i>
                         </Button>
                       </td>
                     </tr>
                     <tr>
-                      <th scope="row" style={{textAlign: 'center', verticalAlign: 'middle'}}>2</th>
-                      <td style={{ textAlign: "center", verticalAlign: 'middle' }}>
+                      <th scope="row" className="center-xy">2</th>
+                      <td className="icon-column">
                         <i className="simple-icon-magnifier queue-icon"></i><br/>
-                        0002
+                        <span className="queue-text">0002</span>
                       </td>
                       <td>
                         <h6 style={{ fontWeight: 'bold' }}>Jacob</h6>
-                        Laki-laki, 26
+                        Laki-laki, 26 Tahun
                       </td>
                       <td style={{ textAlign: "center", verticalAlign: 'middle' }}>
-                        <Button color="secondary" size="xs">
+                        <Button color="secondary" size="xs" className="button-xs">
                           <i className="simple-icon-note"></i>
                         </Button>
                         {' '}
-                        <Button color="warning" size="xs">
+                        <Button color="warning" size="xs" className="button-xs">
                           <i className="simple-icon-drawer"></i>
                         </Button>
                       </td>
                     </tr>
                     <tr>
-                      <th scope="row" style={{textAlign: 'center', verticalAlign: 'middle'}}>3</th>
-                      <td style={{ textAlign: "center", verticalAlign: 'middle' }}>
+                      <th scope="row" className="center-xy">3</th>
+                      <td className="icon-column">
                         <i className="simple-icon-magnifier queue-icon"></i><br/>
-                        0003
+                        <span className="queue-text">0003</span>
                       </td>
                       <td>
                         <h6 style={{ fontWeight: 'bold' }}>Larry</h6>
-                        Laki-laki, 57
+                        Laki-laki, 57 Tahun
                       </td>
                       <td style={{ textAlign: "center", verticalAlign: 'middle' }}>
-                        <Button color="secondary" size="xs">
+                        <Button color="secondary" size="xs" className="button-xs">
                           <i className="simple-icon-note"></i>
                         </Button>
                         {' '}
-                        <Button color="warning" size="xs">
+                        <Button color="warning" size="xs" className="button-xs">
                           <i className="simple-icon-drawer"></i>
                         </Button>
                       </td>
@@ -441,7 +441,7 @@ const VitalSigns = ({ match }) => {
                 </CardTitle>
                 <Form>
                   <FormGroup row>
-                    <Colxx sm={6}>
+                    <Colxx sm={12}>
                       <FormGroup>
                         <Label for="tanggalRekam">
                           Tanggal / Waktu
@@ -462,7 +462,7 @@ const VitalSigns = ({ match }) => {
                       </FormGroup>
                     </Colxx>
 
-                    <Colxx sm={6}>
+                    {/* <Colxx sm={6}>
                       <FormGroup>
                         <Label for="noAntrian">
                           No. Antrian
@@ -475,7 +475,7 @@ const VitalSigns = ({ match }) => {
                           disabled={true}
                         />
                       </FormGroup>
-                    </Colxx>
+                    </Colxx> */}
 
                     <Colxx sm={6}>
                       <FormGroup>
@@ -676,7 +676,7 @@ const VitalSigns = ({ match }) => {
                             value={vitalSigns.respiratory_rate}
                             onChange={onChange}
                           />
-                          <InputGroupAddon addonType="append">/menit</InputGroupAddon>
+                          <InputGroupAddon addonType="append">/ menit</InputGroupAddon>
                         </InputGroup>
                       </FormGroup>
                     </Colxx>
