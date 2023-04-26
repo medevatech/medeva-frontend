@@ -32,12 +32,14 @@ import Pagination from "components/common/Pagination";
 import CustomSelectInput from "components/common/CustomSelectInput";
 
 import patientAPI from "api/patient";
+import insuranceAPI from "api/insurance";
+import patientAllergyAPI from "api/patient-allergy";
 import Swal from "sweetalert2";
 
 const selectKITAS = [
-  { label: "KTP", value: "KTP", key: 0 },
-  { label: "SIM", value: "SIM", key: 1 },
-  { label: "Paspor", value: "PASPOR", key: 2 },
+  { label: "KTP", value: "KTP", key: 0, name: 'tipe_kitas' },
+  { label: "SIM", value: "SIM", key: 1, name: 'tipe_kitas' },
+  { label: "Paspor", value: "PASPOR", key: 2, name: 'tipe_kitas' },
 ];
 
 const selectInsurance = [
@@ -54,126 +56,126 @@ const selectAllergy = [
 ];
 
 const selectNationality = [
-  { label: "WNI", value: "WNI", key: 0 },
-  { label: "WNA", value: "WNA", key: 1 },
+  { label: "WNI", value: "WNI", key: 0, name: 'kewarganegaraan' },
+  { label: "WNA", value: "WNA", key: 1, name: 'kewarganegaraan' },
 ];
 
 const selectMaritalStatus = [
-  { label: "Kawin", value: "Kawin", key: 0 },
-  { label: "Belum Kawin", value: "Belum Kawin", key: 1 },
-  { label: "Cerai Hidup", value: "Cerai Hidup", key: 2 },
-  { label: "Cerai Mati", value: "Cerai Mati", key: 3 },
+  { label: "Belum Kawin", value: "Belum Kawin", key: 0, name: 'status_menikah' },
+  { label: "Kawin", value: "Kawin", key: 1, name: 'status_menikah' },
+  { label: "Cerai Hidup", value: "Cerai Hidup", key: 2, name: 'status_menikah' },
+  { label: "Cerai Mati", value: "Cerai Mati", key: 3, name: 'status_menikah' },
 ];
 
 const selectReligion = [
-  { label: "Islam", value: "Islam", key: 0 },
-  { label: "Protestan", value: "Protestan", key: 1 },
-  { label: "Katolik", value: "Katolik", key: 2 },
-  { label: "Hindu", value: "Hindu", key: 3 },
-  { label: "Budha", value: "Budha", key: 4 },
+  { label: "Islam", value: "Islam", key: 0, name: 'agama' },
+  { label: "Protestan", value: "Protestan", key: 1, name: 'agama' },
+  { label: "Katolik", value: "Katolik", key: 2, name: 'agama' },
+  { label: "Hindu", value: "Hindu", key: 3, name: 'agama' },
+  { label: "Budha", value: "Budha", key: 4, name: 'agama' },
 ];
 
 const selectEmployment = [
-  { label: "Belum/Tidak Bekerja", value: "Belum/Tidak Bekerja", key: 0 },
-  { label: "Pegawai Negeri Sipil", value: "Pegawai Negeri Sipil", key: 1 },
-  { label: "Tentara Nasional Indonesia", value: "Tentara Nasional Indonesia", key: 2 },
-  { label: "Kepolisian RI", value: "Kepolisian RI", key: 3 },
-  { label: "Karyawan BUMN", value: "Karyawan BUMN", key: 4 },
-  { label: "Karyawan BUMD", value: "Karyawan BUMD", key: 5 },
-  { label: "Anggota DPR-RI", value: "Anggota DPR-RI", key: 6 },
-  { label: "Anggota DPD", value: "Anggota DPD", key: 7 },
-  { label: "Anggota BPK", value: "Anggota BPK", key: 8 },
-  { label: "Presiden", value: "Presiden", key: 9 },
-  { label: "Wakil Presiden", value: "Wakil Presiden", key: 10 },
-  { label: "Anggota MK", value: "Anggota MK", key: 11 },
-  { label: "Anggota Kabinet/Kementerian", value: "Anggota Kabinet/Kementerian", key: 12 },
-  { label: "Duta Besar", value: "Duta Besar", key: 13 },
-  { label: "Gubernur", value: "Gubernur", key: 14 },
-  { label: "Wakil Gubernur", value: "Wakil Gubernur", key: 15 },
-  { label: "Bupati", value: "Bupati", key: 16 },
-  { label: "Wakil Bupati", value: "Wakil Bupati", key: 17 },
-  { label: "Walikota", value: "Walikota", key: 18 },
-  { label: "Wakil Walikota", value: "Wakil Walikota", key: 19 },
-  { label: "Anggota DPRD Provinsi", value: "Anggota DPRD Provinsi", key: 20 },
-  { label: "Anggota DPRD Kabupaten/Kota", value: "Anggota DPRD Kabupaten/Kota", key: 21 },
-  { label: "Pengacara", value: "Pengacara", key: 22 },
-  { label: "Notaris", value: "Notaris", key: 23 },
-  { label: "Peneliti", value: "Peneliti", key: 24 },
-  { label: "Perangkat Desa", value: "Perangkat Desa", key: 25 },
-  { label: "Kepala Desa", value: "Kepala Desa", key: 26 },
-  { label: "Dosen", value: "Dosen", key: 27 },
-  { label: "Guru", value: "Guru", key: 28 },
-  { label: "Perdagangan", value: "Perdagangan", key: 29 },
-  { label: "Industri", value: "Industri", key: 30 },
-  { label: "Konstruksi", value: "Konstruksi", key: 31 },
-  { label: "Transportasi", value: "Transportasi", key: 32 },
-  { label: "Karyawan Swasta", value: "Karyawan Swasta", key: 33 },
-  { label: "Karyawan Honorer", value: "Karyawan Honorer", key: 34 },
-  { label: "Buruh Harian Lepas", value: "Buruh Harian Lepas", key: 35 },
-  { label: "Pembantu Rumah Tangga", value: "Pembantu Rumah Tangga", key: 36 },
-  { label: "Tukang Cukur", value: "Tukang Cukur", key: 37 },
-  { label: "Tukang Listrik", value: "Tukang Listrik", key: 38 },
-  { label: "Tukang Batu", value: "Tukang Batu", key: 39 },
-  { label: "Tukang Kayu", value: "Tukang Kayu", key: 40 },
-  { label: "Tukang Sol Sepatu", value: "Tukang Sol Sepatu", key: 41 },
-  { label: "Tukang Las/Pandai Besi", value: "Tukang Las/Pandai Besi", key: 42 },
-  { label: "Tukang Jahit", value: "Tukang Jahit", key: 43 },
-  { label: "Tukang Gigi", value: "Tukang Gigi", key: 44 },
-  { label: "Penata Rias", value: "Penata Rias", key: 45 },
-  { label: "Penata Busana", value: "Penata Busana", key: 46 },
-  { label: "Penata Rambut", value: "Penata Rambut", key: 47 },
-  { label: "Mekanik", value: "Mekanik", key: 48 },
-  { label: "Seniman", value: "Seniman", key: 49 },
-  { label: "Tabib", value: "Tabib", key: 50 },
-  { label: "Paraji", value: "Paraji", key: 51 },
-  { label: "Perancang Busana", value: "Perancang Busana", key: 52 },
-  { label: "Penterjemah", value: "Penterjemah", key: 53 },
-  { label: "Wartawan", value: "Wartawan", key: 54 },
-  { label: "Juru Masak", value: "Juru Masak", key: 55 },
-  { label: "Promotor Acara", value: "Promotor Acara", key: 56 },
-  { label: "Pilot", value: "Pilot", key: 57 },
-  { label: "Arsitek", value: "Arsitek", key: 58 },
-  { label: "Akuntan", value: "Akuntan", key: 59 },
-  { label: "Konsultan", value: "Konsultan", key: 60 },
-  { label: "Penyiar Televisi", value: "Penyiar Televisi", key: 61 },
-  { label: "Penyiar Radio", value: "Penyiar Radio", key: 62 },
-  { label: "Pelaut", value: "Pelaut", key: 63 },
-  { label: "Sopir", value: "Sopir", key: 64 },
-  { label: "Pialang", value: "Pialang", key: 65 },
-  { label: "Paranormal", value: "Paranormal", key: 66 },
-  { label: "Pedagang", value: "Pedagang", key: 67 },
-  { label: "Wiraswasta", value: "Wiraswasta", key: 68 },
-  { label: "Petani/Pekebun", value: "Petani/Pekebun", key: 69 },
-  { label: "Peternak", value: "Peternak", key: 70 },
-  { label: "Buruh Tani/Perkebunan Swasta", value: "Buruh Tani/Perkebunan Swasta", key: 71 },
-  { label: "Buruh Peternakan", value: "Buruh Peternakan", key: 72 },
-  { label: "Nelayan/Perikanan", value: "Nelayan/Perikanan", key: 73 },
-  { label: "Buruh Nelayan/Perikanan", value: "Buruh Nelayan/Perikanan", key: 74 },
-  { label: "Imam Masjid", value: "Imam Masjid", key: 75 },
-  { label: "Pendeta", value: "Pendeta", key: 76 },
-  { label: "Pastor", value: "Pastor", key: 77 },
-  { label: "Ustadz/Mubaligh", value: "Ustadz/Mubaligh", key: 78 },
-  { label: "Biarawati", value: "Biarawati", key: 79 },
-  { label: "Pelajar/Mahasiswa", value: "Pelajar/Mahasiswa", key: 80 },
-  { label: "Dokter", value: "Dokter", key: 81 },
-  { label: "Bidan", value: "Bidan", key: 82 },
-  { label: "Perawat", value: "Perawat", key: 83 },
-  { label: "Apoteker", value: "Apoteker", key: 84 },
-  { label: "Psikiater/Psikolog", value: "Psikiater/Psikolog", key: 85 },
-  { label: "Pensiunan", value: "Pensiunan", key: 86 },
-  { label: "Mengurus Rumah Tangga", value: "Mengurus Rumah Tangga", key: 87 },
-  { label: "Lainnya", value: "Lainnya", key: 88 },
+  { label: "Belum/Tidak Bekerja", value: "Belum/Tidak Bekerja", key: 0, name: 'pekerjaan' },
+  { label: "Pegawai Negeri Sipil", value: "Pegawai Negeri Sipil", key: 1, name: 'pekerjaan' },
+  { label: "Tentara Nasional Indonesia", value: "Tentara Nasional Indonesia", key: 2, name: 'pekerjaan' },
+  { label: "Kepolisian RI", value: "Kepolisian RI", key: 3, name: 'pekerjaan' },
+  { label: "Karyawan BUMN", value: "Karyawan BUMN", key: 4, name: 'pekerjaan' },
+  { label: "Karyawan BUMD", value: "Karyawan BUMD", key: 5, name: 'pekerjaan' },
+  { label: "Anggota DPR-RI", value: "Anggota DPR-RI", key: 6, name: 'pekerjaan' },
+  { label: "Anggota DPD", value: "Anggota DPD", key: 7, name: 'pekerjaan' },
+  { label: "Anggota BPK", value: "Anggota BPK", key: 8, name: 'pekerjaan' },
+  { label: "Presiden", value: "Presiden", key: 9, name: 'pekerjaan' },
+  { label: "Wakil Presiden", value: "Wakil Presiden", key: 10, name: 'pekerjaan' },
+  { label: "Anggota MK", value: "Anggota MK", key: 11, name: 'pekerjaan' },
+  { label: "Anggota Kabinet/Kementerian", value: "Anggota Kabinet/Kementerian", key: 12, name: 'pekerjaan' },
+  { label: "Duta Besar", value: "Duta Besar", key: 13, name: 'pekerjaan' },
+  { label: "Gubernur", value: "Gubernur", key: 14, name: 'pekerjaan' },
+  { label: "Wakil Gubernur", value: "Wakil Gubernur", key: 15, name: 'pekerjaan' },
+  { label: "Bupati", value: "Bupati", key: 16, name: 'pekerjaan' },
+  { label: "Wakil Bupati", value: "Wakil Bupati", key: 17, name: 'pekerjaan' },
+  { label: "Walikota", value: "Walikota", key: 18, name: 'pekerjaan' },
+  { label: "Wakil Walikota", value: "Wakil Walikota", key: 19, name: 'pekerjaan' },
+  { label: "Anggota DPRD Provinsi", value: "Anggota DPRD Provinsi", key: 20, name: 'pekerjaan'  },
+  { label: "Anggota DPRD Kabupaten/Kota", value: "Anggota DPRD Kabupaten/Kota", key: 21, name: 'pekerjaan'  },
+  { label: "Pengacara", value: "Pengacara", key: 22, name: 'pekerjaan'  },
+  { label: "Notaris", value: "Notaris", key: 23, name: 'pekerjaan'  },
+  { label: "Peneliti", value: "Peneliti", key: 24, name: 'pekerjaan'  },
+  { label: "Perangkat Desa", value: "Perangkat Desa", key: 25, name: 'pekerjaan'  },
+  { label: "Kepala Desa", value: "Kepala Desa", key: 26, name: 'pekerjaan'  },
+  { label: "Dosen", value: "Dosen", key: 27, name: 'pekerjaan'  },
+  { label: "Guru", value: "Guru", key: 28, name: 'pekerjaan'  },
+  { label: "Perdagangan", value: "Perdagangan", key: 29, name: 'pekerjaan'  },
+  { label: "Industri", value: "Industri", key: 30, name: 'pekerjaan'  },
+  { label: "Konstruksi", value: "Konstruksi", key: 31, name: 'pekerjaan'  },
+  { label: "Transportasi", value: "Transportasi", key: 32, name: 'pekerjaan'  },
+  { label: "Karyawan Swasta", value: "Karyawan Swasta", key: 33, name: 'pekerjaan'  },
+  { label: "Karyawan Honorer", value: "Karyawan Honorer", key: 34, name: 'pekerjaan'  },
+  { label: "Buruh Harian Lepas", value: "Buruh Harian Lepas", key: 35, name: 'pekerjaan'  },
+  { label: "Pembantu Rumah Tangga", value: "Pembantu Rumah Tangga", key: 36, name: 'pekerjaan'  },
+  { label: "Tukang Cukur", value: "Tukang Cukur", key: 37, name: 'pekerjaan'  },
+  { label: "Tukang Listrik", value: "Tukang Listrik", key: 38, name: 'pekerjaan'  },
+  { label: "Tukang Batu", value: "Tukang Batu", key: 39, name: 'pekerjaan'  },
+  { label: "Tukang Kayu", value: "Tukang Kayu", key: 40, name: 'pekerjaan'  },
+  { label: "Tukang Sol Sepatu", value: "Tukang Sol Sepatu", key: 41, name: 'pekerjaan'  },
+  { label: "Tukang Las/Pandai Besi", value: "Tukang Las/Pandai Besi", key: 42, name: 'pekerjaan'  },
+  { label: "Tukang Jahit", value: "Tukang Jahit", key: 43, name: 'pekerjaan'  },
+  { label: "Tukang Gigi", value: "Tukang Gigi", key: 44, name: 'pekerjaan'  },
+  { label: "Penata Rias", value: "Penata Rias", key: 45, name: 'pekerjaan'  },
+  { label: "Penata Busana", value: "Penata Busana", key: 46, name: 'pekerjaan'  },
+  { label: "Penata Rambut", value: "Penata Rambut", key: 47, name: 'pekerjaan'  },
+  { label: "Mekanik", value: "Mekanik", key: 48, name: 'pekerjaan'  },
+  { label: "Seniman", value: "Seniman", key: 49, name: 'pekerjaan'  },
+  { label: "Tabib", value: "Tabib", key: 50, name: 'pekerjaan'  },
+  { label: "Paraji", value: "Paraji", key: 51, name: 'pekerjaan'  },
+  { label: "Perancang Busana", value: "Perancang Busana", key: 52, name: 'pekerjaan'  },
+  { label: "Penterjemah", value: "Penterjemah", key: 53, name: 'pekerjaan'  },
+  { label: "Wartawan", value: "Wartawan", key: 54, name: 'pekerjaan'  },
+  { label: "Juru Masak", value: "Juru Masak", key: 55, name: 'pekerjaan'  },
+  { label: "Promotor Acara", value: "Promotor Acara", key: 56, name: 'pekerjaan'  },
+  { label: "Pilot", value: "Pilot", key: 57, name: 'pekerjaan'  },
+  { label: "Arsitek", value: "Arsitek", key: 58, name: 'pekerjaan'  },
+  { label: "Akuntan", value: "Akuntan", key: 59, name: 'pekerjaan'  },
+  { label: "Konsultan", value: "Konsultan", key: 60, name: 'pekerjaan'  },
+  { label: "Penyiar Televisi", value: "Penyiar Televisi", key: 61, name: 'pekerjaan'  },
+  { label: "Penyiar Radio", value: "Penyiar Radio", key: 62, name: 'pekerjaan'  },
+  { label: "Pelaut", value: "Pelaut", key: 63, name: 'pekerjaan'  },
+  { label: "Sopir", value: "Sopir", key: 64, name: 'pekerjaan'  },
+  { label: "Pialang", value: "Pialang", key: 65, name: 'pekerjaan'  },
+  { label: "Paranormal", value: "Paranormal", key: 66, name: 'pekerjaan'  },
+  { label: "Pedagang", value: "Pedagang", key: 67, name: 'pekerjaan'  },
+  { label: "Wiraswasta", value: "Wiraswasta", key: 68, name: 'pekerjaan'  },
+  { label: "Petani/Pekebun", value: "Petani/Pekebun", key: 69, name: 'pekerjaan'  },
+  { label: "Peternak", value: "Peternak", key: 70, name: 'pekerjaan'  },
+  { label: "Buruh Tani/Perkebunan Swasta", value: "Buruh Tani/Perkebunan Swasta", key: 71, name: 'pekerjaan'  },
+  { label: "Buruh Peternakan", value: "Buruh Peternakan", key: 72, name: 'pekerjaan'  },
+  { label: "Nelayan/Perikanan", value: "Nelayan/Perikanan", key: 73, name: 'pekerjaan'  },
+  { label: "Buruh Nelayan/Perikanan", value: "Buruh Nelayan/Perikanan", key: 74, name: 'pekerjaan'  },
+  { label: "Imam Masjid", value: "Imam Masjid", key: 75, name: 'pekerjaan'  },
+  { label: "Pendeta", value: "Pendeta", key: 76, name: 'pekerjaan'  },
+  { label: "Pastor", value: "Pastor", key: 77, name: 'pekerjaan'  },
+  { label: "Ustadz/Mubaligh", value: "Ustadz/Mubaligh", key: 78, name: 'pekerjaan'  },
+  { label: "Biarawati", value: "Biarawati", key: 79, name: 'pekerjaan'  },
+  { label: "Pelajar/Mahasiswa", value: "Pelajar/Mahasiswa", key: 80, name: 'pekerjaan'  },
+  { label: "Dokter", value: "Dokter", key: 81, name: 'pekerjaan'  },
+  { label: "Bidan", value: "Bidan", key: 82, name: 'pekerjaan'  },
+  { label: "Perawat", value: "Perawat", key: 83, name: 'pekerjaan'  },
+  { label: "Apoteker", value: "Apoteker", key: 84, name: 'pekerjaan'  },
+  { label: "Psikiater/Psikolog", value: "Psikiater/Psikolog", key: 85, name: 'pekerjaan'  },
+  { label: "Pensiunan", value: "Pensiunan", key: 86, name: 'pekerjaan'  },
+  { label: "Mengurus Rumah Tangga", value: "Mengurus Rumah Tangga", key: 87, name: 'pekerjaan'  },
+  { label: "Lainnya", value: "Lainnya", key: 88, name: 'pekerjaan'  },
 ];
 
 const selectBlood = [
-  { label: "A-", value: "A-", key: 0 },
-  { label: "A+", value: "A+", key: 1 },
-  { label: "B-", value: "B-", key: 2 },
-  { label: "B+", value: "B+", key: 3 },
-  { label: "AB-", value: "AB-", key: 4 },
-  { label: "AB+", value: "AB+", key: 5 },
-  { label: "O-", value: "O-", key: 6 },
-  { label: "O+", value: "O+", key: 7 },
+  { label: "A-", value: "A-", key: 0, name: 'golongan_darah'  },
+  { label: "A+", value: "A+", key: 1, name: 'golongan_darah'  },
+  { label: "B-", value: "B-", key: 2, name: 'golongan_darah'  },
+  { label: "B+", value: "B+", key: 3, name: 'golongan_darah'  },
+  { label: "AB-", value: "AB-", key: 4, name: 'golongan_darah'  },
+  { label: "AB+", value: "AB+", key: 5, name: 'golongan_darah'  },
+  { label: "O-", value: "O-", key: 6, name: 'golongan_darah'  },
+  { label: "O+", value: "O+", key: 7, name: 'golongan_darah'  },
 ];
 
 var urlProvinsi = "https://ibnux.github.io/data-indonesia/provinsi.json";
@@ -185,68 +187,60 @@ const Data = ({ match }) => {
   const dispatch = useDispatch();
   const patientAll = useSelector(state => state.patient);
   const patientTotalPage = useSelector(state => state.patientTotalPage);
+  const [dataStatus, setDataStatus] = useState("add");
 
-  const [selectedMaritalStatus, setSelectedMaritalStatus] = useState("");
-  const [selectedReligion, setSelectedReligion] = useState("");
-  const [selectedNationality, setSelectedNationality] = useState("");
-  const [selectedEmployment, setSelectedEmployment] = useState("");
-  const [selectedProvince, setSelectedProvince] = useState("");
-  const [selectedCity, setSelectedCity] = useState("");
-  const [selectedSubdistrict, setSelectedSubdistrict] = useState("");
-  const [selectedWard, setSelectedWard] = useState("");
-  const [selectedBlood, setSelectedBlood] = useState("");
   const [selectedKITAS, setSelectedKITAS] = useState("");
+  const [selectedNationality, setSelectedNationality] = useState("");
+  const [selectedReligion, setSelectedReligion] = useState("");
+  const [selectedEmployment, setSelectedEmployment] = useState("");
+  const [selectedBlood, setSelectedBlood] = useState("");
+  const [selectedGender, setSelectedGender] = useState("");
+  const [selectedMaritalStatus, setSelectedMaritalStatus] = useState("");
 
-  const [selectedInsurance, setSelectedInsurance] = useState([{ label: ""}]);
-  const [selectedAllergy, setSelectedAllergy] = useState([{ label: ""}]);
+  const [selectedProvince, setSelectedProvince] = useState([]);
+  const [selectedCity, setSelectedCity] = useState([]);
+  const [selectedSubdistrict, setSelectedSubdistrict] = useState([]);
+  const [selectedWard, setSelectedWard] = useState([]);
 
   const [selectProvince, setSelectProvince] = useState([]);
   const [selectCity, setSelectCity] = useState([]);
   const [selectSubdistrict, setSelectSubdistrict] = useState([]);
   const [selectWard, setSelectWard] = useState([]);
-  
-  const [tipe_kitas, setTipeKITAS] = useState("");
-  const [nomor_kitas, setNomorKITAS] = useState("");
 
-  const [nama_lengkap, setNamaLengkap] = useState("");
-  const [nomor_hp, setNomorHP] = useState("");
-  const [tempat_lahir, setTempatLahir] = useState("");
-  const [tanggal_lahir, setTanggalLahir] = useState("");
-  const [alamat, setAlamat] = useState("");
-  const [kode_pos, setKodePos] = useState("");
-  const [jenis_kelamin, setJenisKelamin] = useState("Laki-laki");
-  
-  const [agama, setAgama] = useState("");
-  const [pekerjaan, setPekerjaan] = useState("");
-  const [golongan_darah, setGolonganDarah] = useState("");
-  const [status_menikah, setStatusMenikah] = useState("");
-  const [provinsi, setProvinsi] = useState("");
-  const [kota, setKota] = useState("");
-  const [kecamatan, setKecamatan] = useState("");
-  const [kelurahan, setKelurahan] = useState("");
+  const [selectedInsurance, setSelectedInsurance] = useState([{ label: ""}]);
+  // const [selectedAllergy, setSelectedAllergy] = useState([{ label: ""}]);
+  const [selectedAllergy, setSelectedAllergy] = useState([]);
 
-  const [currentPage, setCurrentPage] = useState(1);
+  const [patientID, setPatientID] = useState('');
+  const [insuranceID, setInsuranceID] = useState('');
+  const [allergyID, setAllergyID] = useState('');
 
-  const [asuransi, setAsuransi] = useState([
+  const [insurance, setInsurance] = useState({
+    id_pasien: '',
+    tipe_asuransi: '',
+    nomor_asuransi: '',
+  });
+
+  const [newInsurance, setNewInsurance] = useState([
     { id: Math.random(), tipe_asuransi: "", nomor_asuransi: "" }
   ]);
 
   const addInsuranceFields = () => {
     let newfieldInsurance = { id: Math.random(), tipe_asuransi: "", nomor_asuransi: "" };
-    setAsuransi([...asuransi, newfieldInsurance]);
+    setNewInsurance([...newInsurance, newfieldInsurance]);
 
     let newfieldDropdownInsurance = { label: "" };
     setSelectedInsurance([...selectedInsurance, newfieldDropdownInsurance]);
   };
 
   const removeInsuranceFields = (id, index) => {
-    let dataInsurance1 = [...asuransi];
+    let dataInsurance1 = [...newInsurance];
     dataInsurance1.splice(index, 1);
-    setAsuransi(dataInsurance1);
+    setNewInsurance(dataInsurance1);
   };
 
   const handleInsuranceAdd = (index, event) => {
-    let dataInsurance2 = [...asuransi]; let displaySelectInsurance = [...selectedInsurance];
+    let dataInsurance2 = [...newInsurance]; let displaySelectInsurance = [...selectedInsurance];
     if (event.target.name === "tipe_asuransi"){
       dataInsurance2[index][event.target.name] = event.value;
       displaySelectInsurance[index]["label"] = event.value;
@@ -254,109 +248,87 @@ const Data = ({ match }) => {
       dataInsurance2[index][event.target.name] = event.target.value;
     }
 
-    setAsuransi(dataInsurance2);
+    setNewInsurance(dataInsurance2);
     setSelectedInsurance(displaySelectInsurance);
 
-    // console.log("data", asuransi);
+    // console.log("data", selectInsurance);
     // console.log("displaySelectInsurance", selectedInsurance);
   };
 
-  const [alergi, setAlergi] = useState([
-    { id: Math.random(), nama: "", kategori: "" }
-  ]);
+  // const [allergy, setAllergy] = useState({
+  //   id_pasien: '',
+  //   id_alergi: '',
+  //   id_kunjungan_dicatat: '',
+  //   id_kunjungan_dihapus: ''
+  // });
 
-  const addAllergyFields = () => {
-    let newfieldAllergy = { id: Math.random(), nama: "", kategori: "" };
-    setAlergi([...alergi, newfieldAllergy]);
+  // const [selectAllergy, setSelectAlergi] = useState([
+  //   { id: Math.random(), nama: "", kategori: "" }
+  // ]);
 
-    let newfieldDropdownAllergy = { label: "" };
-    setSelectedAllergy([...selectedAllergy, newfieldDropdownAllergy]);
-  };
+  // const addAllergyFields = () => {
+  //   let newfieldAllergy = { id: Math.random(), nama: "", kategori: "" };
+  //   setSelectAlergi([...selectAllergy, newfieldAllergy]);
 
-  const removeAllergyFields = (id, index) => {
-    let dataAllergy1 = [...alergi];
-    dataAllergy1.splice(index, 1);
-    setAlergi(dataAllergy1);
-  };
+  //   let newfieldDropdownAllergy = { label: "" };
+  //   setSelectedAllergy([...selectedAllergy, newfieldDropdownAllergy]);
+  // };
 
-  const handleAllergyAdd = (index, event) => {
-    let dataAllergy2 = [...alergi]; let displaySelectAllergy = [...selectedAllergy];
-    if (event.target.name === "kategori"){
-      dataAllergy2[index][event.target.name] = event.value;
-      displaySelectAllergy[index]["label"] = event.value;
-    } else {
-      dataAllergy2[index][event.target.name] = event.target.value;
-    }
+  // const removeAllergyFields = (id, index) => {
+  //   let dataAllergy1 = [...selectAllergy];
+  //   dataAllergy1.splice(index, 1);
+  //   setSelectAlergi(dataAllergy1);
+  // };
 
-    setAlergi(dataAllergy2);
-    setSelectedAllergy(displaySelectAllergy);
-  };
+  // const handleAllergyAdd = (index, event) => {
+  //   let dataAllergy2 = [...selectAllergy]; let displaySelectAllergy = [...selectedAllergy];
+  //   if (event.target.name === "kategori"){
+  //     dataAllergy2[index][event.target.name] = event.value;
+  //     displaySelectAllergy[index]["label"] = event.value;
+  //   } else {
+  //     dataAllergy2[index][event.target.name] = event.target.value;
+  //   }
 
-  const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(10);
-  const [sortBy, setSortBy] = useState("");
-  const [sortOrder, setSortOrder] = useState("");
-  const [search, setSearch] = useState("");
+  //   setSelectAlergi(dataAllergy2);
+  //   setSelectedAllergy(displaySelectAllergy);
+  // };
 
-  const getPatient = async (params) => {
-    try {
-      const res = await patientAPI.get("", params);
-      console.log(res);
-      dispatch({type: "GET_PATIENT", payload: res.data.data});
-      dispatch({type: "GET_TOTAL_PAGE_PATIENT", payload: res.data.pagination.totalPage});
-    } catch (e) {
-      console.log(e);
-    }
-  };
+  const [allergy, setAllergy] = useState({
+    id_pasien: '',
+    nama: '',
+    // id_kunjungan_dicatat: '',
+    // id_kunjungan_dihapus: ''
+  });
 
-  useEffect(() => {
-    let params = "";
-    
-    if (limit !== "10") {
-      params = `${params}?limit=${limit}`;
-    } else {
-      params = `${params}?limit=10`;
-    }
-    if (search !== "") {
-      params = `${params}&searchName=${search}`;
-    }
-    if (currentPage !== "1") {
-      params = `${params}&page=${currentPage}`;
-    }
+  const [patient, setPatient] = useState({
+    tipe_kitas: '',
+    nomor_kitas: '',
+    nama_lengkap: '',
+    nomor_hp: '',
+    tempat_lahir: '',
+    tanggal_lahir: '',
+    alamat: '',
+    kode_pos: '',
+    jenis_kelamin: '',
+    kewarganegaraan: '',
+    agama: '',
+    pekerjaan: '',
+    golongan_darah: '',
+    status_menikah: '',
+    provinsi: '',
+    kota: '',
+    kecamatan: '',
+    kelurahan: '',
+  });
 
-    getPatient(params);
-    onLoadProvinsi();
+  const [ editAddress, setEditAddress ] = useState({
+    status: 0,
+    nama_kota: '',
+    nama_kecamatan: '',
+    nama_kelurahan: ''
+  });
 
-  }, [limit, search, sortBy, sortOrder, page]);
-
-  let startNumber = 1;
-
-  if (currentPage !== 1) {
-    startNumber = (currentPage - 1) * 10 + 1;
-  }
-
-  const handleChangeProv = (event) => {
-    setSelectProvince(event);
-    setProvinsi(event.value);
-    changeKota(event.key);
-  };
-
-  const handleChangeCity = (event) => {
-    setSelectCity(event);
-    setKota(event.value);
-    changeKecamatan(event.key);
-  };
-
-  const handleChangeSubdistrict = (event) => {
-    setSelectSubdistrict(event);
-    setKecamatan(event.value);
-    changeKelurahan(event.key);
-  };
-
-  const handleChangeWard = (event) => {
-    setSelectWard(event);
-    setKelurahan(event.value);
-  };
+  const [ processPatient, setProcessPatient ] = useState(0);
 
   const onLoadProvinsi = async () => {
     try {
@@ -368,7 +340,7 @@ const Data = ({ match }) => {
         for (var i = 0; i < data.length; i++) {
           setSelectedProvince((current) => [
             ...current,
-            { label: data[i].nama, value: data[i].nama, key: data[i].id },
+            { label: data[i].nama, value: data[i].nama, key: data[i].id, name: 'provinsi' },
           ]);
         }
       } else {
@@ -379,7 +351,7 @@ const Data = ({ match }) => {
     }
   };
 
-  const changeKota = async (id_prov) => {
+  const changeKota = async (id_prov, eA = null) => {
     try {
       const response = await fetch(`${urlKabupaten}/${id_prov}.json`);
       // console.log(response);
@@ -390,8 +362,14 @@ const Data = ({ match }) => {
         for (var i = 0; i < data.length; i++) {
           setSelectedCity((current) => [
             ...current,
-            { label: data[i].nama, value: data[i].nama, key: data[i].id },
+            { label: data[i].nama, value: data[i].nama, key: data[i].id, name: 'kota' },
           ]);
+        }
+
+        if(eA) {
+          setEditAddress(current => {
+              return { ...current, status: 2 }
+          })
         }
       } else {
         throw Error(`Error status: ${response.status}`);
@@ -401,7 +379,7 @@ const Data = ({ match }) => {
     }
   };
 
-  const changeKecamatan = async (id_kota) => {
+  const changeKecamatan = async (id_kota, eA = null) => {
     try {
       const response = await fetch(`${urlKecamatan}/${id_kota}.json`);
       // console.log(response);
@@ -412,18 +390,24 @@ const Data = ({ match }) => {
         for (var i = 0; i < data.length; i++) {
           setSelectedSubdistrict((current) => [
             ...current,
-            { label: data[i].nama, value: data[i].nama, key: data[i].id },
+            { label: data[i].nama, value: data[i].nama, key: data[i].id, name: 'kecamatan' },
           ]);
         }
       } else {
         throw Error(`Error status: ${response.status}`);
+      }
+
+      if(eA) {
+        setEditAddress(current => {
+            return { ...current, status: 3 }
+        })
       }
     } catch (e) {
       console.log(e);
     }
   };
 
-  const changeKelurahan = async (id_kecamatan) => {
+  const changeKelurahan = async (id_kecamatan, eA = null) => {
     try {
       const response = await fetch(`${urlKelurahan}/${id_kecamatan}.json`);
       // console.log(response);
@@ -434,8 +418,14 @@ const Data = ({ match }) => {
         for (var i = 0; i < data.length; i++) {
           setSelectedWard((current) => [
             ...current,
-            { label: data[i].nama, value: data[i].nama, key: data[i].id },
+            { label: data[i].nama, value: data[i].nama, key: data[i].id, name: 'kelurahan' },
           ]);
+        }
+
+        if(eA) {
+          setEditAddress(current => {
+              return { ...current, status: 4 }
+          })
         }
       } else {
         throw Error(`Error status: ${response.status}`);
@@ -445,136 +435,542 @@ const Data = ({ match }) => {
     }
   };
 
-  const handleChangeKITAS = (event) => {
-    setSelectedKITAS(event);
-    setNomorKITAS(event.value);
-  };
+  const onChange = (e) => {
+    console.log('e', e);
 
-  const handleChangeJK = (event) => {
-    setJenisKelamin(event.target.value);
-  };
+    if (e.length > 0 && e[0].target.name === 'kategori') {
+      for (var i = 0; i < e.length; i++) {
+        setAllergy(current => {
+            return { ...current, nama: e[i] ? e[i].value : ''}
+        })
+      }
 
-  const handleChangeReligion = (event) => {
-    setSelectedReligion(event);
-    setAgama(event.value);
-  };
-
-  const handleChangeEmployment = (event) => {
-    setSelectedEmployment(event);
-    setPekerjaan(event.value);
-  };
-
-  const handleChangeBlood = (event) => {
-    setSelectedBlood(event);
-    setGolonganDarah(event.value);
-  };
-
-  const handleChangeMaritalStatus = (event) => {
-    setSelectedMaritalStatus(event);
-    setStatusMenikah(event.value);
-  };
-
-  const onPatientAdd = async (e) => {
-    try {
-      let data = {
-        tipe_kitas,
-        nomor_kitas,
-        nama_lengkap,
-        nomor_hp,
-        tempat_lahir,
-        tanggal_lahir,
-        alamat,
-        kode_pos,
-        provinsi,
-        kota,
-        kecamatan,
-        kelurahan,
-        agama,
-        pekerjaan,
-        golongan_darah,
-        jenis_kelamin,
-        status_menikah,
-      };
-      // console.log(data);
-
-      const response = await patientAPI.add(data);
-      // console.log(response);
-
-      if (response.status == 200) {
-        let data = await response.data.data;
-        // console.log(data);
-
-        Swal.fire({
-          title: "Sukses!",
-          html: `Tambah pasien sukses`,
-          icon: "success",
-          confirmButtonColor: "#008ecc",
-        });
-
-        resetForm(e);
+      setSelectedAllergy(Array.isArray(e) ? e.map(x => x.value) : []);
+      console.log('setSelectedAllergy onChange', setSelectedAllergy);
+    } else {
+      if (e.name === 'provinsi') {
+        setPatient(current => {
+            return { ...current, provinsi: e ? e.value : ''}
+        })
+        setSelectProvince(e); changeKota(e.key, "");
+      } else if (e.name === 'kota') {
+        setPatient(current => {
+            return { ...current, kota: e ? e.value : ''}
+        })
+        setSelectCity(e); changeKecamatan(e.key);
+      } else if (e.name === 'kecamatan') {
+        setPatient(current => {
+            return { ...current, kecamatan: e ? e.value : ''}
+        })
+        setSelectSubdistrict(e); changeKelurahan(e.key);
+      } else if (e.name === 'kelurahan') {
+        setPatient(current => {
+            return { ...current, kelurahan: e ? e.value : ''}
+        })
+        setSelectWard(e);
+      } else if (e.name === 'tipe_kitas') {
+        setPatient(current => {
+            return { ...current, tipe_kitas: e ? e.value : ''}
+        })
+      } else if (e.name === 'kewarganegaraan') {
+        setPatient(current => {
+            return { ...current, kewarganegaraan: e ? e.value : ''}
+        })
+      } else if (e.name === 'agama') {
+        setPatient(current => {
+            return { ...current, agama: e ? e.value : ''}
+        })
+      } else if (e.name === 'pekerjaan') {
+        setPatient(current => {
+            return { ...current, pekerjaan: e ? e.value : ''}
+        })
+      } else if (e.name === 'status_menikah') {
+        setPatient(current => {
+            return { ...current, status_menikah: e ? e.value : ''}
+        })
+      } else if (e.name === 'golongan_darah') {
+        setPatient(current => {
+            return { ...current, golongan_darah: e ? e.value : ''}
+        })
       } else {
+        if (e.target.name && e.target.name === 'jenis_kelamin') {
+          if(e.target.id === 'laki') {
+            setPatient(current => {
+              return { ...current, jenis_kelamin: 'Laki-laki' }
+            })
+          } else if(e.target.id === 'perempuan') {
+            setPatient(current => {
+              return { ...current, jenis_kelamin: 'Perempuan' }
+            })
+          }
+        } else if (e.target.name && e.target.name !== 'jenis_kelamin') {
+          setPatient(current => {
+              return { ...current, [e.target.name]: e.target.value }
+          })
+        } else {
+          console.log(e);
+        }
+      }
+    }
+
+    console.log('patient', patient);
+  }
+
+  const onInsuranceSubmit = async (e, status = 0) => {
+    // e.preventDefault();
+
+    if(dataStatus === 'add') {
+      try {
+        const response = await insuranceAPI.add(insurance);
+        // console.log(response);
+
+        if (response.status == 200) {
+          let data = await response.data.data;
+          // console.log(data);
+
+          Swal.fire({
+            title: "Sukses!",
+            html: `Tambah asuransi pasien sukses`,
+            icon: "success",
+            confirmButtonColor: "#008ecc",
+          });
+
+          if(status) {
+            setProcessPatient(2)
+          }
+
+          resetForm(e);
+        } else {
+          Swal.fire({
+            title: "Gagal!",
+            html: `Tambah asuransi pasien gagal`,
+            icon: "error",
+            confirmButtonColor: "#008ecc",
+            confirmButtonText: "Coba lagi",
+          });
+
+          throw Error(`Error status: ${response.statusCode}`);
+        }
+      } catch (e) {
         Swal.fire({
           title: "Gagal!",
-          html: `Tambah pasien gagal`,
+          html: e,
           icon: "error",
           confirmButtonColor: "#008ecc",
           confirmButtonText: "Coba lagi",
         });
 
-        throw Error(`Error status: ${response.statusCode}`);
+        console.log(e);
       }
-    } catch (e) {
-      Swal.fire({
-        title: "Gagal!",
-        html: `Tambah pasien gagal`,
-        icon: "error",
-        confirmButtonColor: "#008ecc",
-        confirmButtonText: "Coba lagi",
-      });
+    } else if (dataStatus === 'update') {
+      try {
+        const response = await insuranceAPI.update(insurance, insuranceID);
+        // console.log(response);
+  
+        if (response.status == 200) {
+          let data = await response.data.data;
+          // console.log(data);
+  
+          Swal.fire({
+            title: "Sukses!",
+            html: `Ubah asuransi pasien sukses`,
+            icon: "success",
+            confirmButtonColor: "#008ecc",
+          });
 
-      console.log(e);
+          if(status) {
+            setProcessPatient(2)
+          }
+  
+          resetForm(e);
+        } else {
+          Swal.fire({
+            title: "Gagal!",
+            html: `Ubah asuransi pasien gagal: ${response.message}`,
+            icon: "error",
+            confirmButtonColor: "#008ecc",
+            confirmButtonText: "Coba lagi",
+          });
+  
+          throw Error(`Error status: ${response.statusCode}`);
+        }
+      } catch (e) {
+        Swal.fire({
+          title: "Gagal!",
+          html: e,
+          icon: "error",
+          confirmButtonColor: "#008ecc",
+          confirmButtonText: "Coba lagi",
+        });
+  
+        console.log(e);
+      }
+    } else {
+      console.log('dataStatus undefined')
+    }
+  }
+
+  const onAllergySubmit = async (e, status = 0) => {
+    // e.preventDefault();
+
+    if(dataStatus === 'add') {
+      try {
+        const response = await patientAllergyAPI.add(allergy);
+        // console.log(response);
+
+        if (response.status == 200) {
+          let data = await response.data.data;
+          // console.log(data);
+
+          Swal.fire({
+            title: "Sukses!",
+            html: `Tambah asuransi pasien sukses`,
+            icon: "success",
+            confirmButtonColor: "#008ecc",
+          });
+
+          if(status) {
+            setProcessPatient(3)
+          }
+
+          resetForm(e);
+        } else {
+          Swal.fire({
+            title: "Gagal!",
+            html: `Tambah asuransi pasien gagal`,
+            icon: "error",
+            confirmButtonColor: "#008ecc",
+            confirmButtonText: "Coba lagi",
+          });
+
+          throw Error(`Error status: ${response.statusCode}`);
+        }
+      } catch (e) {
+        Swal.fire({
+          title: "Gagal!",
+          html: e,
+          icon: "error",
+          confirmButtonColor: "#008ecc",
+          confirmButtonText: "Coba lagi",
+        });
+
+        console.log(e);
+      }
+    } else if (dataStatus === 'update') {
+      try {
+        const response = await patientAllergyAPI.update(allergy, allergyID);
+        // console.log(response);
+  
+        if (response.status == 200) {
+          let data = await response.data.data;
+          // console.log(data);
+  
+          Swal.fire({
+            title: "Sukses!",
+            html: `Ubah alergi pasien sukses`,
+            icon: "success",
+            confirmButtonColor: "#008ecc",
+          });
+
+          if(status) {
+            setProcessPatient(3)
+          }
+  
+          resetForm(e);
+        } else {
+          Swal.fire({
+            title: "Gagal!",
+            html: `Ubah alergi pasien gagal: ${response.message}`,
+            icon: "error",
+            confirmButtonColor: "#008ecc",
+            confirmButtonText: "Coba lagi",
+          });
+  
+          throw Error(`Error status: ${response.statusCode}`);
+        }
+      } catch (e) {
+        Swal.fire({
+          title: "Gagal!",
+          html: e,
+          icon: "error",
+          confirmButtonColor: "#008ecc",
+          confirmButtonText: "Coba lagi",
+        });
+  
+        console.log(e);
+      }
+    } else {
+      console.log('dataStatus undefined')
+    }
+  }
+
+  const onPatientSubmit = async (e) => {
+    e.preventDefault();
+
+    if(dataStatus === 'add') {
+      try {
+        const response = await patientAPI.add(patient);
+        // console.log(response);
+
+        if (response.status == 200) {
+          let data = await response.data.data;
+          // console.log(data);
+
+          Swal.fire({
+            title: "Sukses!",
+            html: `Tambah pasien sukses`,
+            icon: "success",
+            confirmButtonColor: "#008ecc",
+          });
+
+          setPatientID(data.id);
+          setProcessPatient(1);
+
+          resetForm(e);
+        } else {
+          Swal.fire({
+            title: "Gagal!",
+            html: `Tambah pasien gagal`,
+            icon: "error",
+            confirmButtonColor: "#008ecc",
+            confirmButtonText: "Coba lagi",
+          });
+
+          throw Error(`Error status: ${response.statusCode}`);
+        }
+      } catch (e) {
+        Swal.fire({
+          title: "Gagal!",
+          html: e,
+          icon: "error",
+          confirmButtonColor: "#008ecc",
+          confirmButtonText: "Coba lagi",
+        });
+
+        console.log(e);
+      }
+    } else if (dataStatus === 'update') {
+      try {
+        const response = await patientAPI.update(patient, patientID);
+        // console.log(response);
+  
+        if (response.status == 200) {
+          let data = await response.data.data;
+          // console.log(data);
+  
+          Swal.fire({
+            title: "Sukses!",
+            html: `Ubah pasien sukses`,
+            icon: "success",
+            confirmButtonColor: "#008ecc",
+          });
+
+          setPatientID(data.id);
+          setProcessPatient(1);
+  
+          resetForm(e);
+        } else {
+          Swal.fire({
+            title: "Gagal!",
+            html: `Ubah pasien gagal: ${response.message}`,
+            icon: "error",
+            confirmButtonColor: "#008ecc",
+            confirmButtonText: "Coba lagi",
+          });
+  
+          throw Error(`Error status: ${response.statusCode}`);
+        }
+      } catch (e) {
+        Swal.fire({
+          title: "Gagal!",
+          html: e,
+          icon: "error",
+          confirmButtonColor: "#008ecc",
+          confirmButtonText: "Coba lagi",
+        });
+  
+        console.log(e);
+      }
+    } else {
+      console.log('dataStatus undefined')
     }
   };
 
   const resetForm = (e) => {
     e.preventDefault();
     
-    setTipeKITAS("");
-    setNomorKITAS("");
-    setNamaLengkap("");
-    setNomorHP("");
-    setTempatLahir("");
-    setTanggalLahir("");
-    setAlamat("");
-    setKodePos("");
-    setAgama("");
-    setPekerjaan("");
-    setGolonganDarah("");
-    setJenisKelamin("Laki-laki")
-    setProvinsi("");
-    setKota("");
-    setKecamatan("");
-    setKelurahan("");
-    setStatusMenikah("");
+    setPatient({
+      tipe_kitas: '',
+      nomor_kitas: '',
+      nama_lengkap: '',
+      nomor_hp: '',
+      tempat_lahir: '',
+      tanggal_lahir: '',
+      alamat: '',
+      kode_pos: '',
+      jenis_kelamin: '',
+      kewarganegaraan: '',
+      agama: '',
+      pekerjaan: '',
+      golongan_darah: '',
+      status_menikah: '',
+      provinsi: '',
+      kota: '',
+      kecamatan: '',
+      kelurahan: '',
+    });
+
     setSelectedMaritalStatus("");
     setSelectedReligion("");
     setSelectedNationality("");
     setSelectedEmployment("");
-    setSelectedProvince("");
-    setSelectedCity("");
-    setSelectedSubdistrict("");
-    setSelectedWard("");
     setSelectedBlood("");
-    setSelectProvince("");
-    setSelectCity("");
-    setSelectSubdistrict("");
-    setSelectWard("");
+    setSelectedKITAS("");
 
-    setAsuransi([{ id: Math.random(), tipe_asuransi: "", nomor_asuransi: "", target: { name: "tipe_asuransi" } }]);
-    setAlergi([{ id: Math.random(), nama: "", kategori: "", target: { name: "kategori" } }]);
+    setSelectedProvince([]);
+    setSelectedCity([]);
+    setSelectedSubdistrict([]);
+    setSelectedWard([]);
+    setSelectProvince([]);
+    setSelectCity([]);
+    setSelectSubdistrict([]);
+    setSelectWard([]);
 
+    setNewInsurance([{ id: Math.random(), tipe_asuransi: "", nomor_asuransi: "", target: { name: "tipe_asuransi" } }]);
+    // setSelectedAllergy([{ id: Math.random(), nama: "", kategori: "", target: { name: "kategori" } }]);
+    setSelectedAllergy([]);
+
+    setDataStatus("add");
     onLoadProvinsi();
   };
+
+  const getPatient = async (params) => {
+    try {
+      const res = await patientAPI.get("", params);
+      // console.log(res.data.data);
+      dispatch({type: "GET_PATIENT", payload: res.data.data});
+      dispatch({type: "GET_TOTAL_PAGE_PATIENT", payload: res.data.pagination.totalPage});
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  const getPatientById = async (e, id) => {
+    e.preventDefault();
+    resetForm(e);
+    setDataStatus("update");
+
+    try {
+      const res = await patientAPI.get("", `/${id}`);
+      let data = res.data.data[0];
+
+      // console.log(data);
+
+      setPatientID(data.id);
+      setPatient({
+        tipe_kitas: data.tipe_kitas,
+        nomor_kitas: data.nomor_kitas,
+        nama_lengkap: data.nama_lengkap,
+        nomor_hp: data.nomor_hp,
+        tempat_lahir: data.tempat_lahir,
+        tanggal_lahir: data.tanggal_lahir.substring(0, 10),
+        alamat: data.alamat,
+        kode_pos: data.kode_pos,
+        jenis_kelamin: data.jenis_kelamin,
+        kewarganegaraan: data.kewarganegaraan,
+        agama: data.agama,
+        pekerjaan: data.pekerjaan,
+        golongan_darah: data.golongan_darah,
+        status_menikah: data.status_menikah,
+        provinsi: data.provinsi,
+        kota: data.kota,
+        kecamatan: data.kecamatan,
+        kelurahan: data.kelurahan,
+      });
+
+      // console.log(patient);
+
+      setSelectedMaritalStatus({spesialis: data.status_menikah ? e.value : ''});
+      setSelectedReligion({agama: data.agama ? e.value : ''});
+      setSelectedNationality({kewarganegaraan: data.kewarganegaraan ? e.value : ''});
+      setSelectedEmployment({pekerjaan: data.pekerjaan ? e.value : ''});
+      setSelectedBlood({golongan_darah: data.golongan_darah ? e.value : ''});
+      setSelectedKITAS({tipe_kitas: data.tipe_kitas ? e.value : ''});
+      setSelectedGender(data.jenis_kelamin);
+
+      setSelectProvince({provinsi: data.provinsi ? e.value : ''});
+      setSelectCity({kota: data.kota ? e.value : ''});
+      setSelectSubdistrict({kecamatan: data.kecamatan ? e.value : ''});
+      setSelectWard({kelurahan: data.kelurahan ? e.value : ''});
+
+      setEditAddress(current => {
+        return { ...current,
+          status: 1,
+          nama_kota: data.kota,
+          nama_kecamatan: data.kecamatan,
+          nama_kelurahan: data.kelurahan
+        }
+      })
+
+      let id_provinsi = selectedProvince.find(item => item.value === data.provinsi).key;
+      changeKota(id_provinsi, editAddress);
+    } catch (e) {
+      console.log(e);
+    }
+
+    // console.log(dataStatus);
+  };
+
+  const [currentPage, setCurrentPage] = useState(1);
+
+  useEffect(() => {
+    let params = "";
+    
+    if (limit !== 10) {
+      params = `${params}?limit=${limit}`;
+    } else {
+      params = `${params}?limit=10`;
+    }
+    if (search !== "") {
+      params = `${params}&searchName=${search}`;
+    }
+    if (currentPage !== 1) {
+      params = `${params}&page=${currentPage}`;
+    }
+
+    getPatient(params);
+    onLoadProvinsi();
+
+    if(selectedCity.length > 0 && editAddress.status === 2) {
+      let id_kota = selectedCity.find(item => item.value === editAddress.nama_kota).key;
+      changeKecamatan(id_kota, editAddress);
+    }
+
+    if(selectedSubdistrict.length > 0 && editAddress.status === 3) {
+      let id_kecamatan = selectedSubdistrict.find(item => item.value === editAddress.nama_kecamatan).key;
+      changeKelurahan(id_kecamatan, editAddress);
+    }
+
+    if(newInsurance.length > 0 && processPatient === 1) {
+      onInsuranceSubmit();
+    }
+
+    if(selectedAllergy.length > 0 && processPatient === 2) {
+      // onAllergySubmit();
+    }
+
+  }, [limit, search, sortBy, sortOrder, currentPage, editAddress, processPatient]);
+
+  let startNumber = 1;
+
+  if (currentPage !== 1) {
+    startNumber = (currentPage - 1) * 10 + 1;
+  }
+
+  const [limit, setLimit] = useState(10);
+  const [sortBy, setSortBy] = useState("");
+  const [sortOrder, setSortOrder] = useState("");
+  const [search, setSearch] = useState("");
 
   return (
     <>
@@ -616,7 +1012,7 @@ const Data = ({ match }) => {
                   </tr>
                 </thead>
                 <tbody>
-                  {/* {patientAll ? (
+                  {patientAll ? (
                     patientAll.map((data) => (
                       <tr key={data.id}>
                         <th scope="row" style={{ textAlign: "center", verticalAlign: 'middle' }}>
@@ -624,20 +1020,28 @@ const Data = ({ match }) => {
                         </th>
                         <td>
                           <h6 style={{ fontWeight: 'bold' }}>{data.nama_lengkap}</h6>
-                          {data.jenis_kelamin}, Umur<br/>
-                          {data.tipe_kitas}, {data.nomor_hp}
+                          {/* {data.jenis_kelamin.substring(0,1)}, {data.tanggal_lahir}<br/> */}
+                          {data.jenis_kelamin.substring(0,1)}, {new Date().getFullYear() - data.tanggal_lahir.substring(6,10)} tahun<br/>
+                          {data.tipe_kitas} {data.nomor_kitas}<br/>
+                          {/* {data.nomor_hp} */}
                         </td>
                         <td style={{ textAlign: "center", verticalAlign: 'middle' }}>
-                          <Button color="secondary" size="xs"
-                            // onClick={}
+                          <Button color="secondary" size="xs" className="button-xs"
+                            onClick={(e) => getPatientById(e, data.id)}
                             >
                             <i className="simple-icon-note"></i>
                           </Button>
                           {' '}
-                          <Button color="warning" size="xs"
+                          <Button color="warning" size="xs" className="button-xs"
                             // onClick={}
                             >
                             <i className="simple-icon-drawer"></i>
+                          </Button>
+                          {' '}
+                          <Button color="danger" size="xs" className="button-xs"
+                            // onClick={}
+                            >
+                            <i className="simple-icon-trash"></i>
                           </Button>
                         </td>
                       </tr>
@@ -648,45 +1052,7 @@ const Data = ({ match }) => {
                         <p>Loading data</p>
                       </td>
                     </tr>
-                  )} */}
-                  <tr>
-                      <th scope="row" style={{ textAlign: "center", verticalAlign: 'middle' }}>
-                        1
-                      </th>
-                      <td>
-                        <h6 style={{ fontWeight: 'bold' }}>Pasien A</h6>
-                        Jenis Kelamin, Umur<br/>
-                        Tipe KITAS, Nomor KITAS
-                      </td>
-                      <td style={{ textAlign: "center", verticalAlign: 'middle' }}>
-                        <Button color="secondary" size="xs">
-                          <i className="simple-icon-note"></i>
-                        </Button>
-                        {' '}
-                        <Button color="warning" size="xs">
-                          <i className="simple-icon-drawer"></i>
-                        </Button>
-                      </td>
-                    </tr>
-                  <tr>
-                      <th scope="row" style={{ textAlign: "center", verticalAlign: 'middle' }}>
-                        2
-                      </th>
-                      <td>
-                        <h6 style={{ fontWeight: 'bold' }}>Pasien B</h6>
-                        Jenis Kelamin, Umur<br/>
-                        Tipe KITAS, Nomor KITAS
-                      </td>
-                      <td style={{ textAlign: "center", verticalAlign: 'middle' }}>
-                        <Button color="secondary" size="xs">
-                          <i className="simple-icon-note"></i>
-                        </Button>
-                        {' '}
-                        <Button color="warning" size="xs">
-                          <i className="simple-icon-drawer"></i>
-                        </Button>
-                      </td>
-                    </tr>
+                  )}
                 </tbody>
               </Table>
               <Pagination
@@ -705,7 +1071,7 @@ const Data = ({ match }) => {
                 <FormGroup row>
                   <Colxx sm={6}>
                     <FormGroup>
-                      <Label for="noKITAS">
+                      <Label for="nomor_kitas">
                         No. KITAS
                         <span
                           className="required text-danger"
@@ -721,19 +1087,19 @@ const Data = ({ match }) => {
                           components={{ Input: CustomSelectInput }}
                           className="react-select select-KITAS"
                           classNamePrefix="react-select"
-                          name="tipeKITAS"
-                          value={selectedKITAS}
+                          name="tipe_kitas"
+                          value={selectKITAS.find(item => item.value === patient.tipe_kitas) || ''}
                           options={selectKITAS}
-                          onChange={(event) => handleChangeKITAS(event)}
+                          onChange={onChange}
                         />
                         <Input
                           type="text"
-                          name="noKITAS"
-                          id="noKITAS"
+                          name="nomor_kitas"
+                          id="nomor_kitas"
                           placeholder="No. KITAS"
                           className="input-KITAS"
-                          value={nomor_kitas}
-                          onChange={(e) => setNomorKITAS(e.target.value)}
+                          value={patient.nomor_kitas}
+                          onChange={onChange}
                         />
                       </InputGroup>
                     </FormGroup>
@@ -741,7 +1107,7 @@ const Data = ({ match }) => {
 
                   <Colxx sm={6}>
                     <FormGroup>
-                      <Label for="namaLengkap">
+                      <Label for="nama_lengkap">
                         Nama Lengkap
                         <span
                           className="required text-danger"
@@ -753,11 +1119,11 @@ const Data = ({ match }) => {
                       </Label>
                       <Input
                         type="text"
-                        name="namaLengkap"
-                        id="namaLengkap"
+                        name="nama_lengkap"
+                        id="nama_lengkap"
                         placeholder="Nama Lengkap"
-                        value={nama_lengkap}
-                        onChange={(e) => setNamaLengkap(e.target.value)}
+                        value={patient.nama_lengkap}
+                        onChange={onChange}
                       />
                     </FormGroup>
                   </Colxx>
@@ -779,20 +1145,22 @@ const Data = ({ match }) => {
                           <CustomInput
                             type="radio"
                             id="laki"
-                            name="jenisKelamin"
+                            name="jenis_kelamin"
                             label="Laki-laki"
-                            checked={jenis_kelamin === "Laki-laki"}
-                            onChange={(e) => handleChangeJK(e)}
+                            checked={patient.jenis_kelamin === 'Laki-laki'}
+                            value={selectedGender}
+                            onChange={onChange}
                           />
                         </Colxx>
                         <Colxx sm={6} md={8} xl={8}>
                           <CustomInput
                             type="radio"
                             id="perempuan"
-                            name="jenisKelamin"
+                            name="jenis_kelamin"
                             label="Perempuan"
-                            checked={jenis_kelamin === "Perempuan"}
-                            onChange={(e) => handleChangeJK(e)}
+                            checked={patient.jenis_kelamin === 'Perempuan'}
+                            value={selectedGender}
+                            onChange={onChange}
                           />
                         </Colxx>
                       </Row>
@@ -801,43 +1169,43 @@ const Data = ({ match }) => {
 
                   <Colxx sm={6}>
                     <FormGroup>
-                      <Label for="noHP">No. HP</Label>
+                      <Label for="nomor_hp">No. HP</Label>
                       <Input
                         type="number"
-                        name="noHP"
-                        id="noHP"
+                        name="nomor_hp"
+                        id="nomor_hp"
                         placeholder="No. HP"
-                        value={nomor_hp}
+                        value={patient.nomor_hp}
                         pattern="[0-9]*"
-                        onChange={(e) => setNomorHP(e.target.value)}
+                        onChange={onChange}
                       />
                     </FormGroup>
                   </Colxx>
 
                   <Colxx sm={6}>
                     <FormGroup>
-                      <Label for="tempatLahir">Tempat Lahir</Label>
+                      <Label for="tempat_lahir">Tempat Lahir</Label>
                       <Input
                         type="text"
-                        name="tempatLahir"
-                        id="tempatLahir"
+                        name="tempat_lahir"
+                        id="tempat_lahir"
                         placeholder="Tempat Lahir"
-                        value={tempat_lahir}
-                        onChange={(e) => setTempatLahir(e.target.value)}
+                        value={patient.tempat_lahir}
+                        onChange={onChange}
                       />
                     </FormGroup>
                   </Colxx>
 
                   <Colxx sm={6}>
                     <FormGroup>
-                      <Label for="tanggalLahir">Tanggal Lahir</Label>
+                      <Label for="tanggal_lahir">Tanggal Lahir</Label>
                       <Input
                         type="date"
-                        name="tanggalLahir"
-                        id="tanggalLahir"
+                        name="tanggal_lahir"
+                        id="tanggal_lahir"
                         placeholder="Tanggal Lahir"
-                        value={tanggal_lahir}
-                        onChange={(e) => setTanggalLahir(e.target.value)}
+                        value={patient.tanggal_lahir}
+                        onChange={onChange}
                       />
                     </FormGroup>
                   </Colxx>
@@ -851,22 +1219,23 @@ const Data = ({ match }) => {
                         id="alamat"
                         placeholder="Alamat"
                         style={{ minHeight: "100" }}
-                        value={alamat}
-                        onChange={(e) => setAlamat(e.target.value)}
+                        value={patient.alamat}
+                        onChange={onChange}
                       />
                     </FormGroup>
                   </Colxx>
 
                   <Colxx sm={6}>
                     <FormGroup>
-                      <Label for="kodePos">Kode Pos</Label>
+                      <Label for="kode_pos">Kode Pos</Label>
                       <Input
                         type="text"
-                        name="kodePos"
-                        id="kodePos"
+                        name="kode_pos"
+                        id="kode_pos"
                         placeholder="Kode Pos"
-                        value={kode_pos}
-                        onChange={(e) => setKodePos(e.target.value)}
+                        pattern="[0-9]*"
+                        value={patient.kode_pos}
+                        onChange={onChange}
                       />
                     </FormGroup>
                   </Colxx>
@@ -881,24 +1250,24 @@ const Data = ({ match }) => {
                         name="provinsi"
                         id="provinsi"
                         options={selectedProvince}
-                        value={selectProvince}
-                        onChange={(event) => handleChangeProv(event)}
+                        value={selectedProvince.find(item => item.value === patient.provinsi) || ''}
+                        onChange={onChange}
                       />
                     </FormGroup>
                   </Colxx>
 
                   <Colxx sm={3}>
                     <FormGroup>
-                      <Label for="kotakab">Kota / Kabupaten</Label>
+                      <Label for="kota">Kota / Kabupaten</Label>
                       <Select
                         components={{ Input: CustomSelectInput }}
                         className="react-select"
                         classNamePrefix="react-select"
-                        name="kotakab"
-                        id="kotakab"
+                        name="kota"
+                        id="kota"
                         options={selectedCity}
-                        value={selectCity}
-                        onChange={(event) => handleChangeCity(event)}
+                        value={selectedCity.find(item => item.value === patient.kota) || ''}
+                        onChange={onChange}
                       />
                     </FormGroup>
                   </Colxx>
@@ -913,8 +1282,8 @@ const Data = ({ match }) => {
                         name="kecamatan"
                         id="kecamatan"
                         options={selectedSubdistrict}
-                        value={selectSubdistrict}
-                        onChange={(event) => handleChangeSubdistrict(event)}
+                        value={selectedSubdistrict.find(item => item.value === patient.kecamatan) || ''}
+                        onChange={onChange}
                       />
                     </FormGroup>
                   </Colxx>
@@ -929,8 +1298,8 @@ const Data = ({ match }) => {
                         name="kelurahan"
                         id="kelurahan"
                         options={selectedWard}
-                        value={selectWard}
-                        onChange={(event) => handleChangeWard(event)}
+                        value={selectedWard.find(item => item.value === patient.kelurahan) || ''}
+                        onChange={onChange}
                       />
                     </FormGroup>
                   </Colxx>
@@ -944,8 +1313,8 @@ const Data = ({ match }) => {
                         classNamePrefix="react-select"
                         name="kewarganegaraan"
                         options={selectNationality}
-                        value={selectedNationality}
-                        onChange={(event) => handleChangeNationality(event)}
+                        value={selectNationality.find(item => item.value === patient.kewarganegaraan) || ''}
+                        onChange={onChange}
                       />
                     </FormGroup>
                   </Colxx>
@@ -959,13 +1328,13 @@ const Data = ({ match }) => {
                         classNamePrefix="react-select"
                         name="agama"
                         options={selectReligion}
-                        value={selectedReligion}
-                        onChange={(event) => handleChangeReligion(event)}
+                        value={selectReligion.find(item => item.value === patient.agama) || ''}
+                        onChange={onChange}
                       />
                     </FormGroup>
                   </Colxx>
 
-                  <Colxx sm={6}>
+                  <Colxx sm={4}>
                     <FormGroup>
                       <Label for="pekerjaan">Pekerjaan</Label>
                       <Select
@@ -974,13 +1343,13 @@ const Data = ({ match }) => {
                         classNamePrefix="react-select"
                         name="pekerjaan"
                         options={selectEmployment}
-                        value={selectedEmployment}
-                        onChange={(event) => handleChangeEmployment(event)}
+                        value={selectEmployment.find(item => item.value === patient.pekerjaan) || ''}
+                        onChange={onChange}
                       />
                     </FormGroup>
                   </Colxx>
 
-                  <Colxx sm={3}>
+                  <Colxx sm={4}>
                     <FormGroup>
                       <Label for="statusMenikah">Status Menikah</Label>
                       <Select
@@ -989,15 +1358,15 @@ const Data = ({ match }) => {
                         classNamePrefix="react-select"
                         name="status_menikah"
                         options={selectMaritalStatus}
-                        value={selectedMaritalStatus}
-                        onChange={(event) => handleChangeMaritalStatus(event)}
+                        value={selectMaritalStatus.find(item => item.value === patient.status_menikah) || ''}
+                        onChange={onChange}
                       />
                     </FormGroup>
                   </Colxx>
 
-                  <Colxx sm={3}>
+                  <Colxx sm={4}>
                     <FormGroup>
-                      <Label for="golonganDarah">
+                      <Label for="golongan_darah">
                         Golongan Darah
                         <span
                           className="required text-danger"
@@ -1011,15 +1380,32 @@ const Data = ({ match }) => {
                         components={{ Input: CustomSelectInput }}
                         className="react-select"
                         classNamePrefix="react-select"
-                        name="golonganDarah"
+                        name="golongan_darah"
                         options={selectBlood}
-                        value={selectedBlood}
-                        onChange={(event) => handleChangeBlood(event)}
+                        value={selectBlood.find(item => item.value === patient.golongan_darah) || ''}
+                        onChange={onChange}
                       />
                     </FormGroup>
                   </Colxx>
 
-                  <Colxx sm={6}>
+                  <Colxx sm={12}>
+                    <FormGroup>
+                      <Label>Alergi</Label>
+                      <Select
+                        components={{ Input: CustomSelectInput }}
+                        className="react-select"
+                        classNamePrefix="react-select"
+                        isMulti
+                        name="alergi"
+                        id="alergi"
+                        value={selectAllergy.filter(item => selectedAllergy.includes(item.value)) || ''}
+                        options={selectAllergy}
+                        onChange={onChange}
+                      />
+                    </FormGroup>
+                  </Colxx>
+
+                  <Colxx sm={12}>
                     <FormGroup>
                       <Label style={{ lineHeight: '3' }}>Asuransi</Label>
                       <Button
@@ -1030,10 +1416,10 @@ const Data = ({ match }) => {
                       >
                         Tambah
                       </Button>
-                      {asuransi.map((input, index) => {
+                      {selectInsurance.map((input, index) => {
                         return (
                           <InputGroup
-                            key={input.id}
+                            key={index}
                             className="input-group-insurance"
                           >
                             <Select
@@ -1076,7 +1462,7 @@ const Data = ({ match }) => {
                     </FormGroup>
                   </Colxx>
 
-                  <Colxx sm={6}>
+                  {/* <Colxx sm={6}>
                     <FormGroup>
                       <Label style={{ lineHeight: '3' }}>Alergi</Label>
                       <Button
@@ -1087,7 +1473,7 @@ const Data = ({ match }) => {
                       >
                         Tambah
                       </Button>
-                      {alergi.map((input, index) => {
+                      {selectAllergy.map((input, index) => {
                         return (
                           <InputGroup
                             key={input.id}
@@ -1131,7 +1517,7 @@ const Data = ({ match }) => {
                         );
                       })}
                     </FormGroup>
-                  </Colxx>
+                  </Colxx> */}
                 </FormGroup>
 
                 <Row>
@@ -1150,7 +1536,7 @@ const Data = ({ match }) => {
                     &nbsp;&nbsp;
                     <Button
                       color="primary"
-                      onClick={(e) => onPatientAdd(e)}
+                      onClick={(e) => onPatientSubmit(e)}
                     >
                       Simpan
                     </Button>

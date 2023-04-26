@@ -8,19 +8,27 @@ const employee = {
     return baseApi.get(url, payloads, { headers: getOriginHeader() })
   },
   add: (payloads) => {
-    const url = api.employee.all + 'add'
+    const url = api.employee.all
     return baseApi.post(url, payloads, { headers: getOriginHeader() })
   },
   update: (payloads, id) => {
-    const url = api.employee.all + `update/${id}`
+    const url = api.employee.all + `/${id}`
     return baseApi.put(url, payloads, { headers: getOriginHeader() })
   },
   uploadPhoto: (payloads) => {
     const url = api.employee.uploadPhoto
     return baseApi.put(url, payloads, { headers: getOriginHeader() })
   },
-  updatePassword: (payloads) => {
-    const url = api.employee.updatePassword
+  updatePassword: (payloads, id) => {
+    const url = api.employee.updatePassword + `/${id}`
+    return baseApi.put(url, payloads, { headers: getOriginHeader() })
+  },
+  archive: (payloads, id) => {
+    const url = api.employee.archive + `/${id}`
+    return baseApi.put(url, payloads, { headers: getOriginHeader() })
+  },
+  activate: (payloads, id) => {
+    const url = api.employee.activate + `/${id}`
     return baseApi.put(url, payloads, { headers: getOriginHeader() })
   },
 }

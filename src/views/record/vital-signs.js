@@ -57,11 +57,18 @@ const VitalSigns = ({ match }) => {
   const dispatch = useDispatch();
   const queueAll = useSelector(state => state.queue);
   const queueTotalPage = useSelector(state => state.queueTotalPage);
+  const [dataStatus, setDataStatus] = useState("add");
 
-  const [selectedDivision, setSelectedDivision] = useState([]);
-  const [selectedAwareness, setSelectedAwareness] = useState([]);
+  const [selectedDivision, setSelectedDivision] = useState('');
+  const [selectedAwareness, setSelectedAwareness] = useState('');
+
+  const [startDateTime, setStartDateTime] = useState(new Date());
+
+  const [patientID, setPatientID] = useState('');
+  const [vitalSignsID, setVitalSignsID] = useState('');
 
   const [ vitalSigns, setVitalSigns ] = useState({
+    id_pasien: patientID,
     keluhan: '',
     kesadaran: '',
     temperatur: '',
@@ -76,53 +83,116 @@ const VitalSigns = ({ match }) => {
     catatan_tambahan: ''
   });
 
-  const onVitalSignsAdd = async (e) => {
+  const onChange = (e) => {
+    // console.log('e', e);
+
+    if (e.name === 'kesadaran') {
+      setVitalSigns(current => {
+          return { ...current, kesadaran: e.value }
+      })
+
+      setSelectedAwareness(e);
+    } else {
+      setVitalSigns(current => {
+          return { ...current, [e.target.name]: e.target.value }
+      })
+    }
+
+    // console.log('vitalSigns', vitalSigns);
+  }
+
+  const onVitalSignsSubmit = async (e) => {
     e.preventDefault();
 
-    // try {
-    //   const response = await vitalSignsAPI.add(vitalSigns);
-    //   // console.log(response);
+    // console.log(vitalSigns);
+    if(dataStatus === 'add') {
+      try {
+        const response = await vitalSignsAPI.add(vitalSigns);
+        // console.log(response);
 
-    //   if (response.status == 200) {
-    //     let data = await response.data.data;
-    //     // console.log(data);
+        if (response.status == 200) {
+          let data = await response.data.data;
+          // console.log(data);
 
-    //     Swal.fire({
-    //       title: "Sukses!",
-    //       html: `Tambah pra-konsultasi sukses`,
-    //       icon: "success",
-    //       confirmButtonColor: "#008ecc",
-    //     });
+          Swal.fire({
+            title: "Sukses!",
+            html: `Tambah pra-konsultasi sukses`,
+            icon: "success",
+            confirmButtonColor: "#008ecc",
+          });
 
-    //     resetForm(e);
-    //   } else {
-    //     Swal.fire({
-    //       title: "Gagal!",
-    //       html: `Tambah pra-konsultasi gagal`,
-    //       icon: "error",
-    //       confirmButtonColor: "#008ecc",
-    //       confirmButtonText: "Coba lagi",
-    //     });
+          resetForm(e);
+        } else {
+          Swal.fire({
+            title: "Gagal!",
+            html: `Tambah pra-konsultasi gagal: ${response.message}`,
+            icon: "error",
+            confirmButtonColor: "#008ecc",
+            confirmButtonText: "Coba lagi",
+          });
 
-    //     throw Error(`Error status: ${response.statusCode}`);
-    //   }
-    // } catch (e) {
-    //   Swal.fire({
-    //     title: "Gagal!",
-    //     html: `Tambah pra-konsultasi gagal`,
-    //     icon: "error",
-    //     confirmButtonColor: "#008ecc",
-    //     confirmButtonText: "Coba lagi",
-    //   });
+          throw Error(`Error status: ${response.statusCode}`);
+        }
+      } catch (e) {
+        Swal.fire({
+          title: "Gagal!",
+          html: 3,
+          icon: "error",
+          confirmButtonColor: "#008ecc",
+          confirmButtonText: "Coba lagi",
+        });
 
-    //   console.log(e);
-    // }
+        console.log(e);
+      }
+    } else if(dataStatus === 'update') { console.log('harusnya fungsi update');
+      // try {
+      //   const response = await vitalSignsAPI.update(vitalSigns, vitalSignsID);
+      //   // console.log(response);
+
+      //   if (response.status == 200) {
+      //     let data = await response.data.data;
+      //     // console.log(data);
+
+      //     Swal.fire({
+      //       title: "Sukses!",
+      //       html: `Ubah pra-konsultasi sukses`,
+      //       icon: "success",
+      //       confirmButtonColor: "#008ecc",
+      //     });
+
+      //     resetForm(e);
+      //   } else {
+      //     Swal.fire({
+      //       title: "Gagal!",
+      //       html: `Ubah pra-konsultasi gagal: ${response.message}`,
+      //       icon: "error",
+      //       confirmButtonColor: "#008ecc",
+      //       confirmButtonText: "Coba lagi",
+      //     });
+
+      //     throw Error(`Error status: ${response.statusCode}`);
+      //   }
+      // } catch (e) {
+      //   Swal.fire({
+      //     title: "Gagal!",
+      //     html: e,
+      //     icon: "error",
+      //     confirmButtonColor: "#008ecc",
+      //     confirmButtonText: "Coba lagi",
+      //   });
+
+      //   console.log(e);
+      // }
+    } else {
+      console.log('dataStatus undefined')
+    }
   };
 
   const resetForm = (e) => {
     e.preventDefault();
 
     setVitalSigns({
+      id_pasien: '',
       keluhan: '',
       kesadaran: '',
       temperatur: 0,
@@ -136,6 +206,13 @@ const VitalSigns = ({ match }) => {
       heart_rate: 0,
       catatan_tambahan: ''
     });
+    
+    setSelectedAwareness('');
+
+    setPatientID('');
+    setVitalSignsID('');
+
+    setDataStatus("add");
   };
 
   const getQueue = async (params) => {
@@ -148,21 +225,47 @@ const VitalSigns = ({ match }) => {
     }
   };
 
-  const onChange = (e) => {
-    if (e.name === 'kesadaran') {
-      setVitalSigns(current => {
-          return { ...current, 'kesadaran': e.value }
-      })
+  const getQueueById = async (e, id) => {
+    e.preventDefault();
+    resetForm(e);
+    setDataStatus("update");
 
-      setSelectedAwareness(e);
-    } else {
-      setVitalSigns(current => {
-          return { ...current, [e.target.name]: e.target.value }
-      })
+    try {
+      const res = await queueAPI.get("", `/${id}`);
+      let data = res.data.data[0];
+
+      // console.log(data);
+
+      setVitalSignsID(id);
+      setPatientID(data.id_pasien);
+
+      setVitalSigns({
+        id_pasien: data.id_pasien,
+        keluhan: data.keluhan,
+        kesadaran: data.kesadaran,
+        temperatur: data.temperatur,
+        tinggi_badan: data.tinggi_badan,
+        berat_badan: data.berat_badan,
+        lingkar_perut: data.lingkar_perut,
+        imt: data.imt,
+        sistole: data.sistole,
+        diastole: data.diastole,
+        respiratory_rate: data.respiratory_rate,
+        heart_rate: data.heart_rate,
+        catatan_tambahan: data.catatan_tambahan
+      });
+  
+      setSelectedAwareness({kesadaran: data.kesadaran ? e.value : ''});
+
+      // console.log(vitalSigns);
+    } catch (e) {
+      console.log(e);
     }
 
-    // console.log(vitalSigns);
-}
+    // console.log(dataStatus);
+  };
+
+  const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
     let params = "";
@@ -192,11 +295,6 @@ const VitalSigns = ({ match }) => {
   const [sortBy, setSortBy] = useState("");
   const [sortOrder, setSortOrder] = useState("");
   const [search, setSearch] = useState("");
-
-  const [startDateTime, setStartDateTime] = useState(new Date());
-
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPage, setTotalPage] = useState(3);
 
   return (
     <>
@@ -259,68 +357,68 @@ const VitalSigns = ({ match }) => {
                 <Table>
                   <thead>
                     <tr>
-                    <th style={{ textAlign: "center", verticalAlign: 'middle' }}>#</th>
+                    <th className="center-xy">#</th>
                       <th colSpan={2}>Antrian</th>
                     <th style={{ textAlign: "center", width: '150px' }}>Aksi</th>
                     </tr>
                   </thead>
                   <tbody>
                     <tr>
-                      <th scope="row" style={{textAlign: 'center', verticalAlign: 'middle'}}>1</th>
-                      <td style={{ textAlign: "center", verticalAlign: 'middle' }}>
+                      <th scope="row" className="center-xy">1</th>
+                      <td className="icon-column">
                         <i className="simple-icon-magnifier queue-icon"></i><br/>
-                        0001
+                        <span className="queue-text">0001</span>
                       </td>
                       <td>
                         <h6 style={{ fontWeight: 'bold' }}>Otto</h6>
-                        Laki-laki, 32
+                        Laki-laki, 32 Tahun
                       </td>
                       <td style={{ textAlign: "center", verticalAlign: 'middle' }}>
-                        <Button color="secondary" size="xs">
+                        <Button color="secondary" size="xs" className="button-xs">
                           <i className="simple-icon-note"></i>
                         </Button>
                         {' '}
-                        <Button color="warning" size="xs">
+                        <Button color="warning" size="xs" className="button-xs">
                           <i className="simple-icon-drawer"></i>
                         </Button>
                       </td>
                     </tr>
                     <tr>
-                      <th scope="row" style={{textAlign: 'center', verticalAlign: 'middle'}}>2</th>
-                      <td style={{ textAlign: "center", verticalAlign: 'middle' }}>
+                      <th scope="row" className="center-xy">2</th>
+                      <td className="icon-column">
                         <i className="simple-icon-magnifier queue-icon"></i><br/>
-                        0002
+                        <span className="queue-text">0002</span>
                       </td>
                       <td>
                         <h6 style={{ fontWeight: 'bold' }}>Jacob</h6>
-                        Laki-laki, 26
+                        Laki-laki, 26 Tahun
                       </td>
                       <td style={{ textAlign: "center", verticalAlign: 'middle' }}>
-                        <Button color="secondary" size="xs">
+                        <Button color="secondary" size="xs" className="button-xs">
                           <i className="simple-icon-note"></i>
                         </Button>
                         {' '}
-                        <Button color="warning" size="xs">
+                        <Button color="warning" size="xs" className="button-xs">
                           <i className="simple-icon-drawer"></i>
                         </Button>
                       </td>
                     </tr>
                     <tr>
-                      <th scope="row" style={{textAlign: 'center', verticalAlign: 'middle'}}>3</th>
-                      <td style={{ textAlign: "center", verticalAlign: 'middle' }}>
+                      <th scope="row" className="center-xy">3</th>
+                      <td className="icon-column">
                         <i className="simple-icon-magnifier queue-icon"></i><br/>
-                        0003
+                        <span className="queue-text">0003</span>
                       </td>
                       <td>
                         <h6 style={{ fontWeight: 'bold' }}>Larry</h6>
-                        Laki-laki, 57
+                        Laki-laki, 57 Tahun
                       </td>
                       <td style={{ textAlign: "center", verticalAlign: 'middle' }}>
-                        <Button color="secondary" size="xs">
+                        <Button color="secondary" size="xs" className="button-xs">
                           <i className="simple-icon-note"></i>
                         </Button>
                         {' '}
-                        <Button color="warning" size="xs">
+                        <Button color="warning" size="xs" className="button-xs">
                           <i className="simple-icon-drawer"></i>
                         </Button>
                       </td>
@@ -329,7 +427,7 @@ const VitalSigns = ({ match }) => {
                 </Table>
                 <Pagination
                   currentPage={currentPage}
-                  totalPage={totalPage}
+                  totalPage={queueTotalPage}
                   onChangePage={(i) => setCurrentPage(i)}
                 />
               </CardBody>
@@ -343,7 +441,7 @@ const VitalSigns = ({ match }) => {
                 </CardTitle>
                 <Form>
                   <FormGroup row>
-                    <Colxx sm={6}>
+                    <Colxx sm={12}>
                       <FormGroup>
                         <Label for="tanggalRekam">
                           Tanggal / Waktu
@@ -364,7 +462,7 @@ const VitalSigns = ({ match }) => {
                       </FormGroup>
                     </Colxx>
 
-                    <Colxx sm={6}>
+                    {/* <Colxx sm={6}>
                       <FormGroup>
                         <Label for="noAntrian">
                           No. Antrian
@@ -377,7 +475,7 @@ const VitalSigns = ({ match }) => {
                           disabled={true}
                         />
                       </FormGroup>
-                    </Colxx>
+                    </Colxx> */}
 
                     <Colxx sm={6}>
                       <FormGroup>
@@ -578,7 +676,7 @@ const VitalSigns = ({ match }) => {
                             value={vitalSigns.respiratory_rate}
                             onChange={onChange}
                           />
-                          <InputGroupAddon addonType="append">/menit</InputGroupAddon>
+                          <InputGroupAddon addonType="append">/ menit</InputGroupAddon>
                         </InputGroup>
                       </FormGroup>
                     </Colxx>
@@ -640,7 +738,7 @@ const VitalSigns = ({ match }) => {
                       &nbsp;&nbsp;
                       <Button
                         color="primary"
-                        onClick={(e) => onVitalSignsAdd(e)}
+                        onClick={(e) => onVitalSignsSubmit(e)}
                       >
                         Simpan
                       </Button>

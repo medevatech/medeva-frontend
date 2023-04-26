@@ -3,16 +3,16 @@ import { getAuthHeader, getOriginHeader, serializeQueryParams, getJSONHeader } f
 import baseApi from 'service/api-general'
 
 const allergy = {
-  get: (payloads) => {
-    const url = api.allergy.all
+  get: (payloads, options) => {
+    const url = api.allergy.all + options
     return baseApi.get(url, payloads, { headers: getOriginHeader() })
   },
   add: (payloads) => {
     const url = api.allergy.all
     return baseApi.post(url, payloads, { headers: getOriginHeader() })
   },
-  update: (payloads) => {
-    const url = api.allergy.all
+  update: (payloads, id) => {
+    const url = api.allergy.all + id
     return baseApi.put(url, payloads, { headers: getOriginHeader() })
   },
 }

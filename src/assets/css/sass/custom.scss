@@ -93,11 +93,40 @@ label {
 }
 
 .button-xs {
-    padding: 0.15rem 0.5rem 0.15rem 0.5rem
+    padding: 0.25rem 0.5rem 0.25rem 0.5rem;
+    line-height: 1;
+}
+
+.center-xy {
+    text-align: center;
+    vertical-align: middle !important;
+}
+
+.icon-column {
+    text-align: center;
+    vertical-align: middle !important;
+    width: 25px;
 }
 
 .queue-icon {
-    font-size: 1.75em;
+    font-size: 1.25em;
+}
+
+.queue-text {
+    font-size: 0.75em;
+}
+
+.patient-badge {
+    padding: 0.35em 0.15em !important;
+    font-size: 100%;
+}
+
+.med-record-table {
+    border: 1px solid #dee2e6;
+}
+
+.med-record-table th, .med-record-table td {
+    padding: 20px;
 }
 
 @media (max-width: 768px) {
@@ -117,5 +146,11 @@ label {
         -webkit-flex: 0 0 33.33333%;
         flex: 0 0 33.33333%;
         max-width: 33.33333%;
+    }
+}
+
+@media (min-width: 576px) {
+    .modal-record {
+        max-width: 800px;
     }
 }

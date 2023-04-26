@@ -24,13 +24,13 @@ const App = ({ match }) => {
               render={(props) => <Data {...props} />}
             /> */}
             <ProtectedRoute
-              path={`${match.url}`}
-              component={DataSingleState}
+              path={`${match.url}/data`}
+              component={Data}
               roles={[ "isDev", "isManager", "isAdmin" ]}
             />
             <ProtectedRoute
-              path={`${match.url}/data`}
-              component={Data}
+              path={`${match.url}`}
+              component={DataSingleState}
               roles={[ "isDev", "isManager", "isAdmin" ]}
             />
             <Redirect to="/error" />

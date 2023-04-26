@@ -20,10 +20,6 @@ const auth = {
   login: (payloads) => {
     const url = api.auth.login
     return baseApi.post(url, payloads, { headers: getOriginHeader() })
-  },
-  register: (payloads) => {
-    const url = api.auth.register
-    return baseApi.post(url, payloads, { headers: getOriginHeader() })
   }
 }
 export default auth

@@ -6,9 +6,11 @@ const api = {
     updatePassword: '/karyawan/password'
   },
   employee: {
-    all: '/karyawan/',
+    all: '/karyawan',
     updatePhoto: '/karyawan/photo',
-    updatePassword: '/karyawan/password'
+    updatePassword: '/karyawan/password',
+    archive: '/karyawan/archive',
+    activate: '/karyawan/activate'
   },
   clinic: '/klinik',
   division: '/divisi',

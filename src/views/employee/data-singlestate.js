@@ -7,6 +7,10 @@ import {
   CardTitle,
   InputGroup,
   InputGroupAddon,
+  Modal,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
   FormGroup,
   Label,
   CustomInput,
@@ -21,6 +25,7 @@ import "rc-switch/assets/index.css";
 import "rc-slider/assets/index.css";
 import "react-rater/lib/react-rater.css";
 
+import moment from "moment";
 import Select from "react-select";
 import { Colxx, Separator } from "components/common/CustomBootstrap";
 import Pagination from "components/common/Pagination";
@@ -51,6 +56,13 @@ const selectType = [
 const selectWP = [
   { label: "SIP", value: "SIP", key: 0, name: 'tipe_izin' },
   { label: "STR", value: "STR", key: 1, name: 'tipe_izin' },
+];
+
+const selectMaritalStatus = [
+  { label: "Belum Kawin", value: "Belum Kawin", key: 0, name: 'status_menikah' },
+  { label: "Kawin", value: "Kawin", key: 1, name: 'status_menikah' },
+  { label: "Cerai Hidup", value: "Cerai Hidup", key: 2, name: 'status_menikah' },
+  { label: "Cerai Mati", value: "Cerai Mati", key: 3, name: 'status_menikah' },
 ];
 
 const selectSpecialist = [
@@ -134,9 +146,12 @@ const Data = ({ match, history, loading, error }) => {
   const [selectWard, setSelectWard] = useState([]);
 
   const [disabledSpecialist, setDisabledSpecialist] = useState(true);
+  const [fieldColumn, setFieldColumn] = useState({ username: 4, email: 4 });
+  const [openPassword, setOpenPassword] = useState('block');
+  const [modalPassword, setModalPassword] = useState(false);
   const [employeeID, setEmployeeID] = useState('');
 
-  const [ employee, setEmployee ] = useState({
+  const [employee, setEmployee] = useState({
     username: '',
     nama: '',
     email: '',
@@ -165,6 +180,13 @@ const Data = ({ match, history, loading, error }) => {
     status_menikah: '',
     tipe: '',
     spesialis: ''
+  });
+
+  const [ editAddress, setEditAddress ] = useState({
+    status: 0,
+    nama_kota: '',
+    nama_kecamatan: '',
+    nama_kelurahan: ''
   });
 
   const onLoadProvinsi = async () => {
@@ -375,7 +397,13 @@ const Data = ({ match, history, loading, error }) => {
             // return { ...current, spesialis: e.value }
             return { ...current, spesialis: e ? e.value : ''}
         })
-        // setSelectedSpecialist(e);
+        setSelectedSpecialist(e);
+      } else if (e.name === 'status_menikah') {
+        setEmployee(current => {
+            // return { ...current, status_menikah: e.value }
+            return { ...current, status_menikah: e ? e.value : ''}
+        })
+        setSelectedMaritalStatus(e);
       } else {
         if (e.target.name && e.target.name === 'jenis_kelamin') {
           if(e.target.id === 'laki') {
@@ -387,17 +415,21 @@ const Data = ({ match, history, loading, error }) => {
               return { ...current, jenis_kelamin: 'Perempuan' }
             })
           }
-        } else if (e.target.name && e.target.name === 'status_menikah') {
-          if(e.target.id === 'menikah') {
-            setEmployee(current => {
-              return { ...current, status_menikah: 'Menikah' }
-            })
-          } else if(e.target.id === 'belumMenikah') {
-            setEmployee(current => {
-              return { ...current, status_menikah: 'Belum Menikah' }
-            })
-          }
-        } else if (e.target.name && e.target.name !== 'jenis_kelamin' && e.target.name !== 'status_menikah') {
+        // } else if (e.target.name && e.target.name === 'status_menikah') {
+        //   if(e.target.id === 'menikah') {
+        //     setEmployee(current => {
+        //       return { ...current, status_menikah: 'Menikah' }
+        //     })
+        //   } else if(e.target.id === 'belumMenikah') {
+        //     setEmployee(current => {
+        //       return { ...current, status_menikah: 'Belum Menikah' }
+        //     })
+        //   }
+        } else if (e.target.name && e.target.name === 'password_update') {
+          setEmployeePassword(current => {
+              return { ...current, password: e.target.value }
+          })
+        } else if (e.target.name && e.target.name !== 'jenis_kelamin') {
           setEmployee(current => {
               return { ...current, [e.target.name]: e.target.value }
           })
@@ -407,7 +439,7 @@ const Data = ({ match, history, loading, error }) => {
       }
     }
 
-    console.log('employee', employee);
+    // console.log('employee', employee);
   }
 
   const onEmployeeSubmit = async (e) => {
@@ -463,7 +495,7 @@ const Data = ({ match, history, loading, error }) => {
   
           Swal.fire({
             title: "Sukses!",
-            html: `Tambah karyawan sukses`,
+            html: `Ubah karyawan sukses`,
             icon: "success",
             confirmButtonColor: "#008ecc",
           });
@@ -472,7 +504,7 @@ const Data = ({ match, history, loading, error }) => {
         } else {
           Swal.fire({
             title: "Gagal!",
-            html: `Tambah karyawan gagal: ${response.message}`,
+            html: `Ubah karyawan gagal: ${response.message}`,
             icon: "error",
             confirmButtonColor: "#008ecc",
             confirmButtonText: "Coba lagi",
@@ -483,7 +515,7 @@ const Data = ({ match, history, loading, error }) => {
       } catch (e) {
         Swal.fire({
           title: "Gagal!",
-          html: `Tambah karyawan gagal: ${e}`,
+          html: e,
           icon: "error",
           confirmButtonColor: "#008ecc",
           confirmButtonText: "Coba lagi",
@@ -547,6 +579,8 @@ const Data = ({ match, history, loading, error }) => {
     setSelectWard([]);
 
     setDisabledSpecialist(true);
+    setFieldColumn({ username: 4, email: 4 });
+    setOpenPassword('block');
 
     setDataStatus("add");
     onLoadProvinsi();
@@ -562,21 +596,16 @@ const Data = ({ match, history, loading, error }) => {
     }
   };
 
-  const [ editAddress, setEditAddress ] = useState({
-    status: 0,
-    nama_kota: '',
-    nama_kecamatan: '',
-    nama_kelurahan: ''
-  });
-
   const getEmployeeById = async (e, id) => {
     e.preventDefault();
     resetForm(e);
     setDataStatus("update");
+    setFieldColumn({ username: 6, email: 6 });
+    setOpenPassword('none');
 
     try {
-      const res = await employeeAPI.get("", id);
-      let data = res.data.data.result[0];
+      const res = await employeeAPI.get("", `/${id}`);
+      let data = res.data.data[0];
 
       // console.log(data);
 
@@ -597,10 +626,14 @@ const Data = ({ match, history, loading, error }) => {
         nomor_kitas: data.nomor_kitas,
         tipe_izin: data.tipe_izin,
         nomor_izin: data.nomor_izin,
-        kadaluarsa_izin: data.kadaluarsa_izin.substring(0, 10),
+        // kadaluarsa_izin: data.kadaluarsa_izin.substring(0, 10),
+        // kadaluarsa_izin: moment(data.kadaluarsa_izin).format("yyyy MM dd"),
+        kadaluarsa_izin: data.kadaluarsa_izin,
         nomor_hp: data.nomor_hp,
         tempat_lahir: data.tempat_lahir,
-        tanggal_lahir: data.tanggal_lahir.substring(0, 10),
+        // tanggal_lahir: data.tanggal_lahir.substring(0, 10),
+        // tanggal_lahir: moment(data.tanggal_lahir).format("yyyy MM dd"),
+        tanggal_lahir: data.tanggal_lahir,
         alamat: data.alamat,
         kode_pos: data.kode_pos,
         provinsi: data.provinsi,
@@ -664,7 +697,8 @@ const Data = ({ match, history, loading, error }) => {
       }
       setSelectedSpecialist({spesialis: data.spesialis ? e.value : ''});
       setSelectedGender(data.jenis_kelamin);
-      setSelectedMaritalStatus(data.status_menikah);
+      // setSelectedMaritalStatus(data.status_menikah);
+      setSelectedMaritalStatus({spesialis: data.status_menikah ? e.value : ''});
 
       setSelectProvince({provinsi: data.provinsi ? e.value : ''});
       setSelectCity({kota: data.kota ? e.value : ''});
@@ -694,7 +728,87 @@ const Data = ({ match, history, loading, error }) => {
       console.log(e);
     }
 
-    console.log(dataStatus);
+    // console.log(dataStatus);
+  };
+
+  const [employeePassword, setEmployeePassword] = useState({
+    // id: employeeID,
+    password: ''
+  });
+
+  const [employeeUsername, setEmployeeUsername] = useState('');
+
+  const changePasswordById = async (e, id) => {
+    e.preventDefault();
+    resetForm(e);
+    setDataStatus("update");
+    setFieldColumn({ username: 6, email: 6 });
+    setOpenPassword('none');
+    setModalPassword(true);
+
+    try {
+      const res = await employeeAPI.get("", `/${id}`);
+      let data = res.data.data[0];
+
+      // console.log(data);
+
+      setEmployeeID(data.id);
+      setEmployeeUsername(data.username);
+      setEmployeePassword({ password: '' });
+    } catch (e) {
+      console.log(e);
+    }
+
+    // console.log(dataStatus);
+  };
+
+  const onChangePasswordSubmit = async (e) => {
+    e.preventDefault();
+
+    if (dataStatus === 'update') {
+      try {
+        const response = await employeeAPI.updatePassword(employeePassword, employeeID);
+        // console.log(response);
+  
+        if (response.status == 200) {
+          let data = await response.data.data;
+          // console.log(data);
+  
+          Swal.fire({
+            title: "Sukses!",
+            html: `Ubah password karyawan sukses`,
+            icon: "success",
+            confirmButtonColor: "#008ecc",
+          });
+  
+          resetForm(e);
+          setModalPassword(false);
+          setEmployeePassword({ password: '' });
+        } else {
+          Swal.fire({
+            title: "Gagal!",
+            html: `Ubah password karyawan gagal: ${response.message}`,
+            icon: "error",
+            confirmButtonColor: "#008ecc",
+            confirmButtonText: "Coba lagi",
+          });
+  
+          throw Error(`Error status: ${response.statusCode}`);
+        }
+      } catch (e) {
+        Swal.fire({
+          title: "Gagal!",
+          html: e,
+          icon: "error",
+          confirmButtonColor: "#008ecc",
+          confirmButtonText: "Coba lagi",
+        });
+  
+        console.log(e);
+      }
+    } else {
+      console.log('dataStatus wrong')
+    }
   };
 
   const [currentPage, setCurrentPage] = useState(1);
@@ -802,7 +916,6 @@ const Data = ({ match, history, loading, error }) => {
     startNumber = (currentPage - 1) * 10 + 1;
   }
 
-  const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
   const [sortBy, setSortBy] = useState("");
   const [sortOrder, setSortOrder] = useState("");
@@ -874,7 +987,7 @@ const Data = ({ match, history, loading, error }) => {
                   <tr>
                     <th style={{ textAlign: "center", verticalAlign: 'middle' }}>#</th>
                     <th>Karyawan / Tenaga Kesehatan</th>
-                    <th style={{ textAlign: "center", width: '150px' }}>Aksi</th>
+                    <th style={{ textAlign: "center", width: '200px' }}>Aksi</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -889,16 +1002,28 @@ const Data = ({ match, history, loading, error }) => {
                           {data.tipe ? data.tipe : "-"}  
                         </td>
                         <td style={{ textAlign: "center", verticalAlign: 'middle' }}>
-                          <Button color="secondary" size="xs"
+                          <Button color="secondary" size="xs" className="button-xs"
                             onClick={(e) => getEmployeeById(e, data.id)}
                             >
                             <i className="simple-icon-note"></i>
                           </Button>
                           {' '}
-                          <Button color="warning" size="xs"
+                          <Button color="light" size="xs" className="button-xs"
+                            onClick={(e) => changePasswordById(e, data.id)}
+                            >
+                            <i className="simple-icon-lock"></i>
+                          </Button>
+                          {' '}
+                          <Button color="warning" size="xs" className="button-xs"
                             // onClick={}
                             >
                             <i className="simple-icon-drawer"></i>
+                          </Button>
+                          {' '}
+                          <Button color="danger" size="xs" className="button-xs"
+                            // onClick={}
+                            >
+                            <i className="simple-icon-trash"></i>
                           </Button>
                         </td>
                       </tr>
@@ -926,7 +1051,7 @@ const Data = ({ match, history, loading, error }) => {
               <CardTitle>Form Manajemen Karyawan & Tenaga Kesehatan</CardTitle>
               <Form>
                 <FormGroup row>
-                  <Colxx sm={4}>
+                  <Colxx sm={fieldColumn.username}>
                     <FormGroup>
                       <Label for="username">
                         Username
@@ -942,6 +1067,7 @@ const Data = ({ match, history, loading, error }) => {
                         type="text"
                         name="username"
                         id="username"
+                        placeholder="Username"
                         value={employee.username}
                         onChange={onChange}
                         // defaultValue={employee.username}
@@ -949,20 +1075,21 @@ const Data = ({ match, history, loading, error }) => {
                     </FormGroup>
                   </Colxx>
 
-                  <Colxx sm={4}>
+                  <Colxx sm={fieldColumn.email}>
                     <FormGroup>
                       <Label for="email">Email</Label>
                       <Input
                         type="email"
                         name="email"
                         id="email"
+                        placeholder="Email"
                         value={employee.email}
                         onChange={onChange}
                       />
                     </FormGroup>
                   </Colxx>
 
-                  <Colxx sm={4}>
+                  <Colxx sm={4} style={{ display: openPassword }}>
                     <FormGroup>
                       <Label for="password">
                         Password
@@ -977,7 +1104,7 @@ const Data = ({ match, history, loading, error }) => {
                       <Input
                         type="password"
                         name="password"
-                        id="password"
+                        placeholder="Password"
                         value={employee.password}
                         onChange={onChange}
                       />
@@ -1000,6 +1127,7 @@ const Data = ({ match, history, loading, error }) => {
                         type="text"
                         name="nomor_kitas"
                         id="nomor_kitas"
+                        placeholder="No. KITAS"
                         value={employee.nomor_kitas}
                         onChange={onChange}
                       />
@@ -1022,6 +1150,7 @@ const Data = ({ match, history, loading, error }) => {
                         type="text"
                         name="nama"
                         id="nama"
+                        placeholder="Nama Lengkap"
                         value={employee.nama}
                         onChange={onChange}
                       />
@@ -1079,6 +1208,7 @@ const Data = ({ match, history, loading, error }) => {
                         type="text"
                         name="alamat"
                         id="alamat"
+                        placeholder="Alamat"
                         value={employee.alamat}
                         onChange={onChange}
                       />
@@ -1092,6 +1222,7 @@ const Data = ({ match, history, loading, error }) => {
                         type="number"
                         name="kode_pos"
                         id="kode_pos"
+                        placeholder="Kode Pos"
                         value={employee.kode_pos}
                         pattern="[0-9]*"
                         onChange={onChange}
@@ -1121,13 +1252,13 @@ const Data = ({ match, history, loading, error }) => {
 
                   <Colxx sm={3}>
                     <FormGroup>
-                      <Label for="kotakab">Kota / Kabupaten</Label>
+                      <Label for="kota">Kota / Kabupaten</Label>
                       <Select
                         components={{ Input: CustomSelectInput }}
                         className="react-select"
                         classNamePrefix="react-select"
-                        name="kotakab"
-                        id="kotakab"
+                        name="kota"
+                        id="kota"
                         // value={selectedCity}
                         // onChange={setSelectedCity}
                         // options={selectCity}
@@ -1181,11 +1312,12 @@ const Data = ({ match, history, loading, error }) => {
 
                   <Colxx sm={4}>
                     <FormGroup>
-                      <Label for="noHP">No. HP</Label>
+                      <Label for="nomor_hp">No. HP</Label>
                       <Input
                         type="number"
                         name="nomor_hp"
                         id="nomor_hp"
+                        placeholder="No. HP"
                         value={employee.nomor_hp}
                         pattern="[0-9]*"
                         onChange={onChange}
@@ -1235,7 +1367,7 @@ const Data = ({ match, history, loading, error }) => {
                   <Colxx sm={4}>
                     <FormGroup>
                       <Label for="status_menikah">Status Menikah</Label>
-                      <Row>
+                      {/* <Row>
                         <Colxx sm={12} md={12} xl={4}>
                           <CustomInput
                             type="radio"
@@ -1258,7 +1390,18 @@ const Data = ({ match, history, loading, error }) => {
                             onChange={onChange}
                           />
                         </Colxx>
-                      </Row>
+                      </Row> */}
+                      <Select
+                        components={{ Input: CustomSelectInput }}
+                        className="react-select"
+                        classNamePrefix="react-select"
+                        name="status_menikah"
+                        id="status_menikah"
+                        options={selectMaritalStatus}
+                        value={selectMaritalStatus.find(item => item.value === employee.status_menikah)}
+                        // value={selectedWP}
+                        onChange={onChange}
+                      />
                     </FormGroup>
                   </Colxx>
 
@@ -1269,6 +1412,7 @@ const Data = ({ match, history, loading, error }) => {
                         type="text"
                         name="tempat_lahir"
                         id="tempat_lahir"
+                        placeholder="Tempat Lahir"
                         value={employee.tempat_lahir}
                         onChange={onChange}
                       />
@@ -1282,6 +1426,7 @@ const Data = ({ match, history, loading, error }) => {
                         type="date"
                         name="tanggal_lahir"
                         id="tanggal_lahir"
+                        placeholder="Tanggal Lahir"
                         value={employee.tanggal_lahir}
                         onChange={onChange}
                       />
@@ -1330,6 +1475,7 @@ const Data = ({ match, history, loading, error }) => {
                         type="text"
                         name="nomor_izin"
                         id="nomor_izin"
+                        placeholder="No. Izin"
                         value={employee.nomor_izin}
                         onChange={onChange}
                       />
@@ -1413,6 +1559,50 @@ const Data = ({ match, history, loading, error }) => {
             </CardBody>
           </Card>
         </Colxx>
+        
+        <Modal
+          isOpen={modalPassword}
+          toggle={() => setModalPassword(!modalPassword)}
+        >
+          <ModalHeader>
+            Ubah Password {employeeUsername}
+          </ModalHeader>
+          <ModalBody>
+            <Label for="password">
+              Password
+              <span
+                className="required text-danger"
+                aria-required="true"
+              >
+                {" "}
+                *
+              </span>
+            </Label>
+            <Input
+              type="password"
+              name="password_update"
+              placeholder="Password"
+              value={employeePassword.password}
+              onChange={onChange}
+            />
+          </ModalBody>
+          <ModalFooter>
+            <Button
+              type="button"
+              outline
+              color="danger"
+              onClick={() => setModalPassword(false)}
+            >
+              Batal
+            </Button>
+            <Button
+              color="primary"
+              onClick={(e) => onChangePasswordSubmit(e)}
+            >
+              Simpan
+            </Button>{' '}
+          </ModalFooter>
+        </Modal>
       </Row>
     </>
   );
