@@ -7,6 +7,10 @@ const patientAllergy = {
     const url = api.patientAllergy.all + options
     return baseApi.get(url, payloads, { headers: getOriginHeader() })
   },
+  getByPatient: (payloads, options) => {
+    const url = api.patientAllergy.patient + options
+    return baseApi.get(url, payloads, { headers: getOriginHeader() })
+  },
   add: (payloads) => {
     const url = api.patientAllergy.all
     return baseApi.post(url, payloads, { headers: getOriginHeader() })

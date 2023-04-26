@@ -19,7 +19,10 @@ const api = {
   patient: '/pasien',
   insurance: '/asuransi',
   allergy: '/alergi', // MASTER OF 'ALERGI' FIELD
-  patientAllergy: '/alergi-pasien', // JOIN TABLE ID ALERGY TO ID PATIENT AND ID RECORD
+  patientAllergy: {  // JOIN TABLE ID ALERGY TO ID PATIENT AND ID RECORD
+    all: '/alergi-pasien',
+    patient: '/alergi-pasien/pasien'
+  },
   queue: '/antrian',
   vitalSigns: '/vital-signs',
   record: '/kunjungan',

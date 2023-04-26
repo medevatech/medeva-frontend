@@ -178,10 +178,10 @@ const Home = ({ history, loading, error, loginUserAction }) => {
               <p className="white mb-0">
                 Gunakan akun Anda untuk melakukan login.
                 <br />
-                Jika Anda belum terdaftar, silahkan melakukan{' '}
+                {/* Jika Anda belum terdaftar, silahkan melakukan{' '}
                 <NavLink to="/register" className="yellowmedeva">
                   registrasi.
-                </NavLink>
+                </NavLink> */}
               </p>
             </div>
             <div className="form-side">
