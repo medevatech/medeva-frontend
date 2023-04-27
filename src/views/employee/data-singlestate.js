@@ -53,6 +53,15 @@ const selectType = [
   { label: "Manajemen", value: "Manajemen", key: 5, name: "tipe" },
 ];
 
+const selectTypeF = [
+  { label: "-", value: "", key: 0, name: "tipe" },
+  { label: "Admin", value: "Admin", key: 1, name: "tipe" },
+  { label: "Resepsionis", value: "Resepsionis", key: 2, name: "tipe" },
+  { label: "Perawat", value: "Perawat", key: 3, name: "tipe" },
+  { label: "Dokter", value: "Dokter", key: 4, name: "tipe" },
+  { label: "Manajemen", value: "Manajemen", key: 5, name: "tipe" },
+];
+
 const selectWP = [
   { label: "SIP", value: "SIP", key: 0, name: 'tipe_izin' },
   { label: "STR", value: "STR", key: 1, name: 'tipe_izin' },
@@ -66,6 +75,56 @@ const selectMaritalStatus = [
 ];
 
 const selectSpecialist = [
+  { label: "Anak", value: "Anak", key: 0, name: 'spesialis' },
+  { label: "Andrologi", value: "Andrologi", key: 1, name: 'spesialis' },
+  { label: "Anestesiologi dan Terapi Intensif", value: "Anestesiologi dan Terapi Intensif", key: 2, name: 'spesialis' },
+  { label: "Akupunktur Medik", value: "Akupunktur Medik", key: 3, name: 'spesialis' },
+  { label: "Bedah", value: "Bedah", key: 4, name: 'spesialis' },
+  { label: "Bedah Anak", value: "Bedah Anak", key: 5, name: 'spesialis' },
+  { label: "Bedah Plastik, Rekonstruksi, dan Estetik", value: "Bedah Plastik, Rekonstruksi, dan Estetik", key: 6, name: 'spesialis' },
+  { label: "Bedah Saraf", value: "Bedah Saraf", key: 7, name: 'spesialis' },
+  { label: "Bedah Toraks, Kardiak, dan Vaskular", value: "Bedah Toraks, Kardiak, dan Vaskular", key: 8, name: 'spesialis' },
+  { label: "Dermatologi dan Venereologi", value: "Dermatologi dan Venereologi", key: 9, name: 'spesialis' },
+  { label: "Kegawatdaruratan Medik", value: "Kegawatdaruratan Medik", key: 10, name: 'spesialis' },
+  { label: "Farmakologi Klinik", value: "Farmakologi Klinik", key: 11, name: 'spesialis' },
+  { label: "Forensik dan Medikolegal", value: "Forensik dan Medikolegal", key: 12, name: 'spesialis' },
+  { label: "Gizi Klinik", value: "Gizi Klinik", key: 13, name: 'spesialis' },
+  { label: "Jantung dan Pembuluh Darah", value: "Jantung dan Pembuluh Darah", key: 14, name: 'spesialis' },
+  { label: "Kedokteran Fisik dan Rehabilitasi", value: "Kedokteran Fisik dan Rehabilitasi", key: 15, name: 'spesialis' },
+  { label: "Kedokteran Jiwa", value: "Kedokteran Jiwa", key: 16, name: 'spesialis' },
+  { label: "Kedokteran Kelautan", value: "Kedokteran Kelautan", key: 17, name: 'spesialis' },
+  { label: "Kedokteran Keluarga Layanan Primer", value: "Kedokteran Keluarga Layanan Primer", key: 18, name: 'spesialis' },
+  { label: "Kedokteran Nuklir dan Teranostik Molekuler", value: "Kedokteran Nuklir dan Teranostik Molekuler", key: 19, name: 'spesialis' },
+  { label: "Kedokteran Okupasi", value: "Kedokteran Okupasi", key: 20, name: 'spesialis' },
+  { label: "Kedokteran Olahraga", value: "Kedokteran Olahraga", key: 21, name: 'spesialis' },
+  { label: "Kedokteran Penerbangan", value: "Kedokteran Penerbangan", key: 22, name: 'spesialis' },
+  { label: "Mikrobiologi Klinik", value: "Mikrobiologi Klinik", key: 23, name: 'spesialis' },
+  { label: "Neurologi", value: "Neurologi", key: 24, name: 'spesialis' },
+  { label: "Obstetri dan Ginekologi", value: "Obstetri dan Ginekologi", key: 25, name: 'spesialis' },
+  { label: "Oftalmologi", value: "Oftalmologi", key: 26, name: 'spesialis' },
+  { label: "Onkologi Radiasi", value: "Onkologi Radiasi", key: 27, name: 'spesialis' },
+  { label: "Orthopaedi dan Traumatologi", value: "Orthopaedi dan Traumatologi", key: 28, name: 'spesialis' },
+  { label: "Parasitologi Klinik", value: "Parasitologi Klinik", key: 29, name: 'spesialis' },
+  { label: "Patologi Anatomi", value: "Patologi Anatomi", key: 30, name: 'spesialis' },
+  { label: "Patologi Klinik", value: "Patologi Klinik", key: 31, name: 'spesialis' },
+  { label: "Penyakit Dalam", value: "Penyakit Dalam", key: 32, name: 'spesialis' },
+  { label: "Pulmonologi dan Kedokteran Respirasi", value: "Pulmonologi dan Kedokteran Respirasi", key: 33, name: 'spesialis' },
+  { label: "Radiologi", value: "Radiologi", key: 34, name: 'spesialis' },
+  { label: "Telinga Hidung Tenggorok Bedah Kepala Leher", value: "Telinga Hidung Tenggorok Bedah Kepala Leher", key: 35, name: 'spesialis' },
+  { label: "Urologi", value: "Urologi", key: 36, name: 'spesialis' },
+  { label: "Bedah Mulut dan Maksilofasial (Dokter Gigi)", value: "Bedah Mulut dan Maksilofasial (Dokter Gigi)", key: 37, name: 'spesialis' },
+  { label: "Kedokteran Gigi Anak (Dokter Gigi)", value: "Kedokteran Gigi Anak (Dokter Gigi)", key: 38, name: 'spesialis' },
+  { label: "Konservasi Gigi (Dokter Gigi)", value: "Konservasi Gigi (Dokter Gigi)", key: 39, name: 'spesialis' },
+  { label: "Ortodonsia (Dokter Gigi)", value: "Ortodonsia (Dokter Gigi)", key: 40, name: 'spesialis' },
+  { label: "Odontologi Forensik (Dokter Gigi)", value: "Odontologi Forensik (Dokter Gigi)", key: 41, name: 'spesialis' },
+  { label: "Penyakit Mulut (Dokter Gigi)", value: "Penyakit Mulut (Dokter Gigi)", key: 43, name: 'spesialis' },
+  { label: "Periodonsia (Dokter Gigi)", value: "Periodonsia (Dokter Gigi)", key: 44, name: 'spesialis' },
+  { label: "Prostodonsia (Dokter Gigi)", value: "Prostodonsia (Dokter Gigi)", key: 45, name: 'spesialis' },
+  { label: "Radiologi Kedokteran Gigi (Dokter Gigi)", value: "Radiologi Kedokteran Gigi (Dokter Gigi)", key: 46, name: 'spesialis' },
+];
+
+const selectSpecialistF = [
+  { label: "-", value: "", key: 99, name: 'spesialis' },
   { label: "Anak", value: "Anak", key: 0, name: 'spesialis' },
   { label: "Andrologi", value: "Andrologi", key: 1, name: 'spesialis' },
   { label: "Anestesiologi dan Terapi Intensif", value: "Anestesiologi dan Terapi Intensif", key: 2, name: 'spesialis' },
@@ -298,148 +357,152 @@ const Data = ({ match, history, loading, error }) => {
     // console.log('e', e);
 
     if (e.length > 0 && e[0].name === "peran") {
+      // setSelectedRole(e);
+      setSelectedRole(Array.isArray(e) ? e.map(x => x.value) : []);
+  
+      // console.log('selectedRole onChange', selectedRole);
+
       for (var i = 0; i < e.length; i++) {
         if (e[i].value === "Developer") {
           setEmployee(current => {
-              return { ...current, 'is_dev': 1 }
+              return { ...current, is_dev: 1 }
           })
-        } 
+        }
         
         if (e[i].value === "Manager") {
           setEmployee(current => {
-              return { ...current, 'is_manager': 1 }
+              return { ...current, is_manager: 1 }
           })
-        } 
+        }
         
         if (e[i].value === "Admin") {
           setEmployee(current => {
-              return { ...current, 'is_admin': 1 }
+              return { ...current, is_admin: 1 }
           })
         } 
         
         if (e[i].value === "Resepsionis") {
           setEmployee(current => {
-              return { ...current, 'is_resepsionis': 1 }
+              return { ...current, is_resepsionis: 1 }
           })
         } 
         
         if (e[i].value === "Perawat") {
           setEmployee(current => {
-              return { ...current, 'is_perawat': 1 }
+              return { ...current, is_perawat: 1 }
           })
-        } 
+        }
         
         if (e[i].value === "Dokter") {
           setEmployee(current => {
-              return { ...current, 'is_dokter': 1 }
+              return { ...current, is_dokter: 1 }
           })
         } 
         
         if (e[i].value === "Manajemen") {
           setEmployee(current => {
-              return { ...current, 'is_manajemen': 1 }
+              return { ...current, is_manajemen: 1 }
           })
-        }
+        } 
       }
+    } else if (e.length <= 0) {
+      setEmployee(current => {
+          return { ...current, is_dev: 0, is_manager: 0, is_admin: 0, is_resepsionis: 0, is_perawat: 0, is_dokter: 0, is_manajemen: 0 }
+      })
 
-    //   setSelectedRole(e);
       setSelectedRole(Array.isArray(e) ? e.map(x => x.value) : []);
-
-      // console.log('selectedRole onChange', selectedRole);
-    } else {
-      if (e.name === 'provinsi') {
+    } else if (e.name === 'provinsi') {
         setEmployee(current => {
             // return { ...current, provinsi: e.value }
             return { ...current, provinsi: e ? e.value : ''}
         })
         setSelectProvince(e); changeKota(e.key, "");
-      } else if (e.name === 'kota') {
-        setEmployee(current => {
-            // return { ...current, kota: e.value }
-            return { ...current, kota: e ? e.value : ''}
-        })
-        setSelectCity(e); changeKecamatan(e.key);
-      } else if (e.name === 'kecamatan') {
-        setEmployee(current => {
-            // return { ...current, kecamatan: e.value }
-            return { ...current, kecamatan: e ? e.value : ''}
-        })
-        setSelectSubdistrict(e); changeKelurahan(e.key);
-      } else if (e.name === 'kelurahan') {
-        setEmployee(current => {
-            // return { ...current, kelurahan: e.value }
-            return { ...current, kelurahan: e ? e.value : ''}
-        })
-        setSelectWard(e);
-      } else if (e.name === 'tipe_izin') {
-        setEmployee(current => {
-            // return { ...current, tipe_izin: e.value }
-            return { ...current, tipe_izin: e ? e.value : ''}
-        })
-        setSelectedWP(e);
-      } else if (e.name === 'tipe') {
-        setEmployee(current => {
-            // return { ...current, tipe: e.value }
-            return { ...current, tipe: e ? e.value : ''}
-        })
-        setSelectedType(e);
+    } else if (e.name === 'kota') {
+      setEmployee(current => {
+          // return { ...current, kota: e.value }
+          return { ...current, kota: e ? e.value : ''}
+      })
+      setSelectCity(e); changeKecamatan(e.key);
+    } else if (e.name === 'kecamatan') {
+      setEmployee(current => {
+          // return { ...current, kecamatan: e.value }
+          return { ...current, kecamatan: e ? e.value : ''}
+      })
+      setSelectSubdistrict(e); changeKelurahan(e.key);
+    } else if (e.name === 'kelurahan') {
+      setEmployee(current => {
+          // return { ...current, kelurahan: e.value }
+          return { ...current, kelurahan: e ? e.value : ''}
+      })
+      setSelectWard(e);
+    } else if (e.name === 'tipe_izin') {
+      setEmployee(current => {
+          // return { ...current, tipe_izin: e.value }
+          return { ...current, tipe_izin: e ? e.value : ''}
+      })
+      setSelectedWP(e);
+    } else if (e.name === 'tipe') {
+      setEmployee(current => {
+          // return { ...current, tipe: e.value }
+          return { ...current, tipe: e ? e.value : ''}
+      })
+      setSelectedType(e);
 
-        if (e.value === 'Dokter') {
-          setDisabledSpecialist(false);
-        } else {
-          setDisabledSpecialist(true);
-          setEmployee(current => {
-              return { ...current, spesialis: ''}
-          })
-        }
-      } else if (e.name === 'spesialis') {
-        setEmployee(current => {
-            // return { ...current, spesialis: e.value }
-            return { ...current, spesialis: e ? e.value : ''}
-        })
-        setSelectedSpecialist(e);
-      } else if (e.name === 'status_menikah') {
-        setEmployee(current => {
-            // return { ...current, status_menikah: e.value }
-            return { ...current, status_menikah: e ? e.value : ''}
-        })
-        setSelectedMaritalStatus(e);
+      if (e.value === 'Dokter') {
+        setDisabledSpecialist(false);
       } else {
-        if (e.target.name && e.target.name === 'jenis_kelamin') {
-          if(e.target.id === 'laki') {
-            setEmployee(current => {
-              return { ...current, jenis_kelamin: 'Laki-laki' }
-            })
-          } else if(e.target.id === 'perempuan') {
-            setEmployee(current => {
-              return { ...current, jenis_kelamin: 'Perempuan' }
-            })
-          }
-        // } else if (e.target.name && e.target.name === 'status_menikah') {
-        //   if(e.target.id === 'menikah') {
-        //     setEmployee(current => {
-        //       return { ...current, status_menikah: 'Menikah' }
-        //     })
-        //   } else if(e.target.id === 'belumMenikah') {
-        //     setEmployee(current => {
-        //       return { ...current, status_menikah: 'Belum Menikah' }
-        //     })
-        //   }
-        } else if (e.target.name && e.target.name === 'password_update') {
-          setEmployeePassword(current => {
-              return { ...current, password: e.target.value }
-          })
-        } else if (e.target.name && e.target.name !== 'jenis_kelamin') {
+        setDisabledSpecialist(true);
+        setEmployee(current => {
+            return { ...current, spesialis: ''}
+        })
+      }
+    } else if (e.name === 'spesialis') {
+      setEmployee(current => {
+          // return { ...current, spesialis: e.value }
+          return { ...current, spesialis: e ? e.value : ''}
+      })
+      setSelectedSpecialist(e);
+    } else if (e.name === 'status_menikah') {
+      setEmployee(current => {
+          // return { ...current, status_menikah: e.value }
+          return { ...current, status_menikah: e ? e.value : ''}
+      })
+      setSelectedMaritalStatus(e);
+    } else {
+      if (e.target.name && e.target.name === 'jenis_kelamin') {
+        if(e.target.id === 'laki') {
           setEmployee(current => {
-              return { ...current, [e.target.name]: e.target.value }
+            return { ...current, jenis_kelamin: 'Laki-laki' }
           })
-        } else {
-          console.log(e);
+        } else if(e.target.id === 'perempuan') {
+          setEmployee(current => {
+            return { ...current, jenis_kelamin: 'Perempuan' }
+          })
         }
+      // } else if (e.target.name && e.target.name === 'status_menikah') {
+      //   if(e.target.id === 'menikah') {
+      //     setEmployee(current => {
+      //       return { ...current, status_menikah: 'Menikah' }
+      //     })
+      //   } else if(e.target.id === 'belumMenikah') {
+      //     setEmployee(current => {
+      //       return { ...current, status_menikah: 'Belum Menikah' }
+      //     })
+      //   }
+      } else if (e.target.name && e.target.name === 'password_update') {
+        setEmployeePassword(current => {
+            return { ...current, password: e.target.value }
+        })
+      } else if (e.target.name && e.target.name !== 'jenis_kelamin') {
+        setEmployee(current => {
+            return { ...current, [e.target.name]: e.target.value }
+        })
+      } else {
+        console.log(e);
       }
     }
 
-    // console.log('employee', employee);
+    console.log('employee', employee);
   }
 
   const onEmployeeSubmit = async (e) => {
@@ -811,6 +874,9 @@ const Data = ({ match, history, loading, error }) => {
     }
   };
 
+  const [searchName, setSearchName] = useState("");
+  const [searchTipe, setSearchTipe] = useState("");
+  const [searchSpesialis, setSearchSpesialis] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
@@ -821,8 +887,14 @@ const Data = ({ match, history, loading, error }) => {
     } else {
       params = `${params}?limit=10`;
     }
-    if (search !== "") {
-      params = `${params}&searchName=${search}`;
+    if (searchName !== "") {
+      params = `${params}&searchName=${searchName}`;
+    }
+    if (searchTipe !== "") {
+      params = `${params}&searchTipe=${searchTipe}`;
+    }
+    if (searchSpesialis !== "") {
+      params = `${params}&searchSpesialis=${searchSpesialis}`;
     }
     if (currentPage !== 1) {
       params = `${params}&page=${currentPage}`;
@@ -847,15 +919,59 @@ const Data = ({ match, history, loading, error }) => {
       changeKelurahan(id_kecamatan, editAddress);
     }
 
-    if(dataStatus === "update") {
+    if(dataStatus === "add") {
+      if(selectedRole) {
+        if (!selectedRole.includes('Developer')) {
+          setEmployee(current => {
+            return { ...current, is_dev: 0 }
+          })
+        }
+        
+        if (!selectedRole.includes('Manager')) {
+          setEmployee(current => {
+            return { ...current, is_manager: 0 }
+          })
+        } 
+
+        if (!selectedRole.includes('Admin')) {
+          setEmployee(current => {
+            return { ...current, is_admin: 0 }
+          })
+        } 
+
+        if (!selectedRole.includes('Resepsionis')) {
+          setEmployee(current => {
+            return { ...current, is_resepsionis: 0 }
+          })
+        } 
+
+        if (!selectedRole.includes('Perawat')) {
+          setEmployee(current => {
+            return { ...current, is_perawat: 0 }
+          })
+        }
+        
+        if (!selectedRole.includes('Dokter')) {
+          setEmployee(current => {
+            return { ...current, is_dokter: 0 }
+          })
+        } 
+
+        if (!selectedRole.includes('Manajemen')) {
+          setEmployee(current => {
+            return { ...current, is_manajemen: 0 }
+          })
+        } 
+      }
+    } else if(dataStatus === "update") {
       if(selectedRole) {
         selectedRole.includes('Developer') ?
-        setEmployee(current => {
-            return { ...current, is_dev: 1 }
-        }) : 
-        setEmployee(current => {
-            return { ...current, is_dev: 0 }
-        })
+          setEmployee(current => {
+              return { ...current, is_dev: 1 }
+          }) : 
+          setEmployee(current => {
+              return { ...current, is_dev: 0 }
+          })
 
         selectedRole.includes('Manager') ?
           setEmployee(current => {
@@ -908,7 +1024,7 @@ const Data = ({ match, history, loading, error }) => {
         // console.log('selectedRole onUpdate', selectedRole);
       }
     }
-  }, [limit, search, sortBy, sortOrder, currentPage, editAddress, selectedRole ]);
+  }, [limit, searchName, searchTipe, searchSpesialis, sortBy, sortOrder, currentPage, editAddress, selectedRole ]);
 
   let startNumber = 1;
 
@@ -919,7 +1035,6 @@ const Data = ({ match, history, loading, error }) => {
   const [limit, setLimit] = useState(10);
   const [sortBy, setSortBy] = useState("");
   const [sortOrder, setSortOrder] = useState("");
-  const [search, setSearch] = useState("");
 
   return (
     <>
@@ -948,9 +1063,11 @@ const Data = ({ match, history, loading, error }) => {
                     className="react-select"
                     classNamePrefix="react-select"
                     name="tipe"
-                    value={selectedTypeF}
-                    onChange={setSelectedTypeF}
-                    options={selectType}
+                    // value={selectedTypeF}
+                    // onChange={setSelectedTypeF}
+                    onChange={(e) => setSearchTipe(e.value)}
+                    options={selectTypeF}
+                    isSearchable={false}
                   />
                 </Colxx>
                 <Colxx sm="12" md="6" style={{ paddingRight: '0px' }}>
@@ -962,9 +1079,10 @@ const Data = ({ match, history, loading, error }) => {
                     className="react-select"
                     classNamePrefix="react-select"
                     name="spesialis"
-                    value={selectedSpecialistF}
-                    onChange={setSelectedSpecialistF}
-                    options={selectSpecialist}
+                    // value={selectedSpecialistF}
+                    // onChange={setSelectedSpecialistF}
+                    onChange={(e) => setSearchSpesialis(e.value)}
+                    options={selectSpecialistF}
                   />
                 </Colxx>
               </FormGroup>
@@ -974,7 +1092,7 @@ const Data = ({ match, history, loading, error }) => {
                   name="search"
                   id="search"
                   placeholder="Pencarian"
-                  onChange={(e) => setSearch(e.target.value.toLowerCase())}
+                  onChange={(e) => setSearchName(e.target.value)}
                 />
                 <InputGroupAddon addonType="append">
                   <Button outline color="theme-3" className="button-search">

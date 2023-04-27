@@ -338,6 +338,7 @@ const Data = ({ match }) => {
   };
 
   const [currentPage, setCurrentPage] = useState(1);
+  const [search, setSearch] = useState("");
   const [totalPage, setTotalPage] = useState(3);
 
   useEffect(() => {
@@ -367,7 +368,6 @@ const Data = ({ match }) => {
   const [limit, setLimit] = useState(10);
   const [sortBy, setSortBy] = useState("");
   const [sortOrder, setSortOrder] = useState("");
-  const [search, setSearch] = useState("");
 
   return (
     <>

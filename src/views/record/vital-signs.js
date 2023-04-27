@@ -266,6 +266,7 @@ const VitalSigns = ({ match }) => {
   };
 
   const [currentPage, setCurrentPage] = useState(1);
+  const [search, setSearch] = useState("");
 
   useEffect(() => {
     let params = "";
@@ -294,7 +295,6 @@ const VitalSigns = ({ match }) => {
   const [limit, setLimit] = useState(10);
   const [sortBy, setSortBy] = useState("");
   const [sortOrder, setSortOrder] = useState("");
-  const [search, setSearch] = useState("");
 
   return (
     <>
