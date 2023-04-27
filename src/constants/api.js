@@ -17,7 +17,11 @@ const api = {
   shift: '/shift',
   schedule: '/jaga',
   patient: '/pasien',
-  insurance: '/asuransi',
+  insurance: {
+    all: '/asuransi',
+    patient: '/asuransi/pasien',
+    edit: '/asuransi/edit'
+  },
   allergy: '/alergi', // MASTER OF 'ALERGI' FIELD
   patientAllergy: {  // JOIN TABLE ID ALERGY TO ID PATIENT AND ID RECORD
     all: '/alergi-pasien',

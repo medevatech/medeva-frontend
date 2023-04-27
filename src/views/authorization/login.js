@@ -147,7 +147,7 @@ const Home = ({ history, loading, error, loginUserAction }) => {
           } catch (e) {
               Swal.fire({
                 title: 'Error!',
-                html: `Login failed`,
+                html: `Login gagal`,
                 icon: 'error',
                 confirmButtonColor: '#008ecc',
                 confirmButtonText: 'Coba lagi',
