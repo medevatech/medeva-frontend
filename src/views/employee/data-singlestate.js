@@ -208,6 +208,8 @@ const Data = ({ match, history, loading, error }) => {
   const [fieldColumn, setFieldColumn] = useState({ username: 4, email: 4 });
   const [openPassword, setOpenPassword] = useState('block');
   const [modalPassword, setModalPassword] = useState(false);
+  const [modalArchive, setModalArchive] = useState(false);
+  const [statusEmployee, setStatusEmployee] = useState(0);
   const [employeeID, setEmployeeID] = useState('');
 
   const [employee, setEmployee] = useState({
@@ -874,6 +876,93 @@ const Data = ({ match, history, loading, error }) => {
     }
   };
 
+  const archiveById = async (e, id) => {
+    e.preventDefault();
+
+    setModalArchive(true);
+    try {
+      const res = await employeeAPI.get("", `/${id}`);
+      let data = res.data.data[0];
+
+      setEmployeeID(data.id);
+      setStatusEmployee(data.is_active);
+      setEmployeeUsername(data.username);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  const onChangeArchiveSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      if (statusEmployee === 1) {
+        const response = await employeeAPI.archive("", employeeID);
+
+        if (response.status == 200) {
+          let data = await response.data.data;
+          // console.log(data);
+
+          Swal.fire({
+            title: "Sukses!",
+            html: `Arsip karyawan sukses`,
+            icon: "success",
+            confirmButtonColor: "#008ecc",
+          });
+
+          setModalArchive(false);
+        } else {
+          Swal.fire({
+            title: "Gagal!",
+            html: `Arsip karyawan gagal: ${response.message}`,
+            icon: "error",
+            confirmButtonColor: "#008ecc",
+            confirmButtonText: "Coba lagi",
+          });
+
+          throw Error(`Error status: ${response.statusCode}`);
+        }
+      } else {
+        const response = await employeeAPI.activate("", employeeID);
+
+        if (response.status == 200) {
+          let data = await response.data.data;
+          // console.log(data);
+
+          Swal.fire({
+            title: "Sukses!",
+            html: `Aktivasi karyawan sukses`,
+            icon: "success",
+            confirmButtonColor: "#008ecc",
+          });
+
+          setModalArchive(false);
+        } else {
+          Swal.fire({
+            title: "Gagal!",
+            html: `Aktivasi karyawan gagal: ${response.message}`,
+            icon: "error",
+            confirmButtonColor: "#008ecc",
+            confirmButtonText: "Coba lagi",
+          });
+
+          throw Error(`Error status: ${response.statusCode}`);
+        }
+      }
+      // console.log(response);
+    } catch (e) {
+      Swal.fire({
+        title: "Gagal!",
+        html: e,
+        icon: "error",
+        confirmButtonColor: "#008ecc",
+        confirmButtonText: "Coba lagi",
+      });
+
+      console.log(e);
+    }
+  };
+
   const [searchName, setSearchName] = useState("");
   const [searchTipe, setSearchTipe] = useState("");
   const [searchSpesialis, setSearchSpesialis] = useState("");
@@ -1024,6 +1113,7 @@ const Data = ({ match, history, loading, error }) => {
         // console.log('selectedRole onUpdate', selectedRole);
       }
     }
+  // }, [limit, searchName, searchTipe, searchSpesialis, sortBy, sortOrder, currentPage, editAddress, selectedRole, employee, employeeTotalPage ]);
   }, [limit, searchName, searchTipe, searchSpesialis, sortBy, sortOrder, currentPage, editAddress, selectedRole ]);
 
   let startNumber = 1;
@@ -1132,17 +1222,31 @@ const Data = ({ match, history, loading, error }) => {
                             <i className="simple-icon-lock"></i>
                           </Button>
                           {' '}
-                          <Button color="warning" size="xs" className="button-xs"
-                            // onClick={}
+                          {data.is_active == 1 ? (
+                            <Button
+                              color="success"
+                              size="xs"
+                              className="button-xs"
+                              onClick={(e) => archiveById(e, data.id)}
                             >
-                            <i className="simple-icon-drawer"></i>
-                          </Button>
-                          {' '}
+                              <i className="simple-icon-drawer"></i>
+                            </Button>
+                          ) : (
+                            <Button
+                              color="warning"
+                              size="xs"
+                              className="button-xs"
+                              onClick={(e) => archiveById(e, data.id)}
+                            >
+                              <i className="simple-icon-drawer"></i>
+                            </Button>
+                          )}
+                          {/* {' '}
                           <Button color="danger" size="xs" className="button-xs"
                             // onClick={}
                             >
                             <i className="simple-icon-trash"></i>
-                          </Button>
+                          </Button> */}
                         </td>
                       </tr>
                     ))
@@ -1721,6 +1825,30 @@ const Data = ({ match, history, loading, error }) => {
             </Button>{' '}
           </ModalFooter>
         </Modal>
+
+        <Modal
+          isOpen={modalArchive}
+          toggle={() => setModalArchive(!modalArchive)}
+        >
+          <ModalHeader>Arsip Karyawan / Tenaga Kesehatan</ModalHeader>
+          <ModalBody>
+            <h5>Apakah Anda ingin {statusEmployee === 1 ?  'mengarsipkan akun'  : 'aktivasi akun' } {employeeUsername}?</h5>
+          </ModalBody>
+          <ModalFooter>
+            <Button
+              type="button"
+              outline
+              color="danger"
+              onClick={() => setModalArchive(false)}
+            >
+              Batal
+            </Button>
+            <Button color="primary" onClick={(e) => onChangeArchiveSubmit(e)}>
+              Ya
+            </Button>{" "}
+          </ModalFooter>
+        </Modal>
+          
       </Row>
     </>
   );

@@ -16,7 +16,11 @@ const api = {
   division: '/divisi',
   shift: '/shift',
   schedule: '/jaga',
-  patient: '/pasien',
+  patient: {
+    all: '/pasien',
+    archive: '/pasien/archive',
+    activate: '/pasien/activate'
+  },
   insurance: {
     all: '/asuransi',
     patient: '/asuransi/pasien',
@@ -28,7 +32,10 @@ const api = {
     patient: '/alergi-pasien/pasien'
   },
   queue: '/antrian',
-  vitalSigns: '/vital-signs',
+  vitalSigns: {
+    all:  '/vital-signs',
+    patient: '/vital-signs/pasien'
+  },
   record: '/kunjungan',
   tempRecord: '/temp-kunjungan', // JOIN TABLE ID RECORD TO ID VITAL SIGNS
   disease: '/penyakit', // MASTER OF 'DIAGNOSIS' FIELD

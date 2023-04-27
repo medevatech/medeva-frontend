@@ -15,5 +15,13 @@ const patient = {
     const url = api.patient + `/${id}`
     return baseApi.put(url, payloads, { headers: getOriginHeader() })
   },
+  archive: (payloads, id) => {
+    const url = api.patient.archive + `/${id}`
+    return baseApi.put(url, payloads, { headers: getOriginHeader() })
+  },
+  activate: (payloads, id) => {
+    const url = api.patient.activate + `/${id}`
+    return baseApi.put(url, payloads, { headers: getOriginHeader() })
+  },
 }
 export default patient

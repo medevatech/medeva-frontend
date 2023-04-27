@@ -1,6 +1,6 @@
 const queue = (state = [], action) => {
     switch (action.type) {
-        case "READ_QUEUE":
+        case "GET_QUEUE":
             return action.payload;
             break;
         default:
