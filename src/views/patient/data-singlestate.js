@@ -212,7 +212,7 @@ const Data = ({ match }) => {
   const [selectedAllergy, setSelectedAllergy] = useState([]);
 
   const [modalArchive, setModalArchive] = useState(false);
-  const [statusPatient, setPatientStatus] = useState(0);
+  const [patientStatus, setPatientStatus] = useState(0);
   const [patientName, setPatientName] = useState('');
 
   const [patientID, setPatientID] = useState('');
@@ -1006,6 +1006,7 @@ const Data = ({ match }) => {
     try {
       const res = await patientAPI.get("", `/${id}`);
       let data = res.data.data[0];
+      console.log(data);
 
       setPatientID(data.id);
       setPatientStatus(data.is_active);
@@ -1019,7 +1020,7 @@ const Data = ({ match }) => {
     e.preventDefault();
 
     try {
-      if (statusPatient === 1) {
+      if (patientStatus === 1) {
         const response = await patientAPI.archive("", patientID);
 
         if (response.status == 200) {
@@ -1087,7 +1088,7 @@ const Data = ({ match }) => {
   };
 
   const [currentPage, setCurrentPage] = useState(1);
-  const [search, setSearch] = useState("");
+  const [searchName, setSearchName] = useState("");
 
   useEffect(() => {
     let params = "";
@@ -1097,8 +1098,8 @@ const Data = ({ match }) => {
     } else {
       params = `${params}?limit=10`;
     }
-    if (search !== "") {
-      params = `${params}&search=${search}`;
+    if (searchName !== "") {
+      params = `${params}&search=${searchName}`;
     }
     if (currentPage !== 1) {
       params = `${params}&page=${currentPage}`;
@@ -1130,7 +1131,7 @@ const Data = ({ match }) => {
     //   getInsuranceByPatientId("", patientID);
     // }
 
-  }, [limit, search, sortBy, sortOrder, currentPage, editAddress, processPatient, patientAll, patientTotalPage]);
+  }, [limit, searchName, sortBy, sortOrder, currentPage, editAddress, processPatient, patientAll, patientTotalPage]);
 
   let startNumber = 1;
 
@@ -1164,7 +1165,7 @@ const Data = ({ match }) => {
                     name="search"
                     id="search"
                     placeholder="Pencarian"
-                    onChange={(e) => setSearch(e.target.value)}
+                    onChange={(e) => setSearchName(e.target.value)}
                   />
                   <InputGroupAddon addonType="append">
                     <Button outline color="theme-3" className="button-search">
@@ -1738,7 +1739,7 @@ const Data = ({ match }) => {
         >
           <ModalHeader>Arsip Pasien</ModalHeader>
           <ModalBody>
-            <h5>Apakah Anda ingin {statusPatient === 1 ?  'mengarsipkan pasien'  : 'aktivasi pasien' } {patientName}?</h5>
+            <h5>Apakah Anda ingin {patientStatus === 1 ?  'mengarsipkan pasien'  : 'aktivasi pasien' } {patientName}?</h5>
           </ModalBody>
           <ModalFooter>
             <Button

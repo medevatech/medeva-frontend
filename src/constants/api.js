@@ -18,8 +18,8 @@ const api = {
   schedule: '/jaga',
   patient: {
     all: '/pasien',
-    archive: '/pasien/archive',
-    activate: '/pasien/activate'
+    archive: '/pasien/active',
+    activate: '/pasien/active'
   },
   insurance: {
     all: '/asuransi',
@@ -36,7 +36,10 @@ const api = {
     all:  '/vital-signs',
     patient: '/vital-signs/pasien'
   },
-  record: '/kunjungan',
+  record: {
+    all: '/kunjungan',
+    patient: '/kunjungan/pasien'
+  },
   tempRecord: '/temp-kunjungan', // JOIN TABLE ID RECORD TO ID VITAL SIGNS
   disease: '/penyakit', // MASTER OF 'DIAGNOSIS' FIELD
   diagnose: '/diagnosis', // MASTER OF 'DIAGNOSIS' FIELD
