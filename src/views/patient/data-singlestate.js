@@ -7,16 +7,16 @@ import {
   CardTitle,
   InputGroup,
   InputGroupAddon,
+  Modal,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
   FormGroup,
   Label,
   CustomInput,
   Button,
   Form,
-  Table,
-  DropdownToggle,
-  DropdownItem,
-  DropdownMenu,
-  UncontrolledDropdown,
+  Table
 } from "reactstrap";
 import { useDispatch, useSelector } from 'react-redux';
 import "react-tagsinput/react-tagsinput.css";
@@ -43,8 +43,8 @@ const selectKITAS = [
 ];
 
 const selectInsurance = [
-  { label: "BPJS", value: "BPJS", key: 0, target: { name: "tipe_asuransi" } },
-  { label: "Lainnya", value: "Lainnya", key: 1, target: { name: "tipe_asuransi" } },
+  { label: "BPJS", value: "BPJS", key: 0, name: "tipe_asuransi" },
+  { label: "Lainnya", value: "Lainnya", key: 1, name: "tipe_asuransi" },
 ];
 
 const selectAllergy = [
@@ -211,15 +211,15 @@ const Data = ({ match }) => {
   // const [selectedAllergy, setSelectedAllergy] = useState([{ label: ""}]);
   const [selectedAllergy, setSelectedAllergy] = useState([]);
 
+  const [modalArchive, setModalArchive] = useState(false);
+  const [statusPatient, setPatientStatus] = useState(0);
+  const [patientName, setPatientName] = useState('');
+
   const [patientID, setPatientID] = useState('');
   const [insuranceID, setInsuranceID] = useState('');
   const [allergyID, setAllergyID] = useState('');
 
-  const [insurance, setInsurance] = useState({
-    id_pasien: '',
-    tipe_asuransi: '',
-    nomor_asuransi: '',
-  });
+  const [insurance, setInsurance] = useState([]);
 
   const [newInsurance, setNewInsurance] = useState([
     { id: Math.random(), tipe_asuransi: "", nomor_asuransi: "" }
@@ -239,10 +239,10 @@ const Data = ({ match }) => {
     setNewInsurance(dataInsurance1);
   };
 
-  const handleInsuranceAdd = (index, event) => {
+  const handleInsuranceChange = (index, event) => {
     let dataInsurance2 = [...newInsurance]; let displaySelectInsurance = [...selectedInsurance];
-    if (event.target.name === "tipe_asuransi"){
-      dataInsurance2[index][event.target.name] = event.value;
+    if (event.name === "tipe_asuransi"){
+      dataInsurance2[index][event.name] = event.value;
       displaySelectInsurance[index]["label"] = event.value;
     } else {
       dataInsurance2[index][event.target.name] = event.target.value;
@@ -250,9 +250,6 @@ const Data = ({ match }) => {
 
     setNewInsurance(dataInsurance2);
     setSelectedInsurance(displaySelectInsurance);
-
-    console.log("data", selectInsurance);
-    // console.log("displaySelectInsurance", selectedInsurance);
   };
 
   // const [allergy, setAllergy] = useState({
@@ -514,49 +511,52 @@ const Data = ({ match }) => {
     // e.preventDefault();
 
     if(dataStatus === 'add') {
-      try {
-        const response = await insuranceAPI.add(insurance);
-        // console.log(response);
+      if(newInsurance) {
+        newInsurance.map((data, index) => {
+          insurance.push({ id_pasien: patientID, tipe_asuransi: data.tipe_asuransi, nomor_asuransi: data.nomor_asuransi });
+        })
+      }
+  
+      console.log(insurance);
 
-        if (response.status == 200) {
-          let data = await response.data.data;
-          // console.log(data);
-
-          Swal.fire({
-            title: "Sukses!",
-            html: `Tambah asuransi pasien sukses`,
-            icon: "success",
-            confirmButtonColor: "#008ecc",
-          });
-
-          if(processPatient) {
-            setProcessPatient(3);
-            resetForm(e);
+      for (var i = 0; i < insurance.length; i++) {
+        try {
+          const response = await insuranceAPI.add(insurance[i]);
+          // console.log(response);
+  
+          if (response.status == 200) {
+            let data = await response.data.data;
+            // console.log(data);
+  
+            // Swal.fire({
+            //   title: "Sukses!",
+            //   html: `Tambah asuransi pasien sukses`,
+            //   icon: "success",
+            //   confirmButtonColor: "#008ecc",
+            // });
+            
           } else {
-            resetForm(e);
+            // Swal.fire({
+            //   title: "Gagal!",
+            //   html: `Tambah asuransi pasien gagal`,
+            //   icon: "error",
+            //   confirmButtonColor: "#008ecc",
+            //   confirmButtonText: "Coba lagi",
+            // });
+  
+            throw Error(`Error status: ${response.statusCode}`);
           }
-          
-        } else {
-          Swal.fire({
-            title: "Gagal!",
-            html: `Tambah asuransi pasien gagal`,
-            icon: "error",
-            confirmButtonColor: "#008ecc",
-            confirmButtonText: "Coba lagi",
-          });
-
-          throw Error(`Error status: ${response.statusCode}`);
+        } catch (e) {
+          // Swal.fire({
+          //   title: "Gagal!",
+          //   html: e,
+          //   icon: "error",
+          //   confirmButtonColor: "#008ecc",
+          //   confirmButtonText: "Coba lagi",
+          // });
+  
+          console.log(e);
         }
-      } catch (e) {
-        Swal.fire({
-          title: "Gagal!",
-          html: e,
-          icon: "error",
-          confirmButtonColor: "#008ecc",
-          confirmButtonText: "Coba lagi",
-        });
-
-        console.log(e);
       }
     } else if (dataStatus === 'update') {
       try {
@@ -567,45 +567,40 @@ const Data = ({ match }) => {
           let data = await response.data.data;
           // console.log(data);
   
-          Swal.fire({
-            title: "Sukses!",
-            html: `Ubah asuransi pasien sukses`,
-            icon: "success",
-            confirmButtonColor: "#008ecc",
-          });
-
-          if(processPatient) {
-            setProcessPatient(3);
-            resetForm(e);
-          } else {
-            resetForm(e);
-          }
+          // Swal.fire({
+          //   title: "Sukses!",
+          //   html: `Ubah asuransi pasien sukses`,
+          //   icon: "success",
+          //   confirmButtonColor: "#008ecc",
+          // });
 
         } else {
-          Swal.fire({
-            title: "Gagal!",
-            html: `Ubah asuransi pasien gagal: ${response.message}`,
-            icon: "error",
-            confirmButtonColor: "#008ecc",
-            confirmButtonText: "Coba lagi",
-          });
+          // Swal.fire({
+          //   title: "Gagal!",
+          //   html: `Ubah asuransi pasien gagal: ${response.message}`,
+          //   icon: "error",
+          //   confirmButtonColor: "#008ecc",
+          //   confirmButtonText: "Coba lagi",
+          // });
   
           throw Error(`Error status: ${response.statusCode}`);
         }
       } catch (e) {
-        Swal.fire({
-          title: "Gagal!",
-          html: e,
-          icon: "error",
-          confirmButtonColor: "#008ecc",
-          confirmButtonText: "Coba lagi",
-        });
+        // Swal.fire({
+        //   title: "Gagal!",
+        //   html: e,
+        //   icon: "error",
+        //   confirmButtonColor: "#008ecc",
+        //   confirmButtonText: "Coba lagi",
+        // });
   
         console.log(e);
       }
     } else {
       console.log('dataStatus undefined')
     }
+
+    setProcessPatient(0);
   }
 
   const onAllergySubmit = async (e, processPatient = 0) => {
@@ -633,13 +628,6 @@ const Data = ({ match }) => {
             //   icon: "success",
             //   confirmButtonColor: "#008ecc",
             // });
-
-            if(processPatient && insurance) {
-              setProcessPatient(2)
-            } else {
-              resetForm(e);
-            }
-
           } else {
             // Swal.fire({
             //   title: "Gagal!",
@@ -685,14 +673,6 @@ const Data = ({ match }) => {
             //   icon: "success",
             //   confirmButtonColor: "#008ecc",
             // });
-
-            if(status && insurance) {
-              setProcessPatient(2)
-            } else {
-              resetForm(e);
-            }
-    
-            // resetForm(e);
           } else {
             // Swal.fire({
             //   title: "Gagal!",
@@ -719,6 +699,12 @@ const Data = ({ match }) => {
     } else {
       console.log('dataStatus undefined')
     }
+
+    if(newInsurance.length > 0 && patientID) {
+      setProcessPatient(2)
+    } else {
+      resetForm(e);
+    }
   }
 
   const onPatientSubmit = async (e) => {
@@ -741,12 +727,6 @@ const Data = ({ match }) => {
           });
 
           setPatientID(data.id);
-          if(selectedAllergy && patientID) {
-            setProcessPatient(1);
-          } else {
-            resetForm(e);
-          }
-
         } else {
           Swal.fire({
             title: "Gagal!",
@@ -786,12 +766,6 @@ const Data = ({ match }) => {
           });
 
           setPatientID(patientID);
-          if(allergy) {
-            setProcessPatient(1);
-          } else {
-            resetForm(e);
-          }
-
         } else {
           Swal.fire({
             title: "Gagal!",
@@ -817,10 +791,18 @@ const Data = ({ match }) => {
     } else {
       console.log('dataStatus undefined')
     }
+    
+    if(selectedAllergy.length > 0 && patientID) {
+      setProcessPatient(1);
+    } else if(newInsurance.length > 0 && patientID) {
+      setProcessPatient(2);
+    } else {
+      resetForm(e);
+    }
   };
 
   const resetForm = (e) => {
-    e.preventDefault();
+    // e.preventDefault();
     
     setPatient({
       tipe_kitas: '',
@@ -859,10 +841,14 @@ const Data = ({ match }) => {
     setSelectSubdistrict([]);
     setSelectWard([]);
 
-    setNewInsurance([{ id: Math.random(), tipe_asuransi: "", nomor_asuransi: "", target: { name: "tipe_asuransi" } }]);
+    
     // setSelectedAllergy([{ id: Math.random(), alergi: "", name: "alergi"}]);
     setSelectedAllergy([]);
     setAllergy([]);
+
+    setNewInsurance([{ id: Math.random(), tipe_asuransi: "", nomor_asuransi: "", name: "tipe_asuransi" }]);
+    setSelectedInsurance([{ label: ""}]);
+    setInsurance([]);
 
     setProcessPatient(0);
     setDataStatus("add");
@@ -914,7 +900,9 @@ const Data = ({ match }) => {
       });
 
       // console.log(patient);
-      getAllergyByPatientId("", patientID);
+
+      getAllergyByPatientId("", data.id);
+      getInsuranceByPatientId("", data.id);
 
       setSelectedMaritalStatus({spesialis: data.status_menikah ? e.value : ''});
       setSelectedReligion({agama: data.agama ? e.value : ''});
@@ -943,11 +931,13 @@ const Data = ({ match }) => {
     } catch (e) {
       console.log(e);
     }
-
     // console.log(dataStatus);
   };
 
   const getAllergyByPatientId = async (e, id) => {
+    setAllergy([]);
+    setSelectedAllergy([{ label: '' }]);
+
     try {
       const res = await patientAllergyAPI.getByPatient("", `/${id}`);
       let data = res.data.data;
@@ -963,6 +953,135 @@ const Data = ({ match }) => {
         })
       }
     } catch (e) {
+      console.log(e);
+    }
+  };
+
+  const getInsuranceByPatientId = async (e, id) => {
+    try {
+      const res = await insuranceAPI.getByPatient("", `/${id}`);
+      let data = res.data.data;
+      // console.log('data', data);
+
+      if(data) {
+        setInsurance([]);
+        setNewInsurance([]);
+        setSelectedInsurance([{ label: '' }]);
+
+        data.map((data, index) => {
+          insurance.push({ id: data.id, id_pasien: patientID, tipe_asuransi: data.tipe_asuransi, nomor_asuransi: data.nomor_asuransi });
+          // newInsurance.push({ id: Math.random(), tipe_asuransi: data.tipe_asuransi, nomor_asuransi: data.nomor_asuransi });
+          // selectedInsurance.push({ label: data.tipe_asuransi });
+
+          var newfieldInsurance = { id: Math.random(), tipe_asuransi: data.tipe_asuransi, nomor_asuransi: data.nomor_asuransi };
+          setNewInsurance((current) => [
+            ...current, newfieldInsurance
+          ]);
+          // setNewInsurance([...newInsurance, newfieldInsurance]);
+          // console.log(newfieldInsurance);
+          console.log('newInsurance', newInsurance);
+
+          var newfieldDropdownInsurance = { label: data.tipe_asuransi };
+          setSelectedInsurance((current) => [
+            ...current, newfieldDropdownInsurance
+          ]);
+          // setSelectedInsurance([...selectedInsurance, newfieldDropdownInsurance]);
+          // console.log(newfieldDropdownInsurance);
+          console.log('selectedInsurance', selectedInsurance);
+        })
+
+        // console.log('insurance', insurance);
+        // console.log('newInsurance', newInsurance);
+        // console.log('selectedInsurance', selectedInsurance);
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  const archiveById = async (e, id) => {
+    e.preventDefault();
+
+    setModalArchive(true);
+    try {
+      const res = await patientAPI.get("", `/${id}`);
+      let data = res.data.data[0];
+
+      setPatientID(data.id);
+      setPatientStatus(data.is_active);
+      setPatientName(data.nama_lengkap);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  const onChangeArchiveSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      if (statusPatient === 1) {
+        const response = await patientAPI.archive("", patientID);
+
+        if (response.status == 200) {
+          let data = await response.data.data;
+          // console.log(data);
+
+          Swal.fire({
+            title: "Sukses!",
+            html: `Arsip pasien sukses`,
+            icon: "success",
+            confirmButtonColor: "#008ecc",
+          });
+
+          setModalArchive(false);
+        } else {
+          Swal.fire({
+            title: "Gagal!",
+            html: `Arsip pasien gagal: ${response.message}`,
+            icon: "error",
+            confirmButtonColor: "#008ecc",
+            confirmButtonText: "Coba lagi",
+          });
+
+          throw Error(`Error status: ${response.statusCode}`);
+        }
+      } else {
+        const response = await patientAPI.activate("", patientID);
+
+        if (response.status == 200) {
+          let data = await response.data.data;
+          // console.log(data);
+
+          Swal.fire({
+            title: "Sukses!",
+            html: `Aktivasi pasien sukses`,
+            icon: "success",
+            confirmButtonColor: "#008ecc",
+          });
+
+          setModalArchive(false);
+        } else {
+          Swal.fire({
+            title: "Gagal!",
+            html: `Aktivasi pasien gagal: ${response.message}`,
+            icon: "error",
+            confirmButtonColor: "#008ecc",
+            confirmButtonText: "Coba lagi",
+          });
+
+          throw Error(`Error status: ${response.statusCode}`);
+        }
+      }
+      // console.log(response);
+    } catch (e) {
+      Swal.fire({
+        title: "Gagal!",
+        html: e,
+        icon: "error",
+        confirmButtonColor: "#008ecc",
+        confirmButtonText: "Coba lagi",
+      });
+
       console.log(e);
     }
   };
@@ -998,16 +1117,20 @@ const Data = ({ match }) => {
       changeKelurahan(id_kecamatan, editAddress);
     }
 
-    if(processPatient === 1) {
-      onAllergySubmit("", 1);
+    if(processPatient === 1 && patientID) {
+      // onAllergySubmit("", 1);
     }
 
-    if(processPatient === 2) {
-      console.log('allergy', allergy);
-      // onInsuranceSubmit("", 2);
+    if(processPatient === 2 && patientID) {
+      onInsuranceSubmit("", 2);
     }
+      
+    // if(dataStatus === 'update' && patientID) {
+    //   getAllergyByPatientId("", patientID);
+    //   getInsuranceByPatientId("", patientID);
+    // }
 
-  }, [limit, search, sortBy, sortOrder, currentPage, editAddress, processPatient]);
+  }, [limit, search, sortBy, sortOrder, currentPage, editAddress, processPatient, patientAll, patientTotalPage]);
 
   let startNumber = 1;
 
@@ -1068,7 +1191,7 @@ const Data = ({ match }) => {
                         <td>
                           <h6 style={{ fontWeight: 'bold' }}>{data.nama_lengkap}</h6>
                           {/* {data.jenis_kelamin.substring(0,1)}, {data.tanggal_lahir}<br/> */}
-                          {data.jenis_kelamin.substring(0,1)}, {new Date().getFullYear() - data.tanggal_lahir.substring(6,10)} tahun<br/>
+                          {data.jenis_kelamin.substring(0,1)}, {new Date().getFullYear() - data.tanggal_lahir.substring(0,4)} tahun<br/>
                           {data.tipe_kitas} {data.nomor_kitas}<br/>
                           {/* {data.nomor_hp} */}
                         </td>
@@ -1079,17 +1202,31 @@ const Data = ({ match }) => {
                             <i className="simple-icon-note"></i>
                           </Button>
                           {' '}
-                          <Button color="warning" size="xs" className="button-xs"
-                            // onClick={}
+                          {data.is_active == 1 ? (
+                            <Button
+                              color="success"
+                              size="xs"
+                              className="button-xs"
+                              onClick={(e) => archiveById(e, data.id)}
                             >
-                            <i className="simple-icon-drawer"></i>
-                          </Button>
+                              <i className="simple-icon-drawer"></i>
+                            </Button>
+                          ) : (
+                            <Button
+                              color="warning"
+                              size="xs"
+                              className="button-xs"
+                              onClick={(e) => archiveById(e, data.id)}
+                            >
+                              <i className="simple-icon-drawer"></i>
+                            </Button>
+                          )}
                           {' '}
-                          <Button color="danger" size="xs" className="button-xs"
+                          {/* <Button color="danger" size="xs" className="button-xs"
                             // onClick={}
                             >
                             <i className="simple-icon-trash"></i>
-                          </Button>
+                          </Button> */}
                         </td>
                       </tr>
                     ))
@@ -1464,7 +1601,7 @@ const Data = ({ match }) => {
                       >
                         Tambah
                       </Button>
-                      {selectInsurance.map((input, index) => {
+                      {newInsurance.map((input, index) => {
                         return (
                           <InputGroup
                             key={index}
@@ -1479,7 +1616,7 @@ const Data = ({ match }) => {
                               value={selectedInsurance.label}
                               options={selectInsurance}
                               onChange={(event) =>
-                                handleInsuranceAdd(index, event)
+                                handleInsuranceChange(index, event)
                               }
                             />
                             <Input
@@ -1489,7 +1626,7 @@ const Data = ({ match }) => {
                               className="input-insurance"
                               value={input.nomor_asuransi}
                               onChange={(event) =>
-                                handleInsuranceAdd(index, event)
+                                handleInsuranceChange(index, event)
                               }
                             />
                             {index > 0 && (
@@ -1594,6 +1731,29 @@ const Data = ({ match }) => {
             </CardBody>
           </Card>
         </Colxx>
+
+        <Modal
+          isOpen={modalArchive}
+          toggle={() => setModalArchive(!modalArchive)}
+        >
+          <ModalHeader>Arsip Pasien</ModalHeader>
+          <ModalBody>
+            <h5>Apakah Anda ingin {statusPatient === 1 ?  'mengarsipkan pasien'  : 'aktivasi pasien' } {patientName}?</h5>
+          </ModalBody>
+          <ModalFooter>
+            <Button
+              type="button"
+              outline
+              color="danger"
+              onClick={() => setModalArchive(false)}
+            >
+              Batal
+            </Button>
+            <Button color="primary" onClick={(e) => onChangeArchiveSubmit(e)}>
+              Ya
+            </Button>{" "}
+          </ModalFooter>
+        </Modal>
       </Row>
     </>
   );

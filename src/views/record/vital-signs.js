@@ -65,6 +65,7 @@ const VitalSigns = ({ match }) => {
   const [startDateTime, setStartDateTime] = useState(new Date());
 
   const [patientID, setPatientID] = useState('');
+  const [patientData, setPatientData] = useState('');
   const [vitalSignsID, setVitalSignsID] = useState('');
 
   const [ vitalSigns, setVitalSigns ] = useState({
@@ -105,7 +106,7 @@ const VitalSigns = ({ match }) => {
     e.preventDefault();
 
     // console.log(vitalSigns);
-    if(dataStatus === 'add') {
+    if(dataStatus === 'add' && vitalSigns.id_pasien) {
       try {
         const response = await vitalSignsAPI.add(vitalSigns);
         // console.log(response);
@@ -121,7 +122,7 @@ const VitalSigns = ({ match }) => {
             confirmButtonColor: "#008ecc",
           });
 
-          resetForm(e);
+          // resetForm(e);
         } else {
           Swal.fire({
             title: "Gagal!",
@@ -136,7 +137,7 @@ const VitalSigns = ({ match }) => {
       } catch (e) {
         Swal.fire({
           title: "Gagal!",
-          html: 3,
+          html: e,
           icon: "error",
           confirmButtonColor: "#008ecc",
           confirmButtonText: "Coba lagi",
@@ -144,45 +145,45 @@ const VitalSigns = ({ match }) => {
 
         console.log(e);
       }
-    } else if(dataStatus === 'update') { console.log('harusnya fungsi update');
-      // try {
-      //   const response = await vitalSignsAPI.update(vitalSigns, vitalSignsID);
-      //   // console.log(response);
+    } else if(dataStatus === 'update' && vitalSigns.id_pasien && vitalSignsID) {
+      try {
+        const response = await vitalSignsAPI.update(vitalSigns, vitalSignsID);
+        // console.log(response);
 
-      //   if (response.status == 200) {
-      //     let data = await response.data.data;
-      //     // console.log(data);
+        if (response.status == 200) {
+          let data = await response.data.data;
+          // console.log(data);
 
-      //     Swal.fire({
-      //       title: "Sukses!",
-      //       html: `Ubah pra-konsultasi sukses`,
-      //       icon: "success",
-      //       confirmButtonColor: "#008ecc",
-      //     });
+          Swal.fire({
+            title: "Sukses!",
+            html: `Ubah pra-konsultasi sukses`,
+            icon: "success",
+            confirmButtonColor: "#008ecc",
+          });
 
-      //     resetForm(e);
-      //   } else {
-      //     Swal.fire({
-      //       title: "Gagal!",
-      //       html: `Ubah pra-konsultasi gagal: ${response.message}`,
-      //       icon: "error",
-      //       confirmButtonColor: "#008ecc",
-      //       confirmButtonText: "Coba lagi",
-      //     });
+          // resetForm(e);
+        } else {
+          Swal.fire({
+            title: "Gagal!",
+            html: `Ubah pra-konsultasi gagal: ${response.message}`,
+            icon: "error",
+            confirmButtonColor: "#008ecc",
+            confirmButtonText: "Coba lagi",
+          });
 
-      //     throw Error(`Error status: ${response.statusCode}`);
-      //   }
-      // } catch (e) {
-      //   Swal.fire({
-      //     title: "Gagal!",
-      //     html: e,
-      //     icon: "error",
-      //     confirmButtonColor: "#008ecc",
-      //     confirmButtonText: "Coba lagi",
-      //   });
+          throw Error(`Error status: ${response.statusCode}`);
+        }
+      } catch (e) {
+        Swal.fire({
+          title: "Gagal!",
+          html: e,
+          icon: "error",
+          confirmButtonColor: "#008ecc",
+          confirmButtonText: "Coba lagi",
+        });
 
-      //   console.log(e);
-      // }
+        console.log(e);
+      }
     } else {
       console.log('dataStatus undefined')
     }
@@ -211,6 +212,7 @@ const VitalSigns = ({ match }) => {
 
     setPatientID('');
     setVitalSignsID('');
+    setPatientData('');
 
     setDataStatus("add");
   };
@@ -219,25 +221,24 @@ const VitalSigns = ({ match }) => {
     try {
       const res = await queueAPI.get("", params);
       dispatch({type: "GET_QUEUE", payload: res.data.data});
-      dispatch({type: "GET_TOTAL_PAGE_QUEUE", payload: res.data.pagination.totalPage});
+      // dispatch({type: "GET_TOTAL_PAGE_QUEUE", payload: res.data.pagination.totalPage});
     } catch (e) {
       console.log(e);
     }
   };
 
-  const getQueueById = async (e, id) => {
+  const getVitalSignsByPatientId = async (e, id, data) => {
     e.preventDefault();
     resetForm(e);
-    setDataStatus("update");
+
+    setPatientID(id);
+    setPatientData(data);
 
     try {
-      const res = await queueAPI.get("", `/${id}`);
+      const res = await vitalSignsAPI.getByPatient("", `/${id}`);
       let data = res.data.data[0];
 
       // console.log(data);
-
-      setVitalSignsID(id);
-      setPatientID(data.id_pasien);
 
       setVitalSigns({
         id_pasien: data.id_pasien,
@@ -254,14 +255,18 @@ const VitalSigns = ({ match }) => {
         heart_rate: data.heart_rate,
         catatan_tambahan: data.catatan_tambahan
       });
+
+      setVitalSignsID(data.id);
   
       setSelectedAwareness({kesadaran: data.kesadaran ? e.value : ''});
-
-      // console.log(vitalSigns);
+      setDataStatus("update");
+      
+      console.log(vitalSigns);
     } catch (e) {
       console.log(e);
+      setDataStatus("add");
     }
-
+    
     // console.log(dataStatus);
   };
 
@@ -282,8 +287,15 @@ const VitalSigns = ({ match }) => {
       params = `${params}&page=${currentPage}`;
     }
 
-    // getQueue(params);
-  }, [limit, search, sortBy, sortOrder, currentPage]);
+    getQueue(params);
+
+    if(dataStatus === "add" && vitalSigns.id_pasien === '') {
+      setVitalSigns(current => {
+        return { ...current, id_pasien: patientID }
+      })
+    }
+    
+  }, [limit, search, sortBy, sortOrder, currentPage, queueAll, queueTotalPage, dataStatus, vitalSigns.id_pasien]);
 
   let startNumber = 1;
 
@@ -363,7 +375,39 @@ const VitalSigns = ({ match }) => {
                     </tr>
                   </thead>
                   <tbody>
-                    <tr>
+                    {queueAll ? (
+                      queueAll.map((data) => (
+                        <tr key={data.id}>
+                            <th scope="row" className="center-xy">{startNumber++}</th>
+                            <td className="icon-column">
+                              <i className="simple-icon-magnifier queue-icon"></i><br/>
+                              <span className="queue-text">0001</span>
+                            </td>
+                            <td>
+                              <h6 style={{ fontWeight: 'bold' }}>{data.nama_lengkap}</h6>
+                              {data.jenis_kelamin.substring(0,1)}, {new Date().getFullYear() - data.tanggal_lahir.substring(0,4)} tahun<br/>
+                            </td>
+                            <td style={{ textAlign: "center", verticalAlign: 'middle' }}>
+                              <Button color="secondary" size="xs" className="button-xs"
+                                onClick={(e) => getVitalSignsByPatientId(e, data.id_pasien, data)}
+                              >
+                                <i className="simple-icon-note"></i>
+                              </Button>
+                              {' '}
+                              <Button color="warning" size="xs" className="button-xs">
+                                <i className="simple-icon-drawer"></i>
+                              </Button>
+                            </td>
+                          </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td>
+                          <p>Loading data</p>
+                        </td>
+                      </tr>
+                    )}
+                    {/* <tr>
                       <th scope="row" className="center-xy">1</th>
                       <td className="icon-column">
                         <i className="simple-icon-magnifier queue-icon"></i><br/>
@@ -422,7 +466,7 @@ const VitalSigns = ({ match }) => {
                           <i className="simple-icon-drawer"></i>
                         </Button>
                       </td>
-                    </tr>
+                    </tr> */}
                   </tbody>
                 </Table>
                 <Pagination
@@ -437,11 +481,25 @@ const VitalSigns = ({ match }) => {
           <Card className="mb-8">
               <CardBody>
                 <CardTitle>
-                  Form Registrasi Pra-Konsultasi
+                  <Row>
+                    <Colxx sm="6" md="6" xl="6">
+                    Form Registrasi Pra-Konsultasi {patientData ?
+                    <>
+                      <br/><br/>{patientData.nama_lengkap}<br/><p style={{ fontWeight: 'normal' }}>{patientData.jenis_kelamin.substring(0,1)}, {new Date().getFullYear() - patientData.tanggal_lahir.substring(0,4)}</p>
+                    </> :
+                    ''}
+                    </Colxx>
+                    <Colxx sm="6" md="6" xl="6">
+                      <Label style={{ float: 'right', lineHeight: 3 }}>
+                        {patientData ? <><br/><br/>{patientData.created_at}</> : 'Tanggal / Waktu' }
+                        {/* {startDateTime} */}
+                      </Label><br/>
+                    </Colxx>
+                  </Row>
                 </CardTitle>
                 <Form>
                   <FormGroup row>
-                    <Colxx sm={12}>
+                    {/* <Colxx sm={12}>
                       <FormGroup>
                         <Label for="tanggalRekam">
                           Tanggal / Waktu
@@ -460,7 +518,7 @@ const VitalSigns = ({ match }) => {
                           className="disabled-datepicker"
                         />
                       </FormGroup>
-                    </Colxx>
+                    </Colxx> */}
 
                     {/* <Colxx sm={6}>
                       <FormGroup>
@@ -506,8 +564,10 @@ const VitalSigns = ({ match }) => {
                           name="kesadaran"
                           options={selectAwareness}
                           required
-                          value={selectedAwareness}
+                          value={selectAwareness.find(item => item.value === vitalSigns.kesadaran) || ''}
+                          // value={selectedAwareness}
                           onChange={onChange}
+                          isSearchable={false}
                         />
                       </FormGroup>
                     </Colxx>

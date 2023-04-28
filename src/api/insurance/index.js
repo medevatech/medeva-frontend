@@ -7,12 +7,20 @@ const insurance = {
     const url = api.insurance.all + options
     return baseApi.get(url, payloads, { headers: getOriginHeader() })
   },
+  getByPatient: (payloads, options) => {
+    const url = api.insurance.patient + options
+    return baseApi.get(url, payloads, { headers: getOriginHeader() })
+  },
   add: (payloads) => {
     const url = api.insurance.all
     return baseApi.post(url, payloads, { headers: getOriginHeader() })
   },
   update: (payloads, id) => {
     const url = api.insurance.all + id
+    return baseApi.put(url, payloads, { headers: getOriginHeader() })
+  },
+  edit: (payloads, id) => {
+    const url = api.insurance.edit
     return baseApi.put(url, payloads, { headers: getOriginHeader() })
   },
 }

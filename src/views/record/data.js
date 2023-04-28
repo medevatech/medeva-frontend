@@ -35,7 +35,8 @@ import Pagination from 'components/common/Pagination';
 import CustomSelectInput from 'components/common/CustomSelectInput';
 
 import queueAPI from "api/queue";
-import medicalRecordAPI from "api/record";
+import vitalSignsAPI from "api/vital-signs";
+import recordAPI from "api/record";
 import Swal from "sweetalert2";
 
 const selectDivision = [
@@ -92,15 +93,33 @@ const Data = ({ match }) => {
   const [selectedPrognosa, setSelectedPrognosa] = useState('');
 
   const [modalRecord, setModalRecord] = useState(false);
+  const [showRecord, setShowRecord] = useState('none');
   const [startDateTime, setStartDateTime] = useState(new Date());
   const [endDateTime, setEndDateTime] = useState(new Date());
   const [Sdate, setStartDate] = useState(new Date());
   const [Edate, setEndDate] = useState(new Date());
 
   const [patientID, setPatientID] = useState('');
-  const [medicalRecordID, setMedicalRecordID] = useState('');
+  const [vitalSignsID, setVitalSignsID] = useState('');
+  const [recordID, setRecordID] = useState('');
 
-  const [ medicalRecord, setMedicalRecord ] = useState({
+  const [ vitalSigns, setVitalSigns ] = useState({
+    id_pasien: patientID,
+    keluhan: '',
+    kesadaran: '',
+    temperatur: '',
+    tinggi_badan: '',
+    berat_badan: '',
+    lingkar_perut: '',
+    imt: '',
+    sistole: '',
+    diastole: '',
+    respiratory_rate: '',
+    heart_rate: '',
+    catatan_tambahan: ''
+  });
+
+  const [ record, setRecord ] = useState({
     id_jaga: '',
     id_vs: '',
     id_pasien: patientID,
@@ -119,19 +138,19 @@ const Data = ({ match }) => {
     console.log('e', e);
 
     if (e.name === 'tipe') {
-      setMedicalRecord(current => {
+      setRecord(current => {
           return { ...current, tipe: e.value }
       })
 
       setSelectedType(e);
     } else if (e.name === 'status_pulang') {
-      setMedicalRecord(current => {
+      setRecord(current => {
           return { ...current, status_pulang: e.value }
       })
 
       setSelectedVisitation(e);
     } else if (e.name === 'prognosa') {
-      setMedicalRecord(current => {
+      setRecord(current => {
           return { ...current, prognosa: e.value }
       })
 
@@ -142,7 +161,7 @@ const Data = ({ match }) => {
       // setStartDate(sd);
       setStartDateTime(sd);
 
-      setMedicalRecord(current => {
+      setRecord(current => {
           return { ...current, waktu_mulai: moment(ed).format("yyyy-MM-DD HH:mm") }
       })
     } else if (name === 'waktu_selesai') {
@@ -151,33 +170,33 @@ const Data = ({ match }) => {
       // setEndDate(ed);
       setEndDateTime(ed);
 
-      setMedicalRecord(current => {
+      setRecord(current => {
           return { ...current, waktu_selesai: moment(ed).format("yyyy-MM-DD HH:mm") }
       })
     } else if (e.target.name === 'kasus_kll' && e.target.checked === false) {
-      setMedicalRecord(current => {
+      setRecord(current => {
           return { ...current, kasus_kll: false }
       })
     } else if (e.target.name === 'kasus_kll' && e.target.checked === true) {
-      setMedicalRecord(current => {
+      setRecord(current => {
           return { ...current, kasus_kll: true }
       })
     } else {
-      setMedicalRecord(current => {
+      setRecord(current => {
           return { ...current, [e.target.name]: e.target.value }
       })
     }
 
-    console.log('medicalRecord', medicalRecord);
+    console.log('record', record);
   }
 
-  const onMedicalRecordSubmit = async (e) => {
+  const onRecordSubmit = async (e) => {
     e.preventDefault();
 
-    // console.log(medicalRecord);
+    // console.log(record);
     if(dataStatus === 'add') {
       try {
-        const response = await medicalRecordAPI.add(medicalRecord);
+        const response = await recordAPI.add(record);
         // console.log(response);
 
         if (response.status == 200) {
@@ -216,7 +235,7 @@ const Data = ({ match }) => {
       }
     } else if(dataStatus === 'update') { console.log('harusnya fungsi update');
       // try {
-      //   const response = await medicalRecordAPI.update(medicalRecord, medicalRecordID);
+      //   const response = await recordAPI.update(record, recordID);
       //   // console.log(response);
 
       //   if (response.status == 200) {
@@ -261,7 +280,7 @@ const Data = ({ match }) => {
   const resetForm = (e) => {
     e.preventDefault();
 
-    setMedicalRecord({
+    setRecord([{
       id_jaga: '',
       id_vs: '',
       id_pasien: '',
@@ -274,6 +293,22 @@ const Data = ({ match }) => {
       kasus_kll: false,
       status_pulang: '',
       keluhan: ''
+    }]);
+
+    setVitalSigns({
+      id_pasien: patientID,
+      keluhan: '',
+      kesadaran: '',
+      temperatur: '',
+      tinggi_badan: '',
+      berat_badan: '',
+      lingkar_perut: '',
+      imt: '',
+      sistole: '',
+      diastole: '',
+      respiratory_rate: '',
+      heart_rate: '',
+      catatan_tambahan: ''
     });
     
     setSelectedType("");
@@ -281,8 +316,10 @@ const Data = ({ match }) => {
     setSelectedPrognosa("");
 
     setPatientID('');
-    setMedicalRecordID('');
+    setVitalSignsID('');
+    setRecordID('');
 
+    setShowRecord('none');
     setDataStatus("add");
   };
 
@@ -290,27 +327,61 @@ const Data = ({ match }) => {
     try {
       const res = await queueAPI.get("", params);
       dispatch({type: "GET_QUEUE", payload: res.data.data});
-      dispatch({type: "GET_TOTAL_PAGE_QUEUE", payload: res.data.pagination.totalPage});
+      // dispatch({type: "GET_TOTAL_PAGE_QUEUE", payload: res.data.pagination.totalPage});
     } catch (e) {
       console.log(e);
     }
   };
-  
-  const getQueueById = async (e, id) => {
-    e.preventDefault();
+
+  const getVitalSignsByPatientId = async (e, id) => {
+    // e.preventDefault();
     resetForm(e);
-    setDataStatus("update");
 
     try {
-      const res = await queueAPI.get("", `/${id}`);
+      const res = await vitalSignsAPI.getByPatient("", `/${id}`);
       let data = res.data.data[0];
 
       // console.log(data);
 
-      setMedicalRecordID(id);
+      setVitalSignsID(id);
       setPatientID(data.id_pasien);
 
-      setMedicalRecord({
+      setVitalSigns({
+        id_pasien: data.id_pasien,
+        keluhan: data.keluhan,
+        kesadaran: data.kesadaran,
+        temperatur: data.temperatur,
+        tinggi_badan: data.tinggi_badan,
+        berat_badan: data.berat_badan,
+        lingkar_perut: data.lingkar_perut,
+        imt: data.imt,
+        sistole: data.sistole,
+        diastole: data.diastole,
+        respiratory_rate: data.respiratory_rate,
+        heart_rate: data.heart_rate,
+        catatan_tambahan: data.catatan_tambahan
+      });
+
+      getRecordByPatientId("", data.id_pasien);
+
+      // console.log(vitalSigns);
+    } catch (e) {
+      console.log(e);
+    }
+
+    // console.log(dataStatus);
+  };
+  
+  const getRecordByPatientId = async (e, id) => {
+    try {
+      const res = await recordAPI.get("", `/${id}`);
+      let data = res.data.data[0];
+      // console.log(data);
+
+      // setRecordID(id);
+      // setPatientID(data.id_pasien);
+
+      setRecord([{
         id_jaga: data.id_jaga,
         id_vs: data.id_vs,
         id_pasien: data.id_pasien,
@@ -323,13 +394,15 @@ const Data = ({ match }) => {
         kasus_kll: data.kasus_kll,
         status_pulang: data.status_pulang,
         keluhan: data.keluhan
-      });
+      }]);
 
       setSelectedType({tipe: data.tipe ? e.value : ''});
       setSelectedVisitation({status_pulang: data.status_pulang ? e.value : ''});
       setSelectedPrognosa({prognosa: data.prognosa ? e.value : ''});
 
-      // console.log(medicalRecord);
+      setShowRecord('block');
+
+      // console.log(record);
     } catch (e) {
       console.log(e);
     }
@@ -355,8 +428,8 @@ const Data = ({ match }) => {
       params = `${params}&page=${currentPage}`;
     }
 
-    // getQueue(params);
-  }, [limit, search, sortBy, sortOrder, currentPage]);
+    getQueue(params);
+  }, [limit, search, sortBy, sortOrder, currentPage, queueAll, queueTotalPage]);
 
   let startNumber = 1;
 
@@ -431,71 +504,43 @@ const Data = ({ match }) => {
                     </tr>
                   </thead>
                   <tbody>
-                    <tr>
-                      <th scope="row" className="center-xy">1</th>
-                      <td className="icon-column">
-                        <i className="simple-icon-magnifier queue-icon"></i><br/>
-                        <span className="queue-text">0001</span>
-                      </td>
-                      <td>
-                        <h6 style={{ fontWeight: 'bold' }}>Otto</h6>
-                        Laki-laki, 32 Tahun
-                      </td>
-                      <td style={{ textAlign: "center", verticalAlign: 'middle' }}>
-                        {/* <Button color="secondary" size="xs" className="button-xs">
-                          <i className="simple-icon-note"></i>
-                        </Button>
-                        {' '} */}
-                        <Button color="warning" size="xs" className="button-xs">
-                          <i className="simple-icon-drawer"></i>
-                        </Button>
-                      </td>
-                    </tr>
-                    <tr>
-                      <th scope="row" className="center-xy">2</th>
-                      <td className="icon-column">
-                        <i className="simple-icon-magnifier queue-icon"></i><br/>
-                        <span className="queue-text">0002</span>
-                      </td>
-                      <td>
-                        <h6 style={{ fontWeight: 'bold' }}>Jacob</h6>
-                        Laki-laki, 26 Tahun
-                      </td>
-                      <td style={{ textAlign: "center", verticalAlign: 'middle' }}>
-                        {/* <Button color="secondary" size="xs" className="button-xs">
-                          <i className="simple-icon-note"></i>
-                        </Button>
-                        {' '} */}
-                        <Button color="warning" size="xs" className="button-xs">
-                          <i className="simple-icon-drawer"></i>
-                        </Button>
-                      </td>
-                    </tr>
-                    <tr>
-                      <th scope="row" className="center-xy">3</th>
-                      <td className="icon-column">
-                        <i className="simple-icon-magnifier queue-icon"></i><br/>
-                        <span className="queue-text">0003</span>
-                      </td>
-                      <td>
-                        <h6 style={{ fontWeight: 'bold' }}>Larry</h6>
-                        Laki-laki, 57 Tahun
-                      </td>
-                      <td style={{ textAlign: "center", verticalAlign: 'middle' }}>
-                        {/* <Button color="secondary" size="xs" className="button-xs">
-                          <i className="simple-icon-note"></i>
-                        </Button>
-                        {' '} */}
-                        <Button color="warning" size="xs" className="button-xs">
-                          <i className="simple-icon-drawer"></i>
-                        </Button>
-                      </td>
-                    </tr>
+                  {queueAll ? (
+                      queueAll.map((data) => (
+                        <tr key={data.id}>
+                            <th scope="row" className="center-xy">{startNumber++}</th>
+                            <td className="icon-column">
+                              <i className="simple-icon-magnifier queue-icon"></i><br/>
+                              <span className="queue-text">0001</span>
+                            </td>
+                            <td>
+                              <h6 style={{ fontWeight: 'bold' }}>{data.nama_lengkap}</h6>
+                              {data.jenis_kelamin.substring(0,1)}, {new Date().getFullYear() - data.tanggal_lahir.substring(0,4)} tahun<br/>
+                            </td>
+                            <td style={{ textAlign: "center", verticalAlign: 'middle' }}>
+                              <Button color="secondary" size="xs" className="button-xs"
+                                // onClick={(e) => getVitalSignsByPatientId(e, data.id)}
+                              >
+                                <i className="simple-icon-note"></i>
+                              </Button>
+                              {' '}
+                              <Button color="warning" size="xs" className="button-xs">
+                                <i className="simple-icon-drawer"></i>
+                              </Button>
+                            </td>
+                          </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td>
+                          <p>Loading data</p>
+                        </td>
+                      </tr>
+                    )}
                   </tbody>
                 </Table>
                 <Pagination
                   currentPage={currentPage}
-                  totalPage={totalPage}
+                  totalPage={queueTotalPage}
                   onChangePage={(i) => setCurrentPage(i)}
                 />
               </CardBody>
@@ -530,7 +575,7 @@ const Data = ({ match }) => {
                     </Colxx>
                   </Row>
                 </CardTitle>
-                <Table bordered>
+                <Table bordered style={{ display: {showRecord} }}>
                   <tbody>
                     <tr>
                       <th>Keluhan</th>
@@ -885,7 +930,7 @@ const Data = ({ match }) => {
                       value={selectedType}
                       // onChange={setSelectedType}
                       options={selectType}
-                      // value={medicalRecord.tipe}
+                      // value={record.tipe}
                       onChange={onChange}
                     />
                   </FormGroup>
@@ -904,7 +949,7 @@ const Data = ({ match }) => {
                       value={selectedPrognosa}
                       // onChange={setSelectedPrognosa}
                       options={selectPrognosa}
-                      // value={medicalRecord.prognosa}
+                      // value={record.prognosa}
                       onChange={onChange}
                     />
                   </FormGroup>
@@ -921,7 +966,7 @@ const Data = ({ match }) => {
                       id="anamnesis"
                       placeholder="Anamnesis"
                       style={{minHeight: '100'}}
-                      value={medicalRecord.anamnesis}
+                      value={record.anamnesis}
                       onChange={onChange}
                     />
                   </FormGroup>
@@ -938,7 +983,7 @@ const Data = ({ match }) => {
                       id="pemeriksaan_fisik"
                       placeholder="Pemeriksaan Fisik"
                       style={{minHeight: '100'}}
-                      value={medicalRecord.pemeriksaan_fisik}
+                      value={record.pemeriksaan_fisik}
                       onChange={onChange}
                     />
                   </FormGroup>
@@ -954,7 +999,7 @@ const Data = ({ match }) => {
                       name="kasus_kll"
                       id="kasus_kll"
                       label="Kecelakaan Lalu Lintas"
-                      value={medicalRecord.kasus_kll}
+                      value={record.kasus_kll}
                       onChange={onChange}
                     />
                   </FormGroup>
@@ -974,7 +1019,7 @@ const Data = ({ match }) => {
                       // onChange={setSelectedVisitation}
                       options={selectVisitation}
                       required
-                      // value={medicalRecord.status_pulang}
+                      // value={record.status_pulang}
                       onChange={onChange}
                     />
                   </FormGroup>
@@ -991,7 +1036,7 @@ const Data = ({ match }) => {
                       id="keluhan"
                       placeholder="Keluhan"
                       style={{minHeight: '100'}}
-                      value={medicalRecord.keluhan}
+                      value={record.keluhan}
                       onChange={onChange}
                     />
                   </FormGroup>
