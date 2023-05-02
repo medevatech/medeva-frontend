@@ -4,15 +4,19 @@ import baseApi from 'service/api-general'
 
 const record = {
   get: (payloads, options) => {
-    const url = api.record + options
+    const url = api.record.all + options
+    return baseApi.get(url, payloads, { headers: getOriginHeader() })
+  },
+  getByPatient: (payloads, options) => {
+    const url = api.record.patient + options
     return baseApi.get(url, payloads, { headers: getOriginHeader() })
   },
   add: (payloads) => {
-    const url = api.record
+    const url = api.record.all
     return baseApi.post(url, payloads, { headers: getOriginHeader() })
   },
   update: (payloads, id) => {
-    const url = api.record + `/${id}`
+    const url = api.record.all + `/${id}`
     return baseApi.put(url, payloads, { headers: getOriginHeader() })
   }
 }

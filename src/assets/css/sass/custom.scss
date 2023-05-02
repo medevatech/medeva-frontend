@@ -121,12 +121,25 @@ label {
     font-size: 100%;
 }
 
+.med-record-badge {
+    padding-left: 0.75em !important;
+    padding-right: 0.75em !important;
+}
+
 .med-record-table {
     border: 1px solid #dee2e6;
 }
 
 .med-record-table th, .med-record-table td {
-    padding: 20px;
+    padding: 10px 20px;
+}
+
+.med-record-table tr:first-child th, .med-record-table tr:first-child td {
+    padding-top: 20px;
+}
+
+.med-record-table tr:last-child th, .med-record-table tr:last-child td {
+    padding-bottom: 20px;
 }
 
 @media (max-width: 768px) {

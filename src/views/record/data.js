@@ -84,6 +84,8 @@ const Data = ({ match }) => {
   const dispatch = useDispatch();
   const queueAll = useSelector(state => state.queue);
   const queueTotalPage = useSelector(state => state.queueTotalPage);
+  const allRecord = useSelector(state => state.allRecordByPatient);
+
   const [dataStatus, setDataStatus] = useState("add");
 
   const [selectedDivision, setSelectedDivision] = useState('');
@@ -98,33 +100,38 @@ const Data = ({ match }) => {
   const [endDateTime, setEndDateTime] = useState(new Date());
   const [Sdate, setStartDate] = useState(new Date());
   const [Edate, setEndDate] = useState(new Date());
+  const [isChecked, setIsChecked] = useState(false);
 
+  const [patientStatus, setPatientStatus] = useState(0);
   const [patientID, setPatientID] = useState('');
+  const [patientData, setPatientData] = useState('');
   const [vitalSignsID, setVitalSignsID] = useState('');
   const [recordID, setRecordID] = useState('');
+  const [watchID, setWatchID] = useState('');
 
   const [ vitalSigns, setVitalSigns ] = useState({
     id_pasien: patientID,
-    keluhan: '',
-    kesadaran: '',
-    temperatur: '',
-    tinggi_badan: '',
-    berat_badan: '',
-    lingkar_perut: '',
-    imt: '',
-    sistole: '',
-    diastole: '',
-    respiratory_rate: '',
-    heart_rate: '',
-    catatan_tambahan: ''
+    keluhan: '-',
+    kesadaran: '-',
+    temperatur: 0,
+    tinggi_badan: 0,
+    berat_badan: 0,
+    lingkar_perut: 0,
+    imt: 0,
+    sistole: 0,
+    diastole: 0,
+    respiratory_rate: 0,
+    heart_rate: 0,
+    catatan_tambahan: '-',
+    created_at: ''
   });
 
   const [ record, setRecord ] = useState({
-    id_jaga: '',
+    id_jaga: watchID,
     id_vs: '',
     id_pasien: patientID,
-    waktu_mulai: '',
-    waktu_selesai: '',
+    waktu_mulai: startDateTime,
+    waktu_selesai: endDateTime,
     tipe: '',
     anamnesis: '',
     pemeriksaan_fisik: '',
@@ -134,8 +141,10 @@ const Data = ({ match }) => {
     keluhan: ''
   });
 
+  // const [ allRecord, setAllRecord ] = useState([]);
+
   const onChange = (e, name = "") => {
-    console.log('e', e);
+    // console.log('e', e);
 
     if (e.name === 'tipe') {
       setRecord(current => {
@@ -187,8 +196,75 @@ const Data = ({ match }) => {
       })
     }
 
-    console.log('record', record);
+    // console.log('record', record);
   }
+
+  const getRecordByPatientId = async (e, id) => {
+    e.preventDefault();
+    // resetForm(e);
+
+    if(id){
+      setDataStatus("update");
+
+      try {
+        const res = await recordAPI.get("", `/${id}`);
+        let data = res.data.data[0];
+
+        // console.log(data);
+
+        setRecordID(data.id);
+        setRecord({
+          id_jaga: data.id_jaga,
+          id_vs: data.id_vs,
+          id_pasien: patientID,
+          waktu_mulai: data.waktu_mulai,
+          waktu_selesai: data.waktu_selesai,
+          tipe: data.tipe,
+          anamnesis: data.anamnesis,
+          pemeriksaan_fisik: data.pemeriksaan_fisik,
+          prognosa: data.prognosa,
+          kasus_kll: data.kasus_kll,
+          status_pulang: data.status_pulang,
+          keluhan: data.keluhan
+        });
+
+        setSelectedType({tipe: data.tipe ? e.value : ''});
+        setSelectedVisitation({status_pulang: data.status_pulang ? e.value : ''});
+        setSelectedPrognosa({prognosa: data.prognosa ? e.value : ''});
+
+        if (data.kasus_kll === false) {
+          setIsChecked(false);
+        } else if (data.kasus_kll === true) {
+          setIsChecked(true);
+        }
+
+        // console.log(record);
+      } catch (e) {
+        console.log(e);
+      }
+    } else {
+      setDataStatus("add");
+      
+      setRecord({
+        id_jaga: watchID,
+        id_vs: vitalSignsID,
+        id_pasien: patientID,
+        waktu_mulai: patientData.created_at,
+        waktu_selesai: endDateTime,
+        tipe: '',
+        anamnesis: '',
+        pemeriksaan_fisik: '',
+        prognosa: '',
+        kasus_kll: '',
+        status_pulang: '',
+        keluhan: ''
+      });
+    }
+
+    setModalRecord(true);
+
+    // console.log(dataStatus);
+  };
 
   const onRecordSubmit = async (e) => {
     e.preventDefault();
@@ -210,7 +286,8 @@ const Data = ({ match }) => {
             confirmButtonColor: "#008ecc",
           });
 
-          resetForm(e);
+          // resetForm(e);
+          // setShowRecord('none');
         } else {
           Swal.fire({
             title: "Gagal!",
@@ -225,7 +302,7 @@ const Data = ({ match }) => {
       } catch (e) {
         Swal.fire({
           title: "Gagal!",
-          html: 3,
+          html: e,
           icon: "error",
           confirmButtonColor: "#008ecc",
           confirmButtonText: "Coba lagi",
@@ -233,45 +310,46 @@ const Data = ({ match }) => {
 
         console.log(e);
       }
-    } else if(dataStatus === 'update') { console.log('harusnya fungsi update');
-      // try {
-      //   const response = await recordAPI.update(record, recordID);
-      //   // console.log(response);
+    } else if(dataStatus === 'update') {
+      try {
+        const response = await recordAPI.update(record, recordID);
+        // console.log(response);
 
-      //   if (response.status == 200) {
-      //     let data = await response.data.data;
-      //     // console.log(data);
+        if (response.status == 200) {
+          let data = await response.data.data;
+          // console.log(data);
 
-      //     Swal.fire({
-      //       title: "Sukses!",
-      //       html: `Ubah rekam medis sukses`,
-      //       icon: "success",
-      //       confirmButtonColor: "#008ecc",
-      //     });
+          Swal.fire({
+            title: "Sukses!",
+            html: `Ubah rekam medis sukses`,
+            icon: "success",
+            confirmButtonColor: "#008ecc",
+          });
 
-      //     resetForm(e);
-      //   } else {
-      //     Swal.fire({
-      //       title: "Gagal!",
-      //       html: `Ubah rekam medis gagal: ${response.message}`,
-      //       icon: "error",
-      //       confirmButtonColor: "#008ecc",
-      //       confirmButtonText: "Coba lagi",
-      //     });
+          // resetForm(e);
+          // setShowRecord('none');
+        } else {
+          Swal.fire({
+            title: "Gagal!",
+            html: `Ubah rekam medis gagal: ${response.message}`,
+            icon: "error",
+            confirmButtonColor: "#008ecc",
+            confirmButtonText: "Coba lagi",
+          });
 
-      //     throw Error(`Error status: ${response.statusCode}`);
-      //   }
-      // } catch (e) {
-      //   Swal.fire({
-      //     title: "Gagal!",
-      //     html: e,
-      //     icon: "error",
-      //     confirmButtonColor: "#008ecc",
-      //     confirmButtonText: "Coba lagi",
-      //   });
+          throw Error(`Error status: ${response.statusCode}`);
+        }
+      } catch (e) {
+        Swal.fire({
+          title: "Gagal!",
+          html: e,
+          icon: "error",
+          confirmButtonColor: "#008ecc",
+          confirmButtonText: "Coba lagi",
+        });
 
-      //   console.log(e);
-      // }
+        console.log(e);
+      }
     } else {
       console.log('dataStatus undefined')
     }
@@ -280,12 +358,15 @@ const Data = ({ match }) => {
   const resetForm = (e) => {
     e.preventDefault();
 
-    setRecord([{
-      id_jaga: '',
+    dispatch({type: "GET_ALL_RECORD_BY_PATIENT", payload: []});
+    // setAllRecord([]);
+
+    setRecord({
+      id_jaga: watchID,
       id_vs: '',
-      id_pasien: '',
-      waktu_mulai: '',
-      waktu_selesai: '',
+      id_pasien: patientID,
+      waktu_mulai: startDateTime,
+      waktu_selesai: endDateTime,
       tipe: '',
       anamnesis: '',
       pemeriksaan_fisik: '',
@@ -293,22 +374,23 @@ const Data = ({ match }) => {
       kasus_kll: false,
       status_pulang: '',
       keluhan: ''
-    }]);
+    });
 
     setVitalSigns({
       id_pasien: patientID,
-      keluhan: '',
-      kesadaran: '',
-      temperatur: '',
-      tinggi_badan: '',
-      berat_badan: '',
-      lingkar_perut: '',
-      imt: '',
-      sistole: '',
-      diastole: '',
-      respiratory_rate: '',
-      heart_rate: '',
-      catatan_tambahan: ''
+      keluhan: '-',
+      kesadaran: '-',
+      temperatur: 0,
+      tinggi_badan: 0,
+      berat_badan: 0,
+      lingkar_perut: 0,
+      imt: 0,
+      sistole: 0,
+      diastole: 0,
+      respiratory_rate: 0,
+      heart_rate: 0,
+      catatan_tambahan: '-',
+      created_at: ''
     });
     
     setSelectedType("");
@@ -320,31 +402,33 @@ const Data = ({ match }) => {
     setRecordID('');
 
     setShowRecord('none');
-    setDataStatus("add");
   };
 
   const getQueue = async (params) => {
     try {
       const res = await queueAPI.get("", params);
       dispatch({type: "GET_QUEUE", payload: res.data.data});
-      // dispatch({type: "GET_TOTAL_PAGE_QUEUE", payload: res.data.pagination.totalPage});
+      dispatch({type: "GET_TOTAL_PAGE_QUEUE", payload: res.data.pagination.totalPage});
     } catch (e) {
       console.log(e);
     }
   };
 
-  const getVitalSignsByPatientId = async (e, id) => {
+  const getVitalSignsByPatientId = async (e, id, data) => {
     // e.preventDefault();
-    resetForm(e);
+    // resetForm(e);
+
+    setPatientID(id);
+    setPatientData(data);
+    setWatchID(data.id_jaga);
+    // console.log('patientData', data);
 
     try {
       const res = await vitalSignsAPI.getByPatient("", `/${id}`);
       let data = res.data.data[0];
+      // console.log('vitalSigns', data);
 
-      // console.log(data);
-
-      setVitalSignsID(id);
-      setPatientID(data.id_pasien);
+      setVitalSignsID(data.id);
 
       setVitalSigns({
         id_pasien: data.id_pasien,
@@ -359,60 +443,78 @@ const Data = ({ match }) => {
         diastole: data.diastole,
         respiratory_rate: data.respiratory_rate,
         heart_rate: data.heart_rate,
-        catatan_tambahan: data.catatan_tambahan
+        catatan_tambahan: data.catatan_tambahan,
+        created_at: data.created_at
       });
-
-      getRecordByPatientId("", data.id_pasien);
 
       // console.log(vitalSigns);
     } catch (e) {
       console.log(e);
     }
 
-    // console.log(dataStatus);
+    setPatientStatus(1);
   };
   
-  const getRecordByPatientId = async (e, id) => {
+  const getAllRecordByPatientId = async (e, id) => {
     try {
-      const res = await recordAPI.get("", `/${id}`);
-      let data = res.data.data[0];
-      // console.log(data);
+      const res = await recordAPI.getByPatient("", `/${id}`);
+      let data = res.data.data;
+      // console.log('allRecord', data);
 
-      // setRecordID(id);
-      // setPatientID(data.id_pasien);
+      // if(data){
+      //   data.map((data, index) => {
+      //     // allRecord.push({
+      //     //   id_jaga: data.id_jaga,
+      //     //   id_vs: data.id_vs,
+      //     //   id_pasien: data.id_pasien,
+      //     //   waktu_mulai: data.waktu_mulai,
+      //     //   waktu_selesai: data.waktu_selesai,
+      //     //   tipe: data.tipe,
+      //     //   anamnesis: data.anamnesis,
+      //     //   pemeriksaan_fisik: data.pemeriksaan_fisik,
+      //     //   prognosa: data.prognosa,
+      //     //   kasus_kll: data.kasus_kll,
+      //     //   status_pulang: data.status_pulang,
+      //     //   keluhan: data.keluhan
+      //     // });
+      //   })
+      // }
 
-      setRecord([{
-        id_jaga: data.id_jaga,
-        id_vs: data.id_vs,
-        id_pasien: data.id_pasien,
-        waktu_mulai: data.waktu_mulai,
-        waktu_selesai: data.waktu_selesai,
-        tipe: data.tipe,
-        anamnesis: data.anamnesis,
-        pemeriksaan_fisik: data.pemeriksaan_fisik,
-        prognosa: data.prognosa,
-        kasus_kll: data.kasus_kll,
-        status_pulang: data.status_pulang,
-        keluhan: data.keluhan
-      }]);
+      
+      dispatch({type: "GET_ALL_RECORD_BY_PATIENT", payload: data});
 
-      setSelectedType({tipe: data.tipe ? e.value : ''});
-      setSelectedVisitation({status_pulang: data.status_pulang ? e.value : ''});
-      setSelectedPrognosa({prognosa: data.prognosa ? e.value : ''});
+      // setRecord([{
+      //   id_jaga: data.id_jaga,
+      //   id_vs: data.id_vs,
+      //   id_pasien: data.id_pasien,
+      //   waktu_mulai: data.waktu_mulai,
+      //   waktu_selesai: data.waktu_selesai,
+      //   tipe: data.tipe,
+      //   anamnesis: data.anamnesis,
+      //   pemeriksaan_fisik: data.pemeriksaan_fisik,
+      //   prognosa: data.prognosa,
+      //   kasus_kll: data.kasus_kll,
+      //   status_pulang: data.status_pulang,
+      //   keluhan: data.keluhan
+      // }]);
 
-      setShowRecord('block');
+      // setSelectedType({tipe: data.tipe ? e.value : ''});
+      // setSelectedVisitation({status_pulang: data.status_pulang ? e.value : ''});
+      // setSelectedPrognosa({prognosa: data.prognosa ? e.value : ''});
 
-      // console.log(record);
+      // setShowRecord('block');
+
+      // console.log(allRecord);
     } catch (e) {
       console.log(e);
     }
 
-    // console.log(dataStatus);
+    setPatientStatus(2);
   };
 
   const [currentPage, setCurrentPage] = useState(1);
-  const [search, setSearch] = useState("");
-  const [totalPage, setTotalPage] = useState(3);
+  const [searchName, setSearchName] = useState("");
+  const [searchDivisi, setSearchDivisi] = useState("");
 
   useEffect(() => {
     let params = "";
@@ -421,15 +523,24 @@ const Data = ({ match }) => {
     } else {
       params = `${params}?limit=10`;
     }
-    if (search !== "") {
-      params = `${params}&searchName=${search}`;
+    if (searchName !== "") {
+      params = `${params}&searchName=${searchName}`;
+    }
+    if (searchDivisi !== "") {
+      params = `${params}&searchDivisi=${searchDivisi}`;
     }
     if (currentPage !== "1") {
       params = `${params}&page=${currentPage}`;
     }
 
     getQueue(params);
-  }, [limit, search, sortBy, sortOrder, currentPage, queueAll, queueTotalPage]);
+
+    if(patientStatus === 1 && patientID) {
+      getAllRecordByPatientId("", patientID);
+    }
+    
+  // }, [limit, search, searchDivisi, sortBy, sortOrder, currentPage, queueAll, queueTotalPage]);
+  }, [limit, searchName, searchDivisi, sortBy, sortOrder, currentPage, allRecord, patientStatus]);
 
   let startNumber = 1;
 
@@ -477,7 +588,8 @@ const Data = ({ match }) => {
                       classNamePrefix="react-select"
                       name="divisi"
                       value={selectedDivision}
-                      onChange={setSelectedDivision}
+                      // onChange={setSelectedDivision}
+                      onChange={(e) => setSearchDivisi(e.value)}
                       options={selectDivision}
                     />
                   </Colxx>
@@ -488,6 +600,7 @@ const Data = ({ match }) => {
                     name="search"
                     id="search"
                     placeholder="Pencarian"
+                    onChange={(e) => setSearchName(e.target.value)}
                   />
                   <InputGroupAddon addonType="append">
                     <Button outline color="theme-3" className="button-search">
@@ -500,7 +613,7 @@ const Data = ({ match }) => {
                     <tr>
                     <th className="center-xy">#</th>
                       <th colSpan={2}>Antrian</th>
-                    <th style={{ textAlign: "center", width: '150px' }}>Aksi</th>
+                    <th style={{ textAlign: "center", width: '50px' }}>Aksi</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -518,14 +631,14 @@ const Data = ({ match }) => {
                             </td>
                             <td style={{ textAlign: "center", verticalAlign: 'middle' }}>
                               <Button color="secondary" size="xs" className="button-xs"
-                                // onClick={(e) => getVitalSignsByPatientId(e, data.id)}
+                                onClick={(e) => getVitalSignsByPatientId(e, data.id_pasien, data)}
                               >
                                 <i className="simple-icon-note"></i>
                               </Button>
                               {' '}
-                              <Button color="warning" size="xs" className="button-xs">
+                              {/* <Button color="warning" size="xs" className="button-xs">
                                 <i className="simple-icon-drawer"></i>
-                              </Button>
+                              </Button> */}
                             </td>
                           </tr>
                       ))
@@ -552,8 +665,8 @@ const Data = ({ match }) => {
                 <CardTitle>
                   <Row>
                     <Colxx sm="6" md="6" xl="6">
-                      Otto<br/>
-                      <Label>Laki-laki, 32 Tahun</Label><br/>
+                      { patientData ? patientData.nama_lengkap : 'Pasien' }<br/>
+                      <Label>{ patientData ? `${patientData.jenis_kelamin}, ${new Date().getFullYear() - patientData.tanggal_lahir.substring(0,4)} tahun`  : 'Jenis Kelamin, Umur' }</Label><br/>
                       <Badge color="dark" pill className="mt-2 patient-badge">
                         <i className="iconsminds-microscope"></i>
                       </Badge>
@@ -569,7 +682,7 @@ const Data = ({ match }) => {
                     </Colxx>
                     <Colxx sm="6" md="6" xl="6">
                       <Label style={{ float: 'right', lineHeight: 3 }}>
-                        25 April 2023 12.42
+                      { vitalSigns.id_pasien ? vitalSigns.created_at : 'Tanggal / Waktu' }
                         {/* {startDateTime} */}
                       </Label><br/>
                     </Colxx>
@@ -579,47 +692,47 @@ const Data = ({ match }) => {
                   <tbody>
                     <tr>
                       <th>Keluhan</th>
-                      <td>Lorem ipsum dolor sit amet consectetur adipisicing elit. Neque, odio!</td>
+                      <td style={{ width: '70%' }}>{ vitalSigns.id_pasien ? vitalSigns.keluhan : '-' }</td>
                     </tr>
                     <tr>
                       <th>Kesadaran</th>
-                      <td>Compos Mentis</td>
+                      <td>{ vitalSigns.id_pasien ? vitalSigns.kesadaran : '-' }</td>
                     </tr>
                     <tr>
                       <th>Temperatur</th>
-                      <td>100 <sup>0</sup>C</td>
+                      <td>{ vitalSigns.id_pasien ? vitalSigns.temperatur : '0' } <sup>0</sup>C</td>
                     </tr>
                     <tr>
                       <th>Tinggi Badan</th>
-                      <td>100 cm</td>
+                      <td>{ vitalSigns.id_pasien ? vitalSigns.tinggi_badan : '0' } cm</td>
                     </tr>
                     <tr>
                       <th>Berat Badan</th>
-                      <td>100 kg</td>
+                      <td>{ vitalSigns.id_pasien ? vitalSigns.berat_badan : '0' } kg</td>
                     </tr>
                     <tr>
                       <th>Lingkar Perut</th>
-                      <td>100 cm</td>
+                      <td>{ vitalSigns.id_pasien ? vitalSigns.lingkar_perut : '0' } cm</td>
                     </tr>
                     <tr>
                       <th>IMT</th>
-                      <td>100 kg/m<sup>2</sup></td>
+                      <td>{ vitalSigns.id_pasien ? vitalSigns.imt : '0' } kg/m<sup>2</sup></td>
                     </tr>
                     <tr>
                       <th>Tekanan Darah</th>
-                      <td>100 mmHg / 100 mmHg</td>
+                      <td>{ vitalSigns.id_pasien ? vitalSigns.sistole : '0' } mmHg / { vitalSigns ? vitalSigns.diastole : '0' } mmHg</td>
                     </tr>
                     <tr>
                       <th>Tingkat Pernapasan</th>
-                      <td>100 / menit</td>
+                      <td>{ vitalSigns.id_pasien ? vitalSigns.respiratory_rate : '0' } / menit</td>
                     </tr>
                     <tr>
                       <th>Detak Jantung</th>
-                      <td>100 bpm</td>
+                      <td>{ vitalSigns.id_pasien ? vitalSigns.heart_rate : '0' } bpm</td>
                     </tr>
                     <tr>
                       <th>Catatan Tambahan</th>
-                      <td>Lorem ipsum dolor sit amet consectetur adipisicing elit. Neque, odio!</td>
+                      <td style={{ width: '70%' }}>{ vitalSigns.id_pasien ? vitalSigns.catatan_tambahan : '-' }</td>
                     </tr>
                   </tbody>
                 </Table>
@@ -629,16 +742,77 @@ const Data = ({ match }) => {
               <CardBody>
                 <CardTitle>
                   Riwayat Rekam Medis
-                  <Button
-                    color="primary"
-                    style={{ float: "right" }}
-                    className="mb-4"
-                    onClick={() => setModalRecord(true)}
-                  >
-                    Tambah
-                  </Button>
+                  { patientData ?
+                    <Button color="primary" style={{ float: "right" }} className="mb-4" onClick={(e) => getRecordByPatientId(e, "")}>
+                      Tambah
+                    </Button> :
+                  '' }
+                  { patientStatus === 2 && allRecord.length > 0 ?
+                    <>
+                      <br/>
+                      <Label style={{ fontWeight: 'bold' }}>{patientData.nama_lengkap}, </Label>&nbsp;
+                      <Label>
+                        {patientData.jenis_kelamin}, {new Date().getFullYear() - patientData.tanggal_lahir.substring(0,4)} tahun
+                      </Label>
+                    </> :
+                    ' Tidak Ditemukan' }
                 </CardTitle>
-                <Table borderless className="med-record-table">
+                {patientStatus === 2 && allRecord.length > 0 ? ( 
+                  allRecord.map((data) => ( 
+                  <Table borderless className="med-record-table" key={data.id}>
+                    <tbody>
+                      <tr>
+                        <th><h6 style={{ fontWeight: 'bold' }}>Kunjungan {data.tipe ? data.tipe : '-'}</h6></th>
+                        <td>
+                            <span style={{ float: 'right' }}>
+                              {data.waktu_mulai ? data.waktu_mulai : '00/00/0000'} s/d {data.waktu_selesai ? data.waktu_selesai : '00/00/0000'}
+                            </span>
+                        </td>
+                      </tr>
+                      <tr>
+                        <th>Keluhan</th>
+                        <td style={{ width: '70%' }}>{data.keluhan ? data.keluhan : '-'}</td>
+                      </tr>
+                      <tr>
+                        <th>Anamnesis</th>
+                        <td>{data.anamnesis ? data.anamnesis : '-'}</td>
+                      </tr>
+                      <tr>
+                        <th>Pemeriksaan Fisik</th>
+                        <td>{data.pemeriksaan_fisik ? data.pemeriksaan_fisik : '-'}</td>
+                      </tr>
+                      <tr>
+                        <th>Prognosa</th>
+                        <td>{data.prognosa ? data.prognosa : '-'}</td>
+                      </tr>
+                      <tr>
+                        <th>Kasus KLL</th>
+                        <td>{
+                            data.kasus_kll ? 
+                              <h5><span className="badge med-record-badge badge-danger badge-pill"><i className="simple-icon-check"></i></span></h5> :
+                              <h5><span className="badge med-record-badge badge-success badge-pill"><i className="simple-icon-close"></i></span></h5>
+                            }
+                        </td>
+                      </tr>
+                      <tr>
+                        <th>Status Pulang</th>
+                        <td>{data.status_pulang ? data.status_pulang : '-'}</td>
+                      </tr>
+                      <tr>
+                        <th></th>
+                        <td>
+                            <Button color="secondary" size="xs" style={{ float: "right" }}
+                              onClick={(e) => getRecordByPatientId(e, data.id)}
+                              >
+                              Ubah Data Rekam Medis
+                            </Button>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </Table>
+                  ) ) 
+                ) : ('')}
+                {/* <Table borderless className="med-record-table">
                   <tbody>
                     <tr>
                       <th><h6 style={{ fontWeight: 'bold' }}>DD/ Diagnosis</h6></th>
@@ -693,7 +867,7 @@ const Data = ({ match }) => {
                       <td>Poli X</td>
                     </tr>
                   </tbody>
-                </Table>
+                </Table> */}
               </CardBody>
             </Card>
             {/* <Card className="mb-4">
@@ -864,7 +1038,7 @@ const Data = ({ match }) => {
 
           <Modal isOpen={modalRecord} toggle={() => setModalRecord(!modalRecord)} className="modal-record">
             <ModalHeader>
-              Form Registrasi Rekam Medis Otto
+              Form Registrasi Rekam Medis <span style={{ fontWeight: 'bold' }}>{patientData.nama_lengkap}</span>
             </ModalHeader>
             <Form>
             <ModalBody>
@@ -875,7 +1049,9 @@ const Data = ({ match }) => {
                       Waktu Mulai<span className="required text-danger" aria-required="true"> *</span>
                     </Label>
                     <DatePicker
-                      selected={startDateTime}
+                      // selected={startDateTime}
+                      // selected={moment(new Date(patientData.created_at)).format("d MMMM yyyy HH:mm")}
+                      selected={new Date(patientData.created_at)}
                       // onChange={setStartDateTime}
                       name="waktu_mulai"
                       id="waktu_mulai"
@@ -927,7 +1103,8 @@ const Data = ({ match }) => {
                       className="react-select"
                       classNamePrefix="react-select"
                       name="tipe"
-                      value={selectedType}
+                      value={selectType.find(item => item.value === record.tipe) || ''}
+                      // value={selectedType}
                       // onChange={setSelectedType}
                       options={selectType}
                       // value={record.tipe}
@@ -946,7 +1123,8 @@ const Data = ({ match }) => {
                       className="react-select"
                       classNamePrefix="react-select"
                       name="prognosa"
-                      value={selectedPrognosa}
+                      value={selectPrognosa.find(item => item.value === record.prognosa) || ''}
+                      // value={selectedPrognosa}
                       // onChange={setSelectedPrognosa}
                       options={selectPrognosa}
                       // value={record.prognosa}
@@ -995,6 +1173,7 @@ const Data = ({ match }) => {
                       Kasus Kecelakaan Lalu Lintas
                     </Label>
                     <CustomInput
+                      checked={isChecked}
                       type="checkbox"
                       name="kasus_kll"
                       id="kasus_kll"
@@ -1015,7 +1194,8 @@ const Data = ({ match }) => {
                       className="react-select"
                       classNamePrefix="react-select"
                       name="status_pulang"
-                      value={selectedVisitation}
+                      // value={selectedVisitation}
+                      value={selectVisitation.find(item => item.value === record.status_pulang) || ''}
                       // onChange={setSelectedVisitation}
                       options={selectVisitation}
                       required
@@ -1061,7 +1241,8 @@ const Data = ({ match }) => {
                     Batal
                   </Button>
                   &nbsp;&nbsp;
-                  <Button color="primary">
+                  <Button color="primary" 
+                    onClick={(e) => onRecordSubmit(e)}>
                     Simpan
                   </Button>
                 </Colxx>

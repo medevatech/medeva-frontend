@@ -221,7 +221,7 @@ const VitalSigns = ({ match }) => {
     try {
       const res = await queueAPI.get("", params);
       dispatch({type: "GET_QUEUE", payload: res.data.data});
-      // dispatch({type: "GET_TOTAL_PAGE_QUEUE", payload: res.data.pagination.totalPage});
+      dispatch({type: "GET_TOTAL_PAGE_QUEUE", payload: res.data.pagination.totalPage});
     } catch (e) {
       console.log(e);
     }
@@ -271,7 +271,8 @@ const VitalSigns = ({ match }) => {
   };
 
   const [currentPage, setCurrentPage] = useState(1);
-  const [search, setSearch] = useState("");
+  const [searchName, setSearchName] = useState("");
+  const [searchDivisi, setSearchDivisi] = useState("");
 
   useEffect(() => {
     let params = "";
@@ -280,8 +281,11 @@ const VitalSigns = ({ match }) => {
     } else {
       params = `${params}?limit=10`;
     }
-    if (search !== "") {
-      params = `${params}&searchName=${search}`;
+    if (searchName !== "") {
+      params = `${params}&searchName=${searchName}`;
+    }
+    if (searchDivisi !== "") {
+      params = `${params}&searchDivisi=${searchDivisi}`;
     }
     if (currentPage !== "1") {
       params = `${params}&page=${currentPage}`;
@@ -295,7 +299,7 @@ const VitalSigns = ({ match }) => {
       })
     }
     
-  }, [limit, search, sortBy, sortOrder, currentPage, queueAll, queueTotalPage, dataStatus, vitalSigns.id_pasien]);
+  }, [limit, searchName, sortBy, sortOrder, currentPage, queueAll, queueTotalPage, dataStatus, vitalSigns.id_pasien]);
 
   let startNumber = 1;
 
@@ -348,7 +352,8 @@ const VitalSigns = ({ match }) => {
                       classNamePrefix="react-select"
                       name="divisi"
                       value={selectedDivision}
-                      onChange={setSelectedDivision}
+                      onChange={(e) => setSearchDivisi(e.value)}
+                      // onChange={setSelectedDivision}
                       options={selectDivision}
                     />
                   </Colxx>
@@ -359,6 +364,7 @@ const VitalSigns = ({ match }) => {
                     name="search"
                     id="search"
                     placeholder="Pencarian"
+                    onChange={(e) => setSearchName(e.target.value)}
                   />
                   <InputGroupAddon addonType="append">
                     <Button outline color="theme-3" className="button-search">
@@ -371,7 +377,7 @@ const VitalSigns = ({ match }) => {
                     <tr>
                     <th className="center-xy">#</th>
                       <th colSpan={2}>Antrian</th>
-                    <th style={{ textAlign: "center", width: '150px' }}>Aksi</th>
+                    <th style={{ textAlign: "center", width: '50px' }}>Aksi</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -394,9 +400,9 @@ const VitalSigns = ({ match }) => {
                                 <i className="simple-icon-note"></i>
                               </Button>
                               {' '}
-                              <Button color="warning" size="xs" className="button-xs">
+                              {/* <Button color="warning" size="xs" className="button-xs">
                                 <i className="simple-icon-drawer"></i>
-                              </Button>
+                              </Button> */}
                             </td>
                           </tr>
                       ))
