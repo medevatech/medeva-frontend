@@ -299,7 +299,8 @@ const VitalSigns = ({ match }) => {
       })
     }
     
-  }, [limit, searchName, sortBy, sortOrder, currentPage, queueAll, queueTotalPage, dataStatus, vitalSigns.id_pasien]);
+  // }, [limit, searchName, sortBy, sortOrder, currentPage, queueAll, queueTotalPage, dataStatus, vitalSigns.id_pasien]);
+  }, [limit, searchName, sortBy, sortOrder, currentPage, dataStatus, vitalSigns.id_pasien]);
 
   let startNumber = 1;
 
@@ -541,7 +542,7 @@ const VitalSigns = ({ match }) => {
                       </FormGroup>
                     </Colxx> */}
 
-                    <Colxx sm={6}>
+                    <Colxx sm={12}>
                       <FormGroup>
                         <Label for="keluhan">
                           Keluhan
@@ -551,14 +552,14 @@ const VitalSigns = ({ match }) => {
                           name="keluhan"
                           id="keluhan"
                           placeholder="Keluhan"
-                          style={{minHeight: '100'}}
+                          style={{minHeight: '100px'}}
                           value={vitalSigns.keluhan}
                           onChange={onChange}
                         />
                       </FormGroup>
                     </Colxx>
 
-                    <Colxx sm={6}>
+                    <Colxx sm={12}>
                       <FormGroup>
                         <Label for="kesadaran">
                           Kesadaran<span className="required text-danger" aria-required="true"> *</span>
@@ -664,27 +665,6 @@ const VitalSigns = ({ match }) => {
 
                     <Colxx sm={6}>
                       <FormGroup>
-                        <Label for="imt">
-                          IMT<span className="required text-danger" aria-required="true"> *</span>
-                        </Label>
-                        <InputGroup>
-                          <Input
-                            type="number"
-                            name="imt"
-                            id="imt"
-                            placeholder="IMT"
-                            required={true}
-                            pattern="[0-9]*"
-                            value={vitalSigns.imt}
-                            onChange={onChange}
-                          />
-                          <InputGroupAddon addonType="append"><span className="input-group-text">kg/m<sup>2</sup></span></InputGroupAddon>
-                        </InputGroup>
-                      </FormGroup>
-                    </Colxx>
-
-                    <Colxx sm={6}>
-                      <FormGroup>
                         <Label for="sistole">
                           Tekanan Darah<span className="required text-danger" aria-required="true"> *</span>
                         </Label>
@@ -723,6 +703,27 @@ const VitalSigns = ({ match }) => {
                             </InputGroup>
                           </Colxx>
                         </Row>
+                      </FormGroup>
+                    </Colxx>
+
+                    <Colxx sm={6}>
+                      <FormGroup>
+                        <Label for="imt">
+                          IMT<span className="required text-danger" aria-required="true"> *</span>
+                        </Label>
+                        <InputGroup>
+                          <Input
+                            type="number"
+                            name="imt"
+                            id="imt"
+                            placeholder="IMT"
+                            required={true}
+                            pattern="[0-9]*"
+                            value={vitalSigns.imt}
+                            onChange={onChange}
+                          />
+                          <InputGroupAddon addonType="append"><span className="input-group-text">kg/m<sup>2</sup></span></InputGroupAddon>
+                        </InputGroup>
                       </FormGroup>
                     </Colxx>
 

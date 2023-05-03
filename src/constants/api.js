@@ -18,8 +18,8 @@ const api = {
   schedule: '/jaga',
   patient: {
     all: '/pasien',
-    archive: '/pasien/active',
-    activate: '/pasien/active'
+    archive: '/pasien/archive',
+    activate: '/pasien/activate'
   },
   insurance: {
     all: '/asuransi',

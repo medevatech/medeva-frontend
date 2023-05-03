@@ -93,7 +93,8 @@ label {
 }
 
 .button-xs {
-    padding: 0.25rem 0.5rem 0.25rem 0.5rem;
+    // padding: 0.15rem 0.5rem 0.15rem 0.5rem;
+    padding: 0.5rem;
     line-height: 1;
 }
 
@@ -140,6 +141,21 @@ label {
 
 .med-record-table tr:last-child th, .med-record-table tr:last-child td {
     padding-bottom: 20px;
+}
+
+// .menu-hidden .sub-menu, .menu-sub-hidden .sub-menu, .sub-hidden .sub-menu {
+//     transform: translateX(-230px);
+// }
+
+// .menu-mobile.sub-show-temporary .sub-menu, .sub-show-temporary .sub-menu {
+//     transform: translateX(0);
+// }
+
+.max-text {
+    max-width: 150px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 @media (max-width: 768px) {

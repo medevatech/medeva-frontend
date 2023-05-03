@@ -137,7 +137,7 @@ const Data = ({ match }) => {
     pemeriksaan_fisik: '',
     prognosa: '',
     kasus_kll: false,
-    status_pulang: '',
+    // status_pulang: '',
     keluhan: ''
   });
 
@@ -186,10 +186,14 @@ const Data = ({ match }) => {
       setRecord(current => {
           return { ...current, kasus_kll: false }
       })
+
+      setIsChecked(false);
     } else if (e.target.name === 'kasus_kll' && e.target.checked === true) {
       setRecord(current => {
           return { ...current, kasus_kll: true }
       })
+
+      setIsChecked(true);
     } else {
       setRecord(current => {
           return { ...current, [e.target.name]: e.target.value }
@@ -224,7 +228,7 @@ const Data = ({ match }) => {
           pemeriksaan_fisik: data.pemeriksaan_fisik,
           prognosa: data.prognosa,
           kasus_kll: data.kasus_kll,
-          status_pulang: data.status_pulang,
+          // status_pulang: data.status_pulang,
           keluhan: data.keluhan
         });
 
@@ -256,7 +260,7 @@ const Data = ({ match }) => {
         pemeriksaan_fisik: '',
         prognosa: '',
         kasus_kll: '',
-        status_pulang: '',
+        // status_pulang: '',
         keluhan: ''
       });
     }
@@ -372,7 +376,7 @@ const Data = ({ match }) => {
       pemeriksaan_fisik: '',
       prognosa: '',
       kasus_kll: false,
-      status_pulang: '',
+      // status_pulang: '',
       keluhan: ''
     });
 
@@ -459,52 +463,7 @@ const Data = ({ match }) => {
     try {
       const res = await recordAPI.getByPatient("", `/${id}`);
       let data = res.data.data;
-      // console.log('allRecord', data);
-
-      // if(data){
-      //   data.map((data, index) => {
-      //     // allRecord.push({
-      //     //   id_jaga: data.id_jaga,
-      //     //   id_vs: data.id_vs,
-      //     //   id_pasien: data.id_pasien,
-      //     //   waktu_mulai: data.waktu_mulai,
-      //     //   waktu_selesai: data.waktu_selesai,
-      //     //   tipe: data.tipe,
-      //     //   anamnesis: data.anamnesis,
-      //     //   pemeriksaan_fisik: data.pemeriksaan_fisik,
-      //     //   prognosa: data.prognosa,
-      //     //   kasus_kll: data.kasus_kll,
-      //     //   status_pulang: data.status_pulang,
-      //     //   keluhan: data.keluhan
-      //     // });
-      //   })
-      // }
-
-      
       dispatch({type: "GET_ALL_RECORD_BY_PATIENT", payload: data});
-
-      // setRecord([{
-      //   id_jaga: data.id_jaga,
-      //   id_vs: data.id_vs,
-      //   id_pasien: data.id_pasien,
-      //   waktu_mulai: data.waktu_mulai,
-      //   waktu_selesai: data.waktu_selesai,
-      //   tipe: data.tipe,
-      //   anamnesis: data.anamnesis,
-      //   pemeriksaan_fisik: data.pemeriksaan_fisik,
-      //   prognosa: data.prognosa,
-      //   kasus_kll: data.kasus_kll,
-      //   status_pulang: data.status_pulang,
-      //   keluhan: data.keluhan
-      // }]);
-
-      // setSelectedType({tipe: data.tipe ? e.value : ''});
-      // setSelectedVisitation({status_pulang: data.status_pulang ? e.value : ''});
-      // setSelectedPrognosa({prognosa: data.prognosa ? e.value : ''});
-
-      // setShowRecord('block');
-
-      // console.log(allRecord);
     } catch (e) {
       console.log(e);
     }
@@ -539,7 +498,7 @@ const Data = ({ match }) => {
       getAllRecordByPatientId("", patientID);
     }
     
-  // }, [limit, search, searchDivisi, sortBy, sortOrder, currentPage, queueAll, queueTotalPage]);
+  // }, [limit, search, searchDivisi, sortBy, sortOrder, currentPage, queueAll, queueTotalPage, allRecord]);
   }, [limit, searchName, searchDivisi, sortBy, sortOrder, currentPage, allRecord, patientStatus]);
 
   let startNumber = 1;
@@ -715,12 +674,12 @@ const Data = ({ match }) => {
                       <td>{ vitalSigns.id_pasien ? vitalSigns.lingkar_perut : '0' } cm</td>
                     </tr>
                     <tr>
-                      <th>IMT</th>
-                      <td>{ vitalSigns.id_pasien ? vitalSigns.imt : '0' } kg/m<sup>2</sup></td>
-                    </tr>
-                    <tr>
                       <th>Tekanan Darah</th>
                       <td>{ vitalSigns.id_pasien ? vitalSigns.sistole : '0' } mmHg / { vitalSigns ? vitalSigns.diastole : '0' } mmHg</td>
+                    </tr>
+                    <tr>
+                      <th>IMT</th>
+                      <td>{ vitalSigns.id_pasien ? vitalSigns.imt : '0' } kg/m<sup>2</sup></td>
                     </tr>
                     <tr>
                       <th>Tingkat Pernapasan</th>
@@ -781,7 +740,7 @@ const Data = ({ match }) => {
                         <th>Pemeriksaan Fisik</th>
                         <td>{data.pemeriksaan_fisik ? data.pemeriksaan_fisik : '-'}</td>
                       </tr>
-                      <tr>
+                      {/* <tr>
                         <th>Prognosa</th>
                         <td>{data.prognosa ? data.prognosa : '-'}</td>
                       </tr>
@@ -793,11 +752,11 @@ const Data = ({ match }) => {
                               <h5><span className="badge med-record-badge badge-success badge-pill"><i className="simple-icon-close"></i></span></h5>
                             }
                         </td>
-                      </tr>
-                      <tr>
+                      </tr> */}
+                      {/* <tr>
                         <th>Status Pulang</th>
                         <td>{data.status_pulang ? data.status_pulang : '-'}</td>
-                      </tr>
+                      </tr> */}
                       <tr>
                         <th></th>
                         <td>
@@ -812,228 +771,8 @@ const Data = ({ match }) => {
                   </Table>
                   ) ) 
                 ) : ('')}
-                {/* <Table borderless className="med-record-table">
-                  <tbody>
-                    <tr>
-                      <th><h6 style={{ fontWeight: 'bold' }}>DD/ Diagnosis</h6></th>
-                      <td><span style={{ float: 'right' }}>25 April 2023 12.42</span></td>
-                    </tr>
-                    <tr>
-                      <th>Anamnesis</th>
-                      <td>Compos Mentis</td>
-                    </tr>
-                    <tr>
-                      <th>Rhinos SR</th>
-                      <td>(01/01/2019 - 21/01/2019)</td>
-                    </tr>
-                    <tr>
-                      <th>Tindakan</th>
-                      <td>Lorem ipsum dolor sit amet consectetur adipisicing elit. Neque, odio!</td>
-                    </tr>
-                    <tr>
-                      <th>Pemeriksaan Penunjang</th>
-                      <td>Lorem ipsum dolor sit amet consectetur adipisicing elit. Neque, odio!</td>
-                    </tr>
-                    <tr>
-                      <th>Rujukan</th>
-                      <td>Poli X</td>
-                    </tr>
-                  </tbody>
-                </Table>
-                <Table borderless className="med-record-table">
-                  <tbody>
-                    <tr>
-                      <th><h6 style={{ fontWeight: 'bold' }}>DD/ Diagnosis</h6></th>
-                      <td><span style={{ float: 'right' }}>25 April 2023 12.42</span></td>
-                    </tr>
-                    <tr>
-                      <th>Anamnesis</th>
-                      <td>Compos Mentis</td>
-                    </tr>
-                    <tr>
-                      <th>Rhinos SR</th>
-                      <td>(01/01/2019 - 21/01/2019)</td>
-                    </tr>
-                    <tr>
-                      <th>Tindakan</th>
-                      <td>Lorem ipsum dolor sit amet consectetur adipisicing elit. Neque, odio!</td>
-                    </tr>
-                    <tr>
-                      <th>Pemeriksaan Penunjang</th>
-                      <td>Lorem ipsum dolor sit amet consectetur adipisicing elit. Neque, odio!</td>
-                    </tr>
-                    <tr>
-                      <th>Rujukan</th>
-                      <td>Poli X</td>
-                    </tr>
-                  </tbody>
-                </Table> */}
               </CardBody>
             </Card>
-            {/* <Card className="mb-4">
-              <CardBody>
-                <CardTitle>
-                  Form Registrasi Rekam Medis
-                </CardTitle>
-                <Form>
-                  <FormGroup row>
-                    <Colxx sm={6}>
-                      <FormGroup>
-                        <Label for="waktuMulai">
-                          Waktu Mulai<span className="required text-danger" aria-required="true"> *</span>
-                        </Label>
-                        <DatePicker
-                          selected={startDateTime}
-                          onChange={setStartDateTime}
-                          name="waktuMulai"
-                          id="waktuMulai"
-                          showTimeInput
-                          showTimeSelect
-                          timeFormat="HH:mm"
-                          timeIntervals={5}
-                          dateFormat="d MMMM yyyy HH:mm"
-                          readOnly={true}
-                          timeCaption="Jam"
-                          className="disabled-datepicker"
-                        />
-                      </FormGroup>
-                    </Colxx>
-
-                    <Colxx sm={6}>
-                      <FormGroup>
-                        <Label for="waktuSelesai">
-                          Waktu Selesai<span className="required text-danger" aria-required="true"> *</span>
-                        </Label>
-                        <DatePicker
-                          selected={endDateTime}
-                          onChange={setEndDateTime}
-                          name="waktuSelesai"
-                          id="waktuSelesai"
-                          showTimeInput
-                          showTimeSelect
-                          timeFormat="HH:mm"
-                          timeIntervals={5}
-                          dateFormat="d MMMM yyyy HH:mm"
-                          timeCaption="Jam"
-                        />
-                      </FormGroup>
-                    </Colxx>
-
-                    <Colxx sm={6}>
-                      <FormGroup>
-                        <Label for="tipe">
-                          Tipe
-                        </Label>
-                        <Select
-                          components={{ Input: CustomSelectInput }}
-                          className="react-select"
-                          classNamePrefix="react-select"
-                          name="tipe"
-                          value={selectedType}
-                          onChange={setSelectedType}
-                          options={selectType}
-                        />
-                      </FormGroup>
-                    </Colxx>
-
-                    <Colxx sm={6}>
-                      <FormGroup>
-                        <Label for="prognosa">
-                          Prognosa
-                        </Label>
-                        <Select
-                          components={{ Input: CustomSelectInput }}
-                          className="react-select"
-                          classNamePrefix="react-select"
-                          name="prognosa"
-                          value={selectedPrognosa}
-                          onChange={setSelectedPrognosa}
-                          options={selectPrognosa}
-                        />
-                      </FormGroup>
-                    </Colxx>
-
-                    <Colxx sm={12}>
-                      <FormGroup>
-                        <Label for="anamnesis">
-                          Anamnesis
-                        </Label>
-                        <Input
-                          type="textarea"
-                          name="anamnesis"
-                          id="anamnesis"
-                          placeholder="Anamnesis"
-                          style={{minHeight: '100'}}
-                        />
-                      </FormGroup>
-                    </Colxx>
-
-                    <Colxx sm={12}>
-                      <FormGroup>
-                        <Label for="periksaFisik">
-                          Pemeriksaan Fisik
-                        </Label>
-                        <Input
-                          type="textarea"
-                          name="periksaFisik"
-                          id="periksaFisik"
-                          placeholder="Pemeriksaan Fisik"
-                          style={{minHeight: '100'}}
-                        />
-                      </FormGroup>
-                    </Colxx>
-
-                    <Colxx sm={6}>
-                      <FormGroup>
-                        <Label for="kll">
-                          Kasus Kecelakaan Lalu Lintas
-                        </Label>
-                        <CustomInput
-                          type="checkbox"
-                          id="kll"
-                          label="Kecelakaan Lalu Lintas"
-                        />
-                      </FormGroup>
-                    </Colxx>
-
-                    <Colxx sm={6}>
-                      <FormGroup>
-                        <Label for="pulang">
-                          Status Pulang<span className="required text-danger" aria-required="true"> *</span>
-                        </Label>
-                        <Select
-                          components={{ Input: CustomSelectInput }}
-                          className="react-select"
-                          classNamePrefix="react-select"
-                          name="pulang"
-                          value={selectedVisitation}
-                          onChange={setSelectedVisitation}
-                          options={selectVisitation}
-                          required
-                        />
-                      </FormGroup>
-                    </Colxx>
-                  </FormGroup>
-
-                  <Row>
-                    <Colxx sm={6}>
-                      <Label>
-                        * ) Wajib diisi
-                      </Label>
-                    </Colxx>
-                    <Colxx sm={6} className="text-right">
-                      <Button outline color="danger">
-                        Batal
-                      </Button>
-                      &nbsp;&nbsp;
-                      <Button color="primary">
-                        Simpan
-                      </Button>
-                    </Colxx>
-                  </Row>
-                </Form>
-              </CardBody>
-            </Card> */}
           </Colxx>
 
           <Modal isOpen={modalRecord} toggle={() => setModalRecord(!modalRecord)} className="modal-record">
@@ -1115,19 +854,16 @@ const Data = ({ match }) => {
 
                 <Colxx sm={6}>
                   <FormGroup>
-                    <Label for="prognosa">
-                      Prognosa
+                    <Label for="kasus_kll">
+                      Kasus Kecelakaan Lalu Lintas
                     </Label>
-                    <Select
-                      components={{ Input: CustomSelectInput }}
-                      className="react-select"
-                      classNamePrefix="react-select"
-                      name="prognosa"
-                      value={selectPrognosa.find(item => item.value === record.prognosa) || ''}
-                      // value={selectedPrognosa}
-                      // onChange={setSelectedPrognosa}
-                      options={selectPrognosa}
-                      // value={record.prognosa}
+                    <CustomInput
+                      checked={isChecked}
+                      type="checkbox"
+                      name="kasus_kll"
+                      id="kasus_kll"
+                      label="Kecelakaan Lalu Lintas"
+                      value={record.kasus_kll}
                       onChange={onChange}
                     />
                   </FormGroup>
@@ -1169,16 +905,19 @@ const Data = ({ match }) => {
 
                 <Colxx sm={6}>
                   <FormGroup>
-                    <Label for="kasus_kll">
-                      Kasus Kecelakaan Lalu Lintas
+                    <Label for="prognosa">
+                      Prognosa
                     </Label>
-                    <CustomInput
-                      checked={isChecked}
-                      type="checkbox"
-                      name="kasus_kll"
-                      id="kasus_kll"
-                      label="Kecelakaan Lalu Lintas"
-                      value={record.kasus_kll}
+                    <Select
+                      components={{ Input: CustomSelectInput }}
+                      className="react-select"
+                      classNamePrefix="react-select"
+                      name="prognosa"
+                      value={selectPrognosa.find(item => item.value === record.prognosa) || ''}
+                      // value={selectedPrognosa}
+                      // onChange={setSelectedPrognosa}
+                      options={selectPrognosa}
+                      // value={record.prognosa}
                       onChange={onChange}
                     />
                   </FormGroup>
