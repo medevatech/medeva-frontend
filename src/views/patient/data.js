@@ -37,6 +37,8 @@ import insuranceAPI from "api/insurance";
 import patientAllergyAPI from "api/patient-allergy";
 import Swal from "sweetalert2";
 
+import loader from '../../assets/img/loading.gif';
+
 const selectKITAS = [
   { label: "KTP", value: "KTP", key: 0, name: 'tipe_kitas' },
   { label: "SIM", value: "SIM", key: 1, name: 'tipe_kitas' },
@@ -552,7 +554,7 @@ const Data = ({ match }) => {
             //   confirmButtonText: "Coba lagi",
             // });
   
-            throw Error(`Error status: ${response.statusCode}`);
+            throw Error(`Error status: ${response.status}`);
           }
         } catch (e) {
           // Swal.fire({
@@ -591,7 +593,7 @@ const Data = ({ match }) => {
           //   confirmButtonText: "Coba lagi",
           // });
   
-          throw Error(`Error status: ${response.statusCode}`);
+          throw Error(`Error status: ${response.status}`);
         }
       } catch (e) {
         // Swal.fire({
@@ -645,7 +647,7 @@ const Data = ({ match }) => {
             //   confirmButtonText: "Coba lagi",
             // });
 
-            throw Error(`Error status: ${response.statusCode}`);
+            throw Error(`Error status: ${response.status}`);
           }
         } catch (e) {
           // Swal.fire({
@@ -690,7 +692,7 @@ const Data = ({ match }) => {
             //   confirmButtonText: "Coba lagi",
             // });
     
-            throw Error(`Error status: ${response.statusCode}`);
+            throw Error(`Error status: ${response.status}`);
           }
         } catch (e) {
           // Swal.fire({
@@ -744,7 +746,7 @@ const Data = ({ match }) => {
             confirmButtonText: "Coba lagi",
           });
 
-          throw Error(`Error status: ${response.statusCode}`);
+          throw Error(`Error status: ${response.status}`);
         }
       } catch (e) {
         Swal.fire({
@@ -783,7 +785,7 @@ const Data = ({ match }) => {
             confirmButtonText: "Coba lagi",
           });
   
-          throw Error(`Error status: ${response.statusCode}`);
+          throw Error(`Error status: ${response.status}`);
         }
       } catch (e) {
         Swal.fire({
@@ -1084,7 +1086,7 @@ const Data = ({ match }) => {
             confirmButtonText: "Coba lagi",
           });
 
-          throw Error(`Error status: ${response.statusCode}`);
+          throw Error(`Error status: ${response.status}`);
         }
       } else {
         const response = await patientAPI.activate("", patientID);
@@ -1110,7 +1112,7 @@ const Data = ({ match }) => {
             confirmButtonText: "Coba lagi",
           });
 
-          throw Error(`Error status: ${response.statusCode}`);
+          throw Error(`Error status: ${response.status}`);
         }
       }
       // console.log(response);
@@ -1170,7 +1172,7 @@ const Data = ({ match }) => {
           confirmButtonText: "Coba lagi",
         });
 
-        throw Error(`Error status: ${response.statusCode}`);
+        throw Error(`Error status: ${response.status}`);
       }
 
       // console.log(response);
@@ -1223,11 +1225,11 @@ const Data = ({ match }) => {
     }
 
     if(processPatient === 1 && patientID) {
-      // onAllergySubmit("", 1);
+      onAllergySubmit("", 1);
     }
 
     if(processPatient === 2 && patientID) {
-      onInsuranceSubmit("", 2);
+      // onInsuranceSubmit("", 2);
     }
       
     // if(dataStatus === 'update' && patientID) {
@@ -1304,13 +1306,13 @@ const Data = ({ match }) => {
               <Table>
                 <thead>
                   <tr>
-                  <th style={{ textAlign: "center", verticalAlign: 'middle', width: '40px' }}>#</th>
+                    <th className="center-xy" style={{ width: '40px' }}>#</th>
                     <th colSpan="1">Pasien</th>
-                    <th style={{ textAlign: "center", width: '55px' }}>Aksi</th>
+                    <th className="center-xy" style={{ width: '55px' }}>&nbsp;</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {patientAll ? (
+                  {patientAll.length > 0 ? (
                     patientAll.map((data) => (
                       <tr key={data.id} onClick={(e) => getPatientById(e, data.id)} style={{ cursor: 'pointer'}}>
                         <th scope="row" style={{ textAlign: "center", verticalAlign: 'middle' }}>
@@ -1365,9 +1367,11 @@ const Data = ({ match }) => {
                     ))
                   ) : (
                     <tr>
-                      <td>
-                        <p>Loading data</p>
+                      <td>&nbsp;</td>
+                      <td align="center">
+                        <img src={loader} alt="loading..." width="100"/>
                       </td>
+                      <td>&nbsp;</td>
                     </tr>
                   )}
                 </tbody>
@@ -1391,7 +1395,7 @@ const Data = ({ match }) => {
                   <Colxx sm="7" md="6" xl="6" style={{ textAlign: 'right' }}>
                     {<IsActive/>}
                     {(JSON.parse(localStorage.getItem('user_data')).roles.includes('isDev') ||
-                    JSON.parse(localStorage.getItem('user_data')).roles.includes('isAdmin')) && patientID &&
+                    JSON.parse(localStorage.getItem('user_data')).roles.includes('isManager')) && patientID &&
                       <Button color="danger" size="xs"
                         onClick={(e) => deleteById(e, patientID)}
                         >
@@ -1740,7 +1744,7 @@ const Data = ({ match }) => {
                     </FormGroup>
                   </Colxx>
 
-                  <Colxx sm={12}>
+                  {/* <Colxx sm={12}>
                     <FormGroup>
                       <Label style={{ lineHeight: '3' }}>Asuransi</Label>
                       {newInsurance.map((input, index) => {
@@ -1794,63 +1798,6 @@ const Data = ({ match }) => {
                       >
                         Tambah
                       </Button>
-                    </FormGroup>
-                  </Colxx>
-
-                  {/* <Colxx sm={6}>
-                    <FormGroup>
-                      <Label style={{ lineHeight: '3' }}>Alergi</Label>
-                      <Button
-                        color="primary"
-                        style={{ float: "right" }}
-                        className="mb-2"
-                        onClick={addAllergyFields}
-                      >
-                        Tambah
-                      </Button>
-                      {selectAllergy.map((input, index) => {
-                        return (
-                          <InputGroup
-                            key={input.id}
-                            className="input-group-allergy"
-                          >
-                            <Select
-                              addonType="prepend"
-                              components={{ Input: CustomSelectInput }}
-                              className="react-select select-allergy"
-                              classNamePrefix="react-select"
-                              name="alergi"
-                              value={selectedAllergy.label}
-                              options={selectAllergy}
-                              onChange={(event) =>
-                                handleAllergyAdd(index, event)
-                              }
-                            />
-                            <Input
-                              type="text"
-                              name="nama"
-                              placeholder="Nama Alergi"
-                              className="input-allergy"
-                              value={input.nama}
-                              onChange={(event) =>
-                                handleAllergyAdd(index, event)
-                              }
-                            />
-                            {index > 0 && (
-                              <Button
-                                color="danger"
-                                style={{ float: "right" }}
-                                onClick={() =>
-                                  removeAllergyFields(input.id, index)
-                                }
-                                className="remove-allergy"
-                              >
-                                <i className="simple-icon-trash"></i>
-                              </Button>
-                            )}
-                          </InputGroup>
-                        );
-                      })}
                     </FormGroup>
                   </Colxx> */}
                 </FormGroup>

@@ -37,6 +37,9 @@ const Employee = React.lazy(() =>
 const Schedule = React.lazy(() =>
   import(/* webpackChunkName: "views-schedule" */ '../views/schedule')
 );
+const Division = React.lazy(() =>
+  import(/* webpackChunkName: "views-division" */ '../views/division')
+);
 
 const MainRouter = () => {
     return (
@@ -72,6 +75,12 @@ const MainRouter = () => {
                     path="/schedule"
                     component={Schedule}
                     roles={[ "isDev", "isManager", "isAdmin", "isResepsionis", "isPerawat", "isDokter" ]}
+                />
+                <ProtectedRoute
+                // <Route
+                    path="/division"
+                    component={Division}
+                    roles={[ "isDev", "isManager", "isAdmin" ]}
                 />
                 <Route
                     path="/error"

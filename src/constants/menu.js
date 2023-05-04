@@ -47,5 +47,12 @@ const data = [
   //   to: `/schedule`,
   //   roles: [ "isDev", "isManager", "isAdmin", "isResepsionis", "isPerawat", "isDokter" ],
   // },
+  {
+    id: 'division',
+    icon: 'iconsminds-office',
+    label: 'Divisi',
+    to: `/division`,
+    roles: [ "isDev", "isManager", "isAdmin" ],
+  },
 ];
 export default data;

@@ -33,6 +33,8 @@ import queueAPI from "api/queue";
 import vitalSignsAPI from "api/vital-signs";
 import Swal from "sweetalert2";
 
+import loader from '../../assets/img/loading.gif';
+
 const selectDivision = [
   { label: 'Poli Umum', value: 'umum', key: 0 },
   { label: 'Poli Gigi', value: 'gigi', key: 1 }
@@ -132,7 +134,7 @@ const VitalSigns = ({ match }) => {
             confirmButtonText: "Coba lagi",
           });
 
-          throw Error(`Error status: ${response.statusCode}`);
+          throw Error(`Error status: ${response.status}`);
         }
       } catch (e) {
         Swal.fire({
@@ -171,7 +173,7 @@ const VitalSigns = ({ match }) => {
             confirmButtonText: "Coba lagi",
           });
 
-          throw Error(`Error status: ${response.statusCode}`);
+          throw Error(`Error status: ${response.status}`);
         }
       } catch (e) {
         Swal.fire({
@@ -319,16 +321,22 @@ const VitalSigns = ({ match }) => {
           <Colxx sm="12" md="12" xl="4" className="mb-4">
           <Card className="mb-4">
               <CardBody>
-                <CardTitle className="mb-4">
-                  Data Antrian
-                  {/* <Button
-                    color="primary"
-                    style={{ float: "right" }}
-                    className="mb-4"
-                    onClick={resetForm}
-                  >
-                    Tambah
-                  </Button> */}
+                <CardTitle style={{ marginBottom: 0 }}>
+                  <Row>
+                    <Colxx sm="12" md="8" xl="8">
+                    Data Antrian
+                    </Colxx>
+                    <Colxx sm="12" md="4" xl="4">
+                      <Button
+                        color="primary"
+                        style={{ float: "right" }}
+                        className="mb-4"
+                        onClick={() => getQueue("?limit=10&page=1")}
+                      >
+                        Perbarui
+                      </Button>
+                    </Colxx>
+                  </Row>
                 </CardTitle>
                 <FormGroup row style={{ margin: '0px', width: '100%' }}>
                   <Colxx sm="12" md="6" style={{ paddingLeft: '0px' }}>
@@ -376,13 +384,13 @@ const VitalSigns = ({ match }) => {
                 <Table>
                   <thead>
                     <tr>
-                    <th className="center-xy">#</th>
+                      <th className="center-xy" style={{ width: '40px' }}>#</th>
                       <th colSpan={2}>Antrian</th>
-                    <th style={{ textAlign: "center", width: '50px' }}>Aksi</th>
+                      <th className="center-xy" style={{ width: '55px' }}>&nbsp;</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {queueAll ? (
+                    {queueAll.length > 0 ? (
                       queueAll.map((data) => (
                         <tr key={data.id}>
                             <th scope="row" className="center-xy">{startNumber++}</th>
@@ -398,7 +406,7 @@ const VitalSigns = ({ match }) => {
                               <Button color="secondary" size="xs" className="button-xs"
                                 onClick={(e) => getVitalSignsByPatientId(e, data.id_pasien, data)}
                               >
-                                <i className="simple-icon-note"></i>
+                                <i className="simple-icon-arrow-right-circle"></i>
                               </Button>
                               {' '}
                               {/* <Button color="warning" size="xs" className="button-xs">
@@ -409,9 +417,11 @@ const VitalSigns = ({ match }) => {
                       ))
                     ) : (
                       <tr>
-                        <td>
-                          <p>Loading data</p>
+                        <td>&nbsp;</td>
+                        <td align="center">
+                          <img src={loader} alt="loading..." width="100"/>
                         </td>
+                        <td>&nbsp;</td>
                       </tr>
                     )}
                     {/* <tr>

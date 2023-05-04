@@ -36,6 +36,8 @@ import CustomSelectInput from "components/common/CustomSelectInput";
 import employeeAPI from "api/employee";
 import Swal from "sweetalert2";
 
+import loader from '../../assets/img/loading.gif';
+
 const selectRole = [
   { label: "Developer", value: "Developer", key: 0 },
   { label: "Manager", value: "Manager", key: 1 },
@@ -544,7 +546,7 @@ const Data = ({ match, history, loading, error }) => {
             confirmButtonText: "Coba lagi",
           });
   
-          throw Error(`Error status: ${response.statusCode}`);
+          throw Error(`Error status: ${response.status}`);
         }
       } catch (e) {
         Swal.fire({
@@ -583,7 +585,7 @@ const Data = ({ match, history, loading, error }) => {
             confirmButtonText: "Coba lagi",
           });
   
-          throw Error(`Error status: ${response.statusCode}`);
+          throw Error(`Error status: ${response.status}`);
         }
       } catch (e) {
         Swal.fire({
@@ -911,7 +913,7 @@ const Data = ({ match, history, loading, error }) => {
             confirmButtonText: "Coba lagi",
           });
   
-          throw Error(`Error status: ${response.statusCode}`);
+          throw Error(`Error status: ${response.status}`);
         }
       } catch (e) {
         Swal.fire({
@@ -973,7 +975,7 @@ const Data = ({ match, history, loading, error }) => {
             confirmButtonText: "Coba lagi",
           });
 
-          throw Error(`Error status: ${response.statusCode}`);
+          throw Error(`Error status: ${response.status}`);
         }
       } else {
         const response = await employeeAPI.activate("", employeeID);
@@ -999,7 +1001,7 @@ const Data = ({ match, history, loading, error }) => {
             confirmButtonText: "Coba lagi",
           });
 
-          throw Error(`Error status: ${response.statusCode}`);
+          throw Error(`Error status: ${response.status}`);
         }
       }
       // console.log(response);
@@ -1058,7 +1060,7 @@ const Data = ({ match, history, loading, error }) => {
           confirmButtonText: "Coba lagi",
         });
 
-        throw Error(`Error status: ${response.statusCode}`);
+        throw Error(`Error status: ${response.status}`);
       }
 
       // console.log(response);
@@ -1326,16 +1328,16 @@ const Data = ({ match, history, loading, error }) => {
                   </Button>
                 </InputGroupAddon>
               </InputGroup>
-              <Table className="overflow-table-employee">
+              <Table>
                 <thead>
                   <tr>
-                    <th style={{ textAlign: "center", verticalAlign: 'middle', width: '40px' }}>#</th>
+                    <th className="center-xy" style={{ width: '40px' }}>#</th>
                     <th>Karyawan / Tenaga Kesehatan</th>
-                    <th style={{ textAlign: "center", width: '55px' }}>Aksi</th>
+                    <th className="center-xy" style={{ width: '55px' }}>&nbsp;</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {employeeData ? (
+                  {employeeData.length > 0 ? (
                     employeeData.map((data) => (
                       <tr key={data.id} onClick={(e) => getEmployeeById(e, data.id)} style={{ cursor: 'pointer'}}>
                         <th scope="row" style={{ textAlign: "center", verticalAlign: 'middle' }}>
@@ -1361,9 +1363,11 @@ const Data = ({ match, history, loading, error }) => {
                     ))
                   ) : (
                     <tr>
-                      <td>
-                        <p>Loading data</p>
+                      <td>&nbsp;</td>
+                      <td align="center">
+                        <img src={loader} alt="loading..." width="100"/>
                       </td>
+                      <td>&nbsp;</td>
                     </tr>
                   )}
                 </tbody>
@@ -1399,8 +1403,7 @@ const Data = ({ match, history, loading, error }) => {
                     }
                     {<IsActive/>}
                     {(JSON.parse(localStorage.getItem('user_data')).roles.includes('isDev') ||
-                    JSON.parse(localStorage.getItem('user_data')).roles.includes('isManager') ||
-                    JSON.parse(localStorage.getItem('user_data')).roles.includes('isAdmin')) && employeeID &&
+                    JSON.parse(localStorage.getItem('user_data')).roles.includes('isManager')) && employeeID &&
                       <Button color="danger" size="xs"
                         onClick={(e) => deleteById(e, employeeID)}
                         >
@@ -1735,7 +1738,7 @@ const Data = ({ match, history, loading, error }) => {
                         name="status_menikah"
                         id="status_menikah"
                         options={selectMaritalStatus}
-                        value={selectMaritalStatus.find(item => item.value === employee.status_menikah)}
+                        value={selectMaritalStatus.find(item => item.value === employee.status_menikah) || ''}
                         // value={selectedWP}
                         onChange={onChange}
                       />
@@ -1789,7 +1792,7 @@ const Data = ({ match, history, loading, error }) => {
                         name="tipe_izin"
                         id="tipe_izin"
                         options={selectWP}
-                        value={selectWP.find(item => item.value === employee.tipe_izin)}
+                        value={selectWP.find(item => item.value === employee.tipe_izin) || ''}
                         // value={selectedWP}
                         onChange={onChange}
                       />
