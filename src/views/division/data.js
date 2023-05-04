@@ -39,6 +39,8 @@ import Swal from "sweetalert2";
 
 import loader from '../../assets/img/loading.gif';
 
+const userData = JSON.parse(localStorage.getItem('user_data'));
+
 const selectStatusF = [
   { label: "Semua", value: "", key: 0, name: "status" },
   { label: "Aktif", value: "1", key: 1, name: "status" },
@@ -52,7 +54,7 @@ const Data = ({ match, history, loading, error }) => {
   const [dataStatus, setDataStatus] = useState("add");
 
   const [selectedKlinik, setSelectedKlinik] = useState([]);
-  const [selectedKlinikF, setSelectedKlinikF] = useState([]);
+  const [selectedKlinikF, setSelectedKlinikF] = useState([{ label: "Semua", value: "", key: 0, name: 'id_klinik' }]);
 
   const [modalArchive, setModalArchive] = useState(false);
   const [modalDelete, setModalDelete] = useState(false);
@@ -66,14 +68,15 @@ const Data = ({ match, history, loading, error }) => {
 
   const onLoadKlinik = async () => {
     try {
-      const response = await clinicAPI.get("", "");
+      const response = await clinicAPI.get("", "?limit=1000");
       // console.log(response);
+
+      setSelectedKlinik([]);
+      setSelectedKlinikF([{ label: "Semua", value: "", key: 0, name: 'id_klinik' }]);
 
       if (response.status === 200) {
         let data = response.data.data;
         // console.log(data);
-
-        setSelectedKlinik([]); setSelectedKlinikF([]);
       
         for (var i = 0; i < data.length; i++) {
           setSelectedKlinik((current) => [
@@ -92,8 +95,6 @@ const Data = ({ match, history, loading, error }) => {
     } catch (e) {
       console.log(e);
     }
-
-    console.log(selectedKlinik);
   };
 
   const onChange = (e) => {
@@ -103,8 +104,6 @@ const Data = ({ match, history, loading, error }) => {
       setDivision(current => {
           return { ...current, id_klinik: e ? e.value : ''}
       })
-
-      setSelectedKlinik(e);
     } else {
       setDivision(current => {
           return { ...current, [e.target.name]: e.target.value }
@@ -211,6 +210,9 @@ const Data = ({ match, history, loading, error }) => {
       tipe: '',
       id_klinik: ''
     });
+    
+    setSelectedKlinik([]);
+    setSelectedKlinikF([{ label: "Semua", value: "", key: 0, name: 'id_klinik' }]);
 
     setDataStatus("add");
     onLoadKlinik();
@@ -270,9 +272,9 @@ const Data = ({ match, history, loading, error }) => {
   }
 
   function IsActive() {
-    if(JSON.parse(localStorage.getItem('user_data')).roles.includes('isDev') ||
-      JSON.parse(localStorage.getItem('user_data')).roles.includes('isManager') ||
-      JSON.parse(localStorage.getItem('user_data')).roles.includes('isAdmin')) {
+    if(userData.roles.includes('isDev') ||
+      userData.roles.includes('isManager') ||
+      userData.roles.includes('isAdmin')) {
       if (divisionID && divisionStatus == 1) {
         return <ButtonArchive/>;
       } else if (divisionID && divisionStatus == 0) {
@@ -297,7 +299,7 @@ const Data = ({ match, history, loading, error }) => {
 
       setDivisionID(data.id);
       setDivisionStatus(data.is_active);
-      setDivisionName(data.username);
+      setDivisionName(data.tipe);
     } catch (e) {
       console.log(e);
     }
@@ -383,7 +385,7 @@ const Data = ({ match, history, loading, error }) => {
       let data = res.data.data[0];
 
       setDivisionID(data.id);
-      setDivisionName(data.username);
+      setDivisionName(data.tipe);
     } catch (e) {
       console.log(e);
     }
@@ -507,7 +509,7 @@ const Data = ({ match, history, loading, error }) => {
                     className="react-select"
                     classNamePrefix="react-select"
                     name="klinik"
-                    onChange={(e) => setSearchKlinik(e.label)}
+                    onChange={(e) => setSearchKlinik(e.value)}
                     options={selectedKlinikF}
                   />
                 </Colxx>
@@ -549,7 +551,7 @@ const Data = ({ match, history, loading, error }) => {
                   </tr>
                 </thead>
                 <tbody>
-                  {(divisionData.length !== 0 && divisionData.length > 0) ? (
+                  {divisionData.length > 0 ? (
                     divisionData.map((data) => (
                       <tr key={data.id} onClick={(e) => getDivisionById(e, data.id)} style={{ cursor: 'pointer'}}>
                         <th scope="row" style={{ textAlign: "center", verticalAlign: 'middle' }}>
@@ -582,7 +584,7 @@ const Data = ({ match, history, loading, error }) => {
                       <td>&nbsp;</td>
                     </tr>
                   )}
-                  {divisionData.length === 0 && (
+                  {/* {divisionData.length === 0 && (
                     <tr>
                       <td>&nbsp;</td>
                       <td align="center">
@@ -590,7 +592,7 @@ const Data = ({ match, history, loading, error }) => {
                       </td>
                       <td>&nbsp;</td>
                     </tr>
-                  )}
+                  )} */}
                 </tbody>
               </Table>
               <Pagination
@@ -611,8 +613,8 @@ const Data = ({ match, history, loading, error }) => {
                   </Colxx>
                   <Colxx sm="7" md="6" xl="6" style={{ textAlign: 'right' }}>
                     {<IsActive/>}
-                    {(JSON.parse(localStorage.getItem('user_data')).roles.includes('isDev') ||
-                    JSON.parse(localStorage.getItem('user_data')).roles.includes('isManager')) && divisionID &&
+                    {(userData.roles.includes('isDev') ||
+                    userData.roles.includes('isManager')) && divisionID &&
                       <Button color="danger" size="xs"
                         onClick={(e) => deleteById(e, divisionID)}
                         >
@@ -658,6 +660,7 @@ const Data = ({ match, history, loading, error }) => {
                         id="id_klinik"
                         options={selectedKlinik}
                         value={selectedKlinik.find(item => item.value === division.id_klinik) || ''}
+                        // value={division.id_klinik}
                         onChange={onChange}
                       />
                     </FormGroup>

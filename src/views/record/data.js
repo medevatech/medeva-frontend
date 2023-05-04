@@ -41,6 +41,8 @@ import Swal from "sweetalert2";
 
 import loader from '../../assets/img/loading.gif';
 
+const userData = JSON.parse(localStorage.getItem('user_data'));
+
 const selectDivision = [
   { label: 'Poli Umum', value: 'umum', key: 0 },
   { label: 'Poli Gigi', value: 'gigi', key: 1 }
