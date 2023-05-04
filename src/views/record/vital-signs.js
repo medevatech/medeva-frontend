@@ -31,9 +31,12 @@ import CustomSelectInput from 'components/common/CustomSelectInput';
 
 import queueAPI from "api/queue";
 import vitalSignsAPI from "api/vital-signs";
+import divisionAPI from "api/division";
 import Swal from "sweetalert2";
 
 import loader from '../../assets/img/loading.gif';
+
+const userData = JSON.parse(localStorage.getItem('user_data'));
 
 const selectDivision = [
   { label: 'Poli Umum', value: 'umum', key: 0 },
@@ -61,6 +64,8 @@ const VitalSigns = ({ match }) => {
   const queueTotalPage = useSelector(state => state.queueTotalPage);
   const [dataStatus, setDataStatus] = useState("add");
 
+  // const [selectDivision, setSelectDivision] = useState([]);
+  const [selectedDivisionF, setSelectedDivisionF] = useState([{ label: "Semua", value: "", key: 0, name: 'id_klinik' }]);
   const [selectedDivision, setSelectedDivision] = useState('');
   const [selectedAwareness, setSelectedAwareness] = useState('');
 
@@ -217,6 +222,32 @@ const VitalSigns = ({ match }) => {
     setPatientData('');
 
     setDataStatus("add");
+    onLoadDivisi();
+  };
+
+  const onLoadDivisi = async () => {
+    try {
+      const response = await divisionAPI.get("", "?limit=1000");
+      // console.log(response);
+
+      setSelectedDivisionF([{ label: "Semua", value: "", key: 0, name: 'id_divisi' }]);
+
+      if (response.status === 200) {
+        let data = response.data.data;
+        // console.log(data);
+      
+        for (var i = 0; i < data.length; i++) {
+          setSelectedDivisionF((current) => [
+            ...current,
+            { label: data[i].tipe, value: data[i].id, key: data[i].id, name: 'id_divisi' },
+          ]);
+        }
+      } else {
+        throw Error(`Error status: ${response.status}`);
+      }
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   const getQueue = async (params) => {
@@ -289,11 +320,16 @@ const VitalSigns = ({ match }) => {
     if (searchDivisi !== "") {
       params = `${params}&searchDivisi=${searchDivisi}`;
     }
+    if (!userData.roles.includes('isDev')) {
+      params = `${params}&searchJaga=${userData.id}`;
+    }
+
     if (currentPage !== "1") {
       params = `${params}&page=${currentPage}`;
     }
 
     getQueue(params);
+    onLoadDivisi();
 
     if(dataStatus === "add" && vitalSigns.id_pasien === '') {
       setVitalSigns(current => {
@@ -302,7 +338,7 @@ const VitalSigns = ({ match }) => {
     }
     
   // }, [limit, searchName, sortBy, sortOrder, currentPage, queueAll, queueTotalPage, dataStatus, vitalSigns.id_pasien]);
-  }, [limit, searchName, sortBy, sortOrder, currentPage, dataStatus, vitalSigns.id_pasien]);
+  }, [limit, searchName, searchDivisi, sortBy, sortOrder, currentPage, dataStatus, vitalSigns.id_pasien]);
 
   let startNumber = 1;
 
@@ -353,17 +389,16 @@ const VitalSigns = ({ match }) => {
                   </Colxx>
                   <Colxx sm="12" md="6" style={{ paddingRight: '0px' }}>
                     <Label for="divisi">
-                      Divisi
+                      Poli / Divisi
                     </Label>
                     <Select
                       components={{ Input: CustomSelectInput }}
                       className="react-select"
                       classNamePrefix="react-select"
                       name="divisi"
-                      value={selectedDivision}
                       onChange={(e) => setSearchDivisi(e.value)}
                       // onChange={setSelectedDivision}
-                      options={selectDivision}
+                      options={selectedDivisionF}
                     />
                   </Colxx>
                 </FormGroup>
@@ -418,7 +453,7 @@ const VitalSigns = ({ match }) => {
                     ) : (
                       <tr>
                         <td>&nbsp;</td>
-                        <td align="center">
+                        <td align="center" colSpan={2}>
                           <img src={loader} alt="loading..." width="100"/>
                         </td>
                         <td>&nbsp;</td>

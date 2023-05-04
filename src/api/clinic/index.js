@@ -12,7 +12,7 @@ const clinic = {
     return baseApi.post(url, payloads, { headers: getOriginHeader() })
   },
   update: (payloads) => {
-    const url = api.clinic.all+ `${id}`
+    const url = api.clinic.all+ `/${id}`
     return baseApi.put(url, payloads, { headers: getOriginHeader() })
   },
   archive: (payloads, id) => {

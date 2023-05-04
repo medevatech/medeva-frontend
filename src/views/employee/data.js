@@ -38,6 +38,8 @@ import Swal from "sweetalert2";
 
 import loader from '../../assets/img/loading.gif';
 
+const userData = JSON.parse(localStorage.getItem('user_data'));
+
 const selectRole = [
   { label: "Developer", value: "Developer", key: 0 },
   { label: "Manager", value: "Manager", key: 1 },
@@ -836,9 +838,9 @@ const Data = ({ match, history, loading, error }) => {
   }
 
   function IsActive() {
-    if(JSON.parse(localStorage.getItem('user_data')).roles.includes('isDev') ||
-      JSON.parse(localStorage.getItem('user_data')).roles.includes('isManager') ||
-      JSON.parse(localStorage.getItem('user_data')).roles.includes('isAdmin')) {
+    if(userData.roles.includes('isDev') ||
+      userData.roles.includes('isManager') ||
+      userData.roles.includes('isAdmin')) {
       if (employeeID && employeeStatus == 1) {
         return <ButtonArchive/>;
       } else if (employeeID && employeeStatus == 0) {
@@ -1389,9 +1391,9 @@ const Data = ({ match, history, loading, error }) => {
                     Form Manajemen Karyawan & Tenaga Kesehatan
                   </Colxx>
                   <Colxx sm="7" md="6" xl="6" style={{ textAlign: 'right' }}>
-                    {(JSON.parse(localStorage.getItem('user_data')).roles.includes('isDev') ||
-                    JSON.parse(localStorage.getItem('user_data')).roles.includes('isManager') ||
-                    JSON.parse(localStorage.getItem('user_data')).roles.includes('isAdmin')) && employeeID &&
+                    {(userData.roles.includes('isDev') ||
+                    userData.roles.includes('isManager') ||
+                    userData.roles.includes('isAdmin')) && employeeID &&
                       <>
                         <Button color="light" size="xs"
                           onClick={(e) => changePasswordById(e, employeeID)}
@@ -1402,8 +1404,8 @@ const Data = ({ match, history, loading, error }) => {
                       </>
                     }
                     {<IsActive/>}
-                    {(JSON.parse(localStorage.getItem('user_data')).roles.includes('isDev') ||
-                    JSON.parse(localStorage.getItem('user_data')).roles.includes('isManager')) && employeeID &&
+                    {(userData.roles.includes('isDev') ||
+                    userData.roles.includes('isManager')) && employeeID &&
                       <Button color="danger" size="xs"
                         onClick={(e) => deleteById(e, employeeID)}
                         >
@@ -1857,7 +1859,7 @@ const Data = ({ match, history, loading, error }) => {
                           *
                         </span>
                       </Label>
-                      { JSON.parse(localStorage.getItem('user_data')).roles.includes('isAdmin') &&
+                      { userData.roles.includes('isAdmin') &&
                       <Select
                         components={{ Input: CustomSelectInput }}
                         className="react-select"
@@ -1870,7 +1872,7 @@ const Data = ({ match, history, loading, error }) => {
                         options={selectRole.filter(roleChoices => roleChoices.label != 'Developer' && roleChoices.label != 'Manager' && roleChoices.label != 'Admin' && roleChoices.label != 'Manajemen').map(roleChoices => roleChoices)}
                         onChange={onChange}
                       /> }
-                      { JSON.parse(localStorage.getItem('user_data')).roles.includes('isManager') &&
+                      { userData.roles.includes('isManager') &&
                       <Select
                         components={{ Input: CustomSelectInput }}
                         className="react-select"
@@ -1883,7 +1885,7 @@ const Data = ({ match, history, loading, error }) => {
                         options={selectRole.filter(roleChoices => roleChoices.label != 'Developer' && roleChoices.label != 'Manager' && roleChoices.label != 'Manajemen').map(roleChoices => roleChoices)}
                         onChange={onChange}
                       /> }
-                      { JSON.parse(localStorage.getItem('user_data')).roles.includes('isDev') &&
+                      { userData.roles.includes('isDev') &&
                       <Select
                         components={{ Input: CustomSelectInput }}
                         className="react-select"

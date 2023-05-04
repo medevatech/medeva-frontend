@@ -12,7 +12,7 @@ const division = {
     return baseApi.post(url, payloads, { headers: getOriginHeader() })
   },
   update: (payloads, id) => {
-    const url = api.division.all + `${id}`
+    const url = api.division.all + `/${id}`
     return baseApi.put(url, payloads, { headers: getOriginHeader() })
   },
   archive: (payloads, id) => {

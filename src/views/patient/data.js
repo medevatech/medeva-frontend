@@ -39,6 +39,8 @@ import Swal from "sweetalert2";
 
 import loader from '../../assets/img/loading.gif';
 
+const userData = JSON.parse(localStorage.getItem('user_data'));
+
 const selectKITAS = [
   { label: "KTP", value: "KTP", key: 0, name: 'tipe_kitas' },
   { label: "SIM", value: "SIM", key: 1, name: 'tipe_kitas' },
@@ -1027,8 +1029,8 @@ const Data = ({ match }) => {
   }
 
   function IsActive() {
-    if(JSON.parse(localStorage.getItem('user_data')).roles.includes('isDev') ||
-    JSON.parse(localStorage.getItem('user_data')).roles.includes('isResepsionis')){
+    if(userData.roles.includes('isDev') ||
+    userData.roles.includes('isResepsionis')){
       if (patientID && patientStatus == 1) {
         return <ButtonArchive/>;
       } else if (patientID && patientStatus == 0) {
@@ -1307,7 +1309,7 @@ const Data = ({ match }) => {
                 <thead>
                   <tr>
                     <th className="center-xy" style={{ width: '40px' }}>#</th>
-                    <th colSpan="1">Pasien</th>
+                    <th>Pasien</th>
                     <th className="center-xy" style={{ width: '55px' }}>&nbsp;</th>
                   </tr>
                 </thead>
@@ -1394,8 +1396,8 @@ const Data = ({ match }) => {
                   </Colxx>
                   <Colxx sm="7" md="6" xl="6" style={{ textAlign: 'right' }}>
                     {<IsActive/>}
-                    {(JSON.parse(localStorage.getItem('user_data')).roles.includes('isDev') ||
-                    JSON.parse(localStorage.getItem('user_data')).roles.includes('isManager')) && patientID &&
+                    {(userData.roles.includes('isDev') ||
+                    userData.roles.includes('isManager')) && patientID &&
                       <Button color="danger" size="xs"
                         onClick={(e) => deleteById(e, patientID)}
                         >

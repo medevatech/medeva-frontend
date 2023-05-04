@@ -12,7 +12,7 @@ const poly = {
     return baseApi.post(url, payloads, { headers: getOriginHeader() })
   },
   update: (payloads, id) => {
-    const url = api.poly.all + `${id}`
+    const url = api.poly.all + `/${id}`
     return baseApi.put(url, payloads, { headers: getOriginHeader() })
   },
   archive: (payloads, id) => {
