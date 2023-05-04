@@ -8,9 +8,6 @@ import { ProtectedRoute } from 'helpers/authHelper';
 const Data = React.lazy(() =>
   import(/* webpackChunkName: "views-employee-data" */ './data')
 );
-const DataSingleState = React.lazy(() =>
-  import(/* webpackChunkName: "views-employee-data-singlestate" */ './data-singlestate')
-);
 
 const App = ({ match }) => {
   return (
@@ -24,13 +21,8 @@ const App = ({ match }) => {
               render={(props) => <Data {...props} />}
             /> */}
             <ProtectedRoute
-              path={`${match.url}/data`}
-              component={Data}
-              roles={[ "isDev", "isManager", "isAdmin" ]}
-            />
-            <ProtectedRoute
               path={`${match.url}`}
-              component={DataSingleState}
+              component={Data}
               roles={[ "isDev", "isManager", "isAdmin" ]}
             />
             <Redirect to="/error" />

@@ -6,7 +6,7 @@ import AppLayout from 'layout/AppLayout';
 import { ProtectedRoute } from 'helpers/authHelper';
 
 const Data = React.lazy(() =>
-  import(/* webpackChunkName: "views-patient-data" */ './data')
+  import(/* webpackChunkName: "views-division-data" */ './data')
 );
 
 const App = ({ match }) => {
@@ -23,7 +23,7 @@ const App = ({ match }) => {
             <ProtectedRoute
               path={`${match.url}`}
               component={Data}
-              roles={[ "isDev", "isResepsionis", "isPerawat", "isDokter" ]}
+              roles={[ "isDev", "isManager", "isAdmin" ]}
             />
             <Redirect to="/error" />
           </Switch>

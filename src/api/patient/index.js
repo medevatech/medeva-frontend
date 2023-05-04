@@ -23,5 +23,9 @@ const patient = {
     const url = api.patient.activate + `/${id}`
     return baseApi.put(url, payloads, { headers: getOriginHeader() })
   },
+  delete: (payloads, id) => {
+    const url = api.patient.all + `/${id}`
+    return baseApi.delete(url, payloads, { headers: getOriginHeader() })
+  },
 }
 export default patient

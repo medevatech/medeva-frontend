@@ -12,14 +12,22 @@ const api = {
     archive: '/karyawan/archive',
     activate: '/karyawan/activate'
   },
-  clinic: '/klinik',
-  division: '/divisi',
+  clinic: {
+    all: '/klinik',
+    archive: '/klinik/archive',
+    activate: '/klinik/activate'
+  },
+  division: {
+    all: '/divisi',
+    archive: '/divisi/archive',
+    activate: '/divisi/activate'
+  },
   shift: '/shift',
   schedule: '/jaga',
   patient: {
     all: '/pasien',
-    archive: '/pasien/active',
-    activate: '/pasien/active'
+    archive: '/pasien/archive',
+    activate: '/pasien/activate'
   },
   insurance: {
     all: '/asuransi',
@@ -45,7 +53,11 @@ const api = {
   diagnose: '/diagnosis', // MASTER OF 'DIAGNOSIS' FIELD
   inspect: '/pemeriksaan', // MASTER OF 'PEMERIKSAAN' FIELD
   inspectSupport: '/pemeriksaan-penunjang', // JOIN TABLE ID RECORD TO ID PATIENT AND 
-  poly: '/poli', // MASTER OF 'POLI' FIELD
+  poly: {  // MASTER OF 'POLI' FIELD
+    all: '/poli',
+    archive: '/poli/archive',
+    activate: '/poli/activate'
+  },
 }
 
 export default api
