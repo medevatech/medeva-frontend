@@ -23,6 +23,7 @@ import 'rc-switch/assets/index.css';
 import 'rc-slider/assets/index.css';
 import 'react-rater/lib/react-rater.css';
 
+import moment from "moment";
 import Select from 'react-select';
 import { Colxx, Separator } from 'components/common/CustomBootstrap';
 import Pagination from 'components/common/Pagination';
@@ -113,7 +114,7 @@ const VitalSigns = ({ match }) => {
     e.preventDefault();
 
     // console.log(vitalSigns);
-    if(dataStatus === 'add' && vitalSigns.id_pasien) {
+    if(dataStatus === 'add') {
       try {
         const response = await vitalSignsAPI.add(vitalSigns);
         // console.log(response);
@@ -152,7 +153,7 @@ const VitalSigns = ({ match }) => {
 
         console.log(e);
       }
-    } else if(dataStatus === 'update' && vitalSigns.id_pasien && vitalSignsID) {
+    } else if(dataStatus === 'update') {
       try {
         const response = await vitalSignsAPI.update(vitalSigns, vitalSignsID);
         // console.log(response);
@@ -199,8 +200,12 @@ const VitalSigns = ({ match }) => {
   const resetForm = (e) => {
     e.preventDefault();
 
+    setPatientID('');
+    setVitalSignsID('');
+    setPatientData('');
+
     setVitalSigns({
-      id_pasien: '',
+      id_pasien: patientID,
       keluhan: '',
       kesadaran: '',
       temperatur: 0,
@@ -216,10 +221,6 @@ const VitalSigns = ({ match }) => {
     });
     
     setSelectedAwareness('');
-
-    setPatientID('');
-    setVitalSignsID('');
-    setPatientData('');
 
     setDataStatus("add");
     onLoadDivisi();
@@ -269,6 +270,8 @@ const VitalSigns = ({ match }) => {
     e.preventDefault();
     resetForm(e);
 
+    console.log(data);
+
     setPatientID(id);
     setPatientData(data);
 
@@ -299,9 +302,14 @@ const VitalSigns = ({ match }) => {
       setSelectedAwareness({kesadaran: data.kesadaran ? e.value : ''});
       setDataStatus("update");
       
-      console.log(vitalSigns);
+      // console.log(vitalSigns);
     } catch (e) {
       console.log(e);
+
+      setVitalSigns(current => {
+        return { ...current, id_pasien: patientID }
+      })
+
       setDataStatus("add");
     }
     
@@ -336,7 +344,7 @@ const VitalSigns = ({ match }) => {
     getQueue(params);
     onLoadDivisi();
 
-    if(dataStatus === "add" && vitalSigns.id_pasien === '') {
+    if(dataStatus === "add") {
       setVitalSigns(current => {
         return { ...current, id_pasien: patientID }
       })
@@ -440,7 +448,7 @@ const VitalSigns = ({ match }) => {
                     </tr>
                     ) : queueAll.length > 0 ? (
                         queueAll.map((data) => (
-                          <tr key={data.id} onClick={(e) => getVitalSignsByPatientId(e, data.id, data)} style={{ cursor: 'pointer'}}>
+                          <tr key={data.id} onClick={(e) => getVitalSignsByPatientId(e, data.id_pasien, data)} style={{ cursor: 'pointer'}}>
                               <th scope="row" className="center-xy">{startNumber++}</th>
                               <td className="icon-column">
                                 <i className="simple-icon-magnifier queue-icon"></i><br/>
@@ -556,8 +564,8 @@ const VitalSigns = ({ match }) => {
                     ''}
                     </Colxx>
                     <Colxx sm="6" md="6" xl="6">
-                      <Label style={{ float: 'right', lineHeight: 3 }}>
-                        {patientData ? <><br/><br/>{patientData.created_at}</> : 'Tanggal / Waktu' }
+                      <Label style={{ float: 'right', lineHeight: 2 }}>
+                        {patientData ? <><br/><br/>{moment(patientData.created_at).format("DD MMM YYYY - HH:mm")}</> : 'Tanggal / Waktu' }
                         {/* {startDateTime} */}
                       </Label><br/>
                     </Colxx>

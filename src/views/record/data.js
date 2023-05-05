@@ -242,10 +242,10 @@ const Data = ({ match }) => {
         setSelectedVisitation({status_pulang: data.status_pulang ? e.value : ''});
         setSelectedPrognosa({prognosa: data.prognosa ? e.value : ''});
 
-        if (data.kasus_kll === false) {
-          setIsChecked(false);
-        } else if (data.kasus_kll === true) {
+        if (data.kasus_kll === true) {
           setIsChecked(true);
+        } else {
+          setIsChecked(false);
         }
 
         // console.log(record);
@@ -254,13 +254,14 @@ const Data = ({ match }) => {
       }
     } else {
       setDataStatus("add");
-      
+
       setRecord({
         id_jaga: watchID,
         id_vs: vitalSignsID,
         id_pasien: patientID,
-        waktu_mulai: patientData.created_at,
-        waktu_selesai: endDateTime,
+        // waktu_mulai: moment(patientData.created_at).format("YYYY-MM-DD HH:mm:ss.SSS"),
+        // waktu_mulai: moment(patientData.created_at).format(),
+        // waktu_selesai: endDateTime,
         tipe: '',
         anamnesis: '',
         pemeriksaan_fisik: '',
@@ -296,8 +297,10 @@ const Data = ({ match }) => {
             confirmButtonColor: "#008ecc",
           });
 
-          resetForm(e);
+          // resetForm(e);
           // setShowRecord('none');
+
+          getVitalSignsByPatientId(e, patientID, patientData);
         } else {
           Swal.fire({
             title: "Gagal!",
@@ -336,8 +339,10 @@ const Data = ({ match }) => {
             confirmButtonColor: "#008ecc",
           });
 
-          resetForm(e);
+          // resetForm(e);
           // setShowRecord('none');
+
+          getVitalSignsByPatientId(e, patientID, patientData);
         } else {
           Swal.fire({
             title: "Gagal!",
@@ -376,7 +381,7 @@ const Data = ({ match }) => {
       id_vs: '',
       id_pasien: patientID,
       waktu_mulai: startDateTime,
-      waktu_selesai: endDateTime,
+      // waktu_selesai: endDateTime,
       tipe: '',
       anamnesis: '',
       pemeriksaan_fisik: '',
@@ -459,10 +464,29 @@ const Data = ({ match }) => {
     // e.preventDefault();
     // resetForm(e);
 
+    setVitalSigns({
+      id_pasien: patientID,
+      keluhan: '-',
+      kesadaran: '-',
+      temperatur: 0,
+      tinggi_badan: 0,
+      berat_badan: 0,
+      lingkar_perut: 0,
+      imt: 0,
+      sistole: 0,
+      diastole: 0,
+      respiratory_rate: 0,
+      heart_rate: 0,
+      catatan_tambahan: '-',
+      created_at: ''
+    });
+
     setPatientID(id);
     setPatientData(data);
     setWatchID(data.id_jaga);
-    // console.log('patientData', data);
+
+    console.log('patientID', id);
+    console.log('patientData', data);
 
     try {
       const res = await vitalSignsAPI.getByPatient("", `/${id}`);
@@ -497,6 +521,8 @@ const Data = ({ match }) => {
   };
   
   const getAllRecordByPatientId = async (e, id) => {
+    dispatch({type: "GET_ALL_RECORD_BY_PATIENT", payload: []});
+
     try {
       const res = await recordAPI.getByPatient("", `/${id}`);
       let data = res.data.data;
@@ -636,7 +662,7 @@ const Data = ({ match }) => {
                     </tr>
                     ) : queueAll.length > 0 ? (
                         queueAll.map((data) => (
-                          <tr key={data.id} onClick={(e) => getVitalSignsByPatientId(e, data.id, data)} style={{ cursor: 'pointer'}}>
+                          <tr key={data.id} onClick={(e) => getVitalSignsByPatientId(e, data.id_pasien, data)} style={{ cursor: 'pointer'}}>
                               <th scope="row" className="center-xy">{startNumber++}</th>
                               <td className="icon-column">
                                 <i className="simple-icon-magnifier queue-icon"></i><br/>
@@ -701,9 +727,8 @@ const Data = ({ match }) => {
                       {' '}
                     </Colxx>
                     <Colxx sm="6" md="6" xl="6">
-                      <Label style={{ float: 'right', lineHeight: 3 }}>
-                      { vitalSigns.id_pasien ? vitalSigns.created_at : 'Tanggal / Waktu' }
-                        {/* {startDateTime} */}
+                      <Label style={{ float: 'right', lineHeight: 2 }}>
+                        { vitalSigns.id_pasien ? moment(vitalSigns.created_at).format("DD MMM YYYY - HH:mm") : 'Tanggal / Waktu' }
                       </Label><br/>
                     </Colxx>
                   </Row>
@@ -786,6 +811,7 @@ const Data = ({ match }) => {
                         <td>
                             <span style={{ float: 'right' }}>
                               {data.waktu_mulai ? data.waktu_mulai : '00/00/0000'} s/d {data.waktu_selesai ? data.waktu_selesai : '00/00/0000'}
+                              {/* {data.created_at ? data.created_at : '00/00/0000'} s/d {data.updated_at ? data.updated_at : '00/00/0000'} */}
                             </span>
                         </td>
                       </tr>
@@ -843,7 +869,7 @@ const Data = ({ match }) => {
             <Form>
             <ModalBody>
               <FormGroup row>
-                <Colxx sm={6}>
+                {/* <Colxx sm={6}>
                   <FormGroup>
                     <Label for="waktu_mulai">
                       Waktu Mulai<span className="required text-danger" aria-required="true"> *</span>
@@ -891,7 +917,7 @@ const Data = ({ match }) => {
                       shouldCloseOnSelect={true}
                     />
                   </FormGroup>
-                </Colxx>
+                </Colxx> */}
 
                 <Colxx sm={6}>
                   <FormGroup>
