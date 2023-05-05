@@ -250,13 +250,18 @@ const VitalSigns = ({ match }) => {
     }
   };
 
+  const [isLoading, setIsLoading] = useState(false);
+
   const getQueue = async (params) => {
     try {
+      setIsLoading(true);
       const res = await queueAPI.get("", params);
       dispatch({type: "GET_QUEUE", payload: res.data.data});
       dispatch({type: "GET_TOTAL_PAGE_QUEUE", payload: res.data.pagination.totalPage});
     } catch (e) {
       console.log(e);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -425,100 +430,109 @@ const VitalSigns = ({ match }) => {
                     </tr>
                   </thead>
                   <tbody>
-                    {queueAll.length > 0 ? (
-                      queueAll.map((data) => (
-                        <tr key={data.id}>
-                            <th scope="row" className="center-xy">{startNumber++}</th>
-                            <td className="icon-column">
-                              <i className="simple-icon-magnifier queue-icon"></i><br/>
-                              <span className="queue-text">0001</span>
-                            </td>
-                            <td>
-                              <h6 style={{ fontWeight: 'bold' }}>{data.nama_lengkap}</h6>
-                              {data.jenis_kelamin.substring(0,1)}, {new Date().getFullYear() - data.tanggal_lahir.substring(0,4)} tahun<br/>
-                            </td>
-                            <td style={{ textAlign: "center", verticalAlign: 'middle' }}>
-                              <Button color="secondary" size="xs" className="button-xs"
-                                onClick={(e) => getVitalSignsByPatientId(e, data.id_pasien, data)}
-                              >
-                                <i className="simple-icon-arrow-right-circle"></i>
-                              </Button>
-                              {' '}
-                              {/* <Button color="warning" size="xs" className="button-xs">
-                                <i className="simple-icon-drawer"></i>
-                              </Button> */}
-                            </td>
-                          </tr>
-                      ))
-                    ) : (
-                      <tr>
-                        <td>&nbsp;</td>
-                        <td align="center" colSpan={2}>
-                          <img src={loader} alt="loading..." width="100"/>
+                  {isLoading ? (
+                    <tr>
+                      <td>&nbsp;</td>
+                      <td align="center" colSpan={2}>
+                        <img src={loader} alt="loading..." width="100"/>
+                      </td>
+                      <td>&nbsp;</td>
+                    </tr>
+                    ) : queueAll.length > 0 ? (
+                        queueAll.map((data) => (
+                          <tr key={data.id} onClick={(e) => getVitalSignsByPatientId(e, data.id, data)} style={{ cursor: 'pointer'}}>
+                              <th scope="row" className="center-xy">{startNumber++}</th>
+                              <td className="icon-column">
+                                <i className="simple-icon-magnifier queue-icon"></i><br/>
+                                <span className="queue-text">0001</span>
+                              </td>
+                              <td>
+                                <h6 style={{ fontWeight: 'bold' }}>{data.nama_lengkap}</h6>
+                                {data.jenis_kelamin.substring(0,1)}, {new Date().getFullYear() - data.tanggal_lahir.substring(0,4)} tahun<br/>
+                              </td>
+                              <td style={{ textAlign: "center", verticalAlign: 'middle' }}>
+                                <Button color="secondary" size="xs" className="button-xs"
+                                  onClick={(e) => getVitalSignsByPatientId(e, data.id_pasien, data)}
+                                >
+                                  <i className="simple-icon-arrow-right-circle"></i>
+                                </Button>
+                                {' '}
+                                {/* <Button color="warning" size="xs" className="button-xs">
+                                  <i className="simple-icon-drawer"></i>
+                                </Button> */}
+                              </td>
+                            </tr>
+                        ))
+                      ) : (
+                        <tr>
+                          <td>&nbsp;</td>
+                          <td align="center" colSpan={2}>
+                            <h5 style={{ marginTop: '1.5rem' }}><b>Data tidak ditemukan</b></h5>
+                          </td>
+                          <td>&nbsp;</td>
+                        </tr>
+                      )
+                    }
+                      {/* <tr>
+                        <th scope="row" className="center-xy">1</th>
+                        <td className="icon-column">
+                          <i className="simple-icon-magnifier queue-icon"></i><br/>
+                          <span className="queue-text">0001</span>
                         </td>
-                        <td>&nbsp;</td>
+                        <td>
+                          <h6 style={{ fontWeight: 'bold' }}>Otto</h6>
+                          Laki-laki, 32 Tahun
+                        </td>
+                        <td style={{ textAlign: "center", verticalAlign: 'middle' }}>
+                          <Button color="secondary" size="xs" className="button-xs">
+                            <i className="simple-icon-note"></i>
+                          </Button>
+                          {' '}
+                          <Button color="warning" size="xs" className="button-xs">
+                            <i className="simple-icon-drawer"></i>
+                          </Button>
+                        </td>
                       </tr>
-                    )}
-                    {/* <tr>
-                      <th scope="row" className="center-xy">1</th>
-                      <td className="icon-column">
-                        <i className="simple-icon-magnifier queue-icon"></i><br/>
-                        <span className="queue-text">0001</span>
-                      </td>
-                      <td>
-                        <h6 style={{ fontWeight: 'bold' }}>Otto</h6>
-                        Laki-laki, 32 Tahun
-                      </td>
-                      <td style={{ textAlign: "center", verticalAlign: 'middle' }}>
-                        <Button color="secondary" size="xs" className="button-xs">
-                          <i className="simple-icon-note"></i>
-                        </Button>
-                        {' '}
-                        <Button color="warning" size="xs" className="button-xs">
-                          <i className="simple-icon-drawer"></i>
-                        </Button>
-                      </td>
-                    </tr>
-                    <tr>
-                      <th scope="row" className="center-xy">2</th>
-                      <td className="icon-column">
-                        <i className="simple-icon-magnifier queue-icon"></i><br/>
-                        <span className="queue-text">0002</span>
-                      </td>
-                      <td>
-                        <h6 style={{ fontWeight: 'bold' }}>Jacob</h6>
-                        Laki-laki, 26 Tahun
-                      </td>
-                      <td style={{ textAlign: "center", verticalAlign: 'middle' }}>
-                        <Button color="secondary" size="xs" className="button-xs">
-                          <i className="simple-icon-note"></i>
-                        </Button>
-                        {' '}
-                        <Button color="warning" size="xs" className="button-xs">
-                          <i className="simple-icon-drawer"></i>
-                        </Button>
-                      </td>
-                    </tr>
-                    <tr>
-                      <th scope="row" className="center-xy">3</th>
-                      <td className="icon-column">
-                        <i className="simple-icon-magnifier queue-icon"></i><br/>
-                        <span className="queue-text">0003</span>
-                      </td>
-                      <td>
-                        <h6 style={{ fontWeight: 'bold' }}>Larry</h6>
-                        Laki-laki, 57 Tahun
-                      </td>
-                      <td style={{ textAlign: "center", verticalAlign: 'middle' }}>
-                        <Button color="secondary" size="xs" className="button-xs">
-                          <i className="simple-icon-note"></i>
-                        </Button>
-                        {' '}
-                        <Button color="warning" size="xs" className="button-xs">
-                          <i className="simple-icon-drawer"></i>
-                        </Button>
-                      </td>
-                    </tr> */}
+                      <tr>
+                        <th scope="row" className="center-xy">2</th>
+                        <td className="icon-column">
+                          <i className="simple-icon-magnifier queue-icon"></i><br/>
+                          <span className="queue-text">0002</span>
+                        </td>
+                        <td>
+                          <h6 style={{ fontWeight: 'bold' }}>Jacob</h6>
+                          Laki-laki, 26 Tahun
+                        </td>
+                        <td style={{ textAlign: "center", verticalAlign: 'middle' }}>
+                          <Button color="secondary" size="xs" className="button-xs">
+                            <i className="simple-icon-note"></i>
+                          </Button>
+                          {' '}
+                          <Button color="warning" size="xs" className="button-xs">
+                            <i className="simple-icon-drawer"></i>
+                          </Button>
+                        </td>
+                      </tr>
+                      <tr>
+                        <th scope="row" className="center-xy">3</th>
+                        <td className="icon-column">
+                          <i className="simple-icon-magnifier queue-icon"></i><br/>
+                          <span className="queue-text">0003</span>
+                        </td>
+                        <td>
+                          <h6 style={{ fontWeight: 'bold' }}>Larry</h6>
+                          Laki-laki, 57 Tahun
+                        </td>
+                        <td style={{ textAlign: "center", verticalAlign: 'middle' }}>
+                          <Button color="secondary" size="xs" className="button-xs">
+                            <i className="simple-icon-note"></i>
+                          </Button>
+                          {' '}
+                          <Button color="warning" size="xs" className="button-xs">
+                            <i className="simple-icon-drawer"></i>
+                          </Button>
+                        </td>
+                      </tr> */}
                   </tbody>
                 </Table>
                 <Pagination

@@ -675,13 +675,18 @@ const Data = ({ match, history, loading, error }) => {
     onLoadProvinsi();
   };
 
+  const [isLoading, setIsLoading] = useState(false);
+
   const getEmployee = async (params) => {
     try {
+      setIsLoading(true);
       const res = await employeeAPI.get("", params);
       dispatch({type: "GET_EMPLOYEE", payload: res.data.data});
       dispatch({type: "GET_TOTAL_PAGE_EMPLOYEE", payload: res.data.pagination.totalPage});
     } catch (e) {
       console.log(e);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -1339,7 +1344,16 @@ const Data = ({ match, history, loading, error }) => {
                   </tr>
                 </thead>
                 <tbody>
-                  {employeeData.length > 0 ? (
+                {isLoading ? (
+                  <tr>
+                    <td>&nbsp;</td>
+                    <td align="center">
+                      <img src={loader} alt="loading..." width="100"/>
+                    </td>
+                    <td>&nbsp;</td>
+                  </tr>
+                  ) : 
+                  employeeData.length > 0 ? (
                     employeeData.map((data) => (
                       <tr key={data.id} onClick={(e) => getEmployeeById(e, data.id)} style={{ cursor: 'pointer'}}>
                         <th scope="row" style={{ textAlign: "center", verticalAlign: 'middle' }}>
@@ -1367,11 +1381,12 @@ const Data = ({ match, history, loading, error }) => {
                     <tr>
                       <td>&nbsp;</td>
                       <td align="center">
-                        <img src={loader} alt="loading..." width="100"/>
+                        <h5 style={{ marginTop: '1.5rem' }}><b>Data tidak ditemukan</b></h5>
                       </td>
                       <td>&nbsp;</td>
                     </tr>
-                  )}
+                  )
+                }
                 </tbody>
               </Table>
               <Pagination

@@ -36,6 +36,7 @@ import CustomSelectInput from 'components/common/CustomSelectInput';
 
 import queueAPI from "api/queue";
 import vitalSignsAPI from "api/vital-signs";
+import divisionAPI from "api/division";
 import recordAPI from "api/record";
 import Swal from "sweetalert2";
 
@@ -93,6 +94,7 @@ const Data = ({ match }) => {
   const [dataStatus, setDataStatus] = useState("add");
 
   const [selectedDivision, setSelectedDivision] = useState('');
+  const [selectedDivisionF, setSelectedDivisionF] = useState([{ label: "Semua", value: "", key: 0, name: 'id_klinik' }]);
 
   const [selectedType, setSelectedType] = useState('');
   const [selectedVisitation, setSelectedVisitation] = useState('');
@@ -141,7 +143,7 @@ const Data = ({ match }) => {
     pemeriksaan_fisik: '',
     prognosa: '',
     kasus_kll: false,
-    // status_pulang: '',
+    status_pulang: '',
     keluhan: ''
   });
 
@@ -232,7 +234,7 @@ const Data = ({ match }) => {
           pemeriksaan_fisik: data.pemeriksaan_fisik,
           prognosa: data.prognosa,
           kasus_kll: data.kasus_kll,
-          // status_pulang: data.status_pulang,
+          status_pulang: data.status_pulang,
           keluhan: data.keluhan
         });
 
@@ -264,7 +266,7 @@ const Data = ({ match }) => {
         pemeriksaan_fisik: '',
         prognosa: '',
         kasus_kll: '',
-        // status_pulang: '',
+        status_pulang: '',
         keluhan: ''
       });
     }
@@ -294,7 +296,7 @@ const Data = ({ match }) => {
             confirmButtonColor: "#008ecc",
           });
 
-          // resetForm(e);
+          resetForm(e);
           // setShowRecord('none');
         } else {
           Swal.fire({
@@ -334,7 +336,7 @@ const Data = ({ match }) => {
             confirmButtonColor: "#008ecc",
           });
 
-          // resetForm(e);
+          resetForm(e);
           // setShowRecord('none');
         } else {
           Swal.fire({
@@ -380,7 +382,7 @@ const Data = ({ match }) => {
       pemeriksaan_fisik: '',
       prognosa: '',
       kasus_kll: false,
-      // status_pulang: '',
+      status_pulang: '',
       keluhan: ''
     });
 
@@ -410,15 +412,46 @@ const Data = ({ match }) => {
     setRecordID('');
 
     setShowRecord('none');
+    onLoadDivisi();
   };
+
+  const onLoadDivisi = async () => {
+    try {
+      const response = await divisionAPI.get("", "?limit=1000");
+      // console.log(response);
+
+      setSelectedDivisionF([{ label: "Semua", value: "", key: 0, name: 'id_divisi' }]);
+
+      if (response.status === 200) {
+        let data = response.data.data;
+        // console.log(data);
+      
+        for (var i = 0; i < data.length; i++) {
+          setSelectedDivisionF((current) => [
+            ...current,
+            { label: data[i].tipe, value: data[i].id, key: data[i].id, name: 'id_divisi' },
+          ]);
+        }
+      } else {
+        throw Error(`Error status: ${response.status}`);
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  const [isLoading, setIsLoading] = useState(false);
 
   const getQueue = async (params) => {
     try {
+      setIsLoading(true);
       const res = await queueAPI.get("", params);
       dispatch({type: "GET_QUEUE", payload: res.data.data});
       dispatch({type: "GET_TOTAL_PAGE_QUEUE", payload: res.data.pagination.totalPage});
     } catch (e) {
       console.log(e);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -492,11 +525,15 @@ const Data = ({ match }) => {
     if (searchDivisi !== "") {
       params = `${params}&searchDivisi=${searchDivisi}`;
     }
+    if (!userData.roles.includes('isDev')) {
+      params = `${params}&searchJaga=${userData.id}`;
+    }
     if (currentPage !== "1") {
       params = `${params}&page=${currentPage}`;
     }
 
     getQueue(params);
+    onLoadDivisi();
 
     if(patientStatus === 1 && patientID) {
       getAllRecordByPatientId("", patientID);
@@ -561,10 +598,8 @@ const Data = ({ match }) => {
                       className="react-select"
                       classNamePrefix="react-select"
                       name="divisi"
-                      value={selectedDivision}
-                      // onChange={setSelectedDivision}
                       onChange={(e) => setSearchDivisi(e.value)}
-                      options={selectDivision}
+                      options={selectedDivisionF}
                     />
                   </Colxx>
                 </FormGroup>
@@ -591,40 +626,49 @@ const Data = ({ match }) => {
                     </tr>
                   </thead>
                   <tbody>
-                  {queueAll.length > 0 ? (
-                      queueAll.map((data) => (
-                        <tr key={data.id}>
-                            <th scope="row" className="center-xy">{startNumber++}</th>
-                            <td className="icon-column">
-                              <i className="simple-icon-magnifier queue-icon"></i><br/>
-                              <span className="queue-text">0001</span>
-                            </td>
-                            <td>
-                              <h6 style={{ fontWeight: 'bold' }}>{data.nama_lengkap}</h6>
-                              {data.jenis_kelamin.substring(0,1)}, {new Date().getFullYear() - data.tanggal_lahir.substring(0,4)} tahun<br/>
-                            </td>
-                            <td style={{ textAlign: "center", verticalAlign: 'middle' }}>
-                              <Button color="secondary" size="xs" className="button-xs"
-                                onClick={(e) => getVitalSignsByPatientId(e, data.id_pasien, data)}
-                              >
-                                <i className="simple-icon-arrow-right-circle"></i>
-                              </Button>
-                              {' '}
-                              {/* <Button color="warning" size="xs" className="button-xs">
-                                <i className="simple-icon-drawer"></i>
-                              </Button> */}
-                            </td>
-                          </tr>
-                      ))
-                    ) : (
-                      <tr>
-                        <td>&nbsp;</td>
-                        <td align="center">
-                          <img src={loader} alt="loading..." width="100"/>
-                        </td>
-                        <td>&nbsp;</td>
-                      </tr>
-                    )}
+                  {isLoading ? (
+                    <tr>
+                      <td>&nbsp;</td>
+                      <td align="center" colSpan={2}>
+                        <img src={loader} alt="loading..." width="100"/>
+                      </td>
+                      <td>&nbsp;</td>
+                    </tr>
+                    ) : queueAll.length > 0 ? (
+                        queueAll.map((data) => (
+                          <tr key={data.id} onClick={(e) => getVitalSignsByPatientId(e, data.id, data)} style={{ cursor: 'pointer'}}>
+                              <th scope="row" className="center-xy">{startNumber++}</th>
+                              <td className="icon-column">
+                                <i className="simple-icon-magnifier queue-icon"></i><br/>
+                                <span className="queue-text">0001</span>
+                              </td>
+                              <td>
+                                <h6 style={{ fontWeight: 'bold' }}>{data.nama_lengkap}</h6>
+                                {data.jenis_kelamin.substring(0,1)}, {new Date().getFullYear() - data.tanggal_lahir.substring(0,4)} tahun<br/>
+                              </td>
+                              <td style={{ textAlign: "center", verticalAlign: 'middle' }}>
+                                <Button color="secondary" size="xs" className="button-xs"
+                                  onClick={(e) => getVitalSignsByPatientId(e, data.id_pasien, data)}
+                                >
+                                  <i className="simple-icon-arrow-right-circle"></i>
+                                </Button>
+                                {' '}
+                                {/* <Button color="warning" size="xs" className="button-xs">
+                                  <i className="simple-icon-drawer"></i>
+                                </Button> */}
+                              </td>
+                            </tr>
+                        ))
+                      ) : (
+                        <tr>
+                          <td>&nbsp;</td>
+                          <td align="center" colSpan={2}>
+                            <h5 style={{ marginTop: '1.5rem' }}><b>Data tidak ditemukan</b></h5>
+                          </td>
+                          <td>&nbsp;</td>
+                        </tr>
+                      )
+                    }
                   </tbody>
                 </Table>
                 <Pagination
