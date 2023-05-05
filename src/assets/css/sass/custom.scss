@@ -158,6 +158,11 @@ label {
     white-space: nowrap;
 }
 
+.wizard ul.nav {
+    margin-top: 1.5rem;
+    margin-bottom: 3.5rem;
+}
+
 @media (max-width: 768px) {
     .schedule-row-col-1 {
         display: none;
@@ -180,6 +185,6 @@ label {
 
 @media (min-width: 576px) {
     .modal-record {
-        max-width: 800px;
+        max-width: 1200px;
     }
 }

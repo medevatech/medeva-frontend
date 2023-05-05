@@ -34,6 +34,10 @@ import Pagination from 'components/common/Pagination';
 
 import CustomSelectInput from 'components/common/CustomSelectInput';
 
+import { Wizard, Steps, Step } from 'react-albus';
+import BottomNavigation from 'components/wizard/BottomNavigation';
+import TopNavigation from 'components/wizard/TopNavigation';
+
 import queueAPI from "api/queue";
 import vitalSignsAPI from "api/vital-signs";
 import divisionAPI from "api/division";
@@ -114,6 +118,25 @@ const Data = ({ match }) => {
   const [vitalSignsID, setVitalSignsID] = useState('');
   const [recordID, setRecordID] = useState('');
   const [watchID, setWatchID] = useState('');
+
+  const topNavClick = (stepItem, push) => {
+    push(stepItem.id);
+  };
+
+  const onClickNext = (goToNext, steps, step) => {
+    step.isDone = true;
+    if (steps.length - 1 <= steps.indexOf(step)) {
+      return;
+    }
+    goToNext();
+  };
+
+  const onClickPrev = (goToPrev, steps, step) => {
+    if (steps.indexOf(step) <= 0) {
+      return;
+    }
+    goToPrev();
+  };
 
   const [ vitalSigns, setVitalSigns ] = useState({
     id_pasien: patientID,
@@ -261,6 +284,7 @@ const Data = ({ match }) => {
         id_pasien: patientID,
         // waktu_mulai: moment(patientData.created_at).format("YYYY-MM-DD HH:mm:ss.SSS"),
         // waktu_mulai: moment(patientData.created_at).format(),
+        waktu_mulai: moment(patientData.created_at).format("YYYY-MM-DD HH:mm"),
         // waktu_selesai: endDateTime,
         tipe: '',
         anamnesis: '',
@@ -300,6 +324,7 @@ const Data = ({ match }) => {
           // resetForm(e);
           // setShowRecord('none');
 
+          setModalRecord(false);
           getVitalSignsByPatientId(e, patientID, patientData);
         } else {
           Swal.fire({
@@ -342,6 +367,7 @@ const Data = ({ match }) => {
           // resetForm(e);
           // setShowRecord('none');
 
+          setModalRecord(false);
           getVitalSignsByPatientId(e, patientID, patientData);
         } else {
           Swal.fire({
@@ -802,7 +828,7 @@ const Data = ({ match }) => {
                     </> :
                     ' Tidak Ditemukan' }
                 </CardTitle>
-                {patientStatus === 2 && allRecord.length > 0 ? ( 
+                {patientStatus === 2 && allRecord.length > 0 && ( 
                   allRecord.map((data) => ( 
                   <Table borderless className="med-record-table" key={data.id}>
                     <tbody>
@@ -810,7 +836,8 @@ const Data = ({ match }) => {
                         <th><h6 style={{ fontWeight: 'bold' }}>Kunjungan {data.tipe ? data.tipe : '-'}</h6></th>
                         <td>
                             <span style={{ float: 'right' }}>
-                              {data.waktu_mulai ? data.waktu_mulai : '00/00/0000'} s/d {data.waktu_selesai ? data.waktu_selesai : '00/00/0000'}
+                              {data.waktu_mulai ? moment(data.waktu_mulai).format("DD MMM YYYY - HH:mm") : '00/00/0000 - 00:00'} s/d {data.waktu_selesai ? moment(data.waktu_selesai).format("DD MMM YYYY - HH:mm") : '00/00/0000 - 00:00'}
+                              {/* {data.waktu_mulai ? data.waktu_mulai : '00/00/0000'} s/d {data.waktu_selesai ? data.waktu_selesai : '00/00/0000'} */}
                               {/* {data.created_at ? data.created_at : '00/00/0000'} s/d {data.updated_at ? data.updated_at : '00/00/0000'} */}
                             </span>
                         </td>
@@ -857,7 +884,7 @@ const Data = ({ match }) => {
                     </tbody>
                   </Table>
                   ) ) 
-                ) : ('')}
+                )}
               </CardBody>
             </Card>
           </Colxx>
@@ -867,188 +894,260 @@ const Data = ({ match }) => {
               Form Registrasi Rekam Medis <span style={{ fontWeight: 'bold' }}>{patientData.nama_lengkap}</span>
             </ModalHeader>
             <Form>
-            <ModalBody>
-              <FormGroup row>
-                {/* <Colxx sm={6}>
-                  <FormGroup>
-                    <Label for="waktu_mulai">
-                      Waktu Mulai<span className="required text-danger" aria-required="true"> *</span>
-                    </Label>
-                    <DatePicker
-                      // selected={startDateTime}
-                      // selected={moment(new Date(patientData.created_at)).format("d MMMM yyyy HH:mm")}
-                      selected={new Date(patientData.created_at)}
-                      // onChange={setStartDateTime}
-                      name="waktu_mulai"
-                      id="waktu_mulai"
-                      showTimeInput
-                      // showTimeSelect
-                      timeFormat="HH:mm"
-                      timeIntervals={5}
-                      dateFormat="d MMMM yyyy HH:mm"
-                      readOnly={true}
-                      // timeCaption="Jam"
-                      className="disabled-datepicker"
-                      // value={Sdate}
-                      onChange={(e) => onChange(e, "waktu_mulai")}
-                      shouldCloseOnSelect={true}
-                    />
-                  </FormGroup>
-                </Colxx>
+            <ModalBody className="wizard wizard-default">
+              <Wizard>
+                <TopNavigation
+                  className="justify-content-center"
+                  disableNav={false}
+                  topNavClick={topNavClick}
+                />
+                <Steps>
+                  <Step
+                    id="step1"
+                    name="Rekam Medis"
+                  >
+                    <div className="wizard-basic-step">
+                      <FormGroup row>
+                        {/* <Colxx sm={6}>
+                          <FormGroup>
+                            <Label for="waktu_mulai">
+                              Waktu Mulai<span className="required text-danger" aria-required="true"> *</span>
+                            </Label>
+                            <DatePicker
+                              // selected={startDateTime}
+                              // selected={moment(new Date(patientData.created_at)).format("d MMMM yyyy HH:mm")}
+                              selected={new Date(patientData.created_at)}
+                              // onChange={setStartDateTime}
+                              name="waktu_mulai"
+                              id="waktu_mulai"
+                              showTimeInput
+                              // showTimeSelect
+                              timeFormat="HH:mm"
+                              timeIntervals={5}
+                              dateFormat="d MMMM yyyy HH:mm"
+                              readOnly={true}
+                              // timeCaption="Jam"
+                              className="disabled-datepicker"
+                              // value={Sdate}
+                              onChange={(e) => onChange(e, "waktu_mulai")}
+                              shouldCloseOnSelect={true}
+                            />
+                          </FormGroup>
+                        </Colxx>
 
-                <Colxx sm={6}>
-                  <FormGroup>
-                    <Label for="waktu_selesai">
-                      Waktu Selesai<span className="required text-danger" aria-required="true"> *</span>
-                    </Label>
-                    <DatePicker
-                      selected={endDateTime}
-                      // onChange={setEndDateTime}
-                      name="waktu_selesai"
-                      id="waktu_selesai"
-                      showTimeInput
-                      showTimeSelect
-                      timeFormat="HH:mm"
-                      timeIntervals={5}
-                      dateFormat="d MMMM yyyy HH:mm"
-                      timeCaption="Jam"
-                      // value={Edate}
-                      onChange={(e) => onChange(e, "waktu_selesai")}
-                      shouldCloseOnSelect={true}
-                    />
-                  </FormGroup>
-                </Colxx> */}
+                        <Colxx sm={6}>
+                          <FormGroup>
+                            <Label for="waktu_selesai">
+                              Waktu Selesai<span className="required text-danger" aria-required="true"> *</span>
+                            </Label>
+                            <DatePicker
+                              selected={endDateTime}
+                              // onChange={setEndDateTime}
+                              name="waktu_selesai"
+                              id="waktu_selesai"
+                              showTimeInput
+                              showTimeSelect
+                              timeFormat="HH:mm"
+                              timeIntervals={5}
+                              dateFormat="d MMMM yyyy HH:mm"
+                              timeCaption="Jam"
+                              // value={Edate}
+                              onChange={(e) => onChange(e, "waktu_selesai")}
+                              shouldCloseOnSelect={true}
+                            />
+                          </FormGroup>
+                        </Colxx> */}
 
-                <Colxx sm={6}>
-                  <FormGroup>
-                    <Label for="tipe">
-                      Tipe
-                    </Label>
-                    <Select
-                      components={{ Input: CustomSelectInput }}
-                      className="react-select"
-                      classNamePrefix="react-select"
-                      name="tipe"
-                      value={selectType.find(item => item.value === record.tipe) || ''}
-                      // value={selectedType}
-                      // onChange={setSelectedType}
-                      options={selectType}
-                      // value={record.tipe}
-                      onChange={onChange}
-                    />
-                  </FormGroup>
-                </Colxx>
+                        <Colxx sm={6}>
+                          <FormGroup>
+                            <Label for="tipe">
+                              Tipe
+                            </Label>
+                            <Select
+                              components={{ Input: CustomSelectInput }}
+                              className="react-select"
+                              classNamePrefix="react-select"
+                              name="tipe"
+                              value={selectType.find(item => item.value === record.tipe) || ''}
+                              // value={selectedType}
+                              // onChange={setSelectedType}
+                              options={selectType}
+                              // value={record.tipe}
+                              onChange={onChange}
+                            />
+                          </FormGroup>
+                        </Colxx>
 
-                <Colxx sm={6}>
-                  <FormGroup>
-                    <Label for="kasus_kll">
-                      Kasus Kecelakaan Lalu Lintas
-                    </Label>
-                    <CustomInput
-                      checked={isChecked}
-                      type="checkbox"
-                      name="kasus_kll"
-                      id="kasus_kll"
-                      label="Kecelakaan Lalu Lintas"
-                      value={record.kasus_kll}
-                      onChange={onChange}
-                    />
-                  </FormGroup>
-                </Colxx>
+                        <Colxx sm={6}>
+                          <FormGroup>
+                            <Label for="kasus_kll">
+                              Kasus Kecelakaan Lalu Lintas
+                            </Label>
+                            <CustomInput
+                              checked={isChecked}
+                              type="checkbox"
+                              name="kasus_kll"
+                              id="kasus_kll"
+                              label="Kecelakaan Lalu Lintas"
+                              value={record.kasus_kll}
+                              onChange={onChange}
+                            />
+                          </FormGroup>
+                        </Colxx>
 
-                <Colxx sm={12}>
-                  <FormGroup>
-                    <Label for="anamnesis">
-                      Anamnesis
-                    </Label>
-                    <Input
-                      type="textarea"
-                      name="anamnesis"
-                      id="anamnesis"
-                      placeholder="Anamnesis"
-                      style={{minHeight: '100'}}
-                      value={record.anamnesis}
-                      onChange={onChange}
-                    />
-                  </FormGroup>
-                </Colxx>
+                        <Colxx sm={12}>
+                          <FormGroup>
+                            <Label for="anamnesis">
+                              Anamnesis
+                            </Label>
+                            <Input
+                              type="textarea"
+                              name="anamnesis"
+                              id="anamnesis"
+                              placeholder="Anamnesis"
+                              style={{minHeight: '100'}}
+                              value={record.anamnesis}
+                              onChange={onChange}
+                            />
+                          </FormGroup>
+                        </Colxx>
 
-                <Colxx sm={12}>
-                  <FormGroup>
-                    <Label for="pemeriksaan_fisik">
-                      Pemeriksaan Fisik
-                    </Label>
-                    <Input
-                      type="textarea"
-                      name="pemeriksaan_fisik"
-                      id="pemeriksaan_fisik"
-                      placeholder="Pemeriksaan Fisik"
-                      style={{minHeight: '100'}}
-                      value={record.pemeriksaan_fisik}
-                      onChange={onChange}
-                    />
-                  </FormGroup>
-                </Colxx>
+                        <Colxx sm={12}>
+                          <FormGroup>
+                            <Label for="pemeriksaan_fisik">
+                              Pemeriksaan Fisik
+                            </Label>
+                            <Input
+                              type="textarea"
+                              name="pemeriksaan_fisik"
+                              id="pemeriksaan_fisik"
+                              placeholder="Pemeriksaan Fisik"
+                              style={{minHeight: '100'}}
+                              value={record.pemeriksaan_fisik}
+                              onChange={onChange}
+                            />
+                          </FormGroup>
+                        </Colxx>
 
-                <Colxx sm={6}>
-                  <FormGroup>
-                    <Label for="prognosa">
-                      Prognosa
-                    </Label>
-                    <Select
-                      components={{ Input: CustomSelectInput }}
-                      className="react-select"
-                      classNamePrefix="react-select"
-                      name="prognosa"
-                      value={selectPrognosa.find(item => item.value === record.prognosa) || ''}
-                      // value={selectedPrognosa}
-                      // onChange={setSelectedPrognosa}
-                      options={selectPrognosa}
-                      // value={record.prognosa}
-                      onChange={onChange}
-                    />
-                  </FormGroup>
-                </Colxx>
+                        <Colxx sm={6}>
+                          <FormGroup>
+                            <Label for="prognosa">
+                              Prognosa
+                            </Label>
+                            <Select
+                              components={{ Input: CustomSelectInput }}
+                              className="react-select"
+                              classNamePrefix="react-select"
+                              name="prognosa"
+                              value={selectPrognosa.find(item => item.value === record.prognosa) || ''}
+                              // value={selectedPrognosa}
+                              // onChange={setSelectedPrognosa}
+                              options={selectPrognosa}
+                              // value={record.prognosa}
+                              onChange={onChange}
+                            />
+                          </FormGroup>
+                        </Colxx>
 
-                <Colxx sm={6}>
-                  <FormGroup>
-                    <Label for="status_pulang">
-                      Status Pulang<span className="required text-danger" aria-required="true"> *</span>
-                    </Label>
-                    <Select
-                      components={{ Input: CustomSelectInput }}
-                      className="react-select"
-                      classNamePrefix="react-select"
-                      name="status_pulang"
-                      // value={selectedVisitation}
-                      value={selectVisitation.find(item => item.value === record.status_pulang) || ''}
-                      // onChange={setSelectedVisitation}
-                      options={selectVisitation}
-                      required
-                      // value={record.status_pulang}
-                      onChange={onChange}
-                    />
-                  </FormGroup>
-                </Colxx>
+                        <Colxx sm={6}>
+                          <FormGroup>
+                            <Label for="status_pulang">
+                              Status Pulang<span className="required text-danger" aria-required="true"> *</span>
+                            </Label>
+                            <Select
+                              components={{ Input: CustomSelectInput }}
+                              className="react-select"
+                              classNamePrefix="react-select"
+                              name="status_pulang"
+                              // value={selectedVisitation}
+                              value={selectVisitation.find(item => item.value === record.status_pulang) || ''}
+                              // onChange={setSelectedVisitation}
+                              options={selectVisitation}
+                              required
+                              // value={record.status_pulang}
+                              onChange={onChange}
+                            />
+                          </FormGroup>
+                        </Colxx>
 
-                <Colxx sm={12}>
-                  <FormGroup>
-                    <Label for="keluhan">
-                      Keluhan
-                    </Label>
-                    <Input
-                      type="textarea"
-                      name="keluhan"
-                      id="keluhan"
-                      placeholder="Keluhan"
-                      style={{minHeight: '100'}}
-                      value={record.keluhan}
-                      onChange={onChange}
-                    />
-                  </FormGroup>
-                </Colxx>
-              </FormGroup>
-
+                        <Colxx sm={12}>
+                          <FormGroup>
+                            <Label for="keluhan">
+                              Keluhan
+                            </Label>
+                            <Input
+                              type="textarea"
+                              name="keluhan"
+                              id="keluhan"
+                              placeholder="Keluhan"
+                              style={{minHeight: '100'}}
+                              value={record.keluhan}
+                              onChange={onChange}
+                            />
+                          </FormGroup>
+                        </Colxx>
+                      </FormGroup>
+                    </div>
+                  </Step>
+                  <Step id="step2" name="Diagnosis">
+                    <div className="wizard-basic-step text-center">
+                      <h2 className="mb-2">
+                        Test 2
+                      </h2>
+                      <p>
+                        Notif 2
+                      </p>
+                    </div>
+                  </Step>
+                  <Step id="step3" name="Tata Laksana" desc="Obat">
+                    <div className="wizard-basic-step text-center">
+                      <h2 className="mb-2">
+                        Test 3
+                      </h2>
+                      <p>
+                        Notif 3
+                      </p>
+                    </div>
+                  </Step>
+                  <Step id="step4" name="Tata Laksana" desc="Pemeriksaan">
+                    <div className="wizard-basic-step text-center">
+                      <h2 className="mb-2">
+                        Test 4
+                      </h2>
+                      <p>
+                        Notif 4
+                      </p>
+                    </div>
+                  </Step>
+                  <Step id="step5" name="Tata Laksana" desc="Tindakan">
+                    <div className="wizard-basic-step text-center">
+                      <h2 className="mb-2">
+                        Test 5
+                      </h2>
+                      <p>
+                        Notif 5
+                      </p>
+                    </div>
+                  </Step>
+                  <Step id="step6" name="Tata Laksana" desc="Rujukan">
+                    <div className="wizard-basic-step text-center">
+                      <h2 className="mb-2">
+                        Test 6
+                      </h2>
+                      <p>
+                        Notif 6
+                      </p>
+                    </div>
+                  </Step>
+                </Steps>
+                {/* <BottomNavigation
+                  onClickNext={onClickNext}
+                  onClickPrev={onClickPrev}
+                  className="justify-content-center"
+                  prevLabel="Prev"
+                  nextLabel="Next"
+                /> */}
+              </Wizard>
               
             </ModalBody>
             <ModalFooter style={{ display: 'block' }}>
