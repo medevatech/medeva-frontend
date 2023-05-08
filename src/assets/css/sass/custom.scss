@@ -51,7 +51,7 @@ label {
     width: 70%;
 }
 
-.input-group-insurance, .input-group-allergy {
+.input-group-insurance, .input-group-allergy, .input-group-diagnosis {
     margin-bottom: 1rem !important;
 }
 
@@ -64,7 +64,7 @@ label {
     // margin-right: 10px;
 }
 
-.remove-insurance, .remove-allergy {
+.remove-insurance, .remove-allergy, .remove-diagnosis {
     border-radius: 0 0.1rem 0.1rem 0;
 }
 
@@ -163,6 +163,39 @@ label {
     margin-bottom: 3.5rem;
 }
 
+#nav-tata-laksana {
+    padding-top: 1rem;
+    border-top: 1px solid #f3f3f3;
+    text-align:center;
+}
+
+.wizard ul.separator-tabs:before{
+    display: none;
+}
+
+.wizard ul.separator-tabs {
+    // margin-top: 0;
+    margin-bottom: 1.5rem;
+    margin: 0;
+    padding: 0;
+    display:inline-block;
+    list-style: none;
+    list-style-type:none;
+    text-align:center;
+}
+
+.wizard ul.separator-tabs li {
+    display:inline-block;
+}
+
+.wizard-default ul.nav li a:before{
+    background: #fff;
+}
+
+.nav-tabs.separator-tabs .nav-link {
+    margin-right: 0;
+}
+
 @media (max-width: 768px) {
     .schedule-row-col-1 {
         display: none;
@@ -180,6 +213,11 @@ label {
         -webkit-flex: 0 0 33.33333%;
         flex: 0 0 33.33333%;
         max-width: 33.33333%;
+    }
+
+    .col-md-6 {
+        padding: 0px;
+        margin-top: 1.5rem;
     }
 }
 

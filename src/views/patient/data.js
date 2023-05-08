@@ -1446,6 +1446,7 @@ const Data = ({ match }) => {
                           options={selectKITAS}
                           onChange={onChange}
                           isSearchable={false}
+                          required
                         />
                         <Input
                           type="text"
@@ -1455,6 +1456,7 @@ const Data = ({ match }) => {
                           className="input-KITAS"
                           value={patient.nomor_kitas}
                           onChange={onChange}
+                          required={true}
                         />
                       </InputGroup>
                     </FormGroup>
@@ -1479,6 +1481,7 @@ const Data = ({ match }) => {
                         placeholder="Nama Lengkap"
                         value={patient.nama_lengkap}
                         onChange={onChange}
+                        required={true}
                       />
                     </FormGroup>
                   </Colxx>
@@ -1723,13 +1726,13 @@ const Data = ({ match }) => {
                     <FormGroup>
                       <Label for="golongan_darah">
                         Golongan Darah
-                        <span
+                        {/* <span
                           className="required text-danger"
                           aria-required="true"
                         >
                           {" "}
                           *
-                        </span>
+                        </span> */}
                       </Label>
                       <Select
                         components={{ Input: CustomSelectInput }}
@@ -1775,7 +1778,7 @@ const Data = ({ match }) => {
                               className="react-select select-insurance"
                               classNamePrefix="react-select"
                               name="tipe_asuransi"
-                              value={selectedInsurance.label}
+                              // value={selectedInsurance.label}
                               options={selectInsurance}
                               onChange={(event) =>
                                 handleInsuranceChange(index, event)

@@ -572,7 +572,7 @@ const Data = ({ match, history, loading, error }) => {
                           {startNumber++}
                         </th>
                         <td>
-                          <h6 style={{ fontWeight: 'bold' }} className="max-text">{data.tipe}</h6>
+                          <h6 style={{ fontWeight: 'bold' }} className="max-text">{data.nama_divisi}</h6>
                           {data.nama_klinik ? data.nama_klinik : "-"}<br/>
                           {data.is_active == 1 ? (
                             <Badge color="success" className="mt-2">Aktif</Badge>
@@ -651,6 +651,7 @@ const Data = ({ match, history, loading, error }) => {
                         placeholder="Nama Poli / Divisi"
                         value={division.tipe}
                         onChange={onChange}
+                        required={true}
                       />
                     </FormGroup>
                   </Colxx>

@@ -223,7 +223,6 @@ const VitalSigns = ({ match }) => {
     setSelectedAwareness('');
 
     setDataStatus("add");
-    onLoadDivisi();
   };
 
   const onLoadDivisi = async () => {
@@ -733,7 +732,8 @@ const VitalSigns = ({ match }) => {
                     <Colxx sm={6}>
                       <FormGroup>
                         <Label for="sistole">
-                          Tekanan Darah<span className="required text-danger" aria-required="true"> *</span>
+                          Tekanan Darah
+                          {/* <span className="required text-danger" aria-required="true"> *</span> */}
                         </Label>
                         <Row>
                           <Colxx xs={5} sm={5} className="responsive-mobile-vertical-xs-5">
@@ -744,7 +744,7 @@ const VitalSigns = ({ match }) => {
                                 id="sistole"
                                 placeholder="Sistole"
                                 // style={{ maxWidth: '75px' }}
-                                required={true}
+                                // required={true}
                                 pattern="[0-9]*"
                                 value={vitalSigns.sistole}
                                 onChange={onChange}
@@ -761,7 +761,7 @@ const VitalSigns = ({ match }) => {
                                 id="diastole"
                                 placeholder="Diastole"
                                 // style={{ maxWidth: '75px' }}
-                                required={true}
+                                // required={true}
                                 pattern="[0-9]*"
                                 value={vitalSigns.diastole}
                                 onChange={onChange}
@@ -776,7 +776,8 @@ const VitalSigns = ({ match }) => {
                     <Colxx sm={6}>
                       <FormGroup>
                         <Label for="imt">
-                          IMT<span className="required text-danger" aria-required="true"> *</span>
+                          IMT
+                          {/* <span className="required text-danger" aria-required="true"> *</span> */}
                         </Label>
                         <InputGroup>
                           <Input
@@ -784,7 +785,7 @@ const VitalSigns = ({ match }) => {
                             name="imt"
                             id="imt"
                             placeholder="IMT"
-                            required={true}
+                            // required={true}
                             pattern="[0-9]*"
                             value={vitalSigns.imt}
                             onChange={onChange}
@@ -797,7 +798,8 @@ const VitalSigns = ({ match }) => {
                     <Colxx sm={6}>
                       <FormGroup>
                         <Label for="respiratory_rate">
-                          Tingkat Pernapasan<span className="required text-danger" aria-required="true"> *</span>
+                          Tingkat Pernapasan
+                          {/* <span className="required text-danger" aria-required="true"> *</span> */}
                         </Label>
                         <InputGroup>
                           <Input
@@ -805,7 +807,7 @@ const VitalSigns = ({ match }) => {
                             name="respiratory_rate"
                             id="respiratory_rate"
                             placeholder="Tingkat Pernapasan"
-                            required={true}
+                            // required={true}
                             pattern="[0-9]*"
                             value={vitalSigns.respiratory_rate}
                             onChange={onChange}
@@ -818,7 +820,8 @@ const VitalSigns = ({ match }) => {
                     <Colxx sm={6}>
                       <FormGroup>
                         <Label for="heart_rate">
-                          Detak Jantung<span className="required text-danger" aria-required="true"> *</span>
+                          Detak Jantung
+                          {/* <span className="required text-danger" aria-required="true"> *</span> */}
                         </Label>
                         <InputGroup>
                           <Input
@@ -826,7 +829,7 @@ const VitalSigns = ({ match }) => {
                             name="heart_rate"
                             id="heart_rate"
                             placeholder="Detak Jantung"
-                            required={true}
+                            // required={true}
                             pattern="[0-9]*"
                             value={vitalSigns.heart_rate}
                             onChange={onChange}

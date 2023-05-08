@@ -3,16 +3,16 @@ import { getAuthHeader, getOriginHeader, serializeQueryParams, getJSONHeader } f
 import baseApi from 'service/api-general'
 
 const disease = {
-  get: (payloads) => {
-    const url = api.disease.all
+  get: (payloads, options) => {
+    const url = api.disease + options
     return baseApi.get(url, payloads, { headers: getOriginHeader() })
   },
   add: (payloads) => {
-    const url = api.disease.all
+    const url = api.disease
     return baseApi.post(url, payloads, { headers: getOriginHeader() })
   },
-  update: (payloads) => {
-    const url = api.disease.all
+  update: (payloads, id) => {
+    const url = api.disease + `/${id}`
     return baseApi.put(url, payloads, { headers: getOriginHeader() })
   },
 }

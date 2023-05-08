@@ -18,7 +18,13 @@ import {
   ModalHeader,
   ModalBody,
   ModalFooter,
+  Nav,
+  NavItem,
+  TabContent,
+  TabPane,
 } from 'reactstrap';
+import { NavLink } from 'react-router-dom';
+import classnames from 'classnames';
 import { useDispatch, useSelector } from 'react-redux';
 import DatePicker from 'react-datepicker';
 import 'react-tagsinput/react-tagsinput.css';
@@ -41,25 +47,13 @@ import TopNavigation from 'components/wizard/TopNavigation';
 import queueAPI from "api/queue";
 import vitalSignsAPI from "api/vital-signs";
 import divisionAPI from "api/division";
+import diseaseAPI from "api/disease";
 import recordAPI from "api/record";
 import Swal from "sweetalert2";
 
 import loader from '../../assets/img/loading.gif';
 
 const userData = JSON.parse(localStorage.getItem('user_data'));
-
-const selectDivision = [
-  { label: 'Poli Umum', value: 'umum', key: 0 },
-  { label: 'Poli Gigi', value: 'gigi', key: 1 }
-];
-
-const selectPatient = [
-  { label: 'John Doe', value: 'john', key: 0 },
-  { label: 'Jane Doe', value: 'jane', key: 1 },
-  { label: 'Josh Doe', value: 'josh', key: 2 },
-  { label: 'Jack Doe', value: 'jack', key: 3 },
-  { label: 'Janet Doe', value: 'janet', key: 4 },
-];
 
 const selectVisitation = [
   { label: 'Meninggal', value: 'Meninggal', key: 0, name: 'status_pulang' },
@@ -82,6 +76,34 @@ const selectType = [
   { label: 'Rawat Jalan', value: 'Rawat Jalan', key: 3, name: 'tipe' }
 ];
 
+const selectPcs = [
+  { label: 'Kapsul', value: 'Kapsul', key: 0, name: 'satuan' },
+  { label: 'Tablet', value: 'Tablet', key: 1, name: 'satuan' },
+  { label: 'Kaplet', value: 'Kaplet', key: 2, name: 'satuan' },
+  { label: 'Puyer', value: 'Puyer', key: 3, name: 'satuan' },
+  { label: 'Mililiter', value: 'Mililiter', key: 4, name: 'satuan' },
+  { label: 'Sendok Makan', value: 'Sendok Makan', key: 5, name: 'satuan' },
+];
+
+const selectPeriod = [
+  { label: 'Jam', value: 'Jam', key: 0, name: 'periode' },
+  { label: 'Hari', value: 'Hari', key: 1, name: 'periode' }
+];
+
+const selectRules = [
+  { label: 'Sebelum Makan', value: 'Sebelum Makan', key: 0, name: 'aturan_pakai' },
+  { label: 'Setelah Makan', value: 'Setelah Makan', key: 1, name: 'aturan_pakai' },
+  { label: 'Kapan Saja', value: 'Kapan Saja', key: 2, name: 'aturan_pakai' }
+];
+
+const selectConsume = [
+  { label: 'Dikunyah', value: 'Dikunyah', key: 0, name: 'metode_konsumsi' },
+  { label: 'Ditelan', value: 'Ditelan', key: 1, name: 'metode_konsumsi' },
+  { label: 'Disuntik', value: 'Disuntik', key: 2, name: 'metode_konsumsi' },
+  { label: 'Dihirup', value: 'Dihirup', key: 3, name: 'metode_konsumsi' },
+  { label: 'Lainnya', value: 'Lainnya', key: 4, name: 'metode_konsumsi' }
+];
+
 const filterPassedTime = (time) => {
   const currentDate = new Date();
   const selectedDate = new Date(time);
@@ -99,6 +121,16 @@ const Data = ({ match }) => {
 
   const [selectedDivision, setSelectedDivision] = useState('');
   const [selectedDivisionF, setSelectedDivisionF] = useState([{ label: "Semua", value: "", key: 0, name: 'id_klinik' }]);
+  const [selectedDisease, setSelectedDisease] = useState([]);
+  const [selectedDiagnosis, setSelectedDiagnosis] = useState([{ label: ""}]);
+  const [selectedMedicine, setSelectedMedicine] = useState([{ label: ""}]);
+  const [selectedReciept, setSelectedReciept] = useState([{ label: ""}]);
+  const [selectedPcs, setSelectedPcs] = useState([{ label: ""}]);
+  const [selectedPeriod, setSelectedPeriod] = useState([{ label: ""}]);
+  const [selectedRules, setSelectedRules] = useState([{ label: ""}]);
+  const [selectedConsume, setSelectedConsume] = useState([{ label: ""}]);
+  const [selectedLab, setSelectedLab] = useState([{ label: ""}]);
+  const [selectedTreatment, setSelectedTreatment] = useState([]);
 
   const [selectedType, setSelectedType] = useState('');
   const [selectedVisitation, setSelectedVisitation] = useState('');
@@ -111,6 +143,7 @@ const Data = ({ match }) => {
   const [Sdate, setStartDate] = useState(new Date());
   const [Edate, setEndDate] = useState(new Date());
   const [isChecked, setIsChecked] = useState(false);
+  const [activeTab, setActiveTab] = useState('obat');
 
   const [patientStatus, setPatientStatus] = useState(0);
   const [patientID, setPatientID] = useState('');
@@ -231,6 +264,206 @@ const Data = ({ match }) => {
 
     // console.log('record', record);
   }
+
+  const [diagnosis, setDiagnosis] = useState([
+    { id: Math.random(), id_kunjungan: "", id_penyakit: "", tipe_wd: false, tipe_dd: false }
+  ]);
+
+  const addDiagnosisFields = () => {
+    let newfieldDiagnosis = { id: Math.random(), id_kunjungan: "", id_penyakit: "", tipe_wd: false, tipe_dd: false };
+    setDiagnosis([...diagnosis, newfieldDiagnosis]);
+
+    let newfieldDropdownDiagnosis = { label: "" };
+    setSelectedDiagnosis([...selectedDiagnosis, newfieldDropdownDiagnosis]);
+  };
+
+  const removeDiagnosisFields = (id, index) => {
+    let dataDiagnosis1 = [...diagnosis]; let displaySelectDiagnosis1 = [...selectedDiagnosis];
+    dataDiagnosis1.splice(index, 1);
+    displaySelectDiagnosis1.splice(index, 1);
+    setDiagnosis(dataDiagnosis1);
+    setSelectedDiagnosis(displaySelectDiagnosis1);
+  };
+
+  const handleDiagnosisChange = (index, event) => {
+    console.log('handleDiagnosisChange', event);
+
+    let dataDiagnosis2 = [...diagnosis]; let displaySelectDiagnosis = [...selectedDiagnosis];
+
+    if (event.name === "id_penyakit"){
+      dataDiagnosis2[index][event.name] = event.value;
+      displaySelectDiagnosis[index]["label"] = event.label;
+
+    } else if(event.target.name === "tipe_diagnosis") {
+      let wd = false; let dd = false;
+
+      if(event.target.id === 'tipe_wd') {
+        wd = true;
+      }
+      
+      if(event.target.id === 'tipe_dd') {
+        dd = true;
+      }
+
+      dataDiagnosis2[index]['tipe_wd'] = wd;
+      dataDiagnosis2[index]['tipe_dd'] = dd;
+    }
+
+    setDiagnosis(dataDiagnosis2);
+    setSelectedDiagnosis(displaySelectDiagnosis);
+
+    // console.log('diagnosis', diagnosis);
+    // console.log('selectedDiagnosis', selectedDiagnosis);
+  };
+
+  const [reciept, setReciept] = useState([
+    { id: Math.random(), id_kunjungan: "", id_obat: "", jumlah: 0, satuan: "", frekuensi: 0, periode: "", aturan_pakai: "", metode_konsumsi: "" }
+  ]);
+
+  const addRecieptFields = () => {
+    let newfieldReciept = { id: Math.random(), id_kunjungan: "", id_obat: "", jumlah: 0, satuan: "", frekuensi: 0, periode: "", aturan_pakai: "", metode_konsumsi: "" }
+    setReciept([...reciept, newfieldReciept]);
+
+    let newfieldDropdownMedicine = { label: "" };
+    setSelectedMedicine([...selectedMedicine, newfieldDropdownMedicine]);
+
+    let newfieldDropdownPcs = { label: "" };
+    setSelectedPcs([...selectedPcs, newfieldDropdownPcs]);
+
+    let newfieldDropdownPeriod = { label: "" };
+    setSelectedPeriod([...selectedPeriod, newfieldDropdownPeriod]);
+
+    let newfieldDropdownRules = { label: "" };
+    setSelectedRules([...selectedRules, newfieldDropdownRules]);
+
+    let newfieldDropdownConsume = { label: "" };
+    setSelectedConsume([...selectedConsume, newfieldDropdownConsume]);
+  };
+
+  const removeRecieptFields = (id, index) => {
+    let dataReciept = [...reciept];
+    let displaySelectMedicine = [...selectedMedicine];
+    let displaySelectPcs = [...selectedPcs];
+    let displaySelectPeriod = [...selectedPeriod];
+    let displaySelectRules = [...selectedRules];
+    let displaySelectConsume = [...selectedConsume];
+
+    dataReciept.splice(index, 1);
+    displaySelectMedicine.splice(index, 1);
+    displaySelectPcs.splice(index, 1);
+    displaySelectPeriod.splice(index, 1);
+    displaySelectRules.splice(index, 1);
+    displaySelectConsume.splice(index, 1);
+
+    setReciept(dataReciept);
+    setSelectedMedicine(displaySelectMedicine);
+    setSelectedPcs(displaySelectPcs);
+    setSelectedPeriod(displaySelectPeriod);
+    setSelectedRules(displaySelectRules);
+    setSelectedConsume(displaySelectConsume);
+  };
+
+  const handleRecieptChange = (index, event) => {
+    console.log('handleRecieptChange', event);
+
+    let dataReciept = [...reciept];
+    let displaySelectMedicine = [...selectedMedicine];
+    let displaySelectPcs = [...selectedPcs];
+    let displaySelectPeriod = [...selectedPeriod];
+    let displaySelectRules = [...selectedRules];
+    let displaySelectConsume = [...selectedConsume];
+
+    if (event.name === "id_obat"){
+      dataReciept[index][event.name] = event.value;
+      displaySelectMedicine[index]["label"] = event.label;
+    } else if (event.name === "id_obat"){
+      dataReciept[index][event.name] = event.value;
+      displaySelectMedicine[index]["label"] = event.label;
+    } else if (event.name === "satuan"){
+      dataReciept[index][event.name] = event.value;
+      displaySelectPcs[index]["label"] = event.label;
+    } else if (event.name === "periode"){
+      dataReciept[index][event.name] = event.value;
+      displaySelectPeriod[index]["label"] = event.label;
+    } else if (event.name === "aturan_pakai"){
+      dataReciept[index][event.name] = event.value;
+      displaySelectRules[index]["label"] = event.label;
+    } else if (event.name === "metode_konsumsi"){
+      dataReciept[index][event.name] = event.value;
+      displaySelectConsume[index]["label"] = event.label;
+    } else {
+      dataReciept[index][event.target.name] = event.target.value;
+    }
+
+    setReciept(dataReciept);
+    setSelectedMedicine(displaySelectMedicine);
+    setSelectedPcs(displaySelectPcs);
+    setSelectedPeriod(displaySelectPeriod);
+    setSelectedRules(displaySelectRules);
+    setSelectedConsume(displaySelectConsume);
+
+    console.log('reciept', reciept);
+    console.log('selectedMedicine', selectedMedicine);
+    console.log('selectedPcs', selectedPcs);
+    console.log('selectedPeriod', selectedPeriod);
+    console.log('selectedRules', selectedRules);
+    console.log('selectedConsume', selectedConsume);
+  };
+
+  const [checkup, setCheckup] = useState([
+    { id: Math.random(), id_kunjungan: "", id_laboratorium: "", id_pemeriksaan: "" }
+  ]);
+
+  const addCheckupFields = () => {
+    let newfieldCheckup = { id: Math.random(), id_kunjungan: "", id_laboratorium: "", id_pemeriksaan: "" }
+    setCheckup([...checkup, newfieldCheckup]);
+
+    let newfieldDropdownLab = { label: "" };
+    setSelectedLab([...selectedLab, newfieldDropdownLab]);
+
+    let newfieldDropdownTreatment = [];
+    setSelectedTreatment([...selectedTreatment, newfieldDropdownTreatment]);
+  };
+
+  const removeCheckupFields = (id, index) => {
+    let dataCheckup = [...checkup];
+    let displaySelectLab = [...selectedLab];
+    let displaySelectTreatment = [...selectedTreatment];
+
+    dataCheckup.splice(index, 1);
+    displaySelectLab.splice(index, 1);
+    displaySelectTreatment.splice(index, 1);
+
+    setCheckup(dataCheckup);
+    setSelectedLab(displaySelectLab);
+    setSelectedTreatment(displaySelectTreatment);
+  };
+
+  const handleCheckupChange = (index, event) => {
+    console.log('handleCheckupChange', event);
+
+    let dataCheckup = [...checkup];
+    let displaySelectLab = [...selectedLab];
+    let displaySelectTreatment = [...selectedTreatment];
+
+    if (event.name === "id_laboratorium"){
+      dataCheckup[index][event.name] = event.value;
+      displaySelectLab[index]["label"] = event.label;
+    } else if (event.name === "id_pemeriksaan"){
+      dataCheckup[index][event.name] = event.value;
+      displaySelectTreatment[index]["label"] = event.label;
+    } else {
+      dataCheckup[index][event.target.name] = event.target.value;
+    }
+
+    setCheckup(dataCheckup);
+    setSelectedLab(displaySelectLab);
+    setSelectedTreatment(displaySelectTreatment);
+
+    console.log('checkup', checkup);
+    console.log('selectedLab', selectedLab);
+    console.log('selectedTreatment', selectedTreatment);
+  };
 
   const getRecordByPatientId = async (e, id) => {
     e.preventDefault();
@@ -443,7 +676,6 @@ const Data = ({ match }) => {
     setRecordID('');
 
     setShowRecord('none');
-    onLoadDivisi();
   };
 
   const onLoadDivisi = async () => {
@@ -461,6 +693,31 @@ const Data = ({ match }) => {
           setSelectedDivisionF((current) => [
             ...current,
             { label: data[i].tipe, value: data[i].id, key: data[i].id, name: 'id_divisi' },
+          ]);
+        }
+      } else {
+        throw Error(`Error status: ${response.status}`);
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  const onLoadPenyakit = async () => {
+    try {
+      const response = await diseaseAPI.get("", "?limit=1000");
+      // console.log(response);
+
+      setSelectedDisease([]);
+
+      if (response.status === 200) {
+        let data = response.data.data;
+        // console.log(data);
+      
+        for (var i = 0; i < data.length; i++) {
+          setSelectedDisease((current) => [
+            ...current,
+            { label: data[i].kode_icd10 + " - " + data[i].nama_penyakit  , value: data[i].id, key: data[i].id, name: 'id_penyakit' },
           ]);
         }
       } else {
@@ -511,8 +768,8 @@ const Data = ({ match }) => {
     setPatientData(data);
     setWatchID(data.id_jaga);
 
-    console.log('patientID', id);
-    console.log('patientData', data);
+    // console.log('patientID', id);
+    // console.log('patientData', data);
 
     try {
       const res = await vitalSignsAPI.getByPatient("", `/${id}`);
@@ -586,6 +843,7 @@ const Data = ({ match }) => {
 
     getQueue(params);
     onLoadDivisi();
+    onLoadPenyakit();
 
     if(patientStatus === 1 && patientID) {
       getAllRecordByPatientId("", patientID);
@@ -1090,27 +1348,196 @@ const Data = ({ match }) => {
                     </div>
                   </Step>
                   <Step id="step2" name="Diagnosis">
-                    <div className="wizard-basic-step text-center">
-                      <h2 className="mb-2">
-                        Test 2
-                      </h2>
-                      <p>
-                        Notif 2
-                      </p>
+                    <div className="wizard-basic-step">
+                      <FormGroup row>
+                        <Colxx sm={6}>
+                          <Label for="id_penyakit">
+                            Penyakit
+                            {/* <span
+                              className="required text-danger"
+                              aria-required="true"
+                            >
+                              {" "}
+                              *
+                            </span> */}
+                          </Label>
+                        </Colxx>
+                        <Colxx sm={6}>
+                          <Label for="tipe_diagnosis">
+                            Tipe
+                          </Label>
+                        </Colxx>
+
+                        {diagnosis.map((input, index) => {
+                          return (
+                            <React.Fragment key={index}>
+                              <Colxx sm={6}>
+                                <FormGroup>
+                                  <Select
+                                    components={{ Input: CustomSelectInput }}
+                                    className="react-select"
+                                    classNamePrefix="react-select"
+                                    name="id_penyakit"
+                                    // value={selectedDisease.find(item => item.value === diagnosis.id_penyakit) || ''}
+                                    options={selectedDisease}
+                                    onChange={(event) => handleDiagnosisChange(index, event)}
+                                  />
+                                </FormGroup>
+                              </Colxx>
+                              <Colxx sm={6}>
+                                <FormGroup>
+                                  <Row>
+                                    <Colxx sm={6} md={4} xl={4}>
+                                      <CustomInput
+                                        // checked={record.tipe_wd}
+                                        type="checkbox"
+                                        name="tipe_diagnosis"
+                                        id="tipe_wd"
+                                        label="Working Diagnosis"
+                                        // value={diagnosis.tipe_wd}
+                                        onChange={(event) => handleDiagnosisChange(index, event)}
+                                      />
+                                    </Colxx>
+                                    <Colxx sm={5} md={7} xl={7}>
+                                      <CustomInput
+                                        // checked={record.tipe_dd}
+                                        type="checkbox"
+                                        name="tipe_diagnosis"
+                                        id="tipe_dd"
+                                        label="Differential Diagnosis"
+                                        // value={diagnosis.tipe_dd}
+                                        onChange={(event) => handleDiagnosisChange(index, event)}
+                                      />
+                                    </Colxx>
+                                    <Colxx sm={1} md={1} xl={1}>
+                                      {index > 0 && (
+                                        <Button
+                                          color="danger"
+                                          style={{ float: "right" }}
+                                          onClick={() =>
+                                            removeDiagnosisFields(input.id, index)
+                                          }
+                                          className="remove-diagnosis"
+                                        >
+                                          <i className="simple-icon-trash"></i>
+                                        </Button>
+                                      )}
+                                    </Colxx>
+                                  </Row>
+                                </FormGroup>
+                              </Colxx>
+                            </React.Fragment>
+                          )
+                        })}
+
+                        <Colxx sm={12} className="mt-2">
+                          <Button
+                            color="primary"
+                            // style={{ float: "right" }}
+                            // className="mb-2"
+                            onClick={addDiagnosisFields}
+                          >
+                            Tambah
+                          </Button>
+                        </Colxx>
+                      </FormGroup>
                     </div>
                   </Step>
-                  <Step id="step3" name="Tata Laksana" desc="Obat">
-                    <div className="wizard-basic-step text-center">
-                      <h2 className="mb-2">
-                        Test 3
-                      </h2>
-                      <p>
-                        Notif 3
-                      </p>
+                  <Step id="step3" name="Tata Laksana">
+                    <div className="wizard-basic-step" id="nav-tata-laksana">
+                      <Nav tabs className="separator-tabs ml-0 mb-5">
+                        <NavItem>
+                          <NavLink
+                            location={{}}
+                            to="#"
+                            className={classnames({
+                              active: activeTab === 'obat',
+                              'nav-link': true,
+                              'nav-tata-laksana': true,
+                            })}
+                            onClick={() => setActiveTab('obat')}
+                          >
+                            Obat
+                          </NavLink>
+                        </NavItem>
+                        <NavItem>
+                          <NavLink
+                            location={{}}
+                            to="#"
+                            className={classnames({
+                              active: activeTab === 'pemeriksaan',
+                              'nav-link': true,
+                              'nav-tata-laksana': true,
+                            })}
+                            onClick={() => setActiveTab('pemeriksaan')}
+                          >
+                            Pemeriksaan
+                          </NavLink>
+                        </NavItem>
+                        <NavItem>
+                          <NavLink
+                            location={{}}
+                            to="#"
+                            className={classnames({
+                              active: activeTab === 'tindakan',
+                              'nav-link': true,
+                              'nav-tata-laksana': true,
+                            })}
+                            onClick={() => setActiveTab('tindakan')}
+                          >
+                            Tindakan
+                          </NavLink>
+                        </NavItem>
+                        <NavItem>
+                          <NavLink
+                            location={{}}
+                            to="#"
+                            className={classnames({
+                              active: activeTab === 'rujukan',
+                              'nav-link': true,
+                              'nav-tata-laksana': true,
+                            })}
+                            onClick={() => setActiveTab('rujukan')}
+                          >
+                            Rujukan
+                          </NavLink>
+                        </NavItem>
+                      </Nav>
+
+                      <TabContent activeTab={activeTab}>
+                        <TabPane tabId="obat">
+                          <Row>
+                            <Colxx xxs="12" lg="12" className="mb-4 text-center">
+                              <h3>Ini Obat</h3>
+                            </Colxx>
+                          </Row>
+                        </TabPane>
+                        <TabPane tabId="pemeriksaan">
+                          <Row>
+                            <Colxx xxs="12" lg="12" className="mb-4 text-center">
+                              <h3>Ini Pemeriksaan</h3>
+                            </Colxx>
+                          </Row>
+                        </TabPane>
+                        <TabPane tabId="tindakan">
+                          <Row>
+                            <Colxx xxs="12" lg="12" className="mb-4 text-center">
+                              <h3>Ini Tindakan</h3>
+                            </Colxx>
+                          </Row>
+                        </TabPane>
+                        <TabPane tabId="rujukan">
+                          <Row>
+                            <Colxx xxs="12" lg="12" className="mb-4 text-center">
+                              <h3>Ini Rujukan</h3>
+                            </Colxx>
+                          </Row>
+                        </TabPane>
+                      </TabContent>
                     </div>
                   </Step>
-                  <Step id="step4" name="Tata Laksana" desc="Pemeriksaan">
-                    <div className="wizard-basic-step text-center">
+                  {/* <Step id="step4" name="Tata Laksana" desc="Pemeriksaan">
+                    <div className="wizard-basic-step">
                       <h2 className="mb-2">
                         Test 4
                       </h2>
@@ -1120,7 +1547,7 @@ const Data = ({ match }) => {
                     </div>
                   </Step>
                   <Step id="step5" name="Tata Laksana" desc="Tindakan">
-                    <div className="wizard-basic-step text-center">
+                    <div className="wizard-basic-step">
                       <h2 className="mb-2">
                         Test 5
                       </h2>
@@ -1130,7 +1557,7 @@ const Data = ({ match }) => {
                     </div>
                   </Step>
                   <Step id="step6" name="Tata Laksana" desc="Rujukan">
-                    <div className="wizard-basic-step text-center">
+                    <div className="wizard-basic-step">
                       <h2 className="mb-2">
                         Test 6
                       </h2>
@@ -1138,7 +1565,7 @@ const Data = ({ match }) => {
                         Notif 6
                       </p>
                     </div>
-                  </Step>
+                  </Step> */}
                 </Steps>
                 {/* <BottomNavigation
                   onClickNext={onClickNext}

@@ -2,7 +2,8 @@ import axios from 'axios'
 // import store from 'store'
 
 const baseApi = axios.create({
-  baseURL: process.env.REACT_APP_BASE_PATHV1,
+  // baseURL: process.env.REACT_APP_BASE_PATHV1,
+  baseURL: "http://sandbox.medeva.tech:9000/api/v1/",
   headers: {
     // common: {
       // 'x-g2-timeZone-offset': new Date().getTimezoneOffset()

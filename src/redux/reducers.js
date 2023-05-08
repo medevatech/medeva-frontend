@@ -9,6 +9,7 @@ import schedule from "store/schedule";
 import { employee, employeeTotalPage } from "store/employee";
 import { division, divisionTotalPage } from "store/division";
 import { queue, queueTotalPage } from "store/queue";
+import { disease, diseaseTotalPage } from 'store/disease';
 
 import { province, city, subdistrict, ward } from 'store/address';
 
@@ -29,6 +30,8 @@ const reducers = combineReducers({
   employeeTotalPage,
   division,
   divisionTotalPage,
+  disease,
+  diseaseTotalPage,
 
   province,
   city, 
