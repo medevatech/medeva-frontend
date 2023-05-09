@@ -10,6 +10,12 @@ import { employee, employeeTotalPage } from "store/employee";
 import { division, divisionTotalPage } from "store/division";
 import { queue, queueTotalPage } from "store/queue";
 import { disease, diseaseTotalPage } from 'store/disease';
+import { medicine, medicineTotalPage } from 'store/medicine';
+import { lab, labTotalPage } from 'store/lab';
+import { treatmentList, treatmentListTotalPage } from 'store/treatment-list';
+import { divisionReference, divisionReferenceTotalPage } from 'store/division-reference';
+import { hospitalReference, hospitalReferenceTotalPage } from 'store/hospital-reference';
+
 
 import { province, city, subdistrict, ward } from 'store/address';
 
@@ -32,6 +38,16 @@ const reducers = combineReducers({
   divisionTotalPage,
   disease,
   diseaseTotalPage,
+  medicine,
+  medicineTotalPage,
+  lab,
+  labTotalPage,
+  treatmentList,
+  treatmentListTotalPage,
+  divisionReference,
+  divisionReferenceTotalPage,
+  hospitalReference,
+  hospitalReferenceTotalPage,
 
   province,
   city, 

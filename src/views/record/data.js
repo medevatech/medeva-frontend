@@ -23,7 +23,7 @@ import {
   TabContent,
   TabPane,
 } from 'reactstrap';
-import { NavLink } from 'react-router-dom';
+import { Link, NavLink } from 'react-router-dom';
 import classnames from 'classnames';
 import { useDispatch, useSelector } from 'react-redux';
 import DatePicker from 'react-datepicker';
@@ -1072,9 +1072,19 @@ const Data = ({ match }) => {
                 <CardTitle>
                   Riwayat Rekam Medis
                   { patientData ?
-                    <Button color="primary" style={{ float: "right" }} className="mb-4" onClick={(e) => getRecordByPatientId(e, "")}>
-                      Tambah
-                    </Button> :
+                    // <Link
+                    //   to={`/record/form/${patientID}/${watchID}`}
+                    //   >
+                    <Link to={{
+                        pathname: `/record/form`,
+                        state: { patientID: patientID, patientData: patientData }
+                    }}>
+                      <Button color="primary" style={{ float: "right" }} className="mb-4"
+                        // onClick={(e) => getRecordByPatientId(e, "")}
+                      >
+                        Tambah Data Rekam Medis
+                      </Button>
+                    </Link> :
                   '' }
                   { patientStatus === 2 && allRecord.length > 0 ?
                     <>
@@ -1132,11 +1142,19 @@ const Data = ({ match }) => {
                       <tr>
                         <th></th>
                         <td>
-                            <Button color="secondary" size="xs" style={{ float: "right" }}
-                              onClick={(e) => getRecordByPatientId(e, data.id)}
-                              >
-                              Ubah Data Rekam Medis
-                            </Button>
+                            {/* <Link
+                              to={`/record/form/${patientID}/${watchID}`}
+                            > */}
+                            <Link to={{
+                                pathname: `/record/form`,
+                                state: { patientID: patientID, patientData: patientData, recordID: data.id }
+                            }}>
+                              <Button color="secondary" size="xs" style={{ float: "right" }}
+                                // onClick={(e) => getRecordByPatientId(e, data.id)}
+                                >
+                                Ubah Data Rekam Medis
+                              </Button>
+                            </Link>
                         </td>
                       </tr>
                     </tbody>
@@ -1445,6 +1463,37 @@ const Data = ({ match }) => {
                   </Step>
                   <Step id="step3" name="Tata Laksana">
                     <div className="wizard-basic-step" id="nav-tata-laksana">
+                      <TabContent activeTab={activeTab}>
+                        <TabPane tabId="obat">
+                          <Row>
+                            <Colxx xxs="12" lg="12" className="mb-4 text-center">
+                              <h3>Ini Obat</h3>
+                            </Colxx>
+                          </Row>
+                        </TabPane>
+                        <TabPane tabId="pemeriksaan">
+                          <Row>
+                            <Colxx xxs="12" lg="12" className="mb-4 text-center">
+                              <h3>Ini Pemeriksaan</h3>
+                            </Colxx>
+                          </Row>
+                        </TabPane>
+                        <TabPane tabId="tindakan">
+                          <Row>
+                            <Colxx xxs="12" lg="12" className="mb-4 text-center">
+                              <h3>Ini Tindakan</h3>
+                            </Colxx>
+                          </Row>
+                        </TabPane>
+                        <TabPane tabId="rujukan">
+                          <Row>
+                            <Colxx xxs="12" lg="12" className="mb-4 text-center">
+                              <h3>Ini Rujukan</h3>
+                            </Colxx>
+                          </Row>
+                        </TabPane>
+                      </TabContent>
+
                       <Nav tabs className="separator-tabs ml-0 mb-5">
                         <NavItem>
                           <NavLink
@@ -1504,36 +1553,6 @@ const Data = ({ match }) => {
                         </NavItem>
                       </Nav>
 
-                      <TabContent activeTab={activeTab}>
-                        <TabPane tabId="obat">
-                          <Row>
-                            <Colxx xxs="12" lg="12" className="mb-4 text-center">
-                              <h3>Ini Obat</h3>
-                            </Colxx>
-                          </Row>
-                        </TabPane>
-                        <TabPane tabId="pemeriksaan">
-                          <Row>
-                            <Colxx xxs="12" lg="12" className="mb-4 text-center">
-                              <h3>Ini Pemeriksaan</h3>
-                            </Colxx>
-                          </Row>
-                        </TabPane>
-                        <TabPane tabId="tindakan">
-                          <Row>
-                            <Colxx xxs="12" lg="12" className="mb-4 text-center">
-                              <h3>Ini Tindakan</h3>
-                            </Colxx>
-                          </Row>
-                        </TabPane>
-                        <TabPane tabId="rujukan">
-                          <Row>
-                            <Colxx xxs="12" lg="12" className="mb-4 text-center">
-                              <h3>Ini Rujukan</h3>
-                            </Colxx>
-                          </Row>
-                        </TabPane>
-                      </TabContent>
                     </div>
                   </Step>
                   {/* <Step id="step4" name="Tata Laksana" desc="Pemeriksaan">

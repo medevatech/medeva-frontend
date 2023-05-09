@@ -44,7 +44,7 @@ const TopNavigation = ({ className, disableNav, topNavClick }) => {
                     stepItem
                   )}`}
                 >
-                  <NavLink
+                  {/* <NavLink
                     to="#"
                     location={{}}
                     className="nav-link"
@@ -52,7 +52,18 @@ const TopNavigation = ({ className, disableNav, topNavClick }) => {
                   >
                     <span>{stepItem.name}</span>
                     <small>{stepItem.desc}</small>
-                  </NavLink>
+                  </NavLink> */}
+                  
+                  <a
+                    // to=""
+                    // location={{}}
+                    className="nav-link"
+                    aria-disabled="true"
+                    onClick={() => itemClick(stepItem, push)}
+                  >
+                    <span>{stepItem.name}</span>
+                    <small>{stepItem.desc}</small>
+                  </a>
                 </li>
               );
             }
