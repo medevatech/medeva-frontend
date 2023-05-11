@@ -867,14 +867,19 @@ const Data = ({ match }) => {
     onLoadProvinsi();
   };
 
+  const [isLoading, setIsLoading] = useState(false);
+
   const getPatient = async (params) => {
     try {
+      setIsLoading(true);
       const res = await patientAPI.get("", params);
       // console.log(res.data.data);
       dispatch({type: "GET_PATIENT", payload: res.data.data});
       dispatch({type: "GET_TOTAL_PAGE_PATIENT", payload: res.data.pagination.totalPage});
     } catch (e) {
       console.log(e);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -1314,7 +1319,15 @@ const Data = ({ match }) => {
                   </tr>
                 </thead>
                 <tbody>
-                  {patientAll.length > 0 ? (
+                {isLoading ? (
+                  <tr>
+                    <td>&nbsp;</td>
+                    <td align="center">
+                      <img src={loader} alt="loading..." width="100"/>
+                    </td>
+                    <td>&nbsp;</td>
+                  </tr>
+                  ) : patientAll.length > 0 ? (
                     patientAll.map((data) => (
                       <tr key={data.id} onClick={(e) => getPatientById(e, data.id)} style={{ cursor: 'pointer'}}>
                         <th scope="row" style={{ textAlign: "center", verticalAlign: 'middle' }}>
@@ -1371,11 +1384,12 @@ const Data = ({ match }) => {
                     <tr>
                       <td>&nbsp;</td>
                       <td align="center">
-                        <img src={loader} alt="loading..." width="100"/>
+                        <h5 style={{ marginTop: '1.5rem' }}><b>Data tidak ditemukan</b></h5>
                       </td>
                       <td>&nbsp;</td>
                     </tr>
-                  )}
+                  )
+                }
                 </tbody>
               </Table>
               <Pagination
@@ -1432,6 +1446,7 @@ const Data = ({ match }) => {
                           options={selectKITAS}
                           onChange={onChange}
                           isSearchable={false}
+                          required
                         />
                         <Input
                           type="text"
@@ -1441,6 +1456,7 @@ const Data = ({ match }) => {
                           className="input-KITAS"
                           value={patient.nomor_kitas}
                           onChange={onChange}
+                          required={true}
                         />
                       </InputGroup>
                     </FormGroup>
@@ -1465,6 +1481,7 @@ const Data = ({ match }) => {
                         placeholder="Nama Lengkap"
                         value={patient.nama_lengkap}
                         onChange={onChange}
+                        required={true}
                       />
                     </FormGroup>
                   </Colxx>
@@ -1709,13 +1726,13 @@ const Data = ({ match }) => {
                     <FormGroup>
                       <Label for="golongan_darah">
                         Golongan Darah
-                        <span
+                        {/* <span
                           className="required text-danger"
                           aria-required="true"
                         >
                           {" "}
                           *
-                        </span>
+                        </span> */}
                       </Label>
                       <Select
                         components={{ Input: CustomSelectInput }}
@@ -1761,7 +1778,7 @@ const Data = ({ match }) => {
                               className="react-select select-insurance"
                               classNamePrefix="react-select"
                               name="tipe_asuransi"
-                              value={selectedInsurance.label}
+                              // value={selectedInsurance.label}
                               options={selectInsurance}
                               onChange={(event) =>
                                 handleInsuranceChange(index, event)

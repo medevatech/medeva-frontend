@@ -33,33 +33,14 @@ import CustomSelectInput from 'components/common/CustomSelectInput';
 import queueAPI from "api/queue";
 import vitalSignsAPI from "api/vital-signs";
 import divisionAPI from "api/division";
+import scheduleAPI from "api/schedule";
 import Swal from "sweetalert2";
 
 import loader from '../../assets/img/loading.gif';
 
 const userData = JSON.parse(localStorage.getItem('user_data'));
 
-const selectDivision = [
-  { label: 'Poli Umum', value: 'umum', key: 0 },
-  { label: 'Poli Gigi', value: 'gigi', key: 1 }
-];
-
-const selectPatient = [
-  { label: 'John Doe', value: 'john', key: 0 },
-  { label: 'Jane Doe', value: 'jane', key: 1 },
-  { label: 'Josh Doe', value: 'josh', key: 2 },
-  { label: 'Jack Doe', value: 'jack', key: 3 },
-  { label: 'Janet Doe', value: 'janet', key: 4 },
-];
-
-const selectAwareness = [
-  { label: 'Compos Mentis', value: 'Compos Mentis', key: 0, name: 'kesadaran' },
-  { label: 'Somnolence', value: 'Somnolence', name: 'kesadaran' },
-  { label: 'Sopot', value: 'Sopot', name: 'kesadaran' },
-  { label: 'Coma', value: 'Coma', name: 'kesadaran' },
-];
-
-const VitalSigns = ({ match }) => {
+const Data = ({ match }) => {
   const dispatch = useDispatch();
   const queueAll = useSelector(state => state.queue);
   const queueTotalPage = useSelector(state => state.queueTotalPage);
@@ -372,7 +353,7 @@ const VitalSigns = ({ match }) => {
                 <CardTitle style={{ marginBottom: 0 }}>
                   <Row>
                     <Colxx sm="12" md="8" xl="8">
-                    Data Antrian
+                    Data Poli / Divisi
                     </Colxx>
                     <Colxx sm="12" md="4" xl="4">
                       <Button
@@ -432,7 +413,7 @@ const VitalSigns = ({ match }) => {
                   <thead>
                     <tr>
                       <th className="center-xy" style={{ width: '40px' }}>#</th>
-                      <th colSpan={2}>Antrian</th>
+                      <th colSpan={2}>Poli / Divisi</th>
                       <th className="center-xy" style={{ width: '55px' }}>&nbsp;</th>
                     </tr>
                   </thead>
@@ -480,66 +461,6 @@ const VitalSigns = ({ match }) => {
                         </tr>
                       )
                     }
-                      {/* <tr>
-                        <th scope="row" className="center-xy">1</th>
-                        <td className="icon-column">
-                          <i className="simple-icon-magnifier queue-icon"></i><br/>
-                          <span className="queue-text">0001</span>
-                        </td>
-                        <td>
-                          <h6 style={{ fontWeight: 'bold' }}>Otto</h6>
-                          Laki-laki, 32 Tahun
-                        </td>
-                        <td style={{ textAlign: "center", verticalAlign: 'middle' }}>
-                          <Button color="secondary" size="xs" className="button-xs">
-                            <i className="simple-icon-note"></i>
-                          </Button>
-                          {' '}
-                          <Button color="warning" size="xs" className="button-xs">
-                            <i className="simple-icon-drawer"></i>
-                          </Button>
-                        </td>
-                      </tr>
-                      <tr>
-                        <th scope="row" className="center-xy">2</th>
-                        <td className="icon-column">
-                          <i className="simple-icon-magnifier queue-icon"></i><br/>
-                          <span className="queue-text">0002</span>
-                        </td>
-                        <td>
-                          <h6 style={{ fontWeight: 'bold' }}>Jacob</h6>
-                          Laki-laki, 26 Tahun
-                        </td>
-                        <td style={{ textAlign: "center", verticalAlign: 'middle' }}>
-                          <Button color="secondary" size="xs" className="button-xs">
-                            <i className="simple-icon-note"></i>
-                          </Button>
-                          {' '}
-                          <Button color="warning" size="xs" className="button-xs">
-                            <i className="simple-icon-drawer"></i>
-                          </Button>
-                        </td>
-                      </tr>
-                      <tr>
-                        <th scope="row" className="center-xy">3</th>
-                        <td className="icon-column">
-                          <i className="simple-icon-magnifier queue-icon"></i><br/>
-                          <span className="queue-text">0003</span>
-                        </td>
-                        <td>
-                          <h6 style={{ fontWeight: 'bold' }}>Larry</h6>
-                          Laki-laki, 57 Tahun
-                        </td>
-                        <td style={{ textAlign: "center", verticalAlign: 'middle' }}>
-                          <Button color="secondary" size="xs" className="button-xs">
-                            <i className="simple-icon-note"></i>
-                          </Button>
-                          {' '}
-                          <Button color="warning" size="xs" className="button-xs">
-                            <i className="simple-icon-drawer"></i>
-                          </Button>
-                        </td>
-                      </tr> */}
                   </tbody>
                 </Table>
                 <Pagination
@@ -556,7 +477,7 @@ const VitalSigns = ({ match }) => {
                 <CardTitle>
                   <Row>
                     <Colxx sm="6" md="6" xl="6">
-                    Form Registrasi Pra-Konsultasi {patientData ?
+                    Daftar Antrian Poli / Divisi {patientData ?
                     <>
                       <br/><br/>{patientData.nama_lengkap}<br/><p style={{ fontWeight: 'normal' }}>{patientData.jenis_kelamin.substring(0,1)}, {new Date().getFullYear() - patientData.tanggal_lahir.substring(0,4)}</p>
                     </> :
@@ -572,42 +493,6 @@ const VitalSigns = ({ match }) => {
                 </CardTitle>
                 <Form>
                   <FormGroup row>
-                    {/* <Colxx sm={12}>
-                      <FormGroup>
-                        <Label for="tanggalRekam">
-                          Tanggal / Waktu
-                        </Label>
-                        <DatePicker
-                          selected={startDateTime}
-                          onChange={setStartDateTime}
-                          name="tanggalRekam"
-                          id="tanggalRekam"
-                          showTimeSelect
-                          timeFormat="HH:mm"
-                          timeIntervals={30}
-                          dateFormat="d MMMM yyyy HH:mm"
-                          readOnly={true}
-                          timeCaption="Jam"
-                          className="disabled-datepicker"
-                        />
-                      </FormGroup>
-                    </Colxx> */}
-
-                    {/* <Colxx sm={6}>
-                      <FormGroup>
-                        <Label for="noAntrian">
-                          No. Antrian
-                        </Label>
-                        <Input
-                          type="text"
-                          name="noAntrian"
-                          id="noAntrian"
-                          placeholder="No. Antrian"
-                          disabled={true}
-                        />
-                      </FormGroup>
-                    </Colxx> */}
-
                     <Colxx sm={12}>
                       <FormGroup>
                         <Label for="keluhan">
@@ -621,26 +506,6 @@ const VitalSigns = ({ match }) => {
                           style={{minHeight: '100px'}}
                           value={vitalSigns.keluhan}
                           onChange={onChange}
-                        />
-                      </FormGroup>
-                    </Colxx>
-
-                    <Colxx sm={12}>
-                      <FormGroup>
-                        <Label for="kesadaran">
-                          Kesadaran<span className="required text-danger" aria-required="true"> *</span>
-                        </Label>
-                        <Select
-                          components={{ Input: CustomSelectInput }}
-                          className="react-select"
-                          classNamePrefix="react-select"
-                          name="kesadaran"
-                          options={selectAwareness}
-                          required
-                          value={selectAwareness.find(item => item.value === vitalSigns.kesadaran) || ''}
-                          // value={selectedAwareness}
-                          onChange={onChange}
-                          isSearchable={false}
                         />
                       </FormGroup>
                     </Colxx>
@@ -889,4 +754,4 @@ const VitalSigns = ({ match }) => {
     </>
   );
 };
-export default VitalSigns;
+export default Data;

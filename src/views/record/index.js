@@ -11,6 +11,9 @@ const VitalSigns = React.lazy(() =>
 const Data = React.lazy(() =>
   import(/* webpackChunkName: "views-record-data" */ './data')
 );
+const Form = React.lazy(() =>
+  import(/* webpackChunkName: "views-record-form" */ './form')
+);
 
 const App = ({ match }) => {
   return (
@@ -34,7 +37,12 @@ const App = ({ match }) => {
             <ProtectedRoute
               path={`${match.url}/vital-signs`}
               component={VitalSigns}
-              roles={[ "isDev", "isPerawat" ]}
+              roles={[ "isDev", "isPerawat", "isDokter" ]}
+            />
+            <ProtectedRoute
+              path={`${match.url}/form`}
+              component={Form}
+              roles={[ "isDev", "isDokter" ]}
             />
             <ProtectedRoute
               path={`${match.url}`}

@@ -1,6 +1,6 @@
-const schedule = (state = [], action) => {
+const inspectList = (state = [], action) => {
     switch (action.type) {
-        case "GET_SCHEDULE":
+        case "GET_INSPECT":
             return action.payload;
             break;
         default:
@@ -9,9 +9,9 @@ const schedule = (state = [], action) => {
     }
 }
 
-const scheduleTotalPage = (state = 0, action) => {
+const inspectListTotalPage = (state = 0, action) => {
     switch (action.type) {
-        case "GET_TOTAL_PAGE_SCHEDULE":
+        case "GET_TOTAL_PAGE_INSPECT":
             return action.payload;
             break;
         default:
@@ -20,4 +20,4 @@ const scheduleTotalPage = (state = 0, action) => {
     }
 }
 
-export { schedule, scheduleTotalPage } ;
+export { inspectList, inspectListTotalPage } ;

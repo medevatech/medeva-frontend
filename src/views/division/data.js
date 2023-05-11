@@ -218,13 +218,18 @@ const Data = ({ match, history, loading, error }) => {
     onLoadKlinik();
   };
 
+  const [isLoading, setIsLoading] = useState(false);
+
   const getDivision = async (params) => {
     try {
+      setIsLoading(true);
       const res = await divisionAPI.get("", params);
       dispatch({type: "GET_DIVISION", payload: res.data.data});
       dispatch({type: "GET_TOTAL_PAGE_DIVISION", payload: res.data.pagination.totalPage});
     } catch (e) {
       console.log(e);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -551,14 +556,23 @@ const Data = ({ match, history, loading, error }) => {
                   </tr>
                 </thead>
                 <tbody>
-                  {divisionData.length > 0 ? (
+                {isLoading ? (
+                  <tr>
+                    <td>&nbsp;</td>
+                    <td align="center">
+                      <img src={loader} alt="loading..." width="100"/>
+                    </td>
+                    <td>&nbsp;</td>
+                  </tr>
+                  ) : 
+                  divisionData.length > 0 ? (
                     divisionData.map((data) => (
                       <tr key={data.id} onClick={(e) => getDivisionById(e, data.id)} style={{ cursor: 'pointer'}}>
                         <th scope="row" style={{ textAlign: "center", verticalAlign: 'middle' }}>
                           {startNumber++}
                         </th>
                         <td>
-                          <h6 style={{ fontWeight: 'bold' }} className="max-text">{data.tipe}</h6>
+                          <h6 style={{ fontWeight: 'bold' }} className="max-text">{data.nama_divisi}</h6>
                           {data.nama_klinik ? data.nama_klinik : "-"}<br/>
                           {data.is_active == 1 ? (
                             <Badge color="success" className="mt-2">Aktif</Badge>
@@ -579,20 +593,12 @@ const Data = ({ match, history, loading, error }) => {
                     <tr>
                       <td>&nbsp;</td>
                       <td align="center">
-                        <img src={loader} alt="loading..." width="100"/>
+                        <h5 style={{ marginTop: '1.5rem' }}><b>Data tidak ditemukan</b></h5>
                       </td>
                       <td>&nbsp;</td>
                     </tr>
-                  )}
-                  {/* {divisionData.length === 0 && (
-                    <tr>
-                      <td>&nbsp;</td>
-                      <td align="center">
-                        Data tidak ditemukan
-                      </td>
-                      <td>&nbsp;</td>
-                    </tr>
-                  )} */}
+                  )
+                }
                 </tbody>
               </Table>
               <Pagination
@@ -645,6 +651,7 @@ const Data = ({ match, history, loading, error }) => {
                         placeholder="Nama Poli / Divisi"
                         value={division.tipe}
                         onChange={onChange}
+                        required={true}
                       />
                     </FormGroup>
                   </Colxx>

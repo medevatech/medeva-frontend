@@ -49,15 +49,18 @@ const api = {
     patient: '/kunjungan/pasien'
   },
   tempRecord: '/temp-kunjungan', // JOIN TABLE ID RECORD TO ID VITAL SIGNS
-  disease: '/penyakit', // MASTER OF 'DIAGNOSIS' FIELD
-  diagnose: '/diagnosis', // MASTER OF 'DIAGNOSIS' FIELD
-  inspect: '/pemeriksaan', // MASTER OF 'PEMERIKSAAN' FIELD
-  inspectSupport: '/pemeriksaan-penunjang', // JOIN TABLE ID RECORD TO ID PATIENT AND 
-  poly: {  // MASTER OF 'POLI' FIELD
-    all: '/poli',
-    archive: '/poli/archive',
-    activate: '/poli/activate'
-  },
+  disease: '/penyakit', // MASTER OF 'PENYAKIT' FIELD
+  medicine: '/obat', // MASTER OF 'OBAT' FIELD
+  lab: '/laboratorium', // MASTER OF 'LABORATORIUM' FIELD
+  labTreatment: '/layanan-laboratorium', // JOIN TABLE ID LAB TO ID PEMERIKSAAN
+  treatmentList: '/daftar-tindakan', // MASTER OF 'TINDAKAN' FIELD
+  divisionReference: '/poli', // MASTER OF 'POLI RUJUKAN' FIELD
+  hospitalReference: '/rs', // MASTER OF 'RS RUJUKAN' FIELD
+  inspect: {
+    all: '/pemeriksaan',
+    treatment: '/pemeriksaan/layanan-lab',
+  }, // MASTER OF 'PEMERIKSAAN' FIELD
+  inspectSupport: '/pemeriksaan-penunjang', // JOIN TABLE ID RECORD TO ID LAB TO ID INSPECT
 }
 
 export default api

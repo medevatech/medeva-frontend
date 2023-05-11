@@ -21,6 +21,9 @@ const Login = React.lazy(() =>
 // const Login2 = React.lazy(() =>
 //   import(/* webpackChunkName: "user-login2" */ '../views/authorization/login2')
 // );
+const Profile = React.lazy(() =>
+  import(/* webpackChunkName: "user-profile" */ '../views/authorization/profile')
+);
 
 const Dashboard = React.lazy(() =>
   import(/* webpackChunkName: "views-dashboard" */ '../views/dashboard')
@@ -28,14 +31,17 @@ const Dashboard = React.lazy(() =>
 const Patient = React.lazy(() =>
   import(/* webpackChunkName: "views-patient" */ '../views/patient')
 );
+const Queue = React.lazy(() =>
+  import(/* webpackChunkName: "views-queue" */ '../views/queue')
+);
 const Record = React.lazy(() =>
   import(/* webpackChunkName: "views-record" */ '../views/record')
 );
 const Employee = React.lazy(() =>
   import(/* webpackChunkName: "views-employee-developer" */ '../views/employee')
 );
-const Schedule = React.lazy(() =>
-  import(/* webpackChunkName: "views-schedule" */ '../views/schedule')
+const Shift = React.lazy(() =>
+  import(/* webpackChunkName: "views-shift" */ '../views/shift')
 );
 const Division = React.lazy(() =>
   import(/* webpackChunkName: "views-division" */ '../views/division')
@@ -54,8 +60,20 @@ const MainRouter = () => {
                 />
                 <ProtectedRoute
                 // <Route
+                    path="/profile"
+                    component={Profile}
+                    roles={[ "isDev", "isManager", "isAdmin", "isResepsionis", "isPerawat", "isDokter", "isManajemen" ]}
+                />
+                <ProtectedRoute
+                // <Route
                     path="/patient"
                     component={Patient}
+                    roles={[ "isDev", "isResepsionis", "isPerawat", "isDokter" ]}
+                />
+                <ProtectedRoute
+                // <Route
+                    path="/queue"
+                    component={Queue}
                     roles={[ "isDev", "isResepsionis", "isPerawat", "isDokter" ]}
                 />
                 <ProtectedRoute
@@ -73,7 +91,7 @@ const MainRouter = () => {
                 <ProtectedRoute
                 // <Route
                     path="/schedule"
-                    component={Schedule}
+                    component={Shift}
                     roles={[ "isDev", "isManager", "isAdmin", "isResepsionis", "isPerawat", "isDokter" ]}
                 />
                 <ProtectedRoute

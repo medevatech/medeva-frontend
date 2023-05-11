@@ -41,8 +41,8 @@ import loader from '../../assets/img/loading.gif';
 const userData = JSON.parse(localStorage.getItem('user_data'));
 
 const selectRole = [
-  { label: "Developer", value: "Developer", key: 0 },
-  { label: "Manager", value: "Manager", key: 1 },
+  { label: "Developer", value: "Developer", key: 0, name: 'peran' },
+  { label: "Manager", value: "Manager", key: 1, name: 'peran' },
   { label: "Admin", value: "Admin", key: 2, name: "peran" },
   { label: "Resepsionis", value: "Resepsionis", key: 3, name: "peran" },
   { label: "Perawat", value: "Perawat", key: 4, name: "peran" },
@@ -675,13 +675,18 @@ const Data = ({ match, history, loading, error }) => {
     onLoadProvinsi();
   };
 
+  const [isLoading, setIsLoading] = useState(false);
+
   const getEmployee = async (params) => {
     try {
+      setIsLoading(true);
       const res = await employeeAPI.get("", params);
       dispatch({type: "GET_EMPLOYEE", payload: res.data.data});
       dispatch({type: "GET_TOTAL_PAGE_EMPLOYEE", payload: res.data.pagination.totalPage});
     } catch (e) {
       console.log(e);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -1339,7 +1344,16 @@ const Data = ({ match, history, loading, error }) => {
                   </tr>
                 </thead>
                 <tbody>
-                  {employeeData.length > 0 ? (
+                {isLoading ? (
+                  <tr>
+                    <td>&nbsp;</td>
+                    <td align="center">
+                      <img src={loader} alt="loading..." width="100"/>
+                    </td>
+                    <td>&nbsp;</td>
+                  </tr>
+                  ) : 
+                  employeeData.length > 0 ? (
                     employeeData.map((data) => (
                       <tr key={data.id} onClick={(e) => getEmployeeById(e, data.id)} style={{ cursor: 'pointer'}}>
                         <th scope="row" style={{ textAlign: "center", verticalAlign: 'middle' }}>
@@ -1367,11 +1381,12 @@ const Data = ({ match, history, loading, error }) => {
                     <tr>
                       <td>&nbsp;</td>
                       <td align="center">
-                        <img src={loader} alt="loading..." width="100"/>
+                        <h5 style={{ marginTop: '1.5rem' }}><b>Data tidak ditemukan</b></h5>
                       </td>
                       <td>&nbsp;</td>
                     </tr>
-                  )}
+                  )
+                }
                 </tbody>
               </Table>
               <Pagination
@@ -1704,7 +1719,7 @@ const Data = ({ match, history, loading, error }) => {
                         </span>
                       </Label>
                       <Row>
-                        <Colxx sm={12} md={12} xl={5}>
+                        <Colxx sm={12} md={5} xl={5}>
                           <CustomInput
                             type="radio"
                             id="laki"
@@ -1715,7 +1730,7 @@ const Data = ({ match, history, loading, error }) => {
                             onChange={onChange}
                           />
                         </Colxx>
-                        <Colxx sm={12} md={12} xl={7}>
+                        <Colxx sm={12} md={7} xl={7}>
                           <CustomInput
                             type="radio"
                             id="perempuan"

@@ -8,7 +8,7 @@ import {
   Input,
 } from 'reactstrap';
 
-import { NavLink } from 'react-router-dom';
+import { Link, NavLink } from 'react-router-dom';
 import { connect } from 'react-redux';
 
 import {
@@ -232,7 +232,9 @@ const TopNav = ({
               </span>
             </DropdownToggle>
             <DropdownMenu className="mt-3" right style={{ paddingBottom: '0px' }}>
-              <DropdownItem>Edit Profil</DropdownItem>
+              <DropdownItem onClick={() => history.push("/profile")}>
+                Edit Profil
+              </DropdownItem>
               <DropdownItem>Jadwal Jaga</DropdownItem>
               <DropdownItem divider style={{ marginBottom: '0px' }}/>
               <DropdownItem onClick={() => handleLogout()} style={{ backgroundColor: '#8aaab4', color: '#fff' }}>
