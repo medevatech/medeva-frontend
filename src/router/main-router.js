@@ -31,14 +31,17 @@ const Dashboard = React.lazy(() =>
 const Patient = React.lazy(() =>
   import(/* webpackChunkName: "views-patient" */ '../views/patient')
 );
+const Queue = React.lazy(() =>
+  import(/* webpackChunkName: "views-queue" */ '../views/queue')
+);
 const Record = React.lazy(() =>
   import(/* webpackChunkName: "views-record" */ '../views/record')
 );
 const Employee = React.lazy(() =>
   import(/* webpackChunkName: "views-employee-developer" */ '../views/employee')
 );
-const Schedule = React.lazy(() =>
-  import(/* webpackChunkName: "views-schedule" */ '../views/schedule')
+const Shift = React.lazy(() =>
+  import(/* webpackChunkName: "views-shift" */ '../views/shift')
 );
 const Division = React.lazy(() =>
   import(/* webpackChunkName: "views-division" */ '../views/division')
@@ -69,6 +72,12 @@ const MainRouter = () => {
                 />
                 <ProtectedRoute
                 // <Route
+                    path="/queue"
+                    component={Queue}
+                    roles={[ "isDev", "isResepsionis", "isPerawat", "isDokter" ]}
+                />
+                <ProtectedRoute
+                // <Route
                     path="/record"
                     component={Record}
                     roles={[ "isDev", "isPerawat", "isDokter" ]}
@@ -82,7 +91,7 @@ const MainRouter = () => {
                 <ProtectedRoute
                 // <Route
                     path="/schedule"
-                    component={Schedule}
+                    component={Shift}
                     roles={[ "isDev", "isManager", "isAdmin", "isResepsionis", "isPerawat", "isDokter" ]}
                 />
                 <ProtectedRoute

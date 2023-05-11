@@ -5,7 +5,8 @@ import dashboard from "store/dashboard";
 import { patient, patientTotalPage } from "store/patient";
 import { vitalSigns, vitalSignsTotalPage } from "store/vital-signs";
 import { record, recordTotalPage, allRecordByPatient } from "store/record";
-import schedule from "store/schedule";
+import { schedule, scheduleTotalPage } from "store/schedule";
+import { shift, shiftTotalPage } from "store/shift";
 import { employee, employeeTotalPage } from "store/employee";
 import { division, divisionTotalPage } from "store/division";
 import { queue, queueTotalPage } from "store/queue";
@@ -33,6 +34,9 @@ const reducers = combineReducers({
   record,
   recordTotalPage,
   schedule,
+  scheduleTotalPage,
+  shift,
+  shiftTotalPage,
   employee,
   employeeTotalPage,
   division,

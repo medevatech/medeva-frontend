@@ -450,6 +450,7 @@ const Data = ({ match, history, loading, error }) => {
           });
   
           resetForm(e);
+          getEmployeeById(userData.id);
         } else {
           Swal.fire({
             title: "Gagal!",
@@ -772,7 +773,7 @@ const Data = ({ match, history, loading, error }) => {
         // console.log('selectedRole onUpdate', selectedRole);
       }
   // }, [ editAddress, selectedRole ]);
-  }, [ ]);
+  }, [ editAddress ]);
 
   return (
     <AppLayout>

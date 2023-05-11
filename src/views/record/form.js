@@ -43,6 +43,7 @@ import medicineAPI from "api/medicine";
 import labAPI from "api/lab";
 import inspectListAPI from "api/inspect";
 import treatmentListAPI from "api/treatment-list";
+import labTreatmentAPI from "api/lab-treatment";
 import divisionReferenceAPI from "api/division-reference";
 import hospitalReferenceAPI from "api/hospital-reference";
 import recordAPI from "api/record";
@@ -100,6 +101,9 @@ const selectConsume = [
   { label: 'Dihirup', value: 'Dihirup', key: 3, name: 'metode_konsumsi' },
   { label: 'Lainnya', value: 'Lainnya', key: 4, name: 'metode_konsumsi' }
 ];
+
+let selectInspectByLabTreatmentArray = [];
+let selectLabTreatmentArray = [];
 
 const FormRecord = ({ match, history }) => {
   const dispatch = useDispatch();
@@ -426,6 +430,8 @@ const FormRecord = ({ match, history }) => {
   const [selectedLab, setSelectedLab] = useState([{ label: "" }]);
   const [selectInspect, setSelectInspect] = useState([]);
   const [selectInspectByTreatment, setSelectInspectByTreatment] = useState([]);
+  const [selectLabTreatment, setSelectLabTreatment] = useState([]);
+  const [selectInspectByLabTreatment, setSelectInspectByLabTreatment] = useState([]);
   const [selectedInspect, setSelectedInspect] = useState([{ label: "" }]);
 
   const addCheckupFields = () => {
@@ -467,6 +473,8 @@ const FormRecord = ({ match, history }) => {
     if (event.name === "id_laboratorium"){
       dataCheckup[index][event.name] = event.value;
       displaySelectLab[index]["label"] = event.label;
+
+      changeLayananLab(event.value);
     } else if (event.name === "id_pemeriksaan"){
       dataCheckup[index][event.name] = event.value;
       displaySelectInspect[index]["label"] = event.label;
@@ -801,7 +809,7 @@ const FormRecord = ({ match, history }) => {
     onLoadPenyakit();
     onLoadObat();
     onLoadLab();
-    onLoadPemeriksaan();
+    // onLoadPemeriksaan();
     onLoadTindakan();
     onLoadPoliRujukan();
     onLoadRSRujukan();
@@ -884,28 +892,88 @@ const FormRecord = ({ match, history }) => {
     }
   };
 
-  let selectInspectByTreatmentArray = [];
+  // let selectInspectByTreatmentArray = [];
 
-  const onLoadPemeriksaanByLayananId = async (id) => {
+  // const onLoadPemeriksaanByLayananId = async (id) => {
+  //   try {
+  //     const response = await inspectListAPI.getByTreatment("", id);
+  //     // console.log(response);
+
+  //     selectInspectByTreatmentArray = [];
+  //     // setSelectInspectByTreatment([]);
+
+  //     if (response.status === 200) {
+  //       let data = response.data.data;
+  //       // console.log(data);
+      
+  //       for (var i = 0; i < data.length; i++) {
+  //         setSelectInspectByTreatment((current) => [
+  //           ...current,
+  //           { label: data[i].nama, value: data[i].id, key: data[i].id, name: 'id_pemeriksaan' },
+  //         ]);
+
+  //         // selectInspectByTreatment.push({ label: data[i].nama, value: data[i].id, key: data[i].id, name: 'id_pemeriksaan' });
+  //         selectInspectByTreatmentArray.push({ label: data[i].nama, value: data[i].id, key: data[i].id, name: 'id_pemeriksaan' });
+  //       }
+  //     } else {
+  //       throw Error(`Error status: ${response.status}`);
+  //     }
+  //   } catch (e) {
+  //     console.log(e);
+  //   } finally {
+  //     selectInspectByTreatmentArray = [];
+  //     // setSelectInspectByTreatment([]);
+  //   }
+  // };
+
+  // const onLoadPemeriksaan = async () => {
+  //   try {
+  //     const response = await inspectListAPI.get("", "?limit=1000");
+  //     // console.log(response);
+
+  //     setSelectInspect([]);
+
+  //     if (response.status === 200) {
+  //       let data = response.data.data;
+  //       // console.log(data);
+      
+  //       for (var i = 0; i < data.length; i++) {
+  //         // onLoadPemeriksaanByLayananId(data[i].id_layanan_lab);
+
+  //         setSelectInspect((current) => [
+  //           ...current,
+  //           { 
+  //             label: data[i].id_layanan_lab,
+  //             // options: selectInspectByTreatment
+  //             // options: selectInspectByTreatmentArray
+  //           },
+  //         ]);
+  //       }
+  //     } else {
+  //       throw Error(`Error status: ${response.status}`);
+  //     }
+  //   } catch (e) {
+  //     console.log(e);
+  //   } finally {
+      
+  //   }
+  // };
+
+  const onLoadPemeriksaanByLayananLab = async (id_lab, kategori) => {
+    // selectInspectByLabTreatmentArray = [];
+
     try {
-      const response = await inspectListAPI.getByTreatment("", id);
+      const response = await labTreatmentAPI.get("", `?limit=1000&searchLaboratorium=${id_lab}&searchKategori=${kategori}`);
       // console.log(response);
-
-      selectInspectByTreatmentArray = [];
-      // setSelectInspectByTreatment([]);
 
       if (response.status === 200) {
         let data = response.data.data;
         // console.log(data);
       
         for (var i = 0; i < data.length; i++) {
-          setSelectInspectByTreatment((current) => [
-            ...current,
-            { label: data[i].nama, value: data[i].id, key: data[i].id, name: 'id_pemeriksaan' },
-          ]);
-
-          // selectInspectByTreatment.push({ label: data[i].nama, value: data[i].id, key: data[i].id, name: 'id_pemeriksaan' });
-          selectInspectByTreatmentArray.push({ label: data[i].nama, value: data[i].id, key: data[i].id, name: 'id_pemeriksaan' });
+          selectInspectByLabTreatmentArray.push({
+            label: data[i].nama_pemeriksaan, value: data[i].id_pemeriksaan, key: data[i].id_pemeriksaan, name: 'id_pemeriksaan'
+          });
         }
       } else {
         throw Error(`Error status: ${response.status}`);
@@ -913,33 +981,37 @@ const FormRecord = ({ match, history }) => {
     } catch (e) {
       console.log(e);
     } finally {
-      selectInspectByTreatmentArray = [];
-      // setSelectInspectByTreatment([]);
+      selectLabTreatmentArray.push({ 
+        label: kategori,
+        options: selectInspectByLabTreatmentArray
+      });
+
+      selectInspectByLabTreatmentArray = [];
     }
   };
 
-  const onLoadPemeriksaan = async () => {
-    try {
-      const response = await inspectListAPI.get("", "?limit=1000");
-      // console.log(response);
+  const changeLayananLab = async (id_lab) => {
+    selectLabTreatmentArray = [];
+    selectInspectByLabTreatmentArray = [];
 
-      setSelectInspect([]);
+    try {
+      const response = await labTreatmentAPI.getDistinct("", `?limit=1000&searchLaboratorium=${id_lab}`);
+      // console.log(response);
 
       if (response.status === 200) {
         let data = response.data.data;
         // console.log(data);
       
         for (var i = 0; i < data.length; i++) {
-          onLoadPemeriksaanByLayananId(data[i].id_layanan_lab);
+          onLoadPemeriksaanByLayananLab(id_lab, data[i].kategori);
 
-          setSelectInspect((current) => [
-            ...current,
-            { 
-              label: data[i].id_layanan_lab,
-              // options: selectInspectByTreatment
-              // options: selectInspectByTreatmentArray
-            },
-          ]);
+          // selectLabTreatmentArray.push({ 
+          //   label: data[i].kategori,
+          //   key: data[i].id,
+          //   options: selectInspectByLabTreatmentArray
+          // });
+
+          // selectInspectByLabTreatmentArray = [];
         }
       } else {
         throw Error(`Error status: ${response.status}`);
@@ -947,7 +1019,7 @@ const FormRecord = ({ match, history }) => {
     } catch (e) {
       console.log(e);
     } finally {
-      
+      // console.log('selectLabTreatmentArray', selectLabTreatmentArray);
     }
   };
 
@@ -1087,8 +1159,7 @@ const FormRecord = ({ match, history }) => {
     onLoadPenyakit();
     onLoadObat();
     onLoadLab();
-    onLoadPemeriksaan();
-    // onLoadPemeriksaanByLayananId();
+    // onLoadPemeriksaan();
     onLoadTindakan();
     onLoadPoliRujukan();
     onLoadRSRujukan();
@@ -1599,15 +1670,17 @@ const FormRecord = ({ match, history }) => {
                                                       <Colxx sm={5} md={5} xl={5}>
                                                           <FormGroup>
                                                             <Label for="id_pemeriksaan">
-                                                              Layanan
+                                                              Layanan (pilih laboratorium terlebih dahulu)
                                                             </Label>
                                                             <Select
                                                                 components={{ Input: CustomSelectInput }}
                                                                 className="react-select"
                                                                 classNamePrefix="react-select"
                                                                 name="id_pemeriksaan"
-                                                                value={selectInspect.find(item => item.value === checkup[index].id_pemeriksaan) || ''}
-                                                                options={selectInspect}
+                                                                // value={selectLabTreatment.find(item => item.value === checkup[index].id_pemeriksaan) || ''}
+                                                                // options={selectLabTreatment}
+                                                                value={selectLabTreatmentArray.find(item => item.value === checkup[index].id_pemeriksaan) || ''}
+                                                                options={selectLabTreatmentArray}
                                                                 onChange={(event) => handleCheckupChange(index, event)}
                                                             />
                                                           </FormGroup>

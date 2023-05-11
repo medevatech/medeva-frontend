@@ -14,6 +14,13 @@ const data = [
     roles: [ "isDev", "isResepsionis", "isPerawat", "isDokter" ],
   },
   {
+    id: 'queue',
+    icon: 'iconsminds-profile',
+    label: 'Antrian',
+    to: `/queue`,
+    roles: [ "isDev", "isResepsionis", "isPerawat", "isDokter" ],
+  },
+  {
     id: 'record',
     icon: 'iconsminds-first-aid',
     label: 'Kunjungan',

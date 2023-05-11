@@ -52,6 +52,7 @@ const api = {
   disease: '/penyakit', // MASTER OF 'PENYAKIT' FIELD
   medicine: '/obat', // MASTER OF 'OBAT' FIELD
   lab: '/laboratorium', // MASTER OF 'LABORATORIUM' FIELD
+  labTreatment: '/layanan-laboratorium', // JOIN TABLE ID LAB TO ID PEMERIKSAAN
   treatmentList: '/daftar-tindakan', // MASTER OF 'TINDAKAN' FIELD
   divisionReference: '/poli', // MASTER OF 'POLI RUJUKAN' FIELD
   hospitalReference: '/rs', // MASTER OF 'RS RUJUKAN' FIELD
