@@ -55,7 +55,10 @@ const api = {
   treatmentList: '/daftar-tindakan', // MASTER OF 'TINDAKAN' FIELD
   divisionReference: '/poli', // MASTER OF 'POLI RUJUKAN' FIELD
   hospitalReference: '/rs', // MASTER OF 'RS RUJUKAN' FIELD
-  inspect: '/pemeriksaan', // MASTER OF 'PEMERIKSAAN' FIELD
+  inspect: {
+    all: '/pemeriksaan',
+    treatment: '/pemeriksaan/layanan-lab',
+  }, // MASTER OF 'PEMERIKSAAN' FIELD
   inspectSupport: '/pemeriksaan-penunjang', // JOIN TABLE ID RECORD TO ID LAB TO ID INSPECT
 }
 

@@ -752,7 +752,7 @@ const VitalSigns = ({ match }) => {
                               <InputGroupAddon addonType="append">mmHg</InputGroupAddon>
                             </InputGroup>
                           </Colxx>
-                          <Colxx xs={2} sm={1} className="responsive-mobile-vertical-xs-2" style={{ lineHeight: '2rem' }}>/</Colxx>
+                          <Colxx xs={2} sm={1} className="responsive-mobile-vertical-xs-2" style={{ lineHeight: '2rem', textAlign: 'center' }}>/</Colxx>
                           <Colxx xs={5} sm={5} className="responsive-mobile-vertical-xs-5">
                             <InputGroup>
                               <Input

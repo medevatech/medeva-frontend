@@ -41,6 +41,7 @@ import vitalSignsAPI from "api/vital-signs";
 import diseaseAPI from "api/disease";
 import medicineAPI from "api/medicine";
 import labAPI from "api/lab";
+import inspectListAPI from "api/inspect";
 import treatmentListAPI from "api/treatment-list";
 import divisionReferenceAPI from "api/division-reference";
 import hospitalReferenceAPI from "api/hospital-reference";
@@ -77,7 +78,7 @@ const selectPcs = [
   { label: 'Tablet', value: 'Tablet', key: 1, name: 'satuan' },
   { label: 'Kaplet', value: 'Kaplet', key: 2, name: 'satuan' },
   { label: 'Puyer', value: 'Puyer', key: 3, name: 'satuan' },
-  { label: 'Mililiter', value: 'Mililiter', key: 4, name: 'satuan' },
+  { label: 'Mili Liter', value: 'Mili Liter', key: 4, name: 'satuan' },
   { label: 'Sendok Makan', value: 'Sendok Makan', key: 5, name: 'satuan' },
 ];
 
@@ -105,9 +106,9 @@ const FormRecord = ({ match, history }) => {
   const location = useLocation();
   const [dataStatus, setDataStatus] = useState("add");
 
-  let patientID = null;
-  let patientData = null;
-  let recordID = null;
+  let patientID = "";
+  let patientData = "";
+  let recordID = "";
 
   if (location.state) {
     patientID = location.state.patientID;
@@ -131,8 +132,8 @@ const FormRecord = ({ match, history }) => {
   const [selectedVisitation, setSelectedVisitation] = useState('');
   const [selectedPrognosa, setSelectedPrognosa] = useState('');
 
-  const [selectedDivision, setSelectedDivision] = useState('');
-  const [selectedHospital, setSelectedHospital] = useState('');
+  const [selectedDivision, setSelectedDivision] = useState([]);
+  const [selectedHospital, setSelectedHospital] = useState([]);
 
   const [startDateTime, setStartDateTime] = useState(new Date());
   const [endDateTime, setEndDateTime] = useState(new Date());
@@ -254,12 +255,12 @@ const FormRecord = ({ match, history }) => {
   }
 
   const [diagnosis, setDiagnosis] = useState([
-    { id: Math.random(), id_kunjungan: "", id_penyakit: "", tipe_wd: false, tipe_dd: false }
+    { id: Math.random(), id_kunjungan: recordID, id_penyakit: "", tipe_wd: false, tipe_dd: false }
   ]);
   const [selectedDiagnosis, setSelectedDiagnosis] = useState([{ label: ""}]);
 
   const addDiagnosisFields = () => {
-    let newfieldDiagnosis = { id: Math.random(), id_kunjungan: "", id_penyakit: "", tipe_wd: false, tipe_dd: false };
+    let newfieldDiagnosis = { id: Math.random(), id_kunjungan: recordID, id_penyakit: "", tipe_wd: false, tipe_dd: false };
     setDiagnosis([...diagnosis, newfieldDiagnosis]);
 
     let newfieldDropdownDiagnosis = { label: "" };
@@ -267,60 +268,69 @@ const FormRecord = ({ match, history }) => {
   };
 
   const removeDiagnosisFields = (id, index) => {
-    let dataDiagnosis1 = [...diagnosis]; let displaySelectDiagnosis1 = [...selectedDiagnosis];
-    dataDiagnosis1.splice(index, 1);
-    displaySelectDiagnosis1.splice(index, 1);
-    setDiagnosis(dataDiagnosis1);
-    setSelectedDiagnosis(displaySelectDiagnosis1);
-  };
+    let dataDiagnosis = [...diagnosis];
+    let displaySelectDiagnosis = [...selectedDiagnosis];
 
-  const handleDiagnosisChange = (index, event) => {
-    console.log('handleDiagnosisChange', event);
+    dataDiagnosis.splice(index, 1);
+    displaySelectDiagnosis.splice(index, 1);
 
-    let dataDiagnosis2 = [...diagnosis]; let displaySelectDiagnosis = [...selectedDiagnosis];
-
-    if (event.name === "id_penyakit"){
-      dataDiagnosis2[index][event.name] = event.value;
-      displaySelectDiagnosis[index]["label"] = event.label;
-
-    } else if(event.target.name === "tipe_diagnosis") {
-      let wd = false; let dd = false;
-
-      if(event.target.id === 'tipe_wd') {
-        wd = true;
-      }
-      
-      if(event.target.id === 'tipe_dd') {
-        dd = true;
-      }
-
-      dataDiagnosis2[index]['tipe_wd'] = wd;
-      dataDiagnosis2[index]['tipe_dd'] = dd;
-    }
-
-    setDiagnosis(dataDiagnosis2);
+    setDiagnosis(dataDiagnosis);
     setSelectedDiagnosis(displaySelectDiagnosis);
 
-    // console.log('diagnosis', diagnosis);
-    // console.log('selectedDiagnosis', selectedDiagnosis);
+    // console.log('remove diagnosis', dataDiagnosis);
+    // console.log('remove selectedDiagnosis', selectedDiagnosis);
+  };
+
+  let wd = false; let dd = false;
+
+  const handleDiagnosisChange = (index, event) => {
+    // console.log('handleDiagnosisChange', event);
+
+    let dataDiagnosis = [...diagnosis];
+    let displaySelectDiagnosis = [...selectedDiagnosis];
+
+    if (event.name === "id_penyakit"){
+      dataDiagnosis[index][event.name] = event.value;
+      displaySelectDiagnosis[index]["label"] = event.label;
+    } else if(event.target.name === "tipe_diagnosis") {
+      if(event.target.id === 'tipe_wd' && event.target.checked === true) {
+        wd = true;
+      } else if(event.target.id === 'tipe_wd' && event.target.checked === false) {
+        wd = false;
+      }
+      
+      if(event.target.id === 'tipe_dd' && event.target.checked === true) {
+        dd = true;
+      } else if(event.target.id === 'tipe_wd' && event.target.checked === false) {
+        dd = false;
+      }
+
+      dataDiagnosis[index]['tipe_wd'] = wd;
+      dataDiagnosis[index]['tipe_dd'] = dd;
+    }
+
+    setDiagnosis(dataDiagnosis);
+    setSelectedDiagnosis(displaySelectDiagnosis);
+
+    // console.log('handle diagnosis', diagnosis);
+    // console.log('handle selectedDiagnosis', selectedDiagnosis);
   };
 
   const [reciept, setReciept] = useState([
-    { id: Math.random(), id_kunjungan: "", id_obat: "", jumlah: 0, satuan: "", frekuensi: 0, periode: "", aturan_pakai: "", metode_konsumsi: "" }
+    { id: Math.random(), id_kunjungan: recordID, id_obat: "", jumlah: 0, satuan: "", frekuensi: 0, periode: "", aturan_pakai: "", metode_konsumsi: "" }
   ]);
-  const [selectedMedicine, setSelectedMedicine] = useState([{ label: ""}]);
-  const [selectedReciept, setSelectedReciept] = useState([{ label: ""}]);
-  const [selectedPcs, setSelectedPcs] = useState([{ label: ""}]);
-  const [selectedPeriod, setSelectedPeriod] = useState([{ label: ""}]);
-  const [selectedRules, setSelectedRules] = useState([{ label: ""}]);
-  const [selectedConsume, setSelectedConsume] = useState([{ label: ""}]);
+  const [selectedMedicine, setSelectedMedicine] = useState([]);
+  const [selectedPcs, setSelectedPcs] = useState([{ label: '' }]);
+  const [selectedPeriod, setSelectedPeriod] = useState([{ label: '' }]);
+  const [selectedRules, setSelectedRules] = useState([{ label: '' }]);
+  const [selectedConsume, setSelectedConsume] = useState([{ label: '' }]);
 
   const addRecieptFields = () => {
-    let newfieldReciept = { id: Math.random(), id_kunjungan: "", id_obat: "", jumlah: 0, satuan: "", frekuensi: 0, periode: "", aturan_pakai: "", metode_konsumsi: "" }
+    let newfieldReciept = { id: Math.random(), id_kunjungan: recordID, id_obat: "", jumlah: 0, satuan: "", frekuensi: 0, periode: "", aturan_pakai: "", metode_konsumsi: "" }
     setReciept([...reciept, newfieldReciept]);
 
-    let newfieldDropdownMedicine = { label: "" };
-    setSelectedMedicine([...selectedMedicine, newfieldDropdownMedicine]);
+    // let newfieldDropdownMedicine = { label: "" };
+    // setSelectedMedicine([...selectedMedicine, newfieldDropdownMedicine]);
 
     let newfieldDropdownPcs = { label: "" };
     setSelectedPcs([...selectedPcs, newfieldDropdownPcs]);
@@ -356,10 +366,17 @@ const FormRecord = ({ match, history }) => {
     setSelectedPeriod(displaySelectPeriod);
     setSelectedRules(displaySelectRules);
     setSelectedConsume(displaySelectConsume);
+
+    // console.log('remove reciept', reciept);
+    // console.log('remove selectedMedicine', selectedMedicine);
+    // console.log('remove selectedPcs', selectedPcs);
+    // console.log('remove selectedPeriod', selectedPeriod);
+    // console.log('remove selectedRules', selectedRules);
+    // console.log('remove selectedConsume', selectedConsume);
   };
 
   const handleRecieptChange = (index, event) => {
-    console.log('handleRecieptChange', event);
+    // console.log('handleRecieptChange', event);
 
     let dataReciept = [...reciept];
     let displaySelectMedicine = [...selectedMedicine];
@@ -369,9 +386,6 @@ const FormRecord = ({ match, history }) => {
     let displaySelectConsume = [...selectedConsume];
 
     if (event.name === "id_obat"){
-      dataReciept[index][event.name] = event.value;
-      displaySelectMedicine[index]["label"] = event.label;
-    } else if (event.name === "id_obat"){
       dataReciept[index][event.name] = event.value;
       displaySelectMedicine[index]["label"] = event.label;
     } else if (event.name === "satuan"){
@@ -397,78 +411,86 @@ const FormRecord = ({ match, history }) => {
     setSelectedRules(displaySelectRules);
     setSelectedConsume(displaySelectConsume);
 
-    console.log('reciept', reciept);
-    console.log('selectedMedicine', selectedMedicine);
-    console.log('selectedPcs', selectedPcs);
-    console.log('selectedPeriod', selectedPeriod);
-    console.log('selectedRules', selectedRules);
-    console.log('selectedConsume', selectedConsume);
+    // console.log('handle reciept', reciept);
+    // console.log('handle selectedMedicine', selectedMedicine);
+    // console.log('handle selectedPcs', selectedPcs);
+    // console.log('handle selectedPeriod', selectedPeriod);
+    // console.log('handle selectedRules', selectedRules);
+    // console.log('handle selectedConsume', selectedConsume);
   };
 
   const [checkup, setCheckup] = useState([
-    { id: Math.random(), id_kunjungan: "", id_laboratorium: "", id_pemeriksaan: "" }
+    { id: Math.random(), id_kunjungan: recordID, id_laboratorium: "", id_pemeriksaan: "" }
   ]);
-  const [selectedLab, setSelectedLab] = useState([{ label: ""}]);
-  const [selectedTreatment, setSelectedTreatment] = useState([]);
+  const [selectLab, setSelectLab] = useState([]);
+  const [selectedLab, setSelectedLab] = useState([{ label: "" }]);
+  const [selectInspect, setSelectInspect] = useState([]);
+  const [selectInspectByTreatment, setSelectInspectByTreatment] = useState([]);
+  const [selectedInspect, setSelectedInspect] = useState([{ label: "" }]);
 
   const addCheckupFields = () => {
-    let newfieldCheckup = { id: Math.random(), id_kunjungan: "", id_laboratorium: "", id_pemeriksaan: "" }
+    let newfieldCheckup = { id: Math.random(), id_kunjungan: recordID, id_laboratorium: "", id_pemeriksaan: "" }
     setCheckup([...checkup, newfieldCheckup]);
 
     let newfieldDropdownLab = { label: "" };
     setSelectedLab([...selectedLab, newfieldDropdownLab]);
 
-    let newfieldDropdownTreatment = [];
-    setSelectedTreatment([...selectedTreatment, newfieldDropdownTreatment]);
+    let newfieldDropdownInspect = { label: "" };
+    setSelectedInspect([...selectedInspect, newfieldDropdownInspect]);
   };
 
   const removeCheckupFields = (id, index) => {
     let dataCheckup = [...checkup];
     let displaySelectLab = [...selectedLab];
-    let displaySelectTreatment = [...selectedTreatment];
+    let displaySelectInspect = [...selectedInspect];
 
     dataCheckup.splice(index, 1);
     displaySelectLab.splice(index, 1);
-    displaySelectTreatment.splice(index, 1);
+    displaySelectInspect.splice(index, 1);
 
     setCheckup(dataCheckup);
     setSelectedLab(displaySelectLab);
-    setSelectedTreatment(displaySelectTreatment);
+    setSelectedInspect(displaySelectInspect);
+
+    console.log('remove checkup', checkup);
+    console.log('remove selectedLab', selectedLab);
+    console.log('remove selectedInspect', selectedInspect);
   };
 
   const handleCheckupChange = (index, event) => {
-    console.log('handleCheckupChange', event);
+    // console.log('handleCheckupChange', event);
 
     let dataCheckup = [...checkup];
     let displaySelectLab = [...selectedLab];
-    let displaySelectTreatment = [...selectedTreatment];
+    let displaySelectInspect = [...selectedInspect];
 
     if (event.name === "id_laboratorium"){
       dataCheckup[index][event.name] = event.value;
       displaySelectLab[index]["label"] = event.label;
     } else if (event.name === "id_pemeriksaan"){
       dataCheckup[index][event.name] = event.value;
-      displaySelectTreatment[index]["label"] = event.label;
+      displaySelectInspect[index]["label"] = event.label;
     } else {
       dataCheckup[index][event.target.name] = event.target.value;
     }
 
     setCheckup(dataCheckup);
     setSelectedLab(displaySelectLab);
-    setSelectedTreatment(displaySelectTreatment);
+    setSelectedInspect(displaySelectInspect);
 
-    console.log('checkup', checkup);
-    console.log('selectedLab', selectedLab);
-    console.log('selectedTreatment', selectedTreatment);
+    // console.log('handle checkup', checkup);
+    // console.log('handle selectedLab', selectedLab);
+    // console.log('handle selectedInspect', selectedInspect);
   };
 
   const [action, setAction] = useState([
-    { id: Math.random(), id_kunjungan: "", id_tindakan: "", catatan: "" }
+    { id: Math.random(), id_kunjungan: recordID, id_tindakan: "", catatan: "" }
   ]);
+  const [selectAction, setSelectAction] = useState([]);
   const [selectedAction, setSelectedAction] = useState([{ label: ""}]);
 
   const addActionFields = () => {
-    let newfieldAction = { id: Math.random(), id_kunjungan: "", id_tindakan: "", catatan: "" }
+    let newfieldAction = { id: Math.random(), id_kunjungan: recordID, id_tindakan: "", catatan: "" }
     setAction([...action, newfieldAction]);
 
     let newfieldDropdownAction = { label: "" };
@@ -484,6 +506,9 @@ const FormRecord = ({ match, history }) => {
 
     setAction(dataAction);
     setSelectedAction(displaySelectAction);
+
+    console.log('remove action', action);
+    // console.log('remove selectedAction', selectedAction);
   };
 
   const handleActionChange = (index, event) => {
@@ -502,8 +527,8 @@ const FormRecord = ({ match, history }) => {
     setAction(dataAction);
     setSelectedAction(displaySelectAction);
 
-    console.log('action', action);
-    console.log('selectedAction', selectedAction);
+    // console.log('handle action', action);
+    // console.log('handle selectedAction', selectedAction);
   };
 
   const [reference, setReference] = useState([
@@ -531,10 +556,15 @@ const FormRecord = ({ match, history }) => {
 
     setReferenceDiagnosis(dataReferenceDiagnosis);
     setSelectedReferenceDiagnosis(displaySelectReferenceDiagnosis);
+
+    // console.log('remove referenceDiagnosis', referenceDiagnosis);
+    // console.log('remove selectedReferenceDiagnosis', selectedReferenceDiagnosis);
   };
 
+  let wd_rujukan = false; let dd_rujukan = false;
+
   const handleReferenceDiagnosisChange = (index, event) => {
-    console.log('handleReferenceDiagnosisChange', event);
+    // console.log('handleReferenceDiagnosisChange', event);
 
     let dataReferenceDiagnosis = [...referenceDiagnosis];
     let displaySelectReferenceDiagnosis = [...selectedReferenceDiagnosis];
@@ -542,26 +572,56 @@ const FormRecord = ({ match, history }) => {
     if (event.name === "id_penyakit"){
       dataReferenceDiagnosis[index][event.name] = event.value;
       displaySelectReferenceDiagnosis[index]["label"] = event.label;
-    } else if(event.target.name === "tipe_diagnosis") {
-      let wd = false; let dd = false;
+    } else if(event.target.name === "tipe_diagnosis_rujukan") {
 
-      if(event.target.id === 'tipe_wd') {
-        wd = true;
+      console.log('event.target.id', event.target.id);
+      console.log('event.target.checked', event.target.checked);
+
+      if(event.target.id === 'tipe_wd_rujukan' && event.target.checked === true) {
+        wd_rujukan = true;
+      } else if(event.target.id === 'tipe_wd_rujukan' && event.target.checked === false) {
+        wd_rujukan = false;
       }
       
-      if(event.target.id === 'tipe_dd') {
-        dd = true;
+      if(event.target.id === 'tipe_dd_rujukan' && event.target.checked === true) {
+        dd_rujukan = true;
+      } else if(event.target.id === 'tipe_dd_rujukan' && event.target.checked === false) {
+        dd_rujukan = false;
       }
 
-      displaySelectReferenceDiagnosis[index]['tipe_wd'] = wd;
-      displaySelectReferenceDiagnosis[index]['tipe_dd'] = dd;
+      displaySelectReferenceDiagnosis[index]['tipe_wd'] = wd_rujukan;
+      displaySelectReferenceDiagnosis[index]['tipe_dd'] = dd_rujukan;
     }
 
     setReferenceDiagnosis(dataReferenceDiagnosis);
     setSelectedReferenceDiagnosis(displaySelectReferenceDiagnosis);
 
-    // console.log('diagnosis', diagnosis);
-    // console.log('selectedDiagnosis', selectedDiagnosis);
+    console.log('handle referenceDiagnosis', referenceDiagnosis);
+    // console.log('handle selectedReferenceDiagnosis', selectedReferenceDiagnosis);
+  };
+
+  const handleReferenceChange = (e) => {
+    console.log('handleReferenceChange', e);
+
+    if (e.name === 'id_poli') {
+      setReference(current => {
+          return { ...current, id_poli: e.value }
+      })
+
+      setSelectedDivision(e);
+    } else  if (e.name === 'id_rs') {
+      setReference(current => {
+          return { ...current, id_rs: e.value }
+      })
+
+      setSelectedDivision(e);
+    } else {
+      setReference(current => {
+          return { ...current, [e.target.name]: e.target.value }
+      })
+    }
+
+    console.log('reference', reference);
   };
 
   const getRecordByPatientId = async (e, id) => {
@@ -741,6 +801,7 @@ const FormRecord = ({ match, history }) => {
     onLoadPenyakit();
     onLoadObat();
     onLoadLab();
+    onLoadPemeriksaan();
     onLoadTindakan();
     onLoadPoliRujukan();
     onLoadRSRujukan();
@@ -803,16 +864,16 @@ const FormRecord = ({ match, history }) => {
       const response = await labAPI.get("", "?limit=1000");
       // console.log(response);
 
-      setSelectedLab([]);
+      setSelectLab([]);
 
       if (response.status === 200) {
         let data = response.data.data;
         // console.log(data);
       
         for (var i = 0; i < data.length; i++) {
-            setSelectedLab((current) => [
+            setSelectLab((current) => [
             ...current,
-            { label: data[i].nama, value: data[i].id, key: data[i].id, name: 'id_lab' },
+            { label: data[i].nama, value: data[i].id, key: data[i].id, name: 'id_laboratorium' },
           ]);
         }
       } else {
@@ -823,19 +884,86 @@ const FormRecord = ({ match, history }) => {
     }
   };
 
-  const onLoadTindakan = async () => {
+  let selectInspectByTreatmentArray = [];
+
+  const onLoadPemeriksaanByLayananId = async (id) => {
     try {
-      const response = await treatmentListAPI.get("", "?limit=1000");
+      const response = await inspectListAPI.getByTreatment("", id);
       // console.log(response);
 
-      setSelectedTreatment([]);
+      selectInspectByTreatmentArray = [];
+      // setSelectInspectByTreatment([]);
 
       if (response.status === 200) {
         let data = response.data.data;
         // console.log(data);
       
         for (var i = 0; i < data.length; i++) {
-            setSelectedTreatment((current) => [
+          setSelectInspectByTreatment((current) => [
+            ...current,
+            { label: data[i].nama, value: data[i].id, key: data[i].id, name: 'id_pemeriksaan' },
+          ]);
+
+          // selectInspectByTreatment.push({ label: data[i].nama, value: data[i].id, key: data[i].id, name: 'id_pemeriksaan' });
+          selectInspectByTreatmentArray.push({ label: data[i].nama, value: data[i].id, key: data[i].id, name: 'id_pemeriksaan' });
+        }
+      } else {
+        throw Error(`Error status: ${response.status}`);
+      }
+    } catch (e) {
+      console.log(e);
+    } finally {
+      selectInspectByTreatmentArray = [];
+      // setSelectInspectByTreatment([]);
+    }
+  };
+
+  const onLoadPemeriksaan = async () => {
+    try {
+      const response = await inspectListAPI.get("", "?limit=1000");
+      // console.log(response);
+
+      setSelectInspect([]);
+
+      if (response.status === 200) {
+        let data = response.data.data;
+        // console.log(data);
+      
+        for (var i = 0; i < data.length; i++) {
+          onLoadPemeriksaanByLayananId(data[i].id_layanan_lab);
+
+          setSelectInspect((current) => [
+            ...current,
+            { 
+              label: data[i].id_layanan_lab,
+              // options: selectInspectByTreatment
+              // options: selectInspectByTreatmentArray
+            },
+          ]);
+        }
+      } else {
+        throw Error(`Error status: ${response.status}`);
+      }
+    } catch (e) {
+      console.log(e);
+    } finally {
+      
+    }
+  };
+
+  const onLoadTindakan = async () => {
+    try {
+      const response = await treatmentListAPI.get("", "?limit=1000");
+      // console.log(response);
+
+      setSelectAction([]);
+
+      if (response.status === 200) {
+        let data = response.data.data;
+        // console.log(data);
+      
+        for (var i = 0; i < data.length; i++) {
+          setSelectAction((current) => [
             ...current,
             { label: data[i].nama, value: data[i].id, key: data[i].id, name: 'id_tindakan' },
           ]);
@@ -959,6 +1087,8 @@ const FormRecord = ({ match, history }) => {
     onLoadPenyakit();
     onLoadObat();
     onLoadLab();
+    onLoadPemeriksaan();
+    // onLoadPemeriksaanByLayananId();
     onLoadTindakan();
     onLoadPoliRujukan();
     onLoadRSRujukan();
@@ -992,7 +1122,7 @@ const FormRecord = ({ match, history }) => {
                     </Colxx>
                     <Colxx sm="6" md="6" xl="6">
                       <Label style={{ float: 'right', lineHeight: 2 }}>
-                        { vitalSigns.id_pasien ? moment(vitalSigns.created_at).format("DD MMM YYYY - HH:mm") : 'Tanggal / Waktu' }
+                        { vitalSigns.id_pasien && vitalSigns.created_at ? moment(vitalSigns.created_at).format("DD MMM YYYY - HH:mm") : 'Tanggal / Waktu' }
                       </Label><br/>
                     </Colxx>
                   </Row>
@@ -1203,95 +1333,90 @@ const FormRecord = ({ match, history }) => {
                             <Step id="step2" name="Diagnosis">
                                 <div className="wizard-basic-step">
                                     <FormGroup row>
-                                        <Colxx sm={5}>
-                                            <Label for="id_penyakit">
-                                                Penyakit
-                                                {/* <span
-                                                className="required text-danger"
-                                                aria-required="true"
-                                                >
-                                                {" "}
-                                                *
-                                                </span> */}
-                                            </Label>
-                                        </Colxx>
-                                        <Colxx sm={7}>
-                                            <Label for="tipe_diagnosis">
-                                                Tipe
-                                            </Label>
-                                        </Colxx>
-
                                         {diagnosis.map((input, index) => {
                                             return (
-                                                <React.Fragment key={index}>
-                                                    <Colxx sm={5}>
-                                                        <FormGroup>
-                                                            <Select
-                                                                components={{ Input: CustomSelectInput }}
-                                                                className="react-select"
-                                                                classNamePrefix="react-select"
-                                                                name="id_penyakit"
-                                                                // value={selectedDisease.find(item => item.value === diagnosis.id_penyakit) || ''}
-                                                                options={selectedDisease}
-                                                                onChange={(event) => handleDiagnosisChange(index, event)}
-                                                            />
-                                                        </FormGroup>
-                                                    </Colxx>
-                                                    <Colxx sm={7}>
-                                                        <FormGroup>
-                                                            <Row>
-                                                                <Colxx sm={6} md={5} xl={5}>
-                                                                    <CustomInput
-                                                                        // checked={record.tipe_wd}
-                                                                        type="checkbox"
-                                                                        name="tipe_diagnosis"
-                                                                        id="tipe_wd"
-                                                                        label="Working Diagnosis"
-                                                                        // value={diagnosis.tipe_wd}
-                                                                        onChange={(event) => handleDiagnosisChange(index, event)}
-                                                                    />
-                                                                </Colxx>
-                                                                <Colxx sm={5} md={6} xl={6}>
-                                                                    <CustomInput
-                                                                        // checked={record.tipe_dd}
-                                                                        type="checkbox"
-                                                                        name="tipe_diagnosis"
-                                                                        id="tipe_dd"
-                                                                        label="Differential Diagnosis"
-                                                                        // value={diagnosis.tipe_dd}
-                                                                        onChange={(event) => handleDiagnosisChange(index, event)}
-                                                                    />
-                                                                </Colxx>
-                                                                <Colxx sm={1} md={1} xl={1}>
-                                                                    {index > 0 && (
-                                                                        <Button
-                                                                            color="danger"
-                                                                            style={{ float: "right" }}
-                                                                            onClick={() =>
-                                                                                removeDiagnosisFields(input.id, index)
-                                                                            }
-                                                                            className="remove-diagnosis"
-                                                                        >
-                                                                            <i className="simple-icon-trash"></i>
-                                                                        </Button>
-                                                                    )}
-                                                                </Colxx>
-                                                            </Row>
-                                                        </FormGroup>
-                                                    </Colxx>
-                                                </React.Fragment>
+                                              <React.Fragment key={index}>
+                                                  <Colxx sm={5}>
+                                                      <FormGroup>
+                                                          <Label for="id_penyakit">
+                                                              Penyakit
+                                                              {/* <span
+                                                              className="required text-danger"
+                                                              aria-required="true"
+                                                              >
+                                                              {" "}
+                                                              *
+                                                              </span> */}
+                                                          </Label>
+                                                          <Select
+                                                              components={{ Input: CustomSelectInput }}
+                                                              className="react-select"
+                                                              classNamePrefix="react-select"
+                                                              name="id_penyakit"
+                                                              value={selectedDisease.find(item => item.value === diagnosis[index].id_penyakit) || ''}
+                                                              options={selectedDisease}
+                                                              onChange={(event) => handleDiagnosisChange(index, event)}
+                                                          />
+                                                      </FormGroup>
+                                                  </Colxx>
+                                                  <Colxx sm={7}>
+                                                      <FormGroup>
+                                                          <Label for="tipe_diagnosis">
+                                                              Tipe
+                                                          </Label>
+                                                          <Row>
+                                                              <Colxx sm={6} md={5} xl={5}>
+                                                                  <CustomInput
+                                                                    checked={diagnosis[index].tipe_wd}
+                                                                    type="checkbox"
+                                                                    name="tipe_diagnosis"
+                                                                    id="tipe_wd"
+                                                                    label="Working Diagnosis"
+                                                                    // value={diagnosis[index].tipe_wd}
+                                                                    onChange={(event) => handleDiagnosisChange(index, event)}
+                                                                  />
+                                                              </Colxx>
+                                                              <Colxx sm={5} md={6} xl={6}>
+                                                                  <CustomInput
+                                                                    checked={diagnosis[index].tipe_dd}
+                                                                    type="checkbox"
+                                                                    name="tipe_diagnosis"
+                                                                    id="tipe_dd"
+                                                                    label="Differential Diagnosis"
+                                                                    // value={diagnosis[index].tipe_dd}
+                                                                    onChange={(event) => handleDiagnosisChange(index, event)}
+                                                                  />
+                                                              </Colxx>
+                                                              <Colxx sm={1} md={1} xl={1}>
+                                                                  {index > 0 && (
+                                                                    <Button
+                                                                      color="danger"
+                                                                      style={{ float: "right" }}
+                                                                      onClick={() =>
+                                                                          removeDiagnosisFields(input.id, index)
+                                                                      }
+                                                                      className="remove-diagnosis"
+                                                                    >
+                                                                      <i className="simple-icon-trash"></i>
+                                                                    </Button>
+                                                                  )}
+                                                              </Colxx>
+                                                          </Row>
+                                                      </FormGroup>
+                                                  </Colxx>
+                                              </React.Fragment>
                                             )
                                         })}
 
                                         <Colxx sm={12} className="mt-2">
-                                            <Button
-                                                color="primary"
-                                                // style={{ float: "right" }}
-                                                // className="mb-2"
-                                                onClick={addDiagnosisFields}
-                                            >
-                                                Tambah Diagnosis
-                                            </Button>
+                                          <Button
+                                            color="primary"
+                                            // style={{ float: "right" }}
+                                            // className="mb-2"
+                                            onClick={addDiagnosisFields}
+                                          >
+                                            Tambah Diagnosis
+                                          </Button>
                                         </Colxx>
                                     </FormGroup>
                                 </div>
@@ -1303,44 +1428,28 @@ const FormRecord = ({ match, history }) => {
                                             <FormGroup>
                                                 {reciept.map((input, index) => {
                                                     return (
-                                                        <div key={index} className="med-record-form">
-                                                            <FormGroup row>
-                                                                <Colxx sm={10} md={10} xl={10}>
-                                                                    <FormGroup>
-                                                                        <Label for="id_obat">
-                                                                            Obat
-                                                                        </Label>
-                                                                        <Select
-                                                                            components={{ Input: CustomSelectInput }}
-                                                                            className="react-select"
-                                                                            classNamePrefix="react-select"
-                                                                            name="id_obat"
-                                                                            // value={selectedMedicine.find(item => item.value === reciept.id_obat) || ''}
-                                                                            options={selectedMedicine}
-                                                                            onChange={(event) => handleRecieptChange(index, event)}
-                                                                        />
-                                                                    </FormGroup>
-                                                                </Colxx>
-                                                                {index > 0 && (
-                                                                    <Colxx sm={1} md={1} xl={1} rowSpan="3">
-                                                                        <Label>
-                                                                            &nbsp;&nbsp;
-                                                                        </Label>
-                                                                        <Button
-                                                                            color="danger"
-                                                                            style={{ float: "right" }}
-                                                                            onClick={() =>
-                                                                                removeRecieptFields(input.id, index)
-                                                                            }
-                                                                            className="remove-reciept"
-                                                                        >
-                                                                            <i className="simple-icon-trash"></i>
-                                                                        </Button>
-                                                                    </Colxx>
-                                                                )}
-                                                            </FormGroup>
-                                                            <FormGroup row>
-                                                                <Colxx sm={5} md={5} xl={5}>
+                                                      <div key={index} className="med-record-form">
+                                                          <FormGroup row>
+                                                              <Colxx sm={10} md={10} xl={10}>
+                                                                  <FormGroup>
+                                                                      <Label for="id_obat">
+                                                                          Obat
+                                                                      </Label>
+                                                                      <Select
+                                                                          components={{ Input: CustomSelectInput }}
+                                                                          className="react-select"
+                                                                          classNamePrefix="react-select"
+                                                                          name="id_obat"
+                                                                          value={selectedMedicine.find(item => item.value === reciept[index].id_obat) || ''}
+                                                                          options={selectedMedicine}
+                                                                          onChange={(event) => handleRecieptChange(index, event)}
+                                                                      />
+                                                                  </FormGroup>
+                                                              </Colxx>
+                                                          </FormGroup>
+                                                          <FormGroup row>
+                                                              <Colxx sm={5} md={5} xl={5}>
+                                                                  <FormGroup>
                                                                     <Label for="jumlah">
                                                                         Jumlah
                                                                     </Label>
@@ -1351,7 +1460,7 @@ const FormRecord = ({ match, history }) => {
                                                                             id="jumlah"
                                                                             placeholder="Jumlah"
                                                                             className="input-reciept"
-                                                                            value={reciept.jumlah}
+                                                                            value={reciept[index].jumlah}
                                                                             pattern="[0-9]*"
                                                                             onChange={(event) => handleRecieptChange(index, event)}
                                                                         />
@@ -1361,13 +1470,15 @@ const FormRecord = ({ match, history }) => {
                                                                             className="react-select select-reciept"
                                                                             classNamePrefix="react-select"
                                                                             name="satuan"
-                                                                            value={selectedPcs.find(item => item.value === reciept.satuan) || ''}
+                                                                            value={selectedPcs.find(item => item.label === reciept[index].satuan) || ''}
                                                                             options={selectPcs}
                                                                             onChange={(event) => handleRecieptChange(index, event)}
                                                                         />
                                                                     </InputGroup>
-                                                                </Colxx>
-                                                                <Colxx sm={5} md={5} xl={5}>
+                                                                  </FormGroup>
+                                                              </Colxx>
+                                                              <Colxx sm={5} md={5} xl={5}>
+                                                                  <FormGroup>
                                                                     <Label for="frekuensi">
                                                                         Frekuensi
                                                                     </Label>
@@ -1378,7 +1489,7 @@ const FormRecord = ({ match, history }) => {
                                                                             id="frekuensi"
                                                                             placeholder="Frekuensi"
                                                                             className="input-reciept"
-                                                                            value={reciept.frekuensi}
+                                                                            value={reciept[index].frekuensi}
                                                                             pattern="[0-9]*"
                                                                             onChange={(event) => handleRecieptChange(index, event)}
                                                                         />
@@ -1388,15 +1499,17 @@ const FormRecord = ({ match, history }) => {
                                                                             className="react-select select-reciept"
                                                                             classNamePrefix="react-select"
                                                                             name="periode"
-                                                                            value={selectedPeriod.find(item => item.value === reciept.periode) || ''}
+                                                                            value={selectedPeriod.find(item => item.label === reciept[index].periode) || ''}
                                                                             options={selectPeriod}
                                                                             onChange={(event) => handleRecieptChange(index, event)}
                                                                         />
                                                                     </InputGroup>
-                                                                </Colxx>
-                                                            </FormGroup>
-                                                            <FormGroup row>
-                                                                <Colxx sm={5} md={5} xl={5}>
+                                                                  </FormGroup>
+                                                              </Colxx>
+                                                          </FormGroup>
+                                                          <FormGroup row>
+                                                              <Colxx sm={5} md={5} xl={5}>
+                                                                  <FormGroup>
                                                                     <Label for="aturan_pakai">
                                                                         Aturan Pakai
                                                                     </Label>
@@ -1405,62 +1518,378 @@ const FormRecord = ({ match, history }) => {
                                                                         className="react-select"
                                                                         classNamePrefix="react-select"
                                                                         name="aturan_pakai"
-                                                                        // value={selectedRules.find(item => item.value === reciept.aturan_pakai) || ''}
+                                                                        value={selectedRules.find(item => item.label === reciept[index].aturan_pakai) || ''}
                                                                         options={selectRules}
                                                                         onChange={(event) => handleRecieptChange(index, event)}
                                                                     />
-                                                                </Colxx>
-                                                                <Colxx sm={5} md={5} xl={5}>
-                                                                    <FormGroup>
-                                                                        <Label for="metode_konsumsi">
-                                                                            Metode Konsumsi
+                                                                  </FormGroup>
+                                                              </Colxx>
+                                                              <Colxx sm={5} md={5} xl={5}>
+                                                                  <FormGroup>
+                                                                      <Label for="metode_konsumsi">
+                                                                          Metode Konsumsi
+                                                                      </Label>
+                                                                      <Select
+                                                                          components={{ Input: CustomSelectInput }}
+                                                                          className="react-select"
+                                                                          classNamePrefix="react-select"
+                                                                          name="metode_konsumsi"
+                                                                          value={selectedConsume.find(item => item.label === reciept[index].metode_konsumsi) || ''}
+                                                                          options={selectConsume}
+                                                                          onChange={(event) => handleRecieptChange(index, event)}
+                                                                      />
+                                                                  </FormGroup>
+                                                              </Colxx>
+                                                              {index > 0 && (
+                                                                  <Colxx sm={2} md={2} xl={2}>
+                                                                      <FormGroup>
+                                                                        <Label>
+                                                                            &nbsp;&nbsp;
                                                                         </Label>
-                                                                        <Select
-                                                                            components={{ Input: CustomSelectInput }}
-                                                                            className="react-select"
-                                                                            classNamePrefix="react-select"
-                                                                            name="metode_konsumsi"
-                                                                            // value={selectedConsume.find(item => item.value === reciept.metode_konsumsi) || ''}
-                                                                            options={selectConsume}
-                                                                            onChange={(event) => handleRecieptChange(index, event)}
-                                                                        />
-                                                                    </FormGroup>
-                                                                </Colxx>
-                                                            </FormGroup>
-                                                        </div>
+                                                                        <br/>
+                                                                        <Button
+                                                                          color="danger"
+                                                                          // style={{ float: "right" }}
+                                                                          onClick={() =>
+                                                                              removeRecieptFields(input.id, index)
+                                                                          }
+                                                                          className="remove-reciept"
+                                                                        >
+                                                                          <i className="simple-icon-trash"></i>
+                                                                        </Button>
+                                                                      </FormGroup>
+                                                                  </Colxx>
+                                                              )}
+                                                          </FormGroup>
+                                                      </div>
                                                     )
                                                 })}
 
                                                 <Button
-                                                    color="primary"
-                                                    // style={{ float: "right" }}
-                                                    // className="mb-2"
-                                                    onClick={addRecieptFields}
+                                                  color="primary"
+                                                  // style={{ float: "right" }}
+                                                  // className="mb-2"
+                                                  onClick={addRecieptFields}
                                                 >
-                                                    Tambah Resep
+                                                  Tambah Resep
                                                 </Button>
                                             </FormGroup>
                                         </TabPane>
                                         <TabPane tabId="pemeriksaan">
-                                            <Row>
-                                                <Colxx xxs="12" lg="12">
-                                                    <h3>Ini Pemeriksaan</h3>
-                                                </Colxx>
-                                            </Row>
+                                            <FormGroup>
+                                              {checkup.map((input, index) => {
+                                                  return (
+                                                    <FormGroup row key={index}>
+                                                      <Colxx sm={5} md={5} xl={5}>
+                                                          <FormGroup>
+                                                              <Label for="id_laboratorium">
+                                                                  Laboratorium
+                                                              </Label>
+                                                              <Select
+                                                                  components={{ Input: CustomSelectInput }}
+                                                                  className="react-select"
+                                                                  classNamePrefix="react-select"
+                                                                  name="id_laboratorium"
+                                                                  value={selectLab.find(item => item.value === checkup[index].id_laboratorium) || ''}
+                                                                  options={selectLab}
+                                                                  onChange={(event) => handleCheckupChange(index, event)}
+                                                              />
+                                                          </FormGroup>
+                                                      </Colxx>
+                                                      <Colxx sm={5} md={5} xl={5}>
+                                                          <FormGroup>
+                                                            <Label for="id_pemeriksaan">
+                                                              Layanan
+                                                            </Label>
+                                                            <Select
+                                                                components={{ Input: CustomSelectInput }}
+                                                                className="react-select"
+                                                                classNamePrefix="react-select"
+                                                                name="id_pemeriksaan"
+                                                                value={selectInspect.find(item => item.value === checkup[index].id_pemeriksaan) || ''}
+                                                                options={selectInspect}
+                                                                onChange={(event) => handleCheckupChange(index, event)}
+                                                            />
+                                                          </FormGroup>
+                                                      </Colxx>
+                                                      {index > 0 && (
+                                                          <Colxx sm={2} md={2} xl={2}>
+                                                              <FormGroup>
+                                                                <Label>
+                                                                    &nbsp;&nbsp;
+                                                                </Label>
+                                                                <br/>
+                                                                <Button
+                                                                  color="danger"
+                                                                  // style={{ float: "right" }}
+                                                                  onClick={() =>
+                                                                      removeCheckupFields(input.id, index)
+                                                                  }
+                                                                  className="remove-reciept"
+                                                                >
+                                                                  <i className="simple-icon-trash"></i>
+                                                                </Button>
+                                                              </FormGroup>
+                                                          </Colxx>
+                                                      )}
+                                                    </FormGroup>
+                                                  )
+                                              })}
+
+                                              <Button
+                                                color="primary"
+                                                // style={{ float: "right" }}
+                                                // className="mb-2"
+                                                onClick={addCheckupFields}
+                                              >
+                                                Tambah Pemeriksaan
+                                              </Button>
+                                            </FormGroup>
                                         </TabPane>
                                         <TabPane tabId="tindakan">
-                                            <Row>
-                                                <Colxx xxs="12" lg="12">
-                                                    <h3>Ini Tindakan</h3>
-                                                </Colxx>
-                                            </Row>
+                                            <FormGroup>
+                                                {action.map((input, index) => {
+                                                    return (
+                                                      <FormGroup row key={index}>
+                                                        <Colxx sm={5} md={5} xl={5}>
+                                                            <FormGroup>
+                                                                <Label for="id_tindakan">
+                                                                    Tindakan
+                                                                </Label>
+                                                                <Select
+                                                                    components={{ Input: CustomSelectInput }}
+                                                                    className="react-select"
+                                                                    classNamePrefix="react-select"
+                                                                    name="id_tindakan"
+                                                                    value={selectAction.find(item => item.value === action[index].id_tindakan) || ''}
+                                                                    options={selectAction}
+                                                                    onChange={(event) => handleActionChange(index, event)}
+                                                                />
+                                                            </FormGroup>
+                                                        </Colxx>
+                                                        <Colxx sm={5} md={5} xl={5}>
+                                                            <FormGroup>
+                                                              <Label for="catatan">
+                                                                Catatan Tambahan
+                                                              </Label>
+                                                              <Input
+                                                                  type="textarea"
+                                                                  name="catatan"
+                                                                  id="catatan"
+                                                                  placeholder="Catatan"
+                                                                  style={{minHeight: '100px'}}
+                                                                  value={action[index].catatan}
+                                                                  onChange={(event) => handleActionChange(index, event)}
+                                                              />
+                                                            </FormGroup>
+                                                        </Colxx>
+                                                        {index > 0 && (
+                                                            <Colxx sm={2} md={2} xl={2}>
+                                                                <FormGroup>
+                                                                  <Label>
+                                                                      &nbsp;&nbsp;
+                                                                  </Label>
+                                                                  <br/>
+                                                                  <Button
+                                                                    color="danger"
+                                                                    // style={{ float: "right" }}
+                                                                    onClick={() =>
+                                                                        removeActionFields(input.id, index)
+                                                                    }
+                                                                    className="remove-reciept"
+                                                                  >
+                                                                    <i className="simple-icon-trash"></i>
+                                                                  </Button>
+                                                                </FormGroup>
+                                                            </Colxx>
+                                                        )}
+                                                      </FormGroup>
+                                                    )
+                                                })}
+
+                                                <Button
+                                                  color="primary"
+                                                  // style={{ float: "right" }}
+                                                  // className="mb-2"
+                                                  onClick={addActionFields}
+                                                >
+                                                  Tambah Tindakan
+                                                </Button>
+                                            </FormGroup>
                                         </TabPane>
                                         <TabPane tabId="rujukan">
-                                            <Row>
-                                                <Colxx xxs="12" lg="12">
-                                                    <h3>Ini Rujukan</h3>
-                                                </Colxx>
-                                            </Row>
+                                            <FormGroup>
+                                                <FormGroup row>
+                                                  {referenceDiagnosis.map((input, index) => {
+                                                      return (
+                                                        <React.Fragment key={index}>
+                                                            <Colxx sm={5}>
+                                                                <FormGroup>
+                                                                    <Label for="id_penyakit">
+                                                                        Penyakit
+                                                                        {/* <span
+                                                                        className="required text-danger"
+                                                                        aria-required="true"
+                                                                        >
+                                                                        {" "}
+                                                                        *
+                                                                        </span> */}
+                                                                    </Label>
+                                                                    <Select
+                                                                        components={{ Input: CustomSelectInput }}
+                                                                        className="react-select"
+                                                                        classNamePrefix="react-select"
+                                                                        name="id_penyakit_rujukan"
+                                                                        value={selectedDisease.find(item => item.value === referenceDiagnosis[index].id_penyakit) || ''}
+                                                                        options={selectedDisease}
+                                                                        onChange={(event) => handleReferenceDiagnosisChange(index, event)}
+                                                                    />
+                                                                </FormGroup>
+                                                            </Colxx>
+                                                            <Colxx sm={7}>
+                                                                <FormGroup>
+                                                                    <Label for="tipe_diagnosis_rujukan">
+                                                                        Tipe
+                                                                    </Label>
+                                                                    <Row>
+                                                                        <Colxx sm={6} md={5} xl={5}>
+                                                                            <CustomInput
+                                                                              checked={referenceDiagnosis[index].tipe_wd}
+                                                                              type="checkbox"
+                                                                              name="tipe_diagnosis_rujukan"
+                                                                              id="tipe_wd_rujukan"
+                                                                              label="Working Diagnosis"
+                                                                              // value={referenceDiagnosis.tipe_wd}
+                                                                              onChange={(event) => handleReferenceDiagnosisChange(index, event)}
+                                                                            />
+                                                                        </Colxx>
+                                                                        <Colxx sm={5} md={6} xl={6}>
+                                                                            <CustomInput
+                                                                              checked={referenceDiagnosis[index].tipe_dd}
+                                                                              type="checkbox"
+                                                                              name="tipe_diagnosis_rujukan"
+                                                                              id="tipe_dd_rujukan"
+                                                                              label="Differential Diagnosis"
+                                                                              // value={referenceDiagnosis.tipe_dd}
+                                                                              onChange={(event) => handleReferenceDiagnosisChange(index, event)}
+                                                                            />
+                                                                        </Colxx>
+                                                                        <Colxx sm={1} md={1} xl={1}>
+                                                                            {index > 0 && (
+                                                                              <Button
+                                                                                color="danger"
+                                                                                style={{ float: "right" }}
+                                                                                onClick={() =>
+                                                                                    removeReferenceDiagnosisFields(input.id, index)
+                                                                                }
+                                                                                className="remove-diagnosis"
+                                                                              >
+                                                                                <i className="simple-icon-trash"></i>
+                                                                              </Button>
+                                                                            )}
+                                                                        </Colxx>
+                                                                    </Row>
+                                                                </FormGroup>
+                                                            </Colxx>
+                                                        </React.Fragment>
+                                                      )
+                                                  })}
+
+                                                  <Colxx sm={12} className="mt-2">
+                                                    <FormGroup>
+                                                      <Button
+                                                        color="primary"
+                                                        // style={{ float: "right" }}
+                                                        // className="mb-2"
+                                                        onClick={addReferenceDiagnosisFields}
+                                                      >
+                                                        Tambah Diagnosis Rujukan
+                                                      </Button>
+                                                    </FormGroup>
+                                                  </Colxx>
+
+                                                  <Colxx sm={5} md={5} xl={5}>
+                                                      <FormGroup>
+                                                          <Label for="id_poli">
+                                                              Poli / Divisi<span className="required text-danger" aria-required="true"> *</span>
+                                                          </Label>
+                                                          <Select
+                                                              components={{ Input: CustomSelectInput }}
+                                                              className="react-select"
+                                                              classNamePrefix="react-select"
+                                                              name="id_poli"
+                                                              value={selectedDivision.find(item => item.value === reference.id_poli) || ''}
+                                                              options={selectedDivision}
+                                                              onChange={(event) => handleReferenceChange(index, event)}
+                                                          />
+                                                      </FormGroup>
+                                                  </Colxx>
+                                                  <Colxx sm={5} md={5} xl={5}>
+                                                      <FormGroup>
+                                                          <Label for="id_poli">
+                                                              Rumah Sakit
+                                                          </Label>
+                                                          <Select
+                                                              components={{ Input: CustomSelectInput }}
+                                                              className="react-select"
+                                                              classNamePrefix="react-select"
+                                                              name="id_poli"
+                                                              value={selectedHospital.find(item => item.value === reference.id_poli) || ''}
+                                                              options={selectedHospital}
+                                                              onChange={(event) => handleReferenceChange(index, event)}
+                                                          />
+                                                      </FormGroup>
+                                                  </Colxx>
+                                                  <Colxx sm={5} md={5} xl={5}>
+                                                      <FormGroup>
+                                                        <Label for="anamnesis">
+                                                          Anamnesis
+                                                        </Label>
+                                                        <Input
+                                                            type="textarea"
+                                                            name="anamnesis"
+                                                            id="anamnesis"
+                                                            placeholder="Anamnesis"
+                                                            style={{minHeight: '100px'}}
+                                                            value={reference.anamnesis}
+                                                            onChange={(event) => handleReferenceChange(index, event)}
+                                                        />
+                                                      </FormGroup>
+                                                  </Colxx>
+                                                  <Colxx sm={5} md={5} xl={5}>
+                                                      <FormGroup>
+                                                        <Label for="terapi">
+                                                          Terapi
+                                                        </Label>
+                                                        <Input
+                                                            type="textarea"
+                                                            name="terapi"
+                                                            id="terapi"
+                                                            placeholder="Terapi"
+                                                            style={{minHeight: '100px'}}
+                                                            value={reference.terapi}
+                                                            onChange={(event) => handleReferenceChange(index, event)}
+                                                        />
+                                                      </FormGroup>
+                                                  </Colxx>
+                                                  <Colxx sm={10} md={10} xl={10}>
+                                                      <FormGroup>
+                                                        <Label for="catatan">
+                                                          Catatan Tambahan
+                                                        </Label>
+                                                        <Input
+                                                            type="textarea"
+                                                            name="catatan"
+                                                            id="catatan"
+                                                            placeholder="Catatan"
+                                                            style={{minHeight: '100px'}}
+                                                            value={reference.catatan}
+                                                            onChange={(event) => handleReferenceChange(index, event)}
+                                                        />
+                                                      </FormGroup>
+                                                  </Colxx>
+                                              </FormGroup>
+                                            </FormGroup>
                                         </TabPane>
                                     </TabContent>
                                     
@@ -1468,9 +1897,8 @@ const FormRecord = ({ match, history }) => {
                                         <NavItem>
                                             <a
                                                 className={classnames({
-                                                active: activeTab === 'resep',
-                                                'nav-link': true,
-                                                'nav-tata-laksana': true,
+                                                  active: activeTab === 'resep',
+                                                  'nav-link': true,
                                                 })}
                                                 aria-disabled="true"
                                                 onClick={() => setActiveTab('resep')}
@@ -1481,9 +1909,8 @@ const FormRecord = ({ match, history }) => {
                                         <NavItem>
                                             <a
                                                 className={classnames({
-                                                active: activeTab === 'pemeriksaan',
-                                                'nav-link': true,
-                                                'nav-tata-laksana': true,
+                                                  active: activeTab === 'pemeriksaan',
+                                                  'nav-link': true,
                                                 })}
                                                 aria-disabled="true"
                                                 onClick={() => setActiveTab('pemeriksaan')}
@@ -1494,9 +1921,8 @@ const FormRecord = ({ match, history }) => {
                                         <NavItem>
                                             <a
                                                 className={classnames({
-                                                active: activeTab === 'tindakan',
-                                                'nav-link': true,
-                                                'nav-tata-laksana': true,
+                                                  active: activeTab === 'tindakan',
+                                                  'nav-link': true,
                                                 })}
                                                 aria-disabled="true"
                                                 onClick={() => setActiveTab('tindakan')}
@@ -1507,9 +1933,8 @@ const FormRecord = ({ match, history }) => {
                                         <NavItem>
                                             <a
                                                 className={classnames({
-                                                active: activeTab === 'rujukan',
-                                                'nav-link': true,
-                                                'nav-tata-laksana': true,
+                                                  active: activeTab === 'rujukan',
+                                                  'nav-link': true,
                                                 })}
                                                 aria-disabled="true"
                                                 onClick={() => setActiveTab('rujukan')}

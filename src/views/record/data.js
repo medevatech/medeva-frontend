@@ -1012,7 +1012,7 @@ const Data = ({ match }) => {
                     </Colxx>
                     <Colxx sm="6" md="6" xl="6">
                       <Label style={{ float: 'right', lineHeight: 2 }}>
-                        { vitalSigns.id_pasien ? moment(vitalSigns.created_at).format("DD MMM YYYY - HH:mm") : 'Tanggal / Waktu' }
+                        { vitalSigns.id_pasien && vitalSigns.created_at ? moment(vitalSigns.created_at).format("DD MMM YYYY - HH:mm") : 'Tanggal / Waktu' }
                       </Label><br/>
                     </Colxx>
                   </Row>
@@ -1082,7 +1082,7 @@ const Data = ({ match }) => {
                       <Button color="primary" style={{ float: "right" }} className="mb-4"
                         // onClick={(e) => getRecordByPatientId(e, "")}
                       >
-                        Tambah Data Rekam Medis
+                        Tambah
                       </Button>
                     </Link> :
                   '' }
@@ -1152,7 +1152,7 @@ const Data = ({ match }) => {
                               <Button color="secondary" size="xs" style={{ float: "right" }}
                                 // onClick={(e) => getRecordByPatientId(e, data.id)}
                                 >
-                                Ubah Data Rekam Medis
+                                Ubah Data
                               </Button>
                             </Link>
                         </td>

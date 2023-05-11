@@ -41,8 +41,8 @@ import loader from '../../assets/img/loading.gif';
 const userData = JSON.parse(localStorage.getItem('user_data'));
 
 const selectRole = [
-  { label: "Developer", value: "Developer", key: 0 },
-  { label: "Manager", value: "Manager", key: 1 },
+  { label: "Developer", value: "Developer", key: 0, name: 'peran' },
+  { label: "Manager", value: "Manager", key: 1, name: 'peran' },
   { label: "Admin", value: "Admin", key: 2, name: "peran" },
   { label: "Resepsionis", value: "Resepsionis", key: 3, name: "peran" },
   { label: "Perawat", value: "Perawat", key: 4, name: "peran" },
@@ -1719,7 +1719,7 @@ const Data = ({ match, history, loading, error }) => {
                         </span>
                       </Label>
                       <Row>
-                        <Colxx sm={12} md={12} xl={5}>
+                        <Colxx sm={12} md={5} xl={5}>
                           <CustomInput
                             type="radio"
                             id="laki"
@@ -1730,7 +1730,7 @@ const Data = ({ match, history, loading, error }) => {
                             onChange={onChange}
                           />
                         </Colxx>
-                        <Colxx sm={12} md={12} xl={7}>
+                        <Colxx sm={12} md={7} xl={7}>
                           <CustomInput
                             type="radio"
                             id="perempuan"

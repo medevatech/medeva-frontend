@@ -12,6 +12,7 @@ import { queue, queueTotalPage } from "store/queue";
 import { disease, diseaseTotalPage } from 'store/disease';
 import { medicine, medicineTotalPage } from 'store/medicine';
 import { lab, labTotalPage } from 'store/lab';
+import { inspectList, inspectListTotalPage } from 'store/inspect-list';
 import { treatmentList, treatmentListTotalPage } from 'store/treatment-list';
 import { divisionReference, divisionReferenceTotalPage } from 'store/division-reference';
 import { hospitalReference, hospitalReferenceTotalPage } from 'store/hospital-reference';
@@ -42,6 +43,8 @@ const reducers = combineReducers({
   medicineTotalPage,
   lab,
   labTotalPage,
+  inspectList,
+  inspectListTotalPage,
   treatmentList,
   treatmentListTotalPage,
   divisionReference,

@@ -21,6 +21,9 @@ const Login = React.lazy(() =>
 // const Login2 = React.lazy(() =>
 //   import(/* webpackChunkName: "user-login2" */ '../views/authorization/login2')
 // );
+const Profile = React.lazy(() =>
+  import(/* webpackChunkName: "user-profile" */ '../views/authorization/profile')
+);
 
 const Dashboard = React.lazy(() =>
   import(/* webpackChunkName: "views-dashboard" */ '../views/dashboard')
@@ -50,6 +53,12 @@ const MainRouter = () => {
                 // <Route
                     path="/dashboard"
                     component={Dashboard}
+                    roles={[ "isDev", "isManager", "isAdmin", "isResepsionis", "isPerawat", "isDokter", "isManajemen" ]}
+                />
+                <ProtectedRoute
+                // <Route
+                    path="/profile"
+                    component={Profile}
                     roles={[ "isDev", "isManager", "isAdmin", "isResepsionis", "isPerawat", "isDokter", "isManajemen" ]}
                 />
                 <ProtectedRoute
