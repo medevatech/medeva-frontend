@@ -416,7 +416,7 @@ const Data = ({ match, history, loading, error }) => {
       //     })
       //   }
       } else if (e.target.name && e.target.name === 'password') {
-        setEmployeePassword(current => {
+        setEmployee(current => {
             return { ...current, password: e.target.value }
         })
       } else if (e.target.name && e.target.name !== 'jenis_kelamin') {
@@ -480,7 +480,6 @@ const Data = ({ match, history, loading, error }) => {
 
     setEmployeeID('');
     setEmployeeUsername('');
-    setEmployeePassword({ password: '' });
 
     setEmployee({
       username: '',
@@ -666,32 +665,7 @@ const Data = ({ match, history, loading, error }) => {
     // console.log(dataStatus);
   };
 
-  const [employeePassword, setEmployeePassword] = useState({
-    // id: employeeID,
-    password: ''
-  });
-
   const [employeeUsername, setEmployeeUsername] = useState('');
-
-  const changePasswordById = async (e, id) => {
-    // e.preventDefault();
-    // resetForm(e);
-
-    try {
-      const res = await employeeAPI.get("", `/${id}`);
-      let data = res.data.data[0];
-
-      // console.log(data);
-
-      setEmployeeID(data.id);
-      setEmployeeUsername(data.username);
-      setEmployeePassword({ password: '' });
-    } catch (e) {
-      console.log(e);
-    }
-
-    // console.log(dataStatus);
-  };
 
   useEffect(() => {
     getEmployeeById(userData.id);
@@ -773,7 +747,7 @@ const Data = ({ match, history, loading, error }) => {
         // console.log('selectedRole onUpdate', selectedRole);
       }
   // }, [ editAddress, selectedRole ]);
-  }, [ editAddress ]);
+  }, [ ]);
 
   return (
     <AppLayout>

@@ -428,10 +428,7 @@ const FormRecord = ({ match, history }) => {
   ]);
   const [selectLab, setSelectLab] = useState([]);
   const [selectedLab, setSelectedLab] = useState([{ label: "" }]);
-  const [selectInspect, setSelectInspect] = useState([]);
-  const [selectInspectByTreatment, setSelectInspectByTreatment] = useState([]);
   const [selectLabTreatment, setSelectLabTreatment] = useState([]);
-  const [selectInspectByLabTreatment, setSelectInspectByLabTreatment] = useState([]);
   const [selectedInspect, setSelectedInspect] = useState([{ label: "" }]);
 
   const addCheckupFields = () => {
@@ -443,24 +440,38 @@ const FormRecord = ({ match, history }) => {
 
     let newfieldDropdownInspect = { label: "" };
     setSelectedInspect([...selectedInspect, newfieldDropdownInspect]);
+
+    let newfieldDropdownLayananLab = [];
+    setSelectLabTreatment([...selectLabTreatment, newfieldDropdownLayananLab]);
+
+    let newfieldDropdownLayananLabArray = [];
+    selectLabTreatmentArray.push(newfieldDropdownLayananLabArray);
   };
 
   const removeCheckupFields = (id, index) => {
     let dataCheckup = [...checkup];
     let displaySelectLab = [...selectedLab];
     let displaySelectInspect = [...selectedInspect];
+    let displaySelectTreatment = [...selectLabTreatment];
+    let displaySelectTreatmentArray = selectLabTreatmentArray;
 
     dataCheckup.splice(index, 1);
     displaySelectLab.splice(index, 1);
     displaySelectInspect.splice(index, 1);
+    displaySelectTreatment.splice(index, 1);
+    displaySelectTreatmentArray.splice(index, 1);
 
     setCheckup(dataCheckup);
     setSelectedLab(displaySelectLab);
     setSelectedInspect(displaySelectInspect);
+    setSelectLabTreatment(displaySelectTreatment);
+    selectLabTreatmentArray = displaySelectTreatmentArray;
 
-    console.log('remove checkup', checkup);
-    console.log('remove selectedLab', selectedLab);
-    console.log('remove selectedInspect', selectedInspect);
+    // console.log('remove checkup', checkup);
+    // console.log('remove selectedLab', selectedLab);
+    // console.log('remove selectedInspect', selectedInspect);
+    // console.log('remove selectLabTreatment', selectLabTreatment);
+    // console.log('remove selectLabTreatmentArray', selectLabTreatmentArray);
   };
 
   const handleCheckupChange = (index, event) => {
@@ -469,12 +480,13 @@ const FormRecord = ({ match, history }) => {
     let dataCheckup = [...checkup];
     let displaySelectLab = [...selectedLab];
     let displaySelectInspect = [...selectedInspect];
+    // let displaySelectTreatment = [...selectLabTreatment];
+    let displaySelectTreatmentArray = selectLabTreatmentArray;
 
     if (event.name === "id_laboratorium"){
+      changeLayananLab(index, event.value);
       dataCheckup[index][event.name] = event.value;
       displaySelectLab[index]["label"] = event.label;
-
-      changeLayananLab(event.value);
     } else if (event.name === "id_pemeriksaan"){
       dataCheckup[index][event.name] = event.value;
       displaySelectInspect[index]["label"] = event.label;
@@ -485,10 +497,14 @@ const FormRecord = ({ match, history }) => {
     setCheckup(dataCheckup);
     setSelectedLab(displaySelectLab);
     setSelectedInspect(displaySelectInspect);
+    // setSelectLabTreatment(displaySelectTreatment);
+    selectLabTreatmentArray = displaySelectTreatmentArray;
 
     // console.log('handle checkup', checkup);
     // console.log('handle selectedLab', selectedLab);
     // console.log('handle selectedInspect', selectedInspect);
+    // console.log('handle selectLabTreatment', selectLabTreatment);
+    // console.log('handle selectLabTreatmentArray', selectLabTreatmentArray);
   };
 
   const [action, setAction] = useState([
@@ -809,7 +825,6 @@ const FormRecord = ({ match, history }) => {
     onLoadPenyakit();
     onLoadObat();
     onLoadLab();
-    // onLoadPemeriksaan();
     onLoadTindakan();
     onLoadPoliRujukan();
     onLoadRSRujukan();
@@ -892,74 +907,7 @@ const FormRecord = ({ match, history }) => {
     }
   };
 
-  // let selectInspectByTreatmentArray = [];
-
-  // const onLoadPemeriksaanByLayananId = async (id) => {
-  //   try {
-  //     const response = await inspectListAPI.getByTreatment("", id);
-  //     // console.log(response);
-
-  //     selectInspectByTreatmentArray = [];
-  //     // setSelectInspectByTreatment([]);
-
-  //     if (response.status === 200) {
-  //       let data = response.data.data;
-  //       // console.log(data);
-      
-  //       for (var i = 0; i < data.length; i++) {
-  //         setSelectInspectByTreatment((current) => [
-  //           ...current,
-  //           { label: data[i].nama, value: data[i].id, key: data[i].id, name: 'id_pemeriksaan' },
-  //         ]);
-
-  //         // selectInspectByTreatment.push({ label: data[i].nama, value: data[i].id, key: data[i].id, name: 'id_pemeriksaan' });
-  //         selectInspectByTreatmentArray.push({ label: data[i].nama, value: data[i].id, key: data[i].id, name: 'id_pemeriksaan' });
-  //       }
-  //     } else {
-  //       throw Error(`Error status: ${response.status}`);
-  //     }
-  //   } catch (e) {
-  //     console.log(e);
-  //   } finally {
-  //     selectInspectByTreatmentArray = [];
-  //     // setSelectInspectByTreatment([]);
-  //   }
-  // };
-
-  // const onLoadPemeriksaan = async () => {
-  //   try {
-  //     const response = await inspectListAPI.get("", "?limit=1000");
-  //     // console.log(response);
-
-  //     setSelectInspect([]);
-
-  //     if (response.status === 200) {
-  //       let data = response.data.data;
-  //       // console.log(data);
-      
-  //       for (var i = 0; i < data.length; i++) {
-  //         // onLoadPemeriksaanByLayananId(data[i].id_layanan_lab);
-
-  //         setSelectInspect((current) => [
-  //           ...current,
-  //           { 
-  //             label: data[i].id_layanan_lab,
-  //             // options: selectInspectByTreatment
-  //             // options: selectInspectByTreatmentArray
-  //           },
-  //         ]);
-  //       }
-  //     } else {
-  //       throw Error(`Error status: ${response.status}`);
-  //     }
-  //   } catch (e) {
-  //     console.log(e);
-  //   } finally {
-      
-  //   }
-  // };
-
-  const onLoadPemeriksaanByLayananLab = async (id_lab, kategori) => {
+  const onLoadPemeriksaanByLayananLab = async (index, id_lab, kategori) => {
     // selectInspectByLabTreatmentArray = [];
 
     try {
@@ -981,17 +929,45 @@ const FormRecord = ({ match, history }) => {
     } catch (e) {
       console.log(e);
     } finally {
-      selectLabTreatmentArray.push({ 
+      // var newLoopTreatmentByLab = { label: kategori, options: selectInspectByLabTreatmentArray };
+      
+      // setSelectLabTreatment((current) => [
+      //   ...current, { label: kategori, options: selectInspectByLabTreatmentArray }
+      // ]);
+
+      // setSelectLabTreatment(current => [
+      //     ...current,
+      //     {
+      //       label: kategori,
+      //       options: selectInspectByLabTreatmentArray
+      //     }
+      // ])
+
+      // setSelectLabTreatment({ label: kategori, options: selectInspectByLabTreatmentArray });
+
+      if(selectLabTreatment[index] !== undefined) {
+        selectLabTreatment[index].push({ 
+          label: kategori,
+          options: selectInspectByLabTreatmentArray
+        });
+      }
+
+      selectLabTreatmentArray[index].push({ 
         label: kategori,
         options: selectInspectByLabTreatmentArray
       });
 
       selectInspectByLabTreatmentArray = [];
+
+      // console.log('selectLabTreatment', selectLabTreatment);
+      // console.log('selectLabTreatmentArray', selectLabTreatmentArray);
     }
   };
 
-  const changeLayananLab = async (id_lab) => {
-    selectLabTreatmentArray = [];
+  const changeLayananLab = async (index, id_lab) => {
+    // setSelectLabTreatment([]);
+    selectLabTreatment[index] = [];
+    selectLabTreatmentArray[index] = [];
     selectInspectByLabTreatmentArray = [];
 
     try {
@@ -1003,7 +979,7 @@ const FormRecord = ({ match, history }) => {
         // console.log(data);
       
         for (var i = 0; i < data.length; i++) {
-          onLoadPemeriksaanByLayananLab(id_lab, data[i].kategori);
+          onLoadPemeriksaanByLayananLab(index, id_lab, data[i].kategori);
 
           // selectLabTreatmentArray.push({ 
           //   label: data[i].kategori,
@@ -1022,6 +998,23 @@ const FormRecord = ({ match, history }) => {
       // console.log('selectLabTreatmentArray', selectLabTreatmentArray);
     }
   };
+
+  const valueOfSelectTreatment = (index, event = null) => {
+    // if(selectLabTreatmentArray[index] !== undefined){
+    //   selectLabTreatmentArray[index].map((data, i) => 
+    //     data.options.find(item => item.value === checkup[index].id_pemeriksaan) || ''
+    //   )
+    // }
+
+    if(selectLabTreatment[index] !== undefined){
+      // changeLayananLab(index, event);
+      // changeLayananLab(index, checkup[index].id_laboratorium);
+
+      selectLabTreatment[index].map((data, i) => 
+        data.options.find(item => item.value === checkup[index].id_pemeriksaan) || ''
+      )
+    }
+  }
 
   const onLoadTindakan = async () => {
     try {
@@ -1159,7 +1152,6 @@ const FormRecord = ({ match, history }) => {
     onLoadPenyakit();
     onLoadObat();
     onLoadLab();
-    // onLoadPemeriksaan();
     onLoadTindakan();
     onLoadPoliRujukan();
     onLoadRSRujukan();
@@ -1677,10 +1669,17 @@ const FormRecord = ({ match, history }) => {
                                                                 className="react-select"
                                                                 classNamePrefix="react-select"
                                                                 name="id_pemeriksaan"
-                                                                // value={selectLabTreatment.find(item => item.value === checkup[index].id_pemeriksaan) || ''}
-                                                                // options={selectLabTreatment}
-                                                                value={selectLabTreatmentArray.find(item => item.value === checkup[index].id_pemeriksaan) || ''}
-                                                                options={selectLabTreatmentArray}
+                                                                // value={selectLabTreatment[index].find(item => item.value === checkup[index].id_pemeriksaan) || ''}
+                                                                // options={selectLabTreatmentArray[index]}
+                                                                // value={selectLabTreatmentArray.find(item => item.value === checkup[index].id_pemeriksaan) || ''}
+                                                                // value={valueOfSelectTreatment(index)}
+                                                                value={
+                                                                  selectLabTreatment[index] !== undefined &&
+                                                                  selectLabTreatment[index].map((data, i) => 
+                                                                    data.options.find(item => item.value === checkup[index].id_pemeriksaan) || ''
+                                                                  )
+                                                                }
+                                                                options={selectLabTreatment[index]}
                                                                 onChange={(event) => handleCheckupChange(index, event)}
                                                             />
                                                           </FormGroup>
@@ -1695,7 +1694,7 @@ const FormRecord = ({ match, history }) => {
                                                                 <Button
                                                                   color="danger"
                                                                   // style={{ float: "right" }}
-                                                                  onClick={() =>
+                                                                  onClick={(event) =>
                                                                       removeCheckupFields(input.id, index)
                                                                   }
                                                                   className="remove-reciept"
