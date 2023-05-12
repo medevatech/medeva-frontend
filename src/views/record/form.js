@@ -639,7 +639,7 @@ const FormRecord = ({ match, history }) => {
   };
 
   const handleReferenceChange = (e) => {
-    console.log('handleReferenceChange', e);
+    // console.log('handleReferenceChange', e);
 
     if (e.name === 'id_poli') {
       setReference(current => {
@@ -659,7 +659,7 @@ const FormRecord = ({ match, history }) => {
       })
     }
 
-    console.log('reference', reference);
+    // console.log('reference', reference);
   };
 
   const getRecordByPatientId = async (e, id) => {
@@ -2417,9 +2417,9 @@ const FormRecord = ({ match, history }) => {
                                                               className="react-select"
                                                               classNamePrefix="react-select"
                                                               name="id_poli"
-                                                              value={selectedDivision.find(item => item.value === reference.id_poli) || ''}
+                                                              // value={selectedDivision.find(item => item.value === reference.id_poli) || ''}
                                                               options={selectedDivision}
-                                                              onChange={(event) => handleReferenceChange(index, event)}
+                                                              onChange={(event) => handleReferenceChange(event)}
                                                           />
                                                       </FormGroup>
                                                   </Colxx>
@@ -2433,9 +2433,9 @@ const FormRecord = ({ match, history }) => {
                                                               className="react-select"
                                                               classNamePrefix="react-select"
                                                               name="id_poli"
-                                                              value={selectedHospital.find(item => item.value === reference.id_poli) || ''}
+                                                              // value={selectedHospital.find(item => item.value === reference.id_poli) || ''}
                                                               options={selectedHospital}
-                                                              onChange={(event) => handleReferenceChange(index, event)}
+                                                              onChange={(event) => handleReferenceChange(event)}
                                                           />
                                                       </FormGroup>
                                                   </Colxx>
@@ -2451,7 +2451,7 @@ const FormRecord = ({ match, history }) => {
                                                             placeholder="Anamnesis"
                                                             style={{minHeight: '100px'}}
                                                             value={reference.anamnesis}
-                                                            onChange={(event) => handleReferenceChange(index, event)}
+                                                            onChange={(event) => handleReferenceChange(event)}
                                                         />
                                                       </FormGroup>
                                                   </Colxx>
@@ -2467,7 +2467,7 @@ const FormRecord = ({ match, history }) => {
                                                             placeholder="Terapi"
                                                             style={{minHeight: '100px'}}
                                                             value={reference.terapi}
-                                                            onChange={(event) => handleReferenceChange(index, event)}
+                                                            onChange={(event) => handleReferenceChange(event)}
                                                         />
                                                       </FormGroup>
                                                   </Colxx>
@@ -2483,7 +2483,7 @@ const FormRecord = ({ match, history }) => {
                                                             placeholder="Catatan"
                                                             style={{minHeight: '100px'}}
                                                             value={reference.catatan}
-                                                            onChange={(event) => handleReferenceChange(index, event)}
+                                                            onChange={(event) => handleReferenceChange(event)}
                                                         />
                                                       </FormGroup>
                                                   </Colxx>
