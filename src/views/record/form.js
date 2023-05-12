@@ -38,12 +38,18 @@ import { Wizard, Steps, Step } from 'react-albus';
 import TopNavigation from 'components/wizard/TopNavigation';
 
 import vitalSignsAPI from "api/vital-signs";
+import diagnoseAPI from "api/diagnose";
 import diseaseAPI from "api/disease";
+import recieptAPI from "api/reciept"
 import medicineAPI from "api/medicine";
+import inspectSupportAPI from 'api/inspect-support';
 import labAPI from "api/lab";
 import inspectListAPI from "api/inspect";
+import treatmentAPI from "api/treatment"
 import treatmentListAPI from "api/treatment-list";
 import labTreatmentAPI from "api/lab-treatment";
+import referenceAPI from "api/reference"
+import diagnoseReferenceAPI from "api/diagnose-reference"
 import divisionReferenceAPI from "api/division-reference";
 import hospitalReferenceAPI from "api/hospital-reference";
 import recordAPI from "api/record";
@@ -108,7 +114,8 @@ let selectLabTreatmentArray = [];
 const FormRecord = ({ match, history }) => {
   const dispatch = useDispatch();
   const location = useLocation();
-  const [dataStatus, setDataStatus] = useState("add");
+  const [dataStatusRecord, setDataStatus] = useState("add");
+  const [dataStatusReference, setDataStatusReference] = useState("add");
 
   let patientID = "";
   let patientData = "";
@@ -120,6 +127,13 @@ const FormRecord = ({ match, history }) => {
 
     if (location.state.recordID) {
       recordID = location.state.recordID;
+
+      // getDiagnosisByRecordId(recordID);
+      // getRecieptByRecordId(recordID);
+      // getCheckupByRecordId(recordID);
+      // getTreatmentByRecordId(recordID);
+      // getReferenceByRecordId(recordID);
+      // getReferenceDiagnosisByRecordId(recordID);
     }
   } else {
     Swal.fire({
@@ -259,12 +273,12 @@ const FormRecord = ({ match, history }) => {
   }
 
   const [diagnosis, setDiagnosis] = useState([
-    { id: Math.random(), id_kunjungan: recordID, id_penyakit: "", tipe_wd: false, tipe_dd: false }
+    { id: '', id_kunjungan: recordID, id_penyakit: "", tipe_wd: false, tipe_dd: false }
   ]);
   const [selectedDiagnosis, setSelectedDiagnosis] = useState([{ label: ""}]);
 
   const addDiagnosisFields = () => {
-    let newfieldDiagnosis = { id: Math.random(), id_kunjungan: recordID, id_penyakit: "", tipe_wd: false, tipe_dd: false };
+    let newfieldDiagnosis = { id: '', id_kunjungan: recordID, id_penyakit: "", tipe_wd: false, tipe_dd: false };
     setDiagnosis([...diagnosis, newfieldDiagnosis]);
 
     let newfieldDropdownDiagnosis = { label: "" };
@@ -321,7 +335,7 @@ const FormRecord = ({ match, history }) => {
   };
 
   const [reciept, setReciept] = useState([
-    { id: Math.random(), id_kunjungan: recordID, id_obat: "", jumlah: 0, satuan: "", frekuensi: 0, periode: "", aturan_pakai: "", metode_konsumsi: "" }
+    { id: '', id_kunjungan: recordID, id_obat: "", jumlah: 0, satuan: "", frekuensi: 0, periode: "", aturan_pakai: "", metode_konsumsi: "" }
   ]);
   const [selectedMedicine, setSelectedMedicine] = useState([]);
   const [selectedPcs, setSelectedPcs] = useState([{ label: '' }]);
@@ -330,7 +344,7 @@ const FormRecord = ({ match, history }) => {
   const [selectedConsume, setSelectedConsume] = useState([{ label: '' }]);
 
   const addRecieptFields = () => {
-    let newfieldReciept = { id: Math.random(), id_kunjungan: recordID, id_obat: "", jumlah: 0, satuan: "", frekuensi: 0, periode: "", aturan_pakai: "", metode_konsumsi: "" }
+    let newfieldReciept = { id: '', id_kunjungan: recordID, id_obat: "", jumlah: 0, satuan: "", frekuensi: 0, periode: "", aturan_pakai: "", metode_konsumsi: "" }
     setReciept([...reciept, newfieldReciept]);
 
     // let newfieldDropdownMedicine = { label: "" };
@@ -424,7 +438,7 @@ const FormRecord = ({ match, history }) => {
   };
 
   const [checkup, setCheckup] = useState([
-    { id: Math.random(), id_kunjungan: recordID, id_laboratorium: "", id_pemeriksaan: "" }
+    { id: '', id_kunjungan: recordID, id_laboratorium: "", id_pemeriksaan: "" }
   ]);
   const [selectLab, setSelectLab] = useState([]);
   const [selectedLab, setSelectedLab] = useState([{ label: "" }]);
@@ -432,7 +446,7 @@ const FormRecord = ({ match, history }) => {
   const [selectedInspect, setSelectedInspect] = useState([{ label: "" }]);
 
   const addCheckupFields = () => {
-    let newfieldCheckup = { id: Math.random(), id_kunjungan: recordID, id_laboratorium: "", id_pemeriksaan: "" }
+    let newfieldCheckup = { id: '', id_kunjungan: recordID, id_laboratorium: "", id_pemeriksaan: "" }
     setCheckup([...checkup, newfieldCheckup]);
 
     let newfieldDropdownLab = { label: "" };
@@ -508,13 +522,13 @@ const FormRecord = ({ match, history }) => {
   };
 
   const [action, setAction] = useState([
-    { id: Math.random(), id_kunjungan: recordID, id_tindakan: "", catatan: "" }
+    { id: '', id_kunjungan: recordID, id_tindakan: "", catatan: "" }
   ]);
   const [selectAction, setSelectAction] = useState([]);
   const [selectedAction, setSelectedAction] = useState([{ label: ""}]);
 
   const addActionFields = () => {
-    let newfieldAction = { id: Math.random(), id_kunjungan: recordID, id_tindakan: "", catatan: "" }
+    let newfieldAction = { id: '', id_kunjungan: recordID, id_tindakan: "", catatan: "" }
     setAction([...action, newfieldAction]);
 
     let newfieldDropdownAction = { label: "" };
@@ -531,12 +545,12 @@ const FormRecord = ({ match, history }) => {
     setAction(dataAction);
     setSelectedAction(displaySelectAction);
 
-    console.log('remove action', action);
+    // console.log('remove action', action);
     // console.log('remove selectedAction', selectedAction);
   };
 
   const handleActionChange = (index, event) => {
-    console.log('handleActionChange', event);
+    // console.log('handleActionChange', event);
 
     let dataAction = [...action];
     let displaySelectAction = [...selectedAction];
@@ -556,15 +570,15 @@ const FormRecord = ({ match, history }) => {
   };
 
   const [reference, setReference] = useState([
-    { id: Math.random(), id_rujukan: "", id_poli: "", id_rs: "", anamnesis: "", terapi: "", catatan: "" }
+    { id: '', id_rujukan: "", id_poli: "", id_rs: "", anamnesis: "", terapi: "", catatan: "" }
   ]);
   const [referenceDiagnosis, setReferenceDiagnosis] = useState([
-    { id: Math.random(), id_rujukan: "", id_penyakit: "", tipe_wd: false, tipe_dd: false }
+    { id: '', id_rujukan: "", id_penyakit: "", tipe_wd: false, tipe_dd: false }
   ]);
   const [selectedReferenceDiagnosis, setSelectedReferenceDiagnosis] = useState([{ label: ""}]);
 
   const addReferenceDiagnosisFields = () => {
-    let newfieldReferenceDiagnosis = { id: Math.random(), id_rujukan: "", id_penyakit: "", tipe_wd: false, tipe_dd: false };
+    let newfieldReferenceDiagnosis = { id: '', id_rujukan: "", id_penyakit: "", tipe_wd: false, tipe_dd: false };
     setReferenceDiagnosis([...referenceDiagnosis, newfieldReferenceDiagnosis]);
 
     let newfieldDropdownReferenceDiagnosis = { label: "" };
@@ -707,14 +721,14 @@ const FormRecord = ({ match, history }) => {
       });
     }
 
-    // console.log(dataStatus);
+    // console.log(dataStatusRecord);
   };
 
   const onRecordSubmit = async (e) => {
     e.preventDefault();
 
     // console.log(record);
-    if(dataStatus === 'add') {
+    if(dataStatusRecord === 'add') {
       try {
         const response = await recordAPI.add(record);
         // console.log(response);
@@ -730,8 +744,9 @@ const FormRecord = ({ match, history }) => {
             confirmButtonColor: "#008ecc",
           });
 
-          resetForm(e);
-          history.push("/record");
+          // resetForm(e);
+          // history.push("/record");
+
         } else {
           Swal.fire({
             title: "Gagal!",
@@ -754,7 +769,7 @@ const FormRecord = ({ match, history }) => {
 
         console.log(e);
       }
-    } else if(dataStatus === 'update') {
+    } else if(dataStatusRecord === 'update' && recordID) {
       try {
         const response = await recordAPI.update(record, recordID);
         // console.log(response);
@@ -770,8 +785,8 @@ const FormRecord = ({ match, history }) => {
             confirmButtonColor: "#008ecc",
           });
 
-          resetForm(e);
-          history.push("/record");
+          // resetForm(e);
+          // history.push("/record");
         } else {
           Swal.fire({
             title: "Gagal!",
@@ -793,9 +808,521 @@ const FormRecord = ({ match, history }) => {
         });
 
         console.log(e);
+      } finally {
+        // onDiagnosisSubmit(e);
+        // onRecieptSubmit(e);
+        // onCheckupSubmit(e);
+	      // onActionSubmit(e);
+        // onReferenceSubmit(e);
+        // onDiagnosisReferenceSubmit(e);
       }
     } else {
-      console.log('dataStatus undefined')
+      console.log('dataStatusRecord undefined')
+    }
+  };
+
+  const onDiagnosisSubmit = async (e) => {
+    e.preventDefault();
+
+    // console.log(diagnosis);
+    for (var i = 0; i < diagnosis.length; i++) {
+      if(diagnosis[i].id === '') {
+        try {
+          const response = await diagnoseAPI.add(diagnosis[i]);
+          // console.log(response);
+
+          if (response.status == 200) {
+            let data = await response.data.data;
+            // console.log(data);
+
+            Swal.fire({
+              title: "Sukses!",
+              html: `Tambah diagnosis sukses`,
+              icon: "success",
+              confirmButtonColor: "#008ecc",
+            });
+            
+          } else {
+            Swal.fire({
+              title: "Gagal!",
+              html: `Tambah diagnosis gagal: ${response.message}`,
+              icon: "error",
+              confirmButtonColor: "#008ecc",
+              confirmButtonText: "Coba lagi",
+            });
+
+            throw Error(`Error status: ${response.status}`);
+          }
+        } catch (e) {
+          Swal.fire({
+            title: "Gagal!",
+            html: e,
+            icon: "error",
+            confirmButtonColor: "#008ecc",
+            confirmButtonText: "Coba lagi",
+          });
+          console.log(e);
+        }
+      } else {
+        try {
+          const response = await recieptAPI.update(diagnosis[i], diagnosis[i].id);
+          // console.log(response);
+
+          if (response.status == 200) {
+            let data = await response.data.data;
+            // console.log(data);
+
+            Swal.fire({
+              title: "Sukses!",
+              html: `Ubah diagnosis sukses`,
+              icon: "success",
+              confirmButtonColor: "#008ecc",
+            });
+            
+          } else {
+            Swal.fire({
+              title: "Gagal!",
+              html: `Ubah diagnosis gagal: ${response.message}`,
+              icon: "error",
+              confirmButtonColor: "#008ecc",
+              confirmButtonText: "Coba lagi",
+            });
+
+            throw Error(`Error status: ${response.status}`);
+          }
+        } catch (e) {
+          Swal.fire({
+            title: "Gagal!",
+            html: e,
+            icon: "error",
+            confirmButtonColor: "#008ecc",
+            confirmButtonText: "Coba lagi",
+          });
+
+          console.log(e);
+        }
+      }
+    }
+  };
+
+  const onRecieptSubmit = async (e) => {
+    e.preventDefault();
+
+    // console.log(reciept);
+    for (var i = 0; i < reciept.length; i++) {
+      if(reciept[i].id === '') {
+        try {
+          const response = await recieptAPI.add(reciept[i]);
+          // console.log(response);
+
+          if (response.status == 200) {
+            let data = await response.data.data;
+            // console.log(data);
+
+            Swal.fire({
+              title: "Sukses!",
+              html: `Tambah resep sukses`,
+              icon: "success",
+              confirmButtonColor: "#008ecc",
+            });
+            
+          } else {
+            Swal.fire({
+              title: "Gagal!",
+              html: `Tambah resep gagal: ${response.message}`,
+              icon: "error",
+              confirmButtonColor: "#008ecc",
+              confirmButtonText: "Coba lagi",
+            });
+
+            throw Error(`Error status: ${response.status}`);
+          }
+        } catch (e) {
+          Swal.fire({
+            title: "Gagal!",
+            html: e,
+            icon: "error",
+            confirmButtonColor: "#008ecc",
+            confirmButtonText: "Coba lagi",
+          });
+          console.log(e);
+        }
+      } else {
+        try {
+          const response = await recieptAPI.update(reciept[i], reciept[i].id);
+          // console.log(response);
+
+          if (response.status == 200) {
+            let data = await response.data.data;
+            // console.log(data);
+
+            Swal.fire({
+              title: "Sukses!",
+              html: `Ubah resep sukses`,
+              icon: "success",
+              confirmButtonColor: "#008ecc",
+            });
+            
+          } else {
+            Swal.fire({
+              title: "Gagal!",
+              html: `Ubah resep gagal: ${response.message}`,
+              icon: "error",
+              confirmButtonColor: "#008ecc",
+              confirmButtonText: "Coba lagi",
+            });
+
+            throw Error(`Error status: ${response.status}`);
+          }
+        } catch (e) {
+          Swal.fire({
+            title: "Gagal!",
+            html: e,
+            icon: "error",
+            confirmButtonColor: "#008ecc",
+            confirmButtonText: "Coba lagi",
+          });
+
+          console.log(e);
+        }
+      }
+    }
+  };
+
+  const onCheckupSubmit = async (e) => {
+    e.preventDefault();
+
+    // console.log(checkup);
+    for (var i = 0; i < checkup.length; i++) {
+      if(checkup[i].id === '') {
+        try {
+          const response = await inspectSupportAPI.add(checkup[i]);
+          // console.log(response);
+
+          if (response.status == 200) {
+            let data = await response.data.data;
+            // console.log(data);
+
+            Swal.fire({
+              title: "Sukses!",
+              html: `Tambah pemeriksaan sukses`,
+              icon: "success",
+              confirmButtonColor: "#008ecc",
+            });
+            
+          } else {
+            Swal.fire({
+              title: "Gagal!",
+              html: `Tambah pemeriksaan gagal: ${response.message}`,
+              icon: "error",
+              confirmButtonColor: "#008ecc",
+              confirmButtonText: "Coba lagi",
+            });
+
+            throw Error(`Error status: ${response.status}`);
+          }
+        } catch (e) {
+          Swal.fire({
+            title: "Gagal!",
+            html: e,
+            icon: "error",
+            confirmButtonColor: "#008ecc",
+            confirmButtonText: "Coba lagi",
+          });
+          console.log(e);
+        }
+      } else {
+        try {
+          const response = await inspectSupportAPI.update(checkup[i], checkup[i].id);
+          // console.log(response);
+
+          if (response.status == 200) {
+            let data = await response.data.data;
+            // console.log(data);
+
+            Swal.fire({
+              title: "Sukses!",
+              html: `Ubah pemeriksaan sukses`,
+              icon: "success",
+              confirmButtonColor: "#008ecc",
+            });
+            
+          } else {
+            Swal.fire({
+              title: "Gagal!",
+              html: `Ubah pemeriksaan gagal: ${response.message}`,
+              icon: "error",
+              confirmButtonColor: "#008ecc",
+              confirmButtonText: "Coba lagi",
+            });
+
+            throw Error(`Error status: ${response.status}`);
+          }
+        } catch (e) {
+          Swal.fire({
+            title: "Gagal!",
+            html: e,
+            icon: "error",
+            confirmButtonColor: "#008ecc",
+            confirmButtonText: "Coba lagi",
+          });
+
+          console.log(e);
+        }
+      }
+    }
+  };
+
+  const onActionSubmit = async (e) => {
+    e.preventDefault();
+
+    // console.log(action);
+    for (var i = 0; i < action.length; i++) {
+      if(action[i].id === '') {
+        try {
+          const response = await treatmentAPI.add(action[i]);
+          // console.log(response);
+
+          if (response.status == 200) {
+            let data = await response.data.data;
+            // console.log(data);
+
+            Swal.fire({
+              title: "Sukses!",
+              html: `Tambah tindakan sukses`,
+              icon: "success",
+              confirmButtonColor: "#008ecc",
+            });
+            
+          } else {
+            Swal.fire({
+              title: "Gagal!",
+              html: `Tambah tindakan gagal: ${response.message}`,
+              icon: "error",
+              confirmButtonColor: "#008ecc",
+              confirmButtonText: "Coba lagi",
+            });
+
+            throw Error(`Error status: ${response.status}`);
+          }
+        } catch (e) {
+          Swal.fire({
+            title: "Gagal!",
+            html: e,
+            icon: "error",
+            confirmButtonColor: "#008ecc",
+            confirmButtonText: "Coba lagi",
+          });
+          console.log(e);
+        }
+      } else {
+        try {
+          const response = await treatmentAPI.update(action[i], action[i].id);
+          // console.log(response);
+
+          if (response.status == 200) {
+            let data = await response.data.data;
+            // console.log(data);
+
+            Swal.fire({
+              title: "Sukses!",
+              html: `Ubah tindakan sukses`,
+              icon: "success",
+              confirmButtonColor: "#008ecc",
+            });
+            
+          } else {
+            Swal.fire({
+              title: "Gagal!",
+              html: `Ubah tindakan gagal: ${response.message}`,
+              icon: "error",
+              confirmButtonColor: "#008ecc",
+              confirmButtonText: "Coba lagi",
+            });
+
+            throw Error(`Error status: ${response.status}`);
+          }
+        } catch (e) {
+          Swal.fire({
+            title: "Gagal!",
+            html: e,
+            icon: "error",
+            confirmButtonColor: "#008ecc",
+            confirmButtonText: "Coba lagi",
+          });
+
+          console.log(e);
+        }
+      }
+    }
+  };
+
+  const onReferenceSubmit = async (e) => {
+    e.preventDefault();
+
+    // console.log(reference);
+    if(dataStatusReference === 'add') {
+      try {
+        const response = await referenceAPI.add(reference);
+        // console.log(response);
+
+        if (response.status == 200) {
+          let data = await response.data.data;
+          // console.log(data);
+
+          Swal.fire({
+            title: "Sukses!",
+            html: `Tambah rujukan sukses`,
+            icon: "success",
+            confirmButtonColor: "#008ecc",
+          });
+          
+        } else {
+          Swal.fire({
+            title: "Gagal!",
+            html: `Tambah rujukan gagal: ${response.message}`,
+            icon: "error",
+            confirmButtonColor: "#008ecc",
+            confirmButtonText: "Coba lagi",
+          });
+
+          throw Error(`Error status: ${response.status}`);
+        }
+      } catch (e) {
+        Swal.fire({
+          title: "Gagal!",
+          html: e,
+          icon: "error",
+          confirmButtonColor: "#008ecc",
+          confirmButtonText: "Coba lagi",
+        });
+
+        console.log(e);
+      }
+    } else if(dataStatusReference === 'update') {
+      try {
+        const response = await referenceAPI.update(reference, reference.id);
+        // console.log(response);
+
+        if (response.status == 200) {
+          let data = await response.data.data;
+          // console.log(data);
+
+          Swal.fire({
+            title: "Sukses!",
+            html: `Ubah rujukan sukses`,
+            icon: "success",
+            confirmButtonColor: "#008ecc",
+          });
+          
+        } else {
+          Swal.fire({
+            title: "Gagal!",
+            html: `Ubah rujukan gagal: ${response.message}`,
+            icon: "error",
+            confirmButtonColor: "#008ecc",
+            confirmButtonText: "Coba lagi",
+          });
+
+          throw Error(`Error status: ${response.status}`);
+        }
+      } catch (e) {
+        Swal.fire({
+          title: "Gagal!",
+          html: e,
+          icon: "error",
+          confirmButtonColor: "#008ecc",
+          confirmButtonText: "Coba lagi",
+        });
+
+        console.log(e);
+      }
+    } else {
+      console.log('dataStatusRecord undefined')
+    }
+  };
+
+  const onDiagnosisReferenceSubmit = async (e) => {
+    e.preventDefault();
+
+    // console.log(referenceDiagnosis);
+    for (var i = 0; i < referenceDiagnosis.length; i++) {
+      if(referenceDiagnosis[i].id === '') {
+        try {
+          const response = await diagnoseReferenceAPI.add(referenceDiagnosis[i]);
+          // console.log(response);
+
+          if (response.status == 200) {
+            let data = await response.data.data;
+            // console.log(data);
+
+            Swal.fire({
+              title: "Sukses!",
+              html: `Tambah diagnosis rujukan sukses`,
+              icon: "success",
+              confirmButtonColor: "#008ecc",
+            });
+            
+          } else {
+            Swal.fire({
+              title: "Gagal!",
+              html: `Tambah diagnosis rujukan gagal: ${response.message}`,
+              icon: "error",
+              confirmButtonColor: "#008ecc",
+              confirmButtonText: "Coba lagi",
+            });
+
+            throw Error(`Error status: ${response.status}`);
+          }
+        } catch (e) {
+          Swal.fire({
+            title: "Gagal!",
+            html: e,
+            icon: "error",
+            confirmButtonColor: "#008ecc",
+            confirmButtonText: "Coba lagi",
+          });
+          console.log(e);
+        }
+      } else {
+        try {
+          const response = await diagnoseReferenceAPI.update(referenceDiagnosis[i], referenceDiagnosis[i].id);
+          // console.log(response);
+
+          if (response.status == 200) {
+            let data = await response.data.data;
+            // console.log(data);
+
+            Swal.fire({
+              title: "Sukses!",
+              html: `Ubah diagnosis rujukan sukses`,
+              icon: "success",
+              confirmButtonColor: "#008ecc",
+            });
+            
+          } else {
+            Swal.fire({
+              title: "Gagal!",
+              html: `Ubah diagnosis rujukan gagal: ${response.message}`,
+              icon: "error",
+              confirmButtonColor: "#008ecc",
+              confirmButtonText: "Coba lagi",
+            });
+
+            throw Error(`Error status: ${response.status}`);
+          }
+        } catch (e) {
+          Swal.fire({
+            title: "Gagal!",
+            html: e,
+            icon: "error",
+            confirmButtonColor: "#008ecc",
+            confirmButtonText: "Coba lagi",
+          });
+
+          console.log(e);
+        }
+      }
     }
   };
 

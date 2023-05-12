@@ -48,12 +48,17 @@ const api = {
     all: '/kunjungan',
     patient: '/kunjungan/pasien'
   },
+  diagnose: '/diagnosis',
+  reciept: '/resep',
+  treatment: '/tindakan',
+  reference: '/rujukan',
   tempRecord: '/temp-kunjungan', // JOIN TABLE ID RECORD TO ID VITAL SIGNS
   disease: '/penyakit', // MASTER OF 'PENYAKIT' FIELD
   medicine: '/obat', // MASTER OF 'OBAT' FIELD
   lab: '/laboratorium', // MASTER OF 'LABORATORIUM' FIELD
   labTreatment: '/layanan-laboratorium', // JOIN TABLE ID LAB TO ID PEMERIKSAAN
   treatmentList: '/daftar-tindakan', // MASTER OF 'TINDAKAN' FIELD
+  diagnoseReference: '/diagnosis-rujukan', // MASTER OF 'POLI RUJUKAN' FIELD
   divisionReference: '/poli', // MASTER OF 'POLI RUJUKAN' FIELD
   hospitalReference: '/rs', // MASTER OF 'RS RUJUKAN' FIELD
   inspect: {
