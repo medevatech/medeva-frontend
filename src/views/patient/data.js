@@ -1021,7 +1021,8 @@ const Data = ({ match }) => {
     return <>
     <Button color="success" size="xs" onClick={(e) => statusById(e, patientID)}>
       <i className="simple-icon-drawer"></i>&nbsp;Aktifkan
-    </Button><span>&nbsp;&nbsp;</span>
+    </Button>
+    {/* <span>&nbsp;&nbsp;</span> */}
     </>;
   }
 
@@ -1029,7 +1030,8 @@ const Data = ({ match }) => {
     return <>
     <Button color="warning" size="xs" onClick={(e) => statusById(e, patientID)}>
       <i className="simple-icon-drawer"></i>&nbsp;Arsipkan
-    </Button><span>&nbsp;&nbsp;</span>
+    </Button>
+    {/* <span>&nbsp;&nbsp;</span> */}
     </>;
   }
 
@@ -1410,14 +1412,14 @@ const Data = ({ match }) => {
                   </Colxx>
                   <Colxx sm="7" md="6" xl="6" style={{ textAlign: 'right' }}>
                     {<IsActive/>}
-                    {(userData.roles.includes('isDev') ||
+                    {/* {(userData.roles.includes('isDev') ||
                     userData.roles.includes('isManager')) && patientID &&
                       <Button color="danger" size="xs"
                         onClick={(e) => deleteById(e, patientID)}
                         >
                         <i className="simple-icon-trash"></i>&nbsp;Hapus Data
                       </Button>
-                    }
+                    } */}
                   </Colxx>
                 </Row>
               </CardTitle>

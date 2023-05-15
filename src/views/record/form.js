@@ -127,13 +127,6 @@ const FormRecord = ({ match, history }) => {
 
     if (location.state.recordID) {
       recordID = location.state.recordID;
-
-      // getDiagnosisByRecordId(recordID);
-      // getRecieptByRecordId(recordID);
-      // getCheckupByRecordId(recordID);
-      // getTreatmentByRecordId(recordID);
-      // getReferenceByRecordId(recordID);
-      // getReferenceDiagnosisByRecordId(recordID);
     }
   } else {
     Swal.fire({
@@ -1671,7 +1664,14 @@ const FormRecord = ({ match, history }) => {
     } catch (e) {
       console.log(e);
     } finally {
-        recordID && getRecordByPatientId("", recordID);
+        recordID &&
+        getRecordByPatientId("", recordID);
+      // getDiagnosisByRecordId(recordID);
+      // getRecieptByRecordId(recordID);
+      // getCheckupByRecordId(recordID);
+      // getTreatmentByRecordId(recordID);
+      // getReferenceByRecordId(recordID);
+      // getReferenceDiagnosisByRecordId(recordID);
     }
   };
 
@@ -2253,7 +2253,7 @@ const FormRecord = ({ match, history }) => {
                                                         <Colxx sm={5} md={5} xl={5}>
                                                             <FormGroup>
                                                                 <Label for="id_tindakan">
-                                                                    Tindakan
+                                                                    Tindakan / Layanan
                                                                 </Label>
                                                                 <Select
                                                                     components={{ Input: CustomSelectInput }}
@@ -2410,7 +2410,8 @@ const FormRecord = ({ match, history }) => {
                                                   <Colxx sm={5} md={5} xl={5}>
                                                       <FormGroup>
                                                           <Label for="id_poli">
-                                                              Poli / Divisi<span className="required text-danger" aria-required="true"> *</span>
+                                                              Poli / Divisi
+                                                              {/* <span className="required text-danger" aria-required="true"> *</span> */}
                                                           </Label>
                                                           <Select
                                                               components={{ Input: CustomSelectInput }}
