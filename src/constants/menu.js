@@ -22,7 +22,7 @@ const data = [
   },
   {
     id: 'record',
-    icon: 'iconsminds-first-aid',
+    icon: 'iconsminds-stethoscope',
     label: 'Kunjungan',
     to: `/record`,
     subs: [
@@ -57,8 +57,15 @@ const data = [
   {
     id: 'division',
     icon: 'iconsminds-office',
-    label: 'Divisi',
+    label: 'Poli / Divisi',
     to: `/division`,
+    roles: [ "isDev", "isManager", "isAdmin" ],
+  },
+  {
+    id: 'treatment',
+    icon: 'iconsminds-first-aid',
+    label: 'Layanan',
+    to: `/treatment`,
     roles: [ "isDev", "isManager", "isAdmin" ],
   },
 ];

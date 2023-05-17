@@ -2,18 +2,18 @@ import api from 'constants/api'
 import { getAuthHeader, getOriginHeader, serializeQueryParams, getJSONHeader } from 'utils/http'
 import baseApi from 'service/api-general'
 
-const lab = {
+const hospital = {
   get: (payloads, options) => {
-    const url = api.lab.all + options
+    const url = api.reference.hospital + options
     return baseApi.get(url, payloads, { headers: getOriginHeader() })
   },
   add: (payloads) => {
-    const url = api.lab.all
+    const url = api.reference.hospital
     return baseApi.post(url, payloads, { headers: getOriginHeader() })
   },
   update: (payloads, id) => {
-    const url = api.lab.all + `/${id}`
+    const url = api.reference.hospital + `/${id}`
     return baseApi.put(url, payloads, { headers: getOriginHeader() })
   },
 }
-export default lab
+export default hospital

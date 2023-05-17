@@ -33,7 +33,8 @@ import Pagination from "components/common/Pagination";
 
 import CustomSelectInput from "components/common/CustomSelectInput";
 
-import divisionAPI from "api/division";
+import treatmentAPI from "api/treatment/list";
+import treatmentPriceAPI from "api/treatment/price";
 import clinicAPI from "api/clinic";
 import Swal from "sweetalert2";
 
@@ -49,8 +50,8 @@ const selectStatusF = [
 
 const Data = ({ match, history, loading, error }) => {
   const dispatch = useDispatch();
-  const divisionData = useSelector(state => state.division);
-  const divisionTotalPage = useSelector(state => state.divisionTotalPage);
+  const treatmentData = useSelector(state => state.treatmentList);
+  const treatmentTotalPage = useSelector(state => state.treatmentListTotalPage);
   const [dataStatus, setDataStatus] = useState("add");
   const [rowSelected, setRowSelected] = useState(null);
 
@@ -59,12 +60,17 @@ const Data = ({ match, history, loading, error }) => {
 
   const [modalArchive, setModalArchive] = useState(false);
   const [modalDelete, setModalDelete] = useState(false);
-  const [divisionID, setDivisionID] = useState('');
-  const [divisionStatus, setDivisionStatus] = useState(0);
+  const [treatmentID, setTreatmentID] = useState('');
+  const [treatmentStatus, setTreatmentStatus] = useState(0);
 
-  const [division, setDivision] = useState({
-    tipe: '',
-    id_klinik: ''
+  const [treatment, setTreatment] = useState({
+    nama: ''
+  });
+
+  const [treatmentPrice, setTreatmentPrice] = useState({
+    id_daftar_tindakan: treatmentID,
+    id_klinik: '',
+    harga: '',
   });
 
   const onLoadKlinik = async () => {
@@ -102,24 +108,28 @@ const Data = ({ match, history, loading, error }) => {
     // console.log('e', e);
 
     if (e.name === 'id_klinik') {
-      setDivision(current => {
+      setTreatmentPrice(current => {
           return { ...current, id_klinik: e ? e.value : ''}
       })
+    } else if (e.name === 'harga') {
+      setTreatmentPrice(current => {
+          return { ...current, harga: e ? e.value : ''}
+      })
     } else {
-      setDivision(current => {
+      setTreatment(current => {
           return { ...current, [e.target.name]: e.target.value }
       })
     }
 
-    // console.log('division', division);
+    // console.log('treatment', treatment);
   }
 
-  const onDivisionSubmit = async (e) => {
+  const onTreatmentSubmit = async (e) => {
     e.preventDefault();
 
     if(dataStatus === 'add') {
       try {
-        const response = await divisionAPI.add(division);
+        const response = await treatmentAPI.add(treatment);
         // console.log(response);
   
         if (response.status == 200) {
@@ -128,7 +138,7 @@ const Data = ({ match, history, loading, error }) => {
   
           Swal.fire({
             title: "Sukses!",
-            html: `Tambah poli / divisi sukses`,
+            html: `Tambah layanan sukses`,
             icon: "success",
             confirmButtonColor: "#008ecc",
           });
@@ -137,7 +147,7 @@ const Data = ({ match, history, loading, error }) => {
         } else {
           Swal.fire({
             title: "Gagal!",
-            html: `Tambah poli / divisi gagal: ${response.message}`,
+            html: `Tambah layanan gagal: ${response.message}`,
             icon: "error",
             confirmButtonColor: "#008ecc",
             confirmButtonText: "Coba lagi",
@@ -158,7 +168,7 @@ const Data = ({ match, history, loading, error }) => {
       }
     } else if (dataStatus === 'update') {
       try {
-        const response = await divisionAPI.update(division, divisionID);
+        const response = await treatmentAPI.update(treatment, treatmentID);
         // console.log(response);
   
         if (response.status == 200) {
@@ -167,7 +177,7 @@ const Data = ({ match, history, loading, error }) => {
   
           Swal.fire({
             title: "Sukses!",
-            html: `Ubah poli / divisi sukses`,
+            html: `Ubah layanan sukses`,
             icon: "success",
             confirmButtonColor: "#008ecc",
           });
@@ -176,7 +186,7 @@ const Data = ({ match, history, loading, error }) => {
         } else {
           Swal.fire({
             title: "Gagal!",
-            html: `Ubah poli / divisi gagal: ${response.message}`,
+            html: `Ubah layanan gagal: ${response.message}`,
             icon: "error",
             confirmButtonColor: "#008ecc",
             confirmButtonText: "Coba lagi",
@@ -203,9 +213,9 @@ const Data = ({ match, history, loading, error }) => {
   const resetForm = (e, scroll = false) => {
     e.preventDefault();
 
-    setDivisionID('');
-    setDivisionName('');
-    setDivisionStatus(0);
+    setTreatmentID('');
+    setTreatmentName('');
+    setTreatmentStatus(0);
 
     if(scroll) {
       if(window.innerWidth < 1280){
@@ -219,9 +229,14 @@ const Data = ({ match, history, loading, error }) => {
       }
     }
 
-    setDivision({
-      tipe: '',
-      id_klinik: ''
+    setTreatment({
+      nama: '',
+    });
+
+    setTreatmentPrice({
+      id_daftar_tindakan: treatmentID,
+      id_klinik: '',
+      harga: '',
     });
     
     setSelectedKlinik([]);
@@ -233,12 +248,12 @@ const Data = ({ match, history, loading, error }) => {
 
   const [isLoading, setIsLoading] = useState(false);
 
-  const getDivision = async (params) => {
+  const getTreatment = async (params) => {
     try {
       setIsLoading(true);
-      const res = await divisionAPI.get("", params);
-      dispatch({type: "GET_DIVISION", payload: res.data.data});
-      dispatch({type: "GET_TOTAL_PAGE_DIVISION", payload: res.data.pagination.totalPage});
+      const res = await treatmentAPI.get("", params);
+      dispatch({type: "GET_TREATMENT_LIST", payload: res.data.data});
+      dispatch({type: "GET_TOTAL_PAGE_TREATMENT_LIST", payload: res.data.pagination.totalPage});
     } catch (e) {
       console.log(e);
     } finally {
@@ -246,7 +261,7 @@ const Data = ({ match, history, loading, error }) => {
     }
   };
 
-  const getDivisionById = async (e, id) => {
+  const getTreatmentById = async (e, id) => {
     e.preventDefault();
     resetForm(e);
     setDataStatus("update");
@@ -263,19 +278,42 @@ const Data = ({ match, history, loading, error }) => {
     }
 
     try {
-      const res = await divisionAPI.get("", `/${id}`);
+      const res = await treatmentAPI.get("", `/${id}`);
       let data = res.data.data[0];
 
       // console.log(data);
 
-      setDivisionID(data.id);
-      setDivision({
-        tipe: data.tipe,
-        id_klinik: data.id_klinik
+      setTreatmentID(data.id);
+      setTreatment({
+        nama: data.nama,
       });
-      setDivisionStatus(data.is_active);
+      setTreatmentStatus(data.is_active);
 
-      // console.log(division);
+      // console.log(treatment);
+
+    } catch (e) {
+      console.log(e);
+    } finally {
+      getTreatmentPriceById(id);
+    }
+
+    // console.log(dataStatus);
+  };
+
+  const getTreatmentPriceById = async (id) => {
+    try {
+      const res = await treatmentPriceAPI.get("", `/${id}`);
+      let data = res.data.data[0];
+
+      // console.log(data);
+
+      setTreatmentPrice({
+        id_daftar_tindakan: treatmentID,
+        id_klinik: data.id_klinik,
+        harga: data.harga,
+      });
+
+      // console.log(treatmentPrice);
 
     } catch (e) {
       console.log(e);
@@ -286,7 +324,7 @@ const Data = ({ match, history, loading, error }) => {
 
   function ButtonActive() {
     return <>
-    <Button color="success" size="xs" onClick={(e) => statusById(e, divisionID)}>
+    <Button color="success" size="xs" onClick={(e) => statusById(e, treatmentID)}>
       <i className="simple-icon-drawer"></i>&nbsp;Aktifkan
     </Button><span>&nbsp;&nbsp;</span>
     </>;
@@ -294,7 +332,7 @@ const Data = ({ match, history, loading, error }) => {
 
   function ButtonArchive() {
     return <>
-    <Button color="warning" size="xs" onClick={(e) => statusById(e, divisionID)}>
+    <Button color="warning" size="xs" onClick={(e) => statusById(e, treatmentID)}>
       <i className="simple-icon-drawer"></i>&nbsp;Arsipkan
     </Button><span>&nbsp;&nbsp;</span>
     </>;
@@ -304,9 +342,9 @@ const Data = ({ match, history, loading, error }) => {
     if(userData.roles.includes('isDev') ||
       userData.roles.includes('isManager') ||
       userData.roles.includes('isAdmin')) {
-      if (divisionID && divisionStatus == 1) {
+      if (treatmentID && treatmentStatus == 1) {
         return <ButtonArchive/>;
-      } else if (divisionID && divisionStatus == 0) {
+      } else if (treatmentID && treatmentStatus == 0) {
         return <ButtonActive/>;
       } else {
         return null;
@@ -316,19 +354,19 @@ const Data = ({ match, history, loading, error }) => {
     }
   }
 
-  const [divisionName, setDivisionName] = useState('');
+  const [treatmentName, setTreatmentName] = useState('');
 
   const statusById = async (e, id) => {
     e.preventDefault();
 
     setModalArchive(true);
     try {
-      const res = await divisionAPI.get("", `/${id}`);
+      const res = await treatmentAPI.get("", `/${id}`);
       let data = res.data.data[0];
 
-      setDivisionID(data.id);
-      setDivisionStatus(data.is_active);
-      setDivisionName(data.tipe);
+      setTreatmentID(data.id);
+      setTreatmentStatus(data.is_active);
+      setTreatmentName(data.tipe);
     } catch (e) {
       console.log(e);
     }
@@ -338,8 +376,8 @@ const Data = ({ match, history, loading, error }) => {
     e.preventDefault();
 
     try {
-      if (divisionStatus == 1) {
-        const response = await divisionAPI.archive("", divisionID);
+      if (treatmentStatus == 1) {
+        const response = await treatmentAPI.archive("", treatmentID);
 
         if (response.status == 200) {
           let data = await response.data.data;
@@ -347,7 +385,7 @@ const Data = ({ match, history, loading, error }) => {
 
           Swal.fire({
             title: "Sukses!",
-            html: `Arsip poli / divisi sukses`,
+            html: `Arsip layanan sukses`,
             icon: "success",
             confirmButtonColor: "#008ecc",
           });
@@ -356,7 +394,7 @@ const Data = ({ match, history, loading, error }) => {
         } else {
           Swal.fire({
             title: "Gagal!",
-            html: `Arsip poli / divisi gagal: ${response.message}`,
+            html: `Arsip layanan gagal: ${response.message}`,
             icon: "error",
             confirmButtonColor: "#008ecc",
             confirmButtonText: "Coba lagi",
@@ -365,7 +403,7 @@ const Data = ({ match, history, loading, error }) => {
           throw Error(`Error status: ${response.status}`);
         }
       } else {
-        const response = await divisionAPI.activate("", divisionID);
+        const response = await treatmentAPI.activate("", treatmentID);
 
         if (response.status == 200) {
           let data = await response.data.data;
@@ -373,7 +411,7 @@ const Data = ({ match, history, loading, error }) => {
 
           Swal.fire({
             title: "Sukses!",
-            html: `Aktivasi poli / divisi sukses`,
+            html: `Aktivasi layanan sukses`,
             icon: "success",
             confirmButtonColor: "#008ecc",
           });
@@ -382,7 +420,7 @@ const Data = ({ match, history, loading, error }) => {
         } else {
           Swal.fire({
             title: "Gagal!",
-            html: `Aktivasi poli / divisi gagal: ${response.message}`,
+            html: `Aktivasi layanan gagal: ${response.message}`,
             icon: "error",
             confirmButtonColor: "#008ecc",
             confirmButtonText: "Coba lagi",
@@ -410,11 +448,11 @@ const Data = ({ match, history, loading, error }) => {
 
     setModalDelete(true);
     try {
-      const res = await divisionAPI.get("", `/${id}`);
+      const res = await treatmentAPI.get("", `/${id}`);
       let data = res.data.data[0];
 
-      setDivisionID(data.id);
-      setDivisionName(data.tipe);
+      setTreatmentID(data.id);
+      setTreatmentName(data.tipe);
     } catch (e) {
       console.log(e);
     }
@@ -424,7 +462,7 @@ const Data = ({ match, history, loading, error }) => {
     e.preventDefault();
 
     try {
-      const response = await divisionAPI.delete("", divisionID);
+      const response = await treatmentAPI.delete("", treatmentID);
 
       if (response.status == 200) {
         let data = await response.data.data;
@@ -432,7 +470,7 @@ const Data = ({ match, history, loading, error }) => {
 
         Swal.fire({
           title: "Sukses!",
-          html: `Hapus poli / divisi sukses`,
+          html: `Hapus layanan sukses`,
           icon: "success",
           confirmButtonColor: "#008ecc",
         });
@@ -441,7 +479,7 @@ const Data = ({ match, history, loading, error }) => {
       } else {
         Swal.fire({
           title: "Gagal!",
-          html: `Hapus poli / divisi gagal: ${response.message}`,
+          html: `Hapus layanan gagal: ${response.message}`,
           icon: "error",
           confirmButtonColor: "#008ecc",
           confirmButtonText: "Coba lagi",
@@ -490,7 +528,7 @@ const Data = ({ match, history, loading, error }) => {
       params = `${params}&page=${currentPage}`;
     }
 
-    getDivision(params);
+    getTreatment(params);
     onLoadKlinik();
 
   }, [limit, searchName, searchKlinik, searchStatus, sortBy, sortOrder, currentPage ]);
@@ -514,7 +552,7 @@ const Data = ({ match, history, loading, error }) => {
               <CardTitle style={{ marginBottom: 0 }}>
                 <Row>
                   <Colxx sm="12" md="12" xl="12">
-                    Data Poli / Divisi
+                    Data Layanan
                   </Colxx>
                   {/* <Colxx sm="12" md="4" xl="4">
                     <Button
@@ -575,7 +613,7 @@ const Data = ({ match, history, loading, error }) => {
                 <thead>
                   <tr>
                     <th className="center-xy" style={{ width: '40px' }}>#</th>
-                    <th>Poli / Divisi</th>
+                    <th>Layanan</th>
                     <th className="center-xy" style={{ width: '55px' }}>&nbsp;</th>
                   </tr>
                 </thead>
@@ -589,15 +627,14 @@ const Data = ({ match, history, loading, error }) => {
                     <td>&nbsp;</td>
                   </tr>
                   ) : 
-                  divisionData.length > 0 ? (
-                    divisionData.map((data) => (
-                      <tr key={data.id} onClick={(e) => getDivisionById(e, data.id)} style={{ cursor: 'pointer'}} className={`${rowSelected == data.id && 'row-selected'}`}>
+                  treatmentData.length > 0 ? (
+                    treatmentData.map((data) => (
+                      <tr key={data.id} onClick={(e) => getTreatmentById(e, data.id)} style={{ cursor: 'pointer'}} className={`${rowSelected == data.id && 'row-selected'}`}>
                         <th scope="row" style={{ textAlign: "center", verticalAlign: 'middle' }}>
                           {startNumber++}
                         </th>
                         <td>
-                          <h6 style={{ fontWeight: 'bold' }} className="max-text">{data.nama_divisi}</h6>
-                          {data.nama_klinik ? data.nama_klinik : "-"}<br/>
+                          <h6 style={{ fontWeight: 'bold' }} className="max-text">{data.nama}</h6>
                           {data.is_active == 1 ? (
                             <Badge color="success" className="mt-2">Aktif</Badge>
                           ) : (
@@ -606,7 +643,7 @@ const Data = ({ match, history, loading, error }) => {
                         </td>
                         <td style={{ textAlign: "center", verticalAlign: 'middle' }}>
                           <Button color="secondary" size="xs" className="button-xs"
-                            onClick={(e) => getDivisionById(e, data.id)}
+                            onClick={(e) => getTreatmentById(e, data.id)}
                             >
                             <i className="simple-icon-arrow-right-circle"></i>
                           </Button>
@@ -627,7 +664,7 @@ const Data = ({ match, history, loading, error }) => {
               </Table>
               <Pagination
                 currentPage={currentPage}
-                totalPage={divisionTotalPage}
+                totalPage={treatmentTotalPage}
                 onChangePage={(i) => setCurrentPage(i)}
               />
             </CardBody>
@@ -639,14 +676,14 @@ const Data = ({ match, history, loading, error }) => {
               <CardTitle>
                 <Row>
                   <Colxx sm="5" md="6" xl="6">
-                    Form Manajemen Poli / Divisi
+                    Form Manajemen Layanan
                   </Colxx>
                   <Colxx sm="7" md="6" xl="6" style={{ textAlign: 'right' }}>
                     {<IsActive/>}
                     {(userData.roles.includes('isDev') ||
-                    userData.roles.includes('isManager')) && divisionID &&
+                    userData.roles.includes('isManager')) && treatmentID &&
                       <Button color="danger" size="xs"
-                        onClick={(e) => deleteById(e, divisionID)}
+                        onClick={(e) => deleteById(e, treatmentID)}
                         >
                         <i className="simple-icon-trash"></i>&nbsp;Hapus
                       </Button>
@@ -656,7 +693,7 @@ const Data = ({ match, history, loading, error }) => {
               </CardTitle>
               <Form>
                 <FormGroup row>
-                  <Colxx sm={6}>
+                  <Colxx sm={4}>
                     <FormGroup>
                       <Label for="id_klinik">Klinik
                         <span
@@ -674,15 +711,15 @@ const Data = ({ match, history, loading, error }) => {
                         name="id_klinik"
                         id="id_klinik"
                         options={selectedKlinik}
-                        value={selectedKlinik.find(item => item.value === division.id_klinik) || ''}
-                        // value={division.id_klinik}
+                        value={selectedKlinik.find(item => item.value === treatment.id_klinik) || ''}
+                        // value={treatment.id_klinik}
                         onChange={onChange}
                         required
                       />
                     </FormGroup>
                   </Colxx>
 
-                  <Colxx sm={6}>
+                  <Colxx sm={4}>
                     <FormGroup>
                       <Label for="tipe">
                         Nama
@@ -699,7 +736,32 @@ const Data = ({ match, history, loading, error }) => {
                         name="tipe"
                         id="tipe"
                         placeholder="Nama"
-                        value={division.tipe}
+                        value={treatment.tipe}
+                        onChange={onChange}
+                        required={true}
+                      />
+                    </FormGroup>
+                  </Colxx>
+
+                  <Colxx sm={4}>
+                    <FormGroup>
+                      <Label for="tipe">
+                        Harga
+                        <span
+                          className="required text-danger"
+                          aria-required="true"
+                        >
+                          {" "}
+                          *
+                        </span>
+                      </Label>
+                      <Input
+                        type="number"
+                        name="harga"
+                        id="harga"
+                        placeholder="Harga"
+                        value={treatment.harga}
+                        pattern="[0-9]*"
                         onChange={onChange}
                         required={true}
                       />
@@ -723,7 +785,7 @@ const Data = ({ match, history, loading, error }) => {
                     &nbsp;&nbsp;
                     <Button
                       color="primary"
-                      onClick={(e) => onDivisionSubmit(e)}
+                      onClick={(e) => onTreatmentSubmit(e)}
                     >
                       Simpan
                     </Button>
@@ -738,9 +800,9 @@ const Data = ({ match, history, loading, error }) => {
           isOpen={modalArchive}
           toggle={() => setModalArchive(!modalArchive)}
         >
-          <ModalHeader>Arsip Poli / Divisi</ModalHeader>
+          <ModalHeader>Arsip Layanan</ModalHeader>
           <ModalBody>
-            <h5>Apakah Anda ingin {divisionStatus == 1 ?  'mengarsipkan'  : 'aktivasi' } <b>{divisionName}</b>?</h5>
+            <h5>Apakah Anda ingin {treatmentStatus == 1 ?  'mengarsipkan'  : 'aktivasi' } <b>{treatmentName}</b>?</h5>
           </ModalBody>
           <ModalFooter>
             <Button
@@ -761,9 +823,9 @@ const Data = ({ match, history, loading, error }) => {
           isOpen={modalDelete}
           toggle={() => setModalDelete(!modalDelete)}
         >
-          <ModalHeader>Hapus Poli / Divisi</ModalHeader>
+          <ModalHeader>Hapus Layanan</ModalHeader>
           <ModalBody>
-            <h5>Apakah Anda ingin menghapus <b>{divisionName}</b>?</h5>
+            <h5>Apakah Anda ingin menghapus <b>{treatmentName}</b>?</h5>
           </ModalBody>
           <ModalFooter>
             <Button
@@ -787,7 +849,7 @@ const Data = ({ match, history, loading, error }) => {
         className="float-btn"
         onClick={(e) => resetForm(e, true)}
       >
-        <i className="iconsminds-male-female"></i> Tambah Poli / Divisi
+        <i className="iconsminds-first-aid"></i> Tambah Layanan
       </Button>
     </>
   );

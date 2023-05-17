@@ -409,7 +409,7 @@ const Data = ({ match }) => {
                     </Button>
                   </InputGroupAddon>
                 </InputGroup>
-                <Table>
+                <Table hover>
                   <thead>
                     <tr>
                       <th className="center-xy" style={{ width: '40px' }}>#</th>

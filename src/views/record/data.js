@@ -116,8 +116,8 @@ const Data = ({ match }) => {
   const queueAll = useSelector(state => state.queue);
   const queueTotalPage = useSelector(state => state.queueTotalPage);
   const allRecord = useSelector(state => state.allRecordByPatient);
-
   const [dataStatus, setDataStatus] = useState("add");
+  const [rowSelected, setRowSelected] = useState(null);
 
   const [selectedDivision, setSelectedDivision] = useState('');
   const [selectedDivisionF, setSelectedDivisionF] = useState([{ label: "Semua", value: "", key: 0, name: 'id_klinik' }]);
@@ -135,41 +135,14 @@ const Data = ({ match }) => {
   const [selectedType, setSelectedType] = useState('');
   const [selectedVisitation, setSelectedVisitation] = useState('');
   const [selectedPrognosa, setSelectedPrognosa] = useState('');
-
-  const [modalRecord, setModalRecord] = useState(false);
+  
   const [showRecord, setShowRecord] = useState('none');
-  const [startDateTime, setStartDateTime] = useState(new Date());
-  const [endDateTime, setEndDateTime] = useState(new Date());
-  const [Sdate, setStartDate] = useState(new Date());
-  const [Edate, setEndDate] = useState(new Date());
-  const [isChecked, setIsChecked] = useState(false);
-  const [activeTab, setActiveTab] = useState('obat');
 
-  const [patientStatus, setPatientStatus] = useState(0);
   const [patientID, setPatientID] = useState('');
   const [patientData, setPatientData] = useState('');
   const [vitalSignsID, setVitalSignsID] = useState('');
   const [recordID, setRecordID] = useState('');
   const [watchID, setWatchID] = useState('');
-
-  const topNavClick = (stepItem, push) => {
-    push(stepItem.id);
-  };
-
-  const onClickNext = (goToNext, steps, step) => {
-    step.isDone = true;
-    if (steps.length - 1 <= steps.indexOf(step)) {
-      return;
-    }
-    goToNext();
-  };
-
-  const onClickPrev = (goToPrev, steps, step) => {
-    if (steps.indexOf(step) <= 0) {
-      return;
-    }
-    goToPrev();
-  };
 
   const [ vitalSigns, setVitalSigns ] = useState({
     id_pasien: patientID,
@@ -188,467 +161,11 @@ const Data = ({ match }) => {
     created_at: ''
   });
 
-  const [ record, setRecord ] = useState({
-    id_jaga: watchID,
-    id_vs: '',
-    id_pasien: patientID,
-    waktu_mulai: startDateTime,
-    waktu_selesai: endDateTime,
-    tipe: '',
-    anamnesis: '',
-    pemeriksaan_fisik: '',
-    prognosa: '',
-    kasus_kll: false,
-    status_pulang: '',
-    keluhan: ''
-  });
-
-  // const [ allRecord, setAllRecord ] = useState([]);
-
-  const onChange = (e, name = "") => {
-    // console.log('e', e);
-
-    if (e.name === 'tipe') {
-      setRecord(current => {
-          return { ...current, tipe: e.value }
-      })
-
-      setSelectedType(e);
-    } else if (e.name === 'status_pulang') {
-      setRecord(current => {
-          return { ...current, status_pulang: e.value }
-      })
-
-      setSelectedVisitation(e);
-    } else if (e.name === 'prognosa') {
-      setRecord(current => {
-          return { ...current, prognosa: e.value }
-      })
-
-      setSelectedPrognosa(e);
-    } else if (name === 'waktu_mulai') {
-      const sd = new Date(e);
-      // console.log('sd', sd);
-      // setStartDate(sd);
-      setStartDateTime(sd);
-
-      setRecord(current => {
-          return { ...current, waktu_mulai: moment(ed).format("yyyy-MM-DD HH:mm") }
-      })
-    } else if (name === 'waktu_selesai') {
-      const ed = new Date(e);
-      // console.log('ed', ed);
-      // setEndDate(ed);
-      setEndDateTime(ed);
-
-      setRecord(current => {
-          return { ...current, waktu_selesai: moment(ed).format("yyyy-MM-DD HH:mm") }
-      })
-    } else if (e.target.name === 'kasus_kll' && e.target.checked === false) {
-      setRecord(current => {
-          return { ...current, kasus_kll: false }
-      })
-
-      setIsChecked(false);
-    } else if (e.target.name === 'kasus_kll' && e.target.checked === true) {
-      setRecord(current => {
-          return { ...current, kasus_kll: true }
-      })
-
-      setIsChecked(true);
-    } else {
-      setRecord(current => {
-          return { ...current, [e.target.name]: e.target.value }
-      })
-    }
-
-    // console.log('record', record);
-  }
-
-  const [diagnosis, setDiagnosis] = useState([
-    { id: Math.random(), id_kunjungan: "", id_penyakit: "", tipe_wd: false, tipe_dd: false }
-  ]);
-
-  const addDiagnosisFields = () => {
-    let newfieldDiagnosis = { id: Math.random(), id_kunjungan: "", id_penyakit: "", tipe_wd: false, tipe_dd: false };
-    setDiagnosis([...diagnosis, newfieldDiagnosis]);
-
-    let newfieldDropdownDiagnosis = { label: "" };
-    setSelectedDiagnosis([...selectedDiagnosis, newfieldDropdownDiagnosis]);
-  };
-
-  const removeDiagnosisFields = (id, index) => {
-    let dataDiagnosis1 = [...diagnosis]; let displaySelectDiagnosis1 = [...selectedDiagnosis];
-    dataDiagnosis1.splice(index, 1);
-    displaySelectDiagnosis1.splice(index, 1);
-    setDiagnosis(dataDiagnosis1);
-    setSelectedDiagnosis(displaySelectDiagnosis1);
-  };
-
-  const handleDiagnosisChange = (index, event) => {
-    console.log('handleDiagnosisChange', event);
-
-    let dataDiagnosis2 = [...diagnosis]; let displaySelectDiagnosis = [...selectedDiagnosis];
-
-    if (event.name === "id_penyakit"){
-      dataDiagnosis2[index][event.name] = event.value;
-      displaySelectDiagnosis[index]["label"] = event.label;
-
-    } else if(event.target.name === "tipe_diagnosis") {
-      let wd = false; let dd = false;
-
-      if(event.target.id === 'tipe_wd') {
-        wd = true;
-      }
-      
-      if(event.target.id === 'tipe_dd') {
-        dd = true;
-      }
-
-      dataDiagnosis2[index]['tipe_wd'] = wd;
-      dataDiagnosis2[index]['tipe_dd'] = dd;
-    }
-
-    setDiagnosis(dataDiagnosis2);
-    setSelectedDiagnosis(displaySelectDiagnosis);
-
-    // console.log('diagnosis', diagnosis);
-    // console.log('selectedDiagnosis', selectedDiagnosis);
-  };
-
-  const [reciept, setReciept] = useState([
-    { id: Math.random(), id_kunjungan: "", id_obat: "", jumlah: 0, satuan: "", frekuensi: 0, periode: "", aturan_pakai: "", metode_konsumsi: "" }
-  ]);
-
-  const addRecieptFields = () => {
-    let newfieldReciept = { id: Math.random(), id_kunjungan: "", id_obat: "", jumlah: 0, satuan: "", frekuensi: 0, periode: "", aturan_pakai: "", metode_konsumsi: "" }
-    setReciept([...reciept, newfieldReciept]);
-
-    let newfieldDropdownMedicine = { label: "" };
-    setSelectedMedicine([...selectedMedicine, newfieldDropdownMedicine]);
-
-    let newfieldDropdownPcs = { label: "" };
-    setSelectedPcs([...selectedPcs, newfieldDropdownPcs]);
-
-    let newfieldDropdownPeriod = { label: "" };
-    setSelectedPeriod([...selectedPeriod, newfieldDropdownPeriod]);
-
-    let newfieldDropdownRules = { label: "" };
-    setSelectedRules([...selectedRules, newfieldDropdownRules]);
-
-    let newfieldDropdownConsume = { label: "" };
-    setSelectedConsume([...selectedConsume, newfieldDropdownConsume]);
-  };
-
-  const removeRecieptFields = (id, index) => {
-    let dataReciept = [...reciept];
-    let displaySelectMedicine = [...selectedMedicine];
-    let displaySelectPcs = [...selectedPcs];
-    let displaySelectPeriod = [...selectedPeriod];
-    let displaySelectRules = [...selectedRules];
-    let displaySelectConsume = [...selectedConsume];
-
-    dataReciept.splice(index, 1);
-    displaySelectMedicine.splice(index, 1);
-    displaySelectPcs.splice(index, 1);
-    displaySelectPeriod.splice(index, 1);
-    displaySelectRules.splice(index, 1);
-    displaySelectConsume.splice(index, 1);
-
-    setReciept(dataReciept);
-    setSelectedMedicine(displaySelectMedicine);
-    setSelectedPcs(displaySelectPcs);
-    setSelectedPeriod(displaySelectPeriod);
-    setSelectedRules(displaySelectRules);
-    setSelectedConsume(displaySelectConsume);
-  };
-
-  const handleRecieptChange = (index, event) => {
-    console.log('handleRecieptChange', event);
-
-    let dataReciept = [...reciept];
-    let displaySelectMedicine = [...selectedMedicine];
-    let displaySelectPcs = [...selectedPcs];
-    let displaySelectPeriod = [...selectedPeriod];
-    let displaySelectRules = [...selectedRules];
-    let displaySelectConsume = [...selectedConsume];
-
-    if (event.name === "id_obat"){
-      dataReciept[index][event.name] = event.value;
-      displaySelectMedicine[index]["label"] = event.label;
-    } else if (event.name === "id_obat"){
-      dataReciept[index][event.name] = event.value;
-      displaySelectMedicine[index]["label"] = event.label;
-    } else if (event.name === "satuan"){
-      dataReciept[index][event.name] = event.value;
-      displaySelectPcs[index]["label"] = event.label;
-    } else if (event.name === "periode"){
-      dataReciept[index][event.name] = event.value;
-      displaySelectPeriod[index]["label"] = event.label;
-    } else if (event.name === "aturan_pakai"){
-      dataReciept[index][event.name] = event.value;
-      displaySelectRules[index]["label"] = event.label;
-    } else if (event.name === "metode_konsumsi"){
-      dataReciept[index][event.name] = event.value;
-      displaySelectConsume[index]["label"] = event.label;
-    } else {
-      dataReciept[index][event.target.name] = event.target.value;
-    }
-
-    setReciept(dataReciept);
-    setSelectedMedicine(displaySelectMedicine);
-    setSelectedPcs(displaySelectPcs);
-    setSelectedPeriod(displaySelectPeriod);
-    setSelectedRules(displaySelectRules);
-    setSelectedConsume(displaySelectConsume);
-
-    console.log('reciept', reciept);
-    console.log('selectedMedicine', selectedMedicine);
-    console.log('selectedPcs', selectedPcs);
-    console.log('selectedPeriod', selectedPeriod);
-    console.log('selectedRules', selectedRules);
-    console.log('selectedConsume', selectedConsume);
-  };
-
-  const [checkup, setCheckup] = useState([
-    { id: Math.random(), id_kunjungan: "", id_laboratorium: "", id_pemeriksaan: "" }
-  ]);
-
-  const addCheckupFields = () => {
-    let newfieldCheckup = { id: Math.random(), id_kunjungan: "", id_laboratorium: "", id_pemeriksaan: "" }
-    setCheckup([...checkup, newfieldCheckup]);
-
-    let newfieldDropdownLab = { label: "" };
-    setSelectedLab([...selectedLab, newfieldDropdownLab]);
-
-    let newfieldDropdownTreatment = [];
-    setSelectedTreatment([...selectedTreatment, newfieldDropdownTreatment]);
-  };
-
-  const removeCheckupFields = (id, index) => {
-    let dataCheckup = [...checkup];
-    let displaySelectLab = [...selectedLab];
-    let displaySelectTreatment = [...selectedTreatment];
-
-    dataCheckup.splice(index, 1);
-    displaySelectLab.splice(index, 1);
-    displaySelectTreatment.splice(index, 1);
-
-    setCheckup(dataCheckup);
-    setSelectedLab(displaySelectLab);
-    setSelectedTreatment(displaySelectTreatment);
-  };
-
-  const handleCheckupChange = (index, event) => {
-    console.log('handleCheckupChange', event);
-
-    let dataCheckup = [...checkup];
-    let displaySelectLab = [...selectedLab];
-    let displaySelectTreatment = [...selectedTreatment];
-
-    if (event.name === "id_laboratorium"){
-      dataCheckup[index][event.name] = event.value;
-      displaySelectLab[index]["label"] = event.label;
-    } else if (event.name === "id_pemeriksaan"){
-      dataCheckup[index][event.name] = event.value;
-      displaySelectTreatment[index]["label"] = event.label;
-    } else {
-      dataCheckup[index][event.target.name] = event.target.value;
-    }
-
-    setCheckup(dataCheckup);
-    setSelectedLab(displaySelectLab);
-    setSelectedTreatment(displaySelectTreatment);
-
-    console.log('checkup', checkup);
-    console.log('selectedLab', selectedLab);
-    console.log('selectedTreatment', selectedTreatment);
-  };
-
-  const getRecordByPatientId = async (e, id) => {
-    e.preventDefault();
-    // resetForm(e);
-
-    if(id){
-      setDataStatus("update");
-
-      try {
-        const res = await recordAPI.get("", `/${id}`);
-        let data = res.data.data[0];
-
-        // console.log(data);
-
-        setRecordID(data.id);
-        setRecord({
-          id_jaga: data.id_jaga,
-          id_vs: data.id_vs,
-          id_pasien: patientID,
-          waktu_mulai: data.waktu_mulai,
-          waktu_selesai: data.waktu_selesai,
-          tipe: data.tipe,
-          anamnesis: data.anamnesis,
-          pemeriksaan_fisik: data.pemeriksaan_fisik,
-          prognosa: data.prognosa,
-          kasus_kll: data.kasus_kll,
-          status_pulang: data.status_pulang,
-          keluhan: data.keluhan
-        });
-
-        setSelectedType({tipe: data.tipe ? e.value : ''});
-        setSelectedVisitation({status_pulang: data.status_pulang ? e.value : ''});
-        setSelectedPrognosa({prognosa: data.prognosa ? e.value : ''});
-
-        if (data.kasus_kll === true) {
-          setIsChecked(true);
-        } else {
-          setIsChecked(false);
-        }
-
-        // console.log(record);
-      } catch (e) {
-        console.log(e);
-      }
-    } else {
-      setDataStatus("add");
-
-      setRecord({
-        id_jaga: watchID,
-        id_vs: vitalSignsID,
-        id_pasien: patientID,
-        // waktu_mulai: moment(patientData.created_at).format("YYYY-MM-DD HH:mm:ss.SSS"),
-        // waktu_mulai: moment(patientData.created_at).format(),
-        waktu_mulai: moment(patientData.created_at).format("YYYY-MM-DD HH:mm"),
-        // waktu_selesai: endDateTime,
-        tipe: '',
-        anamnesis: '',
-        pemeriksaan_fisik: '',
-        prognosa: '',
-        kasus_kll: '',
-        status_pulang: '',
-        keluhan: ''
-      });
-    }
-
-    setModalRecord(true);
-
-    // console.log(dataStatus);
-  };
-
-  const onRecordSubmit = async (e) => {
-    e.preventDefault();
-
-    // console.log(record);
-    if(dataStatus === 'add') {
-      try {
-        const response = await recordAPI.add(record);
-        // console.log(response);
-
-        if (response.status == 200) {
-          let data = await response.data.data;
-          // console.log(data);
-
-          Swal.fire({
-            title: "Sukses!",
-            html: `Tambah rekam medis sukses`,
-            icon: "success",
-            confirmButtonColor: "#008ecc",
-          });
-
-          // resetForm(e);
-          // setShowRecord('none');
-
-          setModalRecord(false);
-          getVitalSignsByPatientId(e, patientID, patientData);
-        } else {
-          Swal.fire({
-            title: "Gagal!",
-            html: `Tambah rekam medis gagal: ${response.message}`,
-            icon: "error",
-            confirmButtonColor: "#008ecc",
-            confirmButtonText: "Coba lagi",
-          });
-
-          throw Error(`Error status: ${response.status}`);
-        }
-      } catch (e) {
-        Swal.fire({
-          title: "Gagal!",
-          html: e,
-          icon: "error",
-          confirmButtonColor: "#008ecc",
-          confirmButtonText: "Coba lagi",
-        });
-
-        console.log(e);
-      }
-    } else if(dataStatus === 'update') {
-      try {
-        const response = await recordAPI.update(record, recordID);
-        // console.log(response);
-
-        if (response.status == 200) {
-          let data = await response.data.data;
-          // console.log(data);
-
-          Swal.fire({
-            title: "Sukses!",
-            html: `Ubah rekam medis sukses`,
-            icon: "success",
-            confirmButtonColor: "#008ecc",
-          });
-
-          // resetForm(e);
-          // setShowRecord('none');
-
-          setModalRecord(false);
-          getVitalSignsByPatientId(e, patientID, patientData);
-        } else {
-          Swal.fire({
-            title: "Gagal!",
-            html: `Ubah rekam medis gagal: ${response.message}`,
-            icon: "error",
-            confirmButtonColor: "#008ecc",
-            confirmButtonText: "Coba lagi",
-          });
-
-          throw Error(`Error status: ${response.status}`);
-        }
-      } catch (e) {
-        Swal.fire({
-          title: "Gagal!",
-          html: e,
-          icon: "error",
-          confirmButtonColor: "#008ecc",
-          confirmButtonText: "Coba lagi",
-        });
-
-        console.log(e);
-      }
-    } else {
-      console.log('dataStatus undefined')
-    }
-  };
-
   const resetForm = (e) => {
     e.preventDefault();
 
     dispatch({type: "GET_ALL_RECORD_BY_PATIENT", payload: []});
     // setAllRecord([]);
-
-    setRecord({
-      id_jaga: watchID,
-      id_vs: '',
-      id_pasien: patientID,
-      waktu_mulai: startDateTime,
-      // waktu_selesai: endDateTime,
-      tipe: '',
-      anamnesis: '',
-      pemeriksaan_fisik: '',
-      prognosa: '',
-      kasus_kll: false,
-      status_pulang: '',
-      keluhan: ''
-    });
 
     setVitalSigns({
       id_pasien: patientID,
@@ -678,56 +195,6 @@ const Data = ({ match }) => {
     setShowRecord('none');
   };
 
-  const onLoadDivisi = async () => {
-    try {
-      const response = await divisionAPI.get("", "?limit=1000");
-      // console.log(response);
-
-      setSelectedDivisionF([{ label: "Semua", value: "", key: 0, name: 'id_divisi' }]);
-
-      if (response.status === 200) {
-        let data = response.data.data;
-        // console.log(data);
-      
-        for (var i = 0; i < data.length; i++) {
-          setSelectedDivisionF((current) => [
-            ...current,
-            { label: data[i].tipe, value: data[i].id, key: data[i].id, name: 'id_divisi' },
-          ]);
-        }
-      } else {
-        throw Error(`Error status: ${response.status}`);
-      }
-    } catch (e) {
-      console.log(e);
-    }
-  };
-
-  const onLoadPenyakit = async () => {
-    try {
-      const response = await diseaseAPI.get("", "?limit=1000");
-      // console.log(response);
-
-      setSelectedDisease([]);
-
-      if (response.status === 200) {
-        let data = response.data.data;
-        // console.log(data);
-      
-        for (var i = 0; i < data.length; i++) {
-          setSelectedDisease((current) => [
-            ...current,
-            { label: data[i].kode_icd10 + " - " + data[i].nama_penyakit  , value: data[i].id, key: data[i].id, name: 'id_penyakit' },
-          ]);
-        }
-      } else {
-        throw Error(`Error status: ${response.status}`);
-      }
-    } catch (e) {
-      console.log(e);
-    }
-  };
-
   const [isLoading, setIsLoading] = useState(false);
 
   const getQueue = async (params) => {
@@ -746,6 +213,7 @@ const Data = ({ match }) => {
   const getVitalSignsByPatientId = async (e, id, data) => {
     // e.preventDefault();
     // resetForm(e);
+    setRowSelected(id);
 
     setVitalSigns({
       id_pasien: patientID,
@@ -798,9 +266,9 @@ const Data = ({ match }) => {
       // console.log(vitalSigns);
     } catch (e) {
       console.log(e);
+    } finally {
+      getAllRecordByPatientId(e, id);
     }
-
-    setPatientStatus(1);
   };
   
   const getAllRecordByPatientId = async (e, id) => {
@@ -813,8 +281,6 @@ const Data = ({ match }) => {
     } catch (e) {
       console.log(e);
     }
-
-    setPatientStatus(2);
   };
 
   const [currentPage, setCurrentPage] = useState(1);
@@ -842,15 +308,9 @@ const Data = ({ match }) => {
     }
 
     getQueue(params);
-    onLoadDivisi();
-    onLoadPenyakit();
-
-    if(patientStatus === 1 && patientID) {
-      getAllRecordByPatientId("", patientID);
-    }
     
   // }, [limit, search, searchDivisi, sortBy, sortOrder, currentPage, queueAll, queueTotalPage, allRecord]);
-  }, [limit, searchName, searchDivisi, sortBy, sortOrder, currentPage, allRecord, patientStatus]);
+  }, [limit, searchName, searchDivisi, sortBy, sortOrder, currentPage, allRecord]);
 
   let startNumber = 1;
 
@@ -927,7 +387,7 @@ const Data = ({ match }) => {
                     </Button>
                   </InputGroupAddon>
                 </InputGroup>
-                <Table>
+                <Table hover>
                   <thead>
                     <tr>
                       <th className="center-xy" style={{ width: '40px' }}>#</th>
@@ -946,7 +406,7 @@ const Data = ({ match }) => {
                     </tr>
                     ) : queueAll.length > 0 ? (
                         queueAll.map((data) => (
-                          <tr key={data.id} onClick={(e) => getVitalSignsByPatientId(e, data.id_pasien, data)} style={{ cursor: 'pointer'}}>
+                          <tr key={data.id} onClick={(e) => getVitalSignsByPatientId(e, data.id_pasien, data)} style={{ cursor: 'pointer'}} className={`${rowSelected == data.id && 'row-selected'}`}>
                               <th scope="row" className="center-xy">{startNumber++}</th>
                               <td className="icon-column">
                                 <i className="simple-icon-magnifier queue-icon"></i><br/>
@@ -962,10 +422,6 @@ const Data = ({ match }) => {
                                 >
                                   <i className="simple-icon-arrow-right-circle"></i>
                                 </Button>
-                                {' '}
-                                {/* <Button color="warning" size="xs" className="button-xs">
-                                  <i className="simple-icon-drawer"></i>
-                                </Button> */}
                               </td>
                             </tr>
                         ))
@@ -1072,21 +528,16 @@ const Data = ({ match }) => {
                 <CardTitle>
                   Riwayat Rekam Medis
                   { patientData ?
-                    // <Link
-                    //   to={`/record/form/${patientID}/${watchID}`}
-                    //   >
                     <Link to={{
                         pathname: `/record/form`,
                         state: { patientID: patientID, patientData: patientData }
                     }}>
-                      <Button color="primary" style={{ float: "right" }} className="mb-4"
-                        // onClick={(e) => getRecordByPatientId(e, "")}
-                      >
+                      <Button color="primary" style={{ float: "right" }} className="mb-4">
                         Tambah
                       </Button>
                     </Link> :
                   '' }
-                  { patientStatus === 2 && allRecord.length > 0 ?
+                  { allRecord.length > 0 ?
                     <>
                       <br/>
                       <Label style={{ fontWeight: 'bold' }}>{patientData.nama_lengkap}, </Label>&nbsp;
@@ -1096,7 +547,7 @@ const Data = ({ match }) => {
                     </> :
                     ' Tidak Ditemukan' }
                 </CardTitle>
-                {patientStatus === 2 && allRecord.length > 0 && ( 
+                { allRecord.length > 0 && ( 
                   allRecord.map((data) => ( 
                   <Table borderless className="med-record-table" key={data.id}>
                     <tbody>
@@ -1105,8 +556,6 @@ const Data = ({ match }) => {
                         <td>
                             <span style={{ float: 'right' }}>
                               {data.waktu_mulai ? moment(data.waktu_mulai).format("DD MMM YYYY - HH:mm") : '00/00/0000 - 00:00'} s/d {data.waktu_selesai ? moment(data.waktu_selesai).format("DD MMM YYYY - HH:mm") : '00/00/0000 - 00:00'}
-                              {/* {data.waktu_mulai ? data.waktu_mulai : '00/00/0000'} s/d {data.waktu_selesai ? data.waktu_selesai : '00/00/0000'} */}
-                              {/* {data.created_at ? data.created_at : '00/00/0000'} s/d {data.updated_at ? data.updated_at : '00/00/0000'} */}
                             </span>
                         </td>
                       </tr>
@@ -1122,36 +571,14 @@ const Data = ({ match }) => {
                         <th>Pemeriksaan Fisik</th>
                         <td>{data.pemeriksaan_fisik ? data.pemeriksaan_fisik : '-'}</td>
                       </tr>
-                      {/* <tr>
-                        <th>Prognosa</th>
-                        <td>{data.prognosa ? data.prognosa : '-'}</td>
-                      </tr>
-                      <tr>
-                        <th>Kasus KLL</th>
-                        <td>{
-                            data.kasus_kll ? 
-                              <h5><span className="badge med-record-badge badge-danger badge-pill"><i className="simple-icon-check"></i></span></h5> :
-                              <h5><span className="badge med-record-badge badge-success badge-pill"><i className="simple-icon-close"></i></span></h5>
-                            }
-                        </td>
-                      </tr> */}
-                      {/* <tr>
-                        <th>Status Pulang</th>
-                        <td>{data.status_pulang ? data.status_pulang : '-'}</td>
-                      </tr> */}
                       <tr>
                         <th></th>
                         <td>
-                            {/* <Link
-                              to={`/record/form/${patientID}/${watchID}`}
-                            > */}
                             <Link to={{
                                 pathname: `/record/form`,
                                 state: { patientID: patientID, patientData: patientData, recordID: data.id }
                             }}>
-                              <Button color="secondary" size="xs" style={{ float: "right" }}
-                                // onClick={(e) => getRecordByPatientId(e, data.id)}
-                                >
+                              <Button color="secondary" size="xs" style={{ float: "right" }}>
                                 Ubah Data
                               </Button>
                             </Link>
@@ -1164,463 +591,6 @@ const Data = ({ match }) => {
               </CardBody>
             </Card>
           </Colxx>
-
-          <Modal isOpen={modalRecord} toggle={() => setModalRecord(!modalRecord)} className="modal-record">
-            <ModalHeader>
-              Form Registrasi Rekam Medis <span style={{ fontWeight: 'bold' }}>{patientData.nama_lengkap}</span>
-            </ModalHeader>
-            <Form>
-            <ModalBody className="wizard wizard-default">
-              <Wizard>
-                <TopNavigation
-                  className="justify-content-center"
-                  disableNav={false}
-                  topNavClick={topNavClick}
-                />
-                <Steps>
-                  <Step
-                    id="step1"
-                    name="Rekam Medis"
-                  >
-                    <div className="wizard-basic-step">
-                      <FormGroup row>
-                        {/* <Colxx sm={6}>
-                          <FormGroup>
-                            <Label for="waktu_mulai">
-                              Waktu Mulai<span className="required text-danger" aria-required="true"> *</span>
-                            </Label>
-                            <DatePicker
-                              // selected={startDateTime}
-                              // selected={moment(new Date(patientData.created_at)).format("d MMMM yyyy HH:mm")}
-                              selected={new Date(patientData.created_at)}
-                              // onChange={setStartDateTime}
-                              name="waktu_mulai"
-                              id="waktu_mulai"
-                              showTimeInput
-                              // showTimeSelect
-                              timeFormat="HH:mm"
-                              timeIntervals={5}
-                              dateFormat="d MMMM yyyy HH:mm"
-                              readOnly={true}
-                              // timeCaption="Jam"
-                              className="disabled-datepicker"
-                              // value={Sdate}
-                              onChange={(e) => onChange(e, "waktu_mulai")}
-                              shouldCloseOnSelect={true}
-                            />
-                          </FormGroup>
-                        </Colxx>
-
-                        <Colxx sm={6}>
-                          <FormGroup>
-                            <Label for="waktu_selesai">
-                              Waktu Selesai<span className="required text-danger" aria-required="true"> *</span>
-                            </Label>
-                            <DatePicker
-                              selected={endDateTime}
-                              // onChange={setEndDateTime}
-                              name="waktu_selesai"
-                              id="waktu_selesai"
-                              showTimeInput
-                              showTimeSelect
-                              timeFormat="HH:mm"
-                              timeIntervals={5}
-                              dateFormat="d MMMM yyyy HH:mm"
-                              timeCaption="Jam"
-                              // value={Edate}
-                              onChange={(e) => onChange(e, "waktu_selesai")}
-                              shouldCloseOnSelect={true}
-                            />
-                          </FormGroup>
-                        </Colxx> */}
-
-                        <Colxx sm={6}>
-                          <FormGroup>
-                            <Label for="tipe">
-                              Tipe
-                            </Label>
-                            <Select
-                              components={{ Input: CustomSelectInput }}
-                              className="react-select"
-                              classNamePrefix="react-select"
-                              name="tipe"
-                              value={selectType.find(item => item.value === record.tipe) || ''}
-                              // value={selectedType}
-                              // onChange={setSelectedType}
-                              options={selectType}
-                              // value={record.tipe}
-                              onChange={onChange}
-                            />
-                          </FormGroup>
-                        </Colxx>
-
-                        <Colxx sm={6}>
-                          <FormGroup>
-                            <Label for="kasus_kll">
-                              Kasus Kecelakaan Lalu Lintas
-                            </Label>
-                            <CustomInput
-                              checked={isChecked}
-                              type="checkbox"
-                              name="kasus_kll"
-                              id="kasus_kll"
-                              label="Kecelakaan Lalu Lintas"
-                              value={record.kasus_kll}
-                              onChange={onChange}
-                            />
-                          </FormGroup>
-                        </Colxx>
-
-                        <Colxx sm={12}>
-                          <FormGroup>
-                            <Label for="anamnesis">
-                              Anamnesis
-                            </Label>
-                            <Input
-                              type="textarea"
-                              name="anamnesis"
-                              id="anamnesis"
-                              placeholder="Anamnesis"
-                              style={{minHeight: '100'}}
-                              value={record.anamnesis}
-                              onChange={onChange}
-                            />
-                          </FormGroup>
-                        </Colxx>
-
-                        <Colxx sm={12}>
-                          <FormGroup>
-                            <Label for="pemeriksaan_fisik">
-                              Pemeriksaan Fisik
-                            </Label>
-                            <Input
-                              type="textarea"
-                              name="pemeriksaan_fisik"
-                              id="pemeriksaan_fisik"
-                              placeholder="Pemeriksaan Fisik"
-                              style={{minHeight: '100'}}
-                              value={record.pemeriksaan_fisik}
-                              onChange={onChange}
-                            />
-                          </FormGroup>
-                        </Colxx>
-
-                        <Colxx sm={6}>
-                          <FormGroup>
-                            <Label for="prognosa">
-                              Prognosa
-                            </Label>
-                            <Select
-                              components={{ Input: CustomSelectInput }}
-                              className="react-select"
-                              classNamePrefix="react-select"
-                              name="prognosa"
-                              value={selectPrognosa.find(item => item.value === record.prognosa) || ''}
-                              // value={selectedPrognosa}
-                              // onChange={setSelectedPrognosa}
-                              options={selectPrognosa}
-                              // value={record.prognosa}
-                              onChange={onChange}
-                            />
-                          </FormGroup>
-                        </Colxx>
-
-                        <Colxx sm={6}>
-                          <FormGroup>
-                            <Label for="status_pulang">
-                              Status Pulang<span className="required text-danger" aria-required="true"> *</span>
-                            </Label>
-                            <Select
-                              components={{ Input: CustomSelectInput }}
-                              className="react-select"
-                              classNamePrefix="react-select"
-                              name="status_pulang"
-                              // value={selectedVisitation}
-                              value={selectVisitation.find(item => item.value === record.status_pulang) || ''}
-                              // onChange={setSelectedVisitation}
-                              options={selectVisitation}
-                              required
-                              // value={record.status_pulang}
-                              onChange={onChange}
-                            />
-                          </FormGroup>
-                        </Colxx>
-
-                        <Colxx sm={12}>
-                          <FormGroup>
-                            <Label for="keluhan">
-                              Keluhan
-                            </Label>
-                            <Input
-                              type="textarea"
-                              name="keluhan"
-                              id="keluhan"
-                              placeholder="Keluhan"
-                              style={{minHeight: '100'}}
-                              value={record.keluhan}
-                              onChange={onChange}
-                            />
-                          </FormGroup>
-                        </Colxx>
-                      </FormGroup>
-                    </div>
-                  </Step>
-                  <Step id="step2" name="Diagnosis">
-                    <div className="wizard-basic-step">
-                      <FormGroup row>
-                        <Colxx sm={6}>
-                          <Label for="id_penyakit">
-                            Penyakit
-                            {/* <span
-                              className="required text-danger"
-                              aria-required="true"
-                            >
-                              {" "}
-                              *
-                            </span> */}
-                          </Label>
-                        </Colxx>
-                        <Colxx sm={6}>
-                          <Label for="tipe_diagnosis">
-                            Tipe
-                          </Label>
-                        </Colxx>
-
-                        {diagnosis.map((input, index) => {
-                          return (
-                            <React.Fragment key={index}>
-                              <Colxx sm={6}>
-                                <FormGroup>
-                                  <Select
-                                    components={{ Input: CustomSelectInput }}
-                                    className="react-select"
-                                    classNamePrefix="react-select"
-                                    name="id_penyakit"
-                                    // value={selectedDisease.find(item => item.value === diagnosis.id_penyakit) || ''}
-                                    options={selectedDisease}
-                                    onChange={(event) => handleDiagnosisChange(index, event)}
-                                  />
-                                </FormGroup>
-                              </Colxx>
-                              <Colxx sm={6}>
-                                <FormGroup>
-                                  <Row>
-                                    <Colxx sm={6} md={4} xl={4}>
-                                      <CustomInput
-                                        // checked={record.tipe_wd}
-                                        type="checkbox"
-                                        name="tipe_diagnosis"
-                                        id="tipe_wd"
-                                        label="Working Diagnosis"
-                                        // value={diagnosis.tipe_wd}
-                                        onChange={(event) => handleDiagnosisChange(index, event)}
-                                      />
-                                    </Colxx>
-                                    <Colxx sm={5} md={7} xl={7}>
-                                      <CustomInput
-                                        // checked={record.tipe_dd}
-                                        type="checkbox"
-                                        name="tipe_diagnosis"
-                                        id="tipe_dd"
-                                        label="Differential Diagnosis"
-                                        // value={diagnosis.tipe_dd}
-                                        onChange={(event) => handleDiagnosisChange(index, event)}
-                                      />
-                                    </Colxx>
-                                    <Colxx sm={1} md={1} xl={1}>
-                                      {index > 0 && (
-                                        <Button
-                                          color="danger"
-                                          style={{ float: "right" }}
-                                          onClick={() =>
-                                            removeDiagnosisFields(input.id, index)
-                                          }
-                                          className="remove-diagnosis"
-                                        >
-                                          <i className="simple-icon-trash"></i>
-                                        </Button>
-                                      )}
-                                    </Colxx>
-                                  </Row>
-                                </FormGroup>
-                              </Colxx>
-                            </React.Fragment>
-                          )
-                        })}
-
-                        <Colxx sm={12} className="mt-2">
-                          <Button
-                            color="primary"
-                            // style={{ float: "right" }}
-                            // className="mb-2"
-                            onClick={addDiagnosisFields}
-                          >
-                            Tambah
-                          </Button>
-                        </Colxx>
-                      </FormGroup>
-                    </div>
-                  </Step>
-                  <Step id="step3" name="Tata Laksana">
-                    <div className="wizard-basic-step" id="nav-tata-laksana">
-                      <TabContent activeTab={activeTab}>
-                        <TabPane tabId="obat">
-                          <Row>
-                            <Colxx xxs="12" lg="12" className="mb-4 text-center">
-                              <h3>Ini Obat</h3>
-                            </Colxx>
-                          </Row>
-                        </TabPane>
-                        <TabPane tabId="pemeriksaan">
-                          <Row>
-                            <Colxx xxs="12" lg="12" className="mb-4 text-center">
-                              <h3>Ini Pemeriksaan</h3>
-                            </Colxx>
-                          </Row>
-                        </TabPane>
-                        <TabPane tabId="tindakan">
-                          <Row>
-                            <Colxx xxs="12" lg="12" className="mb-4 text-center">
-                              <h3>Ini Tindakan</h3>
-                            </Colxx>
-                          </Row>
-                        </TabPane>
-                        <TabPane tabId="rujukan">
-                          <Row>
-                            <Colxx xxs="12" lg="12" className="mb-4 text-center">
-                              <h3>Ini Rujukan</h3>
-                            </Colxx>
-                          </Row>
-                        </TabPane>
-                      </TabContent>
-
-                      <Nav tabs className="separator-tabs ml-0 mb-5">
-                        <NavItem>
-                          <NavLink
-                            location={{}}
-                            to="#"
-                            className={classnames({
-                              active: activeTab === 'obat',
-                              'nav-link': true,
-                              'nav-tata-laksana': true,
-                            })}
-                            onClick={() => setActiveTab('obat')}
-                          >
-                            Obat
-                          </NavLink>
-                        </NavItem>
-                        <NavItem>
-                          <NavLink
-                            location={{}}
-                            to="#"
-                            className={classnames({
-                              active: activeTab === 'pemeriksaan',
-                              'nav-link': true,
-                              'nav-tata-laksana': true,
-                            })}
-                            onClick={() => setActiveTab('pemeriksaan')}
-                          >
-                            Pemeriksaan
-                          </NavLink>
-                        </NavItem>
-                        <NavItem>
-                          <NavLink
-                            location={{}}
-                            to="#"
-                            className={classnames({
-                              active: activeTab === 'tindakan',
-                              'nav-link': true,
-                              'nav-tata-laksana': true,
-                            })}
-                            onClick={() => setActiveTab('tindakan')}
-                          >
-                            Tindakan
-                          </NavLink>
-                        </NavItem>
-                        <NavItem>
-                          <NavLink
-                            location={{}}
-                            to="#"
-                            className={classnames({
-                              active: activeTab === 'rujukan',
-                              'nav-link': true,
-                              'nav-tata-laksana': true,
-                            })}
-                            onClick={() => setActiveTab('rujukan')}
-                          >
-                            Rujukan
-                          </NavLink>
-                        </NavItem>
-                      </Nav>
-
-                    </div>
-                  </Step>
-                  {/* <Step id="step4" name="Tata Laksana" desc="Pemeriksaan">
-                    <div className="wizard-basic-step">
-                      <h2 className="mb-2">
-                        Test 4
-                      </h2>
-                      <p>
-                        Notif 4
-                      </p>
-                    </div>
-                  </Step>
-                  <Step id="step5" name="Tata Laksana" desc="Tindakan">
-                    <div className="wizard-basic-step">
-                      <h2 className="mb-2">
-                        Test 5
-                      </h2>
-                      <p>
-                        Notif 5
-                      </p>
-                    </div>
-                  </Step>
-                  <Step id="step6" name="Tata Laksana" desc="Rujukan">
-                    <div className="wizard-basic-step">
-                      <h2 className="mb-2">
-                        Test 6
-                      </h2>
-                      <p>
-                        Notif 6
-                      </p>
-                    </div>
-                  </Step> */}
-                </Steps>
-                {/* <BottomNavigation
-                  onClickNext={onClickNext}
-                  onClickPrev={onClickPrev}
-                  className="justify-content-center"
-                  prevLabel="Prev"
-                  nextLabel="Next"
-                /> */}
-              </Wizard>
-              
-            </ModalBody>
-            <ModalFooter style={{ display: 'block' }}>
-              <Row>
-                <Colxx sm={6}>
-                  <Label>
-                    * ) Wajib diisi
-                  </Label>
-                </Colxx>
-                <Colxx sm={6} className="text-right">
-                <Button
-                  type="button"
-                  outline
-                  color="danger"
-                  onClick={() => setModalRecord(false)}>
-                    Batal
-                  </Button>
-                  &nbsp;&nbsp;
-                  <Button color="primary" 
-                    onClick={(e) => onRecordSubmit(e)}>
-                    Simpan
-                  </Button>
-                </Colxx>
-              </Row>
-            </ModalFooter>
-            </Form>
-          </Modal>
         </Row>
     </>
   );

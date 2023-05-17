@@ -48,8 +48,9 @@ const selectKITAS = [
 ];
 
 const selectInsurance = [
-  { label: "BPJS", value: "BPJS", key: 0, name: "tipe_asuransi" },
-  { label: "Lainnya", value: "Lainnya", key: 1, name: "tipe_asuransi" },
+  { label: "PPS/Kapitasi", value: "PPS/Kapitasi", key: 0, name: "tipe_asuransi" },
+  { label: "FFS Paket", value: "FFS Paket", key: 1, name: "tipe_asuransi" },
+  { label: "FFS Non-Paket", value: "FFS Non-Paket", key: 2, name: "tipe_asuransi" },
 ];
 
 const selectAllergy = [
@@ -199,6 +200,7 @@ const Data = ({ match }) => {
   const patientAll = useSelector(state => state.patient);
   const patientTotalPage = useSelector(state => state.patientTotalPage);
   const [dataStatus, setDataStatus] = useState("add");
+  const [rowSelected, setRowSelected] = useState(null);
 
   const [selectedKITAS, setSelectedKITAS] = useState("");
   const [selectedNationality, setSelectedNationality] = useState("");
@@ -813,8 +815,20 @@ const Data = ({ match }) => {
     }
   };
 
-  const resetForm = (e) => {
+  const resetForm = (e, scroll = false) => {
     // e.preventDefault();
+
+    if(scroll) {
+      if(window.innerWidth < 1280){
+        const element = document.getElementById('manage-form-tab-mobile');
+        if (element) {
+          window.scroll({
+            top: element,
+            behavior: "smooth"
+          })
+        }
+      }
+    }
     
     setPatient({
       tipe_kitas: '',
@@ -887,6 +901,17 @@ const Data = ({ match }) => {
     e.preventDefault();
     resetForm(e);
     setDataStatus("update");
+    setRowSelected(id);
+
+    if(window.innerWidth < 1280){
+      const element = document.getElementById('manage-form-tab-mobile');
+      if (element) {
+        window.scroll({
+          top: element,
+          behavior: "smooth"
+        })
+      }
+    }
 
     try {
       const res = await patientAPI.get("", `/${id}`);
@@ -1262,15 +1287,15 @@ const Data = ({ match }) => {
   return (
     <>
       <Row>
-        <Colxx sm="12" md="12" xl="4" className="mb-4">
+        <Colxx sm="12" md="12" xl="4" className="mb-4 switch-table">
           <Card className="mb-4">
             <CardBody>
-              <CardTitle style={{ marginBottom: 0 }}>
+              <CardTitle>
                 <Row>
-                  <Colxx sm="12" md="8" xl="8">
+                  <Colxx sm="12" md="12" xl="12">
                   Data Pasien
                   </Colxx>
-                  <Colxx sm="12" md="4" xl="4">
+                  {/* <Colxx sm="12" md="4" xl="4">
                     <Button
                       color="primary"
                       style={{ float: "right" }}
@@ -1279,7 +1304,7 @@ const Data = ({ match }) => {
                     >
                       Tambah
                     </Button>
-                  </Colxx>
+                  </Colxx> */}
                 </Row>
               </CardTitle>
               <FormGroup row style={{ margin: '0px', width: '100%' }}>
@@ -1312,7 +1337,7 @@ const Data = ({ match }) => {
                   </Button>
                 </InputGroupAddon>
               </InputGroup>
-              <Table>
+              <Table hover>
                 <thead>
                   <tr>
                     <th className="center-xy" style={{ width: '40px' }}>#</th>
@@ -1331,7 +1356,7 @@ const Data = ({ match }) => {
                   </tr>
                   ) : patientAll.length > 0 ? (
                     patientAll.map((data) => (
-                      <tr key={data.id} onClick={(e) => getPatientById(e, data.id)} style={{ cursor: 'pointer'}}>
+                      <tr key={data.id} onClick={(e) => getPatientById(e, data.id)} style={{ cursor: 'pointer' }} className={`${rowSelected == data.id && 'row-selected'}`}>
                         <th scope="row" style={{ textAlign: "center", verticalAlign: 'middle' }}>
                           {startNumber++}
                         </th>
@@ -1402,7 +1427,8 @@ const Data = ({ match }) => {
             </CardBody>
           </Card>
         </Colxx>
-        <Colxx sm="12" md="12" xl="8" className="mb-4">
+
+        <Colxx sm="12" md="12" xl="8" className="mb-4 manage-form" id="manage-form-tab-mobile">
           <Card className="mb-8">
             <CardBody>
               <CardTitle>
@@ -1896,6 +1922,14 @@ const Data = ({ match }) => {
           </ModalFooter>
         </Modal>
       </Row>
+
+      <Button
+        color="primary"
+        className="float-btn"
+        onClick={(e) => resetForm(e, true)}
+      >
+        <i className="iconsminds-add-user"></i> Tambah Pasien
+      </Button>
     </>
   );
 };

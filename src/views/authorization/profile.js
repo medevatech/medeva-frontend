@@ -415,10 +415,6 @@ const Data = ({ match, history, loading, error }) => {
       //       return { ...current, status_menikah: 'Belum Menikah' }
       //     })
       //   }
-      } else if (e.target.name && e.target.name === 'password') {
-        setEmployee(current => {
-            return { ...current, password: e.target.value }
-        })
       } else if (e.target.name && e.target.name !== 'jenis_kelamin') {
         setEmployee(current => {
             return { ...current, [e.target.name]: e.target.value }
@@ -451,6 +447,11 @@ const Data = ({ match, history, loading, error }) => {
   
           resetForm(e);
           getEmployeeById(userData.id);
+
+          if(employee.password) {
+            localStorage.clear();
+            history.push('../');
+          }
         } else {
           Swal.fire({
             title: "Gagal!",

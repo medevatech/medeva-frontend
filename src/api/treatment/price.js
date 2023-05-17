@@ -2,22 +2,18 @@ import api from 'constants/api'
 import { getAuthHeader, getOriginHeader, serializeQueryParams, getJSONHeader } from 'utils/http'
 import baseApi from 'service/api-general'
 
-const labTreatment = {
+const price = {
   get: (payloads, options) => {
-    const url = api.labTreatment + options
-    return baseApi.get(url, payloads, { headers: getOriginHeader() })
-  },
-  getDistinct: (payloads, options) => {
-    const url = api.labTreatment + '/distinct' + options
+    const url = api.treatment.price + options
     return baseApi.get(url, payloads, { headers: getOriginHeader() })
   },
   add: (payloads) => {
-    const url = api.labTreatment
+    const url = api.treatment.price
     return baseApi.post(url, payloads, { headers: getOriginHeader() })
   },
   update: (payloads, id) => {
-    const url = api.labTreatment + `/${id}`
+    const url = api.treatment.price + `/${id}`
     return baseApi.put(url, payloads, { headers: getOriginHeader() })
-  },
+  }
 }
-export default labTreatment
+export default price

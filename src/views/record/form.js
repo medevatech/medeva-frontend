@@ -42,16 +42,15 @@ import diagnoseAPI from "api/diagnose";
 import diseaseAPI from "api/disease";
 import recieptAPI from "api/reciept"
 import medicineAPI from "api/medicine";
-import inspectSupportAPI from 'api/inspect-support';
+import inspectSupportAPI from 'api/inspect/support';
 import labAPI from "api/lab";
-import inspectListAPI from "api/inspect";
+import labTreatmentAPI from "api/lab/treatment";
 import treatmentAPI from "api/treatment"
-import treatmentListAPI from "api/treatment-list";
-import labTreatmentAPI from "api/lab-treatment";
+import treatmentListAPI from "api/treatment/list";
 import referenceAPI from "api/reference"
-import diagnoseReferenceAPI from "api/diagnose-reference"
-import divisionReferenceAPI from "api/division-reference";
-import hospitalReferenceAPI from "api/hospital-reference";
+import diagnoseReferenceAPI from "api/reference/diagnose"
+import divisionReferenceAPI from "api/reference/division";
+import hospitalReferenceAPI from "api/reference/hospital";
 import recordAPI from "api/record";
 import Swal from "sweetalert2";
 
@@ -74,10 +73,10 @@ const selectPrognosa = [
 ];
 
 const selectType = [
-  { label: 'Promotif', value: 'Promotif', key: 0, name: 'tipe' },
-  { label: 'Preventif', value: 'Preventif', key: 1, name: 'tipe' },
-  { label: 'Rawat Inap', value: 'Rawat Inap', key: 2, name: 'tipe' },
-  { label: 'Rawat Jalan', value: 'Rawat Jalan', key: 3, name: 'tipe' }
+  { label: 'Rawat Jalan', value: 'Rawat Jalan', key: 0, name: 'tipe' },
+  { label: 'Rawat Inap', value: 'Rawat Inap', key: 1, name: 'tipe' },
+  { label: 'Promotif', value: 'Promotif', key: 2, name: 'tipe' },
+  { label: 'Preventif', value: 'Preventif', key: 3, name: 'tipe' }
 ];
 
 const selectPcs = [
@@ -202,7 +201,8 @@ const FormRecord = ({ match, history }) => {
     prognosa: '',
     kasus_kll: false,
     status_pulang: '',
-    keluhan: ''
+    keluhan: '',
+    catatan_tambahan: '',
   });
 
   const onChange = (e, name = "") => {
@@ -565,44 +565,44 @@ const FormRecord = ({ match, history }) => {
   const [reference, setReference] = useState([
     { id: '', id_rujukan: "", id_poli: "", id_rs: "", anamnesis: "", terapi: "", catatan: "" }
   ]);
-  const [referenceDiagnosis, setReferenceDiagnosis] = useState([
+  const [diagnoseReference, setDiagnoseReference] = useState([
     { id: '', id_rujukan: "", id_penyakit: "", tipe_wd: false, tipe_dd: false }
   ]);
-  const [selectedReferenceDiagnosis, setSelectedReferenceDiagnosis] = useState([{ label: ""}]);
+  const [selectedDiagnoseReference, setSelectedDiagnoseReference] = useState([{ label: ""}]);
 
-  const addReferenceDiagnosisFields = () => {
-    let newfieldReferenceDiagnosis = { id: '', id_rujukan: "", id_penyakit: "", tipe_wd: false, tipe_dd: false };
-    setReferenceDiagnosis([...referenceDiagnosis, newfieldReferenceDiagnosis]);
+  const addDiagnoseReferenceFields = () => {
+    let newfieldDiagnoseReference = { id: '', id_rujukan: "", id_penyakit: "", tipe_wd: false, tipe_dd: false };
+    setDiagnoseReference([...diagnoseReference, newfieldDiagnoseReference]);
 
-    let newfieldDropdownReferenceDiagnosis = { label: "" };
-    setSelectedReferenceDiagnosis([...selectedReferenceDiagnosis, newfieldDropdownReferenceDiagnosis]);
+    let newfieldDropdownDiagnoseReference = { label: "" };
+    setSelectedDiagnoseReference([...selectedDiagnoseReference, newfieldDropdownDiagnoseReference]);
   };
 
-  const removeReferenceDiagnosisFields = (id, index) => {
-    let dataReferenceDiagnosis = [...referenceDiagnosis];
-    let displaySelectReferenceDiagnosis = [...selectedReferenceDiagnosis];
+  const removeDiagnoseReferenceFields = (id, index) => {
+    let dataDiagnoseReference = [...diagnoseReference];
+    let displaySelectDiagnoseReference = [...selectedDiagnoseReference];
 
-    dataReferenceDiagnosis.splice(index, 1);
-    displaySelectReferenceDiagnosis.splice(index, 1);
+    dataDiagnoseReference.splice(index, 1);
+    displaySelectDiagnoseReference.splice(index, 1);
 
-    setReferenceDiagnosis(dataReferenceDiagnosis);
-    setSelectedReferenceDiagnosis(displaySelectReferenceDiagnosis);
+    setDiagnoseReference(dataDiagnoseReference);
+    setSelectedDiagnoseReference(displaySelectDiagnoseReference);
 
-    // console.log('remove referenceDiagnosis', referenceDiagnosis);
-    // console.log('remove selectedReferenceDiagnosis', selectedReferenceDiagnosis);
+    // console.log('remove diagnoseReference', diagnoseReference);
+    // console.log('remove selectedDiagnoseReference', selectedDiagnoseReference);
   };
 
   let wd_rujukan = false; let dd_rujukan = false;
 
-  const handleReferenceDiagnosisChange = (index, event) => {
-    // console.log('handleReferenceDiagnosisChange', event);
+  const handleDiagnoseReferenceChange = (index, event) => {
+    // console.log('handleDiagnoseReferenceChange', event);
 
-    let dataReferenceDiagnosis = [...referenceDiagnosis];
-    let displaySelectReferenceDiagnosis = [...selectedReferenceDiagnosis];
+    let dataDiagnoseReference = [...diagnoseReference];
+    let displaySelectDiagnoseReference = [...selectedDiagnoseReference];
 
     if (event.name === "id_penyakit"){
-      dataReferenceDiagnosis[index][event.name] = event.value;
-      displaySelectReferenceDiagnosis[index]["label"] = event.label;
+      dataDiagnoseReference[index][event.name] = event.value;
+      displaySelectDiagnoseReference[index]["label"] = event.label;
     } else if(event.target.name === "tipe_diagnosis_rujukan") {
 
       console.log('event.target.id', event.target.id);
@@ -620,15 +620,15 @@ const FormRecord = ({ match, history }) => {
         dd_rujukan = false;
       }
 
-      displaySelectReferenceDiagnosis[index]['tipe_wd'] = wd_rujukan;
-      displaySelectReferenceDiagnosis[index]['tipe_dd'] = dd_rujukan;
+      displaySelectDiagnoseReference[index]['tipe_wd'] = wd_rujukan;
+      displaySelectDiagnoseReference[index]['tipe_dd'] = dd_rujukan;
     }
 
-    setReferenceDiagnosis(dataReferenceDiagnosis);
-    setSelectedReferenceDiagnosis(displaySelectReferenceDiagnosis);
+    setDiagnoseReference(dataDiagnoseReference);
+    setSelectedDiagnoseReference(displaySelectDiagnoseReference);
 
-    console.log('handle referenceDiagnosis', referenceDiagnosis);
-    // console.log('handle selectedReferenceDiagnosis', selectedReferenceDiagnosis);
+    console.log('handle diagnoseReference', diagnoseReference);
+    // console.log('handle selectedDiagnoseReference', selectedDiagnoseReference);
   };
 
   const handleReferenceChange = (e) => {
@@ -679,7 +679,8 @@ const FormRecord = ({ match, history }) => {
           prognosa: data.prognosa,
           kasus_kll: data.kasus_kll,
           status_pulang: data.status_pulang,
-          keluhan: data.keluhan
+          keluhan: data.keluhan,
+          catatan_tambahan: data.catatan_tambahan,
         });
 
         setSelectedType({tipe: data.tipe ? e.value : ''});
@@ -710,7 +711,8 @@ const FormRecord = ({ match, history }) => {
         prognosa: '',
         kasus_kll: '',
         status_pulang: '',
-        keluhan: ''
+        keluhan: '',
+        catatan_tambahan: ''
       });
     }
 
@@ -807,7 +809,7 @@ const FormRecord = ({ match, history }) => {
         // onCheckupSubmit(e);
 	      // onActionSubmit(e);
         // onReferenceSubmit(e);
-        // onDiagnosisReferenceSubmit(e);
+        // onDiagnoseReferenceSubmit(e);
       }
     } else {
       console.log('dataStatusRecord undefined')
@@ -1235,14 +1237,14 @@ const FormRecord = ({ match, history }) => {
     }
   };
 
-  const onDiagnosisReferenceSubmit = async (e) => {
+  const onDiagnoseReferenceSubmit = async (e) => {
     e.preventDefault();
 
-    // console.log(referenceDiagnosis);
-    for (var i = 0; i < referenceDiagnosis.length; i++) {
-      if(referenceDiagnosis[i].id === '') {
+    // console.log(diagnoseReference);
+    for (var i = 0; i < diagnoseReference.length; i++) {
+      if(diagnoseReference[i].id === '') {
         try {
-          const response = await diagnoseReferenceAPI.add(referenceDiagnosis[i]);
+          const response = await diagnoseReferenceAPI.add(diagnoseReference[i]);
           // console.log(response);
 
           if (response.status == 200) {
@@ -1279,7 +1281,7 @@ const FormRecord = ({ match, history }) => {
         }
       } else {
         try {
-          const response = await diagnoseReferenceAPI.update(referenceDiagnosis[i], referenceDiagnosis[i].id);
+          const response = await diagnoseReferenceAPI.update(diagnoseReference[i], diagnoseReference[i].id);
           // console.log(response);
 
           if (response.status == 200) {
@@ -1334,7 +1336,8 @@ const FormRecord = ({ match, history }) => {
       prognosa: '',
       kasus_kll: false,
       status_pulang: '',
-      keluhan: ''
+      keluhan: '',
+      catatan_tambahan: ''
     });
     
     setIsChecked(false);
@@ -1671,7 +1674,7 @@ const FormRecord = ({ match, history }) => {
       // getCheckupByRecordId(recordID);
       // getTreatmentByRecordId(recordID);
       // getReferenceByRecordId(recordID);
-      // getReferenceDiagnosisByRecordId(recordID);
+      // getDiagnoseReferenceByRecordId(recordID);
     }
   };
 
@@ -1828,6 +1831,23 @@ const FormRecord = ({ match, history }) => {
 
                                     <Colxx sm={12}>
                                         <FormGroup>
+                                            <Label for="keluhan">
+                                            Keluhan
+                                            </Label>
+                                            <Input
+                                            type="textarea"
+                                            name="keluhan"
+                                            id="keluhan"
+                                            placeholder="Keluhan"
+                                            style={{minHeight: '100'}}
+                                            value={record.keluhan}
+                                            onChange={onChange}
+                                            />
+                                        </FormGroup>
+                                    </Colxx>
+
+                                    <Colxx sm={12}>
+                                        <FormGroup>
                                             <Label for="anamnesis">
                                             Anamnesis
                                             </Label>
@@ -1896,23 +1916,6 @@ const FormRecord = ({ match, history }) => {
                                             options={selectVisitation}
                                             required
                                             // value={record.status_pulang}
-                                            onChange={onChange}
-                                            />
-                                        </FormGroup>
-                                    </Colxx>
-
-                                    <Colxx sm={12}>
-                                        <FormGroup>
-                                            <Label for="keluhan">
-                                            Keluhan
-                                            </Label>
-                                            <Input
-                                            type="textarea"
-                                            name="keluhan"
-                                            id="keluhan"
-                                            placeholder="Keluhan"
-                                            style={{minHeight: '100'}}
-                                            value={record.keluhan}
                                             onChange={onChange}
                                             />
                                         </FormGroup>
@@ -2009,6 +2012,23 @@ const FormRecord = ({ match, history }) => {
                                           </Button>
                                         </Colxx>
                                     </FormGroup>
+
+                                    <Colxx sm={12}>
+                                        <FormGroup>
+                                            <Label for="catatan_tambahan">
+                                            Catatan Tambahan
+                                            </Label>
+                                            <Input
+                                            type="textarea"
+                                            name="catatan_tambahan"
+                                            id="catatan_tambahan"
+                                            placeholder="Catatan Tambahan"
+                                            style={{minHeight: '100'}}
+                                            value={record.catatan_tambahan}
+                                            onChange={onChange}
+                                            />
+                                        </FormGroup>
+                                    </Colxx>
                                 </div>
                             </Step>
                             <Step id="step3" name="Tata Laksana">
@@ -2253,7 +2273,7 @@ const FormRecord = ({ match, history }) => {
                                                         <Colxx sm={5} md={5} xl={5}>
                                                             <FormGroup>
                                                                 <Label for="id_tindakan">
-                                                                    Tindakan / Layanan
+                                                                    Layanan
                                                                 </Label>
                                                                 <Select
                                                                     components={{ Input: CustomSelectInput }}
@@ -2319,7 +2339,7 @@ const FormRecord = ({ match, history }) => {
                                         <TabPane tabId="rujukan">
                                             <FormGroup>
                                                 <FormGroup row>
-                                                  {referenceDiagnosis.map((input, index) => {
+                                                  {diagnoseReference.map((input, index) => {
                                                       return (
                                                         <React.Fragment key={index}>
                                                             <Colxx sm={5}>
@@ -2339,9 +2359,9 @@ const FormRecord = ({ match, history }) => {
                                                                         className="react-select"
                                                                         classNamePrefix="react-select"
                                                                         name="id_penyakit_rujukan"
-                                                                        value={selectedDisease.find(item => item.value === referenceDiagnosis[index].id_penyakit) || ''}
+                                                                        value={selectedDisease.find(item => item.value === diagnoseReference[index].id_penyakit) || ''}
                                                                         options={selectedDisease}
-                                                                        onChange={(event) => handleReferenceDiagnosisChange(index, event)}
+                                                                        onChange={(event) => handleDiagnoseReferenceChange(index, event)}
                                                                     />
                                                                 </FormGroup>
                                                             </Colxx>
@@ -2353,24 +2373,24 @@ const FormRecord = ({ match, history }) => {
                                                                     <Row>
                                                                         <Colxx sm={6} md={5} xl={5}>
                                                                             <CustomInput
-                                                                              checked={referenceDiagnosis[index].tipe_wd}
+                                                                              checked={diagnoseReference[index].tipe_wd}
                                                                               type="checkbox"
                                                                               name="tipe_diagnosis_rujukan"
                                                                               id="tipe_wd_rujukan"
                                                                               label="Working Diagnosis"
-                                                                              // value={referenceDiagnosis.tipe_wd}
-                                                                              onChange={(event) => handleReferenceDiagnosisChange(index, event)}
+                                                                              // value={diagnoseReference.tipe_wd}
+                                                                              onChange={(event) => handleDiagnoseReferenceChange(index, event)}
                                                                             />
                                                                         </Colxx>
                                                                         <Colxx sm={5} md={6} xl={6}>
                                                                             <CustomInput
-                                                                              checked={referenceDiagnosis[index].tipe_dd}
+                                                                              checked={diagnoseReference[index].tipe_dd}
                                                                               type="checkbox"
                                                                               name="tipe_diagnosis_rujukan"
                                                                               id="tipe_dd_rujukan"
                                                                               label="Differential Diagnosis"
-                                                                              // value={referenceDiagnosis.tipe_dd}
-                                                                              onChange={(event) => handleReferenceDiagnosisChange(index, event)}
+                                                                              // value={diagnoseReference.tipe_dd}
+                                                                              onChange={(event) => handleDiagnoseReferenceChange(index, event)}
                                                                             />
                                                                         </Colxx>
                                                                         <Colxx sm={1} md={1} xl={1}>
@@ -2379,7 +2399,7 @@ const FormRecord = ({ match, history }) => {
                                                                                 color="danger"
                                                                                 style={{ float: "right" }}
                                                                                 onClick={() =>
-                                                                                    removeReferenceDiagnosisFields(input.id, index)
+                                                                                    removeDiagnoseReferenceFields(input.id, index)
                                                                                 }
                                                                                 className="remove-diagnosis"
                                                                               >
@@ -2400,7 +2420,7 @@ const FormRecord = ({ match, history }) => {
                                                         color="primary"
                                                         // style={{ float: "right" }}
                                                         // className="mb-2"
-                                                        onClick={addReferenceDiagnosisFields}
+                                                        onClick={addDiagnoseReferenceFields}
                                                       >
                                                         Tambah Diagnosis Rujukan
                                                       </Button>

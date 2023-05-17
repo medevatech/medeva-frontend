@@ -46,6 +46,9 @@ const Shift = React.lazy(() =>
 const Division = React.lazy(() =>
   import(/* webpackChunkName: "views-division" */ '../views/division')
 );
+const Treatment = React.lazy(() =>
+  import(/* webpackChunkName: "views-treatment" */ '../views/treatment')
+);
 
 const MainRouter = () => {
     return (
@@ -98,6 +101,12 @@ const MainRouter = () => {
                 // <Route
                     path="/division"
                     component={Division}
+                    roles={[ "isDev", "isManager", "isAdmin" ]}
+                />
+                <ProtectedRoute
+                // <Route
+                    path="/treatment"
+                    component={Treatment}
                     roles={[ "isDev", "isManager", "isAdmin" ]}
                 />
                 <Route
