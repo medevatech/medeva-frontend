@@ -14,6 +14,26 @@ const price = {
   update: (payloads, id) => {
     const url = api.treatment.price + `/${id}`
     return baseApi.put(url, payloads, { headers: getOriginHeader() })
-  }
+  },
+  getByClinic: (payloads, id) => {
+    const url = api.treatment.clinicPrice + `/${id}`
+    return baseApi.get(url, payloads, { headers: getOriginHeader() })
+  },
+  update: (payloads, id) => {
+    const url = api.treatment.price + `/${id}`
+    return baseApi.put(url, payloads, { headers: getOriginHeader() })
+  },
+  archive: (payloads, id) => {
+    const url = api.treatment.archivePrice + `/${id}`
+    return baseApi.put(url, payloads, { headers: getOriginHeader() })
+  },
+  activate: (payloads, id) => {
+    const url = api.treatment.activatePrice + `/${id}`
+    return baseApi.put(url, payloads, { headers: getOriginHeader() })
+  },
+  delete: (payloads, id) => {
+    const url = api.treatment.price + `/${id}`
+    return baseApi.delete(url, payloads, { headers: getOriginHeader() })
+  },
 }
 export default price

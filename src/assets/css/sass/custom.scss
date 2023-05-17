@@ -203,7 +203,7 @@ label {
 }
 
 .med-record-form {
-    border-bottom: 1px solid #dee2e6;
+    // border-bottom: 1px solid #dee2e6;
     margin-bottom: 1.5rem;
     // padding-top: 1.5rem;
     // padding-left: 1.5rem;
@@ -216,13 +216,6 @@ label {
 // .menu-mobile.sub-show-temporary .sub-menu, .sub-show-temporary .sub-menu {
 //     transform: translateX(0);
 // }
-
-.max-text {
-    max-width: 150px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
 
 .wizard ul.nav {
     margin-top: 1.5rem;
@@ -286,7 +279,6 @@ label {
 }
 
 .manage-form {
-    // display: none;
     scroll-margin: 150px;
 }
 
@@ -301,11 +293,6 @@ label {
 
     .switch-table {
         order: 2;
-    }
-
-    .manage-form {
-        // display: block !important;
-        // margin-top: 150px;
     }
 }
 
@@ -374,6 +361,13 @@ label {
     .sub-show-temporary .sub-menu, .menu-mobile.sub-show-temporary .sub-menu {
         -webkit-transform: translateX(0);
         transform: translateX(0);
+    }
+
+    .max-text {
+        max-width: 150px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
     }
 }
 

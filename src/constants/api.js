@@ -31,14 +31,14 @@ const api = {
   },
   insurance: {
     all: '/asuransi',
-    patient: '/asuransi/pasien',
-    edit: '/asuransi/edit'
+    class: '/asuransi-kelas'
   },
   allergy: '/alergi', // MASTER OF 'ALERGI' FIELD
   patientAllergy: {  // JOIN TABLE ID ALERGY TO ID PATIENT AND ID RECORD
     all: '/alergi-pasien',
     patient: '/alergi-pasien/pasien'
   },
+  participant: '/peserta',
   queue: '/antrian',
   vitalSigns: {
     all:  '/vital-signs',
@@ -54,8 +54,13 @@ const api = {
   treatment: {
     all: '/tindakan',
     list: '/daftar-tindakan', // MASTER OF 'NAMA TINDAKAN' FIELD
-    clinic: '/daftar-tindakan/klinik',
-    price: '/harga-tindakan' // MASTER OF 'HARGA TINDAKAN' FIELD
+    archiveList: '/daftar-tindakan/archive',
+    activateList: '/daftar-tindakan/activate',
+    clinicList: '/daftar-tindakan/klinik',
+    price: '/harga-tindakan', // MASTER OF 'HARGA TINDAKAN' FIELD,
+    clinicPrice: '/harga-tindakan/klinik', // MASTER OF 'HARGA TINDAKAN' FIELD,
+    archivePrice: '/harga-tindakan/archive',
+    activatePrice: '/harga-tindakan/activate'
   },
   disease: '/penyakit', // MASTER OF 'PENYAKIT' FIELD
   medicine: '/obat', // MASTER OF 'OBAT' FIELD

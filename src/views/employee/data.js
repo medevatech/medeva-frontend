@@ -1281,7 +1281,7 @@ const Data = ({ match, history, loading, error }) => {
         <Colxx sm="12" md="12" xl="4" className="mb-4 switch-table">
           <Card className="mb-4">
             <CardBody>
-              <CardTitle style={{ marginBottom: 0 }}>
+              <CardTitle>
                 <Row>
                   <Colxx sm="12" md="12" xl="12">
                     Data Karyawan & Tenaga Kesehatan

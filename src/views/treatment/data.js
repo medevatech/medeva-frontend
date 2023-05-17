@@ -56,7 +56,6 @@ const Data = ({ match, history, loading, error }) => {
   const [rowSelected, setRowSelected] = useState(null);
 
   const [selectedKlinik, setSelectedKlinik] = useState([]);
-  const [selectedKlinikF, setSelectedKlinikF] = useState([{ label: "Semua", value: "", key: 0, name: 'id_klinik' }]);
 
   const [modalArchive, setModalArchive] = useState(false);
   const [modalDelete, setModalDelete] = useState(false);
@@ -67,59 +66,12 @@ const Data = ({ match, history, loading, error }) => {
     nama: ''
   });
 
-  const [treatmentPrice, setTreatmentPrice] = useState({
-    id_daftar_tindakan: treatmentID,
-    id_klinik: '',
-    harga: '',
-  });
-
-  const onLoadKlinik = async () => {
-    try {
-      const response = await clinicAPI.get("", "?limit=1000");
-      // console.log(response);
-
-      setSelectedKlinik([]);
-      setSelectedKlinikF([{ label: "Semua", value: "", key: 0, name: 'id_klinik' }]);
-
-      if (response.status === 200) {
-        let data = response.data.data;
-        // console.log(data);
-      
-        for (var i = 0; i < data.length; i++) {
-          setSelectedKlinik((current) => [
-            ...current,
-            { label: data[i].nama_klinik, value: data[i].id, key: data[i].id, name: 'id_klinik' },
-          ]);
-          
-          setSelectedKlinikF((current) => [
-            ...current,
-            { label: data[i].nama_klinik, value: data[i].id, key: data[i].id, name: 'id_klinik' },
-          ]);
-        }
-      } else {
-        throw Error(`Error status: ${response.status}`);
-      }
-    } catch (e) {
-      console.log(e);
-    }
-  };
-
   const onChange = (e) => {
     // console.log('e', e);
 
-    if (e.name === 'id_klinik') {
-      setTreatmentPrice(current => {
-          return { ...current, id_klinik: e ? e.value : ''}
-      })
-    } else if (e.name === 'harga') {
-      setTreatmentPrice(current => {
-          return { ...current, harga: e ? e.value : ''}
-      })
-    } else {
-      setTreatment(current => {
-          return { ...current, [e.target.name]: e.target.value }
-      })
-    }
+    setTreatment(current => {
+        return { ...current, [e.target.name]: e.target.value }
+    })
 
     // console.log('treatment', treatment);
   }
@@ -233,17 +185,7 @@ const Data = ({ match, history, loading, error }) => {
       nama: '',
     });
 
-    setTreatmentPrice({
-      id_daftar_tindakan: treatmentID,
-      id_klinik: '',
-      harga: '',
-    });
-    
-    setSelectedKlinik([]);
-    setSelectedKlinikF([{ label: "Semua", value: "", key: 0, name: 'id_klinik' }]);
-
     setDataStatus("add");
-    onLoadKlinik();
   };
 
   const [isLoading, setIsLoading] = useState(false);
@@ -290,30 +232,6 @@ const Data = ({ match, history, loading, error }) => {
       setTreatmentStatus(data.is_active);
 
       // console.log(treatment);
-
-    } catch (e) {
-      console.log(e);
-    } finally {
-      getTreatmentPriceById(id);
-    }
-
-    // console.log(dataStatus);
-  };
-
-  const getTreatmentPriceById = async (id) => {
-    try {
-      const res = await treatmentPriceAPI.get("", `/${id}`);
-      let data = res.data.data[0];
-
-      // console.log(data);
-
-      setTreatmentPrice({
-        id_daftar_tindakan: treatmentID,
-        id_klinik: data.id_klinik,
-        harga: data.harga,
-      });
-
-      // console.log(treatmentPrice);
 
     } catch (e) {
       console.log(e);
@@ -503,7 +421,6 @@ const Data = ({ match, history, loading, error }) => {
   };
 
   const [searchName, setSearchName] = useState("");
-  const [searchKlinik, setSearchKlinik] = useState("");
   const [searchStatus, setSearchStatus] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -518,9 +435,6 @@ const Data = ({ match, history, loading, error }) => {
     if (searchName !== "") {
       params = `${params}&searchName=${searchName}`;
     }
-    if (searchKlinik !== "") {
-      params = `${params}&searchKlinik=${searchKlinik}`;
-    }
     if (searchStatus !== "") {
       params = `${params}&searchStatus=${searchStatus}`;
     }
@@ -529,9 +443,8 @@ const Data = ({ match, history, loading, error }) => {
     }
 
     getTreatment(params);
-    onLoadKlinik();
 
-  }, [limit, searchName, searchKlinik, searchStatus, sortBy, sortOrder, currentPage ]);
+  }, [limit, searchName, searchStatus, sortBy, sortOrder, currentPage ]);
 
   let startNumber = 1;
 
@@ -549,38 +462,15 @@ const Data = ({ match, history, loading, error }) => {
         <Colxx sm="12" md="12" xl="4" className="mb-4 switch-table">
           <Card className="mb-4">
             <CardBody>
-              <CardTitle style={{ marginBottom: 0 }}>
+              <CardTitle>
                 <Row>
                   <Colxx sm="12" md="12" xl="12">
                     Data Layanan
                   </Colxx>
-                  {/* <Colxx sm="12" md="4" xl="4">
-                    <Button
-                      color="primary"
-                      style={{ float: "right" }}
-                      className="mb-4"
-                      onClick={resetForm}
-                    >
-                      Tambah
-                    </Button>
-                  </Colxx> */}
                 </Row>
               </CardTitle>
               <FormGroup row style={{ margin: '0px', width: '100%' }}>
-                <Colxx sm="12" md="6" style={{ paddingLeft: '0px' }}>
-                  <Label for="klinik">
-                    Klinik
-                  </Label>
-                  <Select
-                    components={{ Input: CustomSelectInput }}
-                    className="react-select"
-                    classNamePrefix="react-select"
-                    name="klinik"
-                    onChange={(e) => setSearchKlinik(e.value)}
-                    options={selectedKlinikF}
-                  />
-                </Colxx>
-                <Colxx sm="12" md="6" style={{ paddingRight: '0px' }}>
+                <Colxx sm="12" md="12" style={{ paddingLeft: '0px', paddingRight: '0px' }}>
                   <Label for="status">
                       Status
                     </Label>
@@ -693,35 +583,9 @@ const Data = ({ match, history, loading, error }) => {
               </CardTitle>
               <Form>
                 <FormGroup row>
-                  <Colxx sm={4}>
+                  <Colxx sm={12}>
                     <FormGroup>
-                      <Label for="id_klinik">Klinik
-                        <span
-                          className="required text-danger"
-                          aria-required="true"
-                        >
-                          {" "}
-                          *
-                        </span>
-                      </Label>
-                      <Select
-                        components={{ Input: CustomSelectInput }}
-                        className="react-select"
-                        classNamePrefix="react-select"
-                        name="id_klinik"
-                        id="id_klinik"
-                        options={selectedKlinik}
-                        value={selectedKlinik.find(item => item.value === treatment.id_klinik) || ''}
-                        // value={treatment.id_klinik}
-                        onChange={onChange}
-                        required
-                      />
-                    </FormGroup>
-                  </Colxx>
-
-                  <Colxx sm={4}>
-                    <FormGroup>
-                      <Label for="tipe">
+                      <Label for="nama">
                         Nama
                         <span
                           className="required text-danger"
@@ -733,35 +597,10 @@ const Data = ({ match, history, loading, error }) => {
                       </Label>
                       <Input
                         type="text"
-                        name="tipe"
-                        id="tipe"
+                        name="nama"
+                        id="nama"
                         placeholder="Nama"
-                        value={treatment.tipe}
-                        onChange={onChange}
-                        required={true}
-                      />
-                    </FormGroup>
-                  </Colxx>
-
-                  <Colxx sm={4}>
-                    <FormGroup>
-                      <Label for="tipe">
-                        Harga
-                        <span
-                          className="required text-danger"
-                          aria-required="true"
-                        >
-                          {" "}
-                          *
-                        </span>
-                      </Label>
-                      <Input
-                        type="number"
-                        name="harga"
-                        id="harga"
-                        placeholder="Harga"
-                        value={treatment.harga}
-                        pattern="[0-9]*"
+                        value={treatment.nama}
                         onChange={onChange}
                         required={true}
                       />
@@ -849,7 +688,7 @@ const Data = ({ match, history, loading, error }) => {
         className="float-btn"
         onClick={(e) => resetForm(e, true)}
       >
-        <i className="iconsminds-first-aid"></i> Tambah Layanan
+        <i className="iconsminds-library"></i> Tambah Layanan
       </Button>
     </>
   );

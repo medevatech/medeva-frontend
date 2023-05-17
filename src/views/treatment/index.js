@@ -5,6 +5,9 @@ import { connect } from 'react-redux';
 import AppLayout from 'layout/AppLayout';
 import { ProtectedRoute } from 'helpers/authHelper';
 
+const Price = React.lazy(() =>
+  import(/* webpackChunkName: "views-treatment-price" */ './price')
+);
 const Data = React.lazy(() =>
   import(/* webpackChunkName: "views-treatment-data" */ './data')
 );
@@ -21,7 +24,12 @@ const App = ({ match }) => {
               render={(props) => <Data {...props} />}
             /> */}
             <ProtectedRoute
-              path={`${match.url}`}
+              path={`${match.url}/price`}
+              component={Price}
+              roles={[ "isDev", "isManager", "isAdmin" ]}
+            />
+            <ProtectedRoute
+              path={`${match.url}/list`}
               component={Data}
               roles={[ "isDev", "isManager", "isAdmin" ]}
             />

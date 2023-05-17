@@ -16,8 +16,20 @@ const list = {
     return baseApi.put(url, payloads, { headers: getOriginHeader() })
   },
   getByClinic: (payloads, id) => {
-    const url = api.treatment.clinic + `/${id}`
+    const url = api.treatment.clinicList + `/${id}`
     return baseApi.get(url, payloads, { headers: getOriginHeader() })
+  },
+  archive: (payloads, id) => {
+    const url = api.treatment.archiveList + `/${id}`
+    return baseApi.put(url, payloads, { headers: getOriginHeader() })
+  },
+  activate: (payloads, id) => {
+    const url = api.treatment.activateList + `/${id}`
+    return baseApi.put(url, payloads, { headers: getOriginHeader() })
+  },
+  delete: (payloads, id) => {
+    const url = api.treatment.list + `/${id}`
+    return baseApi.delete(url, payloads, { headers: getOriginHeader() })
   },
 }
 export default list

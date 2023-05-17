@@ -66,7 +66,20 @@ const data = [
     icon: 'iconsminds-first-aid',
     label: 'Layanan',
     to: `/treatment`,
-    roles: [ "isDev", "isManager", "isAdmin" ],
+    subs: [
+      {
+        icon: 'iconsminds-library',
+        label: 'Daftar Layanan',
+        to: `/treatment/list`,
+        roles: [ "isDev", "isManager", "isAdmin" ],
+      },
+      {
+        icon: 'iconsminds-wallet',
+        label: 'Harga Layanan',
+        to: `/treatment/price`,
+        roles: [ "isDev", "isManager", "isAdmin" ],
+      },
+    ]
   },
 ];
 export default data;
