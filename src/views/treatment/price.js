@@ -177,7 +177,7 @@ const Data = ({ match, history, loading, error }) => {
 
         Swal.fire({
           title: "Sukses!",
-          html: `Tambah layanan sukses`,
+          html: `Tambah tindakan sukses`,
           icon: "success",
           confirmButtonColor: "#008ecc",
         });
@@ -186,7 +186,7 @@ const Data = ({ match, history, loading, error }) => {
       } else {
         Swal.fire({
           title: "Gagal!",
-          html: `Tambah layanan gagal: ${response.message}`,
+          html: `Tambah tindakan gagal: ${response.message}`,
           icon: "error",
           confirmButtonColor: "#008ecc",
           confirmButtonText: "Coba lagi",
@@ -221,7 +221,7 @@ const Data = ({ match, history, loading, error }) => {
   
           Swal.fire({
             title: "Sukses!",
-            html: `Tambah harga layanan sukses`,
+            html: `Tambah harga tindakan sukses`,
             icon: "success",
             confirmButtonColor: "#008ecc",
           });
@@ -230,7 +230,7 @@ const Data = ({ match, history, loading, error }) => {
         } else {
           Swal.fire({
             title: "Gagal!",
-            html: `Tambah harga layanan gagal: ${response.message}`,
+            html: `Tambah harga tindakan gagal: ${response.message}`,
             icon: "error",
             confirmButtonColor: "#008ecc",
             confirmButtonText: "Coba lagi",
@@ -260,7 +260,7 @@ const Data = ({ match, history, loading, error }) => {
   
           Swal.fire({
             title: "Sukses!",
-            html: `Ubah harga layanan sukses`,
+            html: `Ubah harga tindakan sukses`,
             icon: "success",
             confirmButtonColor: "#008ecc",
           });
@@ -269,7 +269,7 @@ const Data = ({ match, history, loading, error }) => {
         } else {
           Swal.fire({
             title: "Gagal!",
-            html: `Ubah harga layanan gagal: ${response.message}`,
+            html: `Ubah harga tindakan gagal: ${response.message}`,
             icon: "error",
             confirmButtonColor: "#008ecc",
             confirmButtonText: "Coba lagi",
@@ -444,7 +444,7 @@ const Data = ({ match, history, loading, error }) => {
 
           Swal.fire({
             title: "Sukses!",
-            html: `Arsip harga layanan sukses`,
+            html: `Arsip harga tindakan sukses`,
             icon: "success",
             confirmButtonColor: "#008ecc",
           });
@@ -453,7 +453,7 @@ const Data = ({ match, history, loading, error }) => {
         } else {
           Swal.fire({
             title: "Gagal!",
-            html: `Arsip harga layanan gagal: ${response.message}`,
+            html: `Arsip harga tindakan gagal: ${response.message}`,
             icon: "error",
             confirmButtonColor: "#008ecc",
             confirmButtonText: "Coba lagi",
@@ -470,7 +470,7 @@ const Data = ({ match, history, loading, error }) => {
 
           Swal.fire({
             title: "Sukses!",
-            html: `Aktivasi harga layanan sukses`,
+            html: `Aktivasi harga tindakan sukses`,
             icon: "success",
             confirmButtonColor: "#008ecc",
           });
@@ -479,7 +479,7 @@ const Data = ({ match, history, loading, error }) => {
         } else {
           Swal.fire({
             title: "Gagal!",
-            html: `Aktivasi harga layanan gagal: ${response.message}`,
+            html: `Aktivasi harga tindakan gagal: ${response.message}`,
             icon: "error",
             confirmButtonColor: "#008ecc",
             confirmButtonText: "Coba lagi",
@@ -529,7 +529,7 @@ const Data = ({ match, history, loading, error }) => {
 
         Swal.fire({
           title: "Sukses!",
-          html: `Hapus harga layanan sukses`,
+          html: `Hapus harga tindakan sukses`,
           icon: "success",
           confirmButtonColor: "#008ecc",
         });
@@ -538,7 +538,7 @@ const Data = ({ match, history, loading, error }) => {
       } else {
         Swal.fire({
           title: "Gagal!",
-          html: `Hapus harga layanan gagal: ${response.message}`,
+          html: `Hapus harga tindakan gagal: ${response.message}`,
           icon: "error",
           confirmButtonColor: "#008ecc",
           confirmButtonText: "Coba lagi",
@@ -612,7 +612,7 @@ const Data = ({ match, history, loading, error }) => {
               <CardTitle>
                 <Row>
                   <Colxx sm="12" md="12" xl="12">
-                    Data Layanan Klinik
+                    Data Tindakan Klinik
                   </Colxx>
                 </Row>
               </CardTitle>
@@ -663,7 +663,7 @@ const Data = ({ match, history, loading, error }) => {
                 <thead>
                   <tr>
                     <th className="center-xy" style={{ width: '40px' }}>#</th>
-                    <th>Layanan</th>
+                    <th>Tindakan</th>
                     <th className="center-xy" style={{ width: '55px' }}>&nbsp;</th>
                   </tr>
                 </thead>
@@ -727,7 +727,7 @@ const Data = ({ match, history, loading, error }) => {
               <CardTitle>
                 <Row>
                   <Colxx sm="5" md="6" xl="6">
-                    Form Manajemen Harga Layanan
+                    Form Manajemen Harga Tindakan
                   </Colxx>
                   <Colxx sm="7" md="6" xl="6" style={{ textAlign: 'right' }}>
                     {<IsActive/>}
@@ -769,10 +769,10 @@ const Data = ({ match, history, loading, error }) => {
                     </FormGroup>
                   </Colxx>
 
-                  <Colxx lg={3} className="col-tp-3" style={{ paddingRight: '5px' }}>
+                  <Colxx lg={3} className="col-tp-3" style={{ paddingRight: '0px' }}>
                     <FormGroup>
                       <Label for="tipe">
-                        Layanan
+                        Tindakan
                         <span
                           className="required text-danger"
                           aria-required="true"
@@ -795,7 +795,7 @@ const Data = ({ match, history, loading, error }) => {
                     </FormGroup>
                   </Colxx>
 
-                  <Colxx lg={1} className="col-tp-1" style={{ paddingLeft: '5px' }}>
+                  <Colxx lg={1} className="col-tp-1" style={{ paddingLeft: '0px' }}>
                     <FormGroup>
                       <Label>
                         &nbsp;
@@ -805,6 +805,7 @@ const Data = ({ match, history, loading, error }) => {
                         color="primary"
                         className="btn-sm"
                         onClick={() => setModalAddList(true)}
+                        style={{ borderRadius: '0 5px 5px 0', padding: '0.45rem', border: '2px solid #008ecc' }}
                       >
                         Tambah
                       </Button>
@@ -839,7 +840,7 @@ const Data = ({ match, history, loading, error }) => {
 
                 <Row>
                   <Colxx sm={6}>
-                    <Label>* Wajib diisi</Label>
+                    <Label>* ) Wajib diisi</Label>
                   </Colxx>
                   <Colxx sm={6} className="text-right">
                     <Button
@@ -868,7 +869,7 @@ const Data = ({ match, history, loading, error }) => {
           isOpen={modalArchive}
           toggle={() => setModalArchive(!modalArchive)}
         >
-          <ModalHeader>Arsip Layanan</ModalHeader>
+          <ModalHeader>Arsip Tindakan</ModalHeader>
           <ModalBody>
             <h5>Apakah Anda ingin {treatmentStatus == 1 ?  'mengarsipkan'  : 'aktivasi' } <b>{treatmentName}</b>?</h5>
           </ModalBody>
@@ -891,7 +892,7 @@ const Data = ({ match, history, loading, error }) => {
           isOpen={modalDelete}
           toggle={() => setModalDelete(!modalDelete)}
         >
-          <ModalHeader>Hapus Layanan</ModalHeader>
+          <ModalHeader>Hapus Tindakan</ModalHeader>
           <ModalBody>
             <h5>Apakah Anda ingin menghapus <b>{treatmentName}</b>?</h5>
           </ModalBody>
@@ -914,7 +915,7 @@ const Data = ({ match, history, loading, error }) => {
           isOpen={modalAddList}
           toggle={() => setModalAddList(!modalAddList)}
         >
-          <ModalHeader>Tambah Layanan</ModalHeader>
+          <ModalHeader>Tambah Tindakan</ModalHeader>
           <ModalBody>
             <FormGroup>
               <Label for="nama">
@@ -939,28 +940,22 @@ const Data = ({ match, history, loading, error }) => {
             </FormGroup>
           </ModalBody>
           <ModalFooter>
-            <Colxx sm={6}>
-              <Label>* Wajib diisi</Label>
+            <Colxx sm={6} className="responsive-modal-button">
+              <Label className="text-left">* ) Wajib diisi</Label>
             </Colxx>
-            <Colxx sm={6} className="text-right">
-              <Row>
-                <Colxx sm={6} className="responsive-modal-button">
-                  <Button
-                    type="button"
-                    outline
-                    color="danger"
-                    onClick={() => setModalAddList(false)}
-                  >
-                    Batal
-                  </Button>
-                  &nbsp;&nbsp;
-                </Colxx>
-                <Colxx sm={6} className="responsive-modal-button">
-                  <Button color="primary" onClick={(e) => onTreatmentListSubmit(e)}>
-                    Simpan
-                  </Button>
-                </Colxx>
-              </Row>
+            <Colxx sm={6} className="responsive-modal-button text-right">
+              <Button
+                type="button"
+                outline
+                color="danger"
+                onClick={() => setModalAddList(false)}
+              >
+                Batal
+              </Button>
+              &nbsp;&nbsp;
+              <Button color="primary" onClick={(e) => onTreatmentListSubmit(e)}>
+                Simpan
+              </Button>
             </Colxx>
           </ModalFooter>
         </Modal>
@@ -972,7 +967,7 @@ const Data = ({ match, history, loading, error }) => {
         className="float-btn"
         onClick={(e) => resetForm(e, true)}
       >
-        <i className="iconsminds-wallet"></i> Tambah Layanan
+        <i className="iconsminds-wallet"></i> Tambah Tindakan
       </Button>
     </>
   );

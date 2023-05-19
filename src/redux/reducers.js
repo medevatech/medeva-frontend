@@ -15,6 +15,7 @@ import { medicine, medicineTotalPage } from 'store/medicine';
 import { lab, labTotalPage } from 'store/lab';
 import { inspect, inspectTotalPage } from 'store/inspect';
 import { treatment, treatmentTotalPage, treatmentList, treatmentListTotalPage, treatmentPrice, treatmentPriceTotalPage } from 'store/treatment';
+import { service, serviceTotalPage, serviceList, serviceListTotalPage, servicePrice, servicePriceTotalPage } from 'store/service';
 import { diagnoseReference, diagnoseReferenceTotalPage, divisionReference, divisionReferenceTotalPage, hospitalReference, hospitalReferenceTotalPage } from 'store/reference';
 import { action, actionTotalPage } from 'store/action';
 
@@ -62,6 +63,12 @@ const reducers = combineReducers({
   hospitalReferenceTotalPage,
   action,
   actionTotalPage,
+  service,
+  serviceTotalPage,
+  serviceList,
+  serviceListTotalPage,
+  servicePrice,
+  servicePriceTotalPage,
 
   province,
   city, 

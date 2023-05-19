@@ -104,8 +104,17 @@ label {
     margin-bottom: 1rem !important;
 }
 
-.select-insurance, .select-allergy {
+.select-insurance {
     width: 30%;
+}
+
+.select-allergy {
+    margin-bottom: 1rem;
+}
+
+.select-allergy:not(:first-of-type) {
+    width: 89%;
+    display: inline-block;
 }
 
 .input-insurance, .input-allergy {
@@ -113,7 +122,7 @@ label {
     // margin-right: 10px;
 }
 
-.remove-insurance, .remove-diagnosis, .remove-reciept {
+.remove-allergy, .remove-insurance, .remove-diagnosis, .remove-reciept {
     border-radius: 0 0.1rem 0.1rem 0;
 }
 
@@ -282,6 +291,17 @@ label {
     scroll-margin: 150px;
 }
 
+.responsive-modal-button {
+    padding-right: 0px !important;
+    padding-left: 5px !important;
+}
+
+.custom-column-record-reciept {
+    -webkit-flex: 0 0 20.833335%;
+    flex: 0 0 20.833335%;
+    max-width: 20.833335%;
+}
+
 @media (max-width: 1280px) {
     .remove-diagnosis, .remove-reciept {
         padding: 0.5rem 0.5rem 0.5rem 0.5rem;
@@ -311,6 +331,10 @@ label {
         -webkit-flex: 0 0 8.33333% !important;
         flex: 0 0 8.33333% !important;
         max-width: 8.33333% !important;
+    }
+
+    .select-allergy:not(:first-of-type) {
+        width: 84%;
     }
 }
 
@@ -356,21 +380,36 @@ label {
     }
 
     .col-tp-3 {
-        -webkit-flex: 0 0 70% !important;
-        flex: 0 0 70% !important;
-        max-width: 70% !important;
+        -webkit-flex: 0 0 80% !important;
+        flex: 0 0 80% !important;
+        max-width: 80% !important;
     }
 
     .col-tp-1 {
-        -webkit-flex: 0 0 30% !important;
-        flex: 0 0 30% !important;
-        max-width: 30% !important;
+        -webkit-flex: 0 0 20% !important;
+        flex: 0 0 20% !important;
+        max-width: 20% !important;
     }
 
     .responsive-modal-button {
+        display: inherit;
         -webkit-flex: 0 0 50% !important;
         flex: 0 0 50% !important;
         max-width: 50% !important;
+    }
+
+    .custom-column-record-reciept {
+        -webkit-flex: 0 0 50%;
+        flex: 0 0 50%;
+        max-width: 50%;
+    }
+
+    .custom-column-record-reciept-pcs {
+        padding-right: 20px;
+    }
+
+    .select-allergy:not(:first-of-type) {
+        width: 81%;
     }
 }
 

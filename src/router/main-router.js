@@ -46,6 +46,9 @@ const Division = React.lazy(() =>
 const Treatment = React.lazy(() =>
   import(/* webpackChunkName: "views-treatment" */ '../views/treatment')
 );
+const Service = React.lazy(() =>
+  import(/* webpackChunkName: "views-service" */ '../views/service')
+);
 const Schedule = React.lazy(() =>
   import(/* webpackChunkName: "views-schedule" */ '../views/schedule')
 );
@@ -101,6 +104,12 @@ const MainRouter = () => {
                 // <Route
                     path="/treatment"
                     component={Treatment}
+                    roles={[ "isDev", "isManager", "isAdmin" ]}
+                />
+                <ProtectedRoute
+                // <Route
+                    path="/service"
+                    component={Service}
                     roles={[ "isDev", "isManager", "isAdmin" ]}
                 />
                 <ProtectedRoute

@@ -56,20 +56,40 @@ const data = [
   },
   {
     id: 'treatment',
-    icon: 'iconsminds-first-aid',
-    label: 'Layanan',
+    icon: 'iconsminds-ambulance',
+    label: 'Tindakan',
     to: `/treatment`,
     subs: [
       {
         icon: 'iconsminds-library',
-        label: 'Daftar Layanan',
+        label: 'Daftar Tindakan',
         to: `/treatment/list`,
         roles: [ "isDev", "isManager", "isAdmin" ],
       },
       {
         icon: 'iconsminds-wallet',
-        label: 'Harga Layanan',
+        label: 'Harga Tindakan',
         to: `/treatment/price`,
+        roles: [ "isDev", "isManager", "isAdmin" ],
+      },
+    ]
+  },
+  {
+    id: 'service',
+    icon: 'iconsminds-first-aid',
+    label: 'Layanan',
+    to: `/service`,
+    subs: [
+      {
+        icon: 'iconsminds-library',
+        label: 'Daftar Layanan',
+        to: `/service/list`,
+        roles: [ "isDev", "isManager", "isAdmin" ],
+      },
+      {
+        icon: 'iconsminds-wallet',
+        label: 'Harga Layanan',
+        to: `/service/price`,
         roles: [ "isDev", "isManager", "isAdmin" ],
       },
     ]

@@ -33,8 +33,8 @@ import Pagination from "components/common/Pagination";
 
 import CustomSelectInput from "components/common/CustomSelectInput";
 
-import treatmentAPI from "api/treatment/list";
-import treatmentPriceAPI from "api/treatment/price";
+import serviceAPI from "api/service/list";
+import servicePriceAPI from "api/service/price";
 import clinicAPI from "api/clinic";
 import Swal from "sweetalert2";
 
@@ -50,8 +50,8 @@ const selectStatusF = [
 
 const Data = ({ match, history, loading, error }) => {
   const dispatch = useDispatch();
-  const treatmentData = useSelector(state => state.treatmentList);
-  const treatmentTotalPage = useSelector(state => state.treatmentListTotalPage);
+  const serviceData = useSelector(state => state.serviceList);
+  const serviceTotalPage = useSelector(state => state.serviceListTotalPage);
   const [dataStatus, setDataStatus] = useState("add");
   const [rowSelected, setRowSelected] = useState(null);
 
@@ -59,29 +59,29 @@ const Data = ({ match, history, loading, error }) => {
 
   const [modalArchive, setModalArchive] = useState(false);
   const [modalDelete, setModalDelete] = useState(false);
-  const [treatmentID, setTreatmentID] = useState('');
-  const [treatmentStatus, setTreatmentStatus] = useState(0);
+  const [serviceID, setServiceID] = useState('');
+  const [serviceStatus, setServiceStatus] = useState(0);
 
-  const [treatment, setTreatment] = useState({
+  const [service, setService] = useState({
     nama: ''
   });
 
   const onChange = (e) => {
     // console.log('e', e);
 
-    setTreatment(current => {
+    setService(current => {
         return { ...current, [e.target.name]: e.target.value }
     })
 
-    // console.log('treatment', treatment);
+    // console.log('service', service);
   }
 
-  const onTreatmentSubmit = async (e) => {
+  const onServiceSubmit = async (e) => {
     e.preventDefault();
 
     if(dataStatus === 'add') {
       try {
-        const response = await treatmentAPI.add(treatment);
+        const response = await serviceAPI.add(service);
         // console.log(response);
   
         if (response.status == 200) {
@@ -90,7 +90,7 @@ const Data = ({ match, history, loading, error }) => {
   
           Swal.fire({
             title: "Sukses!",
-            html: `Tambah tindakan sukses`,
+            html: `Tambah layanan sukses`,
             icon: "success",
             confirmButtonColor: "#008ecc",
           });
@@ -99,7 +99,7 @@ const Data = ({ match, history, loading, error }) => {
         } else {
           Swal.fire({
             title: "Gagal!",
-            html: `Tambah tindakan gagal: ${response.message}`,
+            html: `Tambah layanan gagal: ${response.message}`,
             icon: "error",
             confirmButtonColor: "#008ecc",
             confirmButtonText: "Coba lagi",
@@ -120,7 +120,7 @@ const Data = ({ match, history, loading, error }) => {
       }
     } else if (dataStatus === 'update') {
       try {
-        const response = await treatmentAPI.update(treatment, treatmentID);
+        const response = await serviceAPI.update(service, serviceID);
         // console.log(response);
   
         if (response.status == 200) {
@@ -129,7 +129,7 @@ const Data = ({ match, history, loading, error }) => {
   
           Swal.fire({
             title: "Sukses!",
-            html: `Ubah tindakan sukses`,
+            html: `Ubah layanan sukses`,
             icon: "success",
             confirmButtonColor: "#008ecc",
           });
@@ -138,7 +138,7 @@ const Data = ({ match, history, loading, error }) => {
         } else {
           Swal.fire({
             title: "Gagal!",
-            html: `Ubah tindakan gagal: ${response.message}`,
+            html: `Ubah layanan gagal: ${response.message}`,
             icon: "error",
             confirmButtonColor: "#008ecc",
             confirmButtonText: "Coba lagi",
@@ -165,9 +165,9 @@ const Data = ({ match, history, loading, error }) => {
   const resetForm = (e, scroll = false) => {
     e.preventDefault();
 
-    setTreatmentID('');
-    setTreatmentName('');
-    setTreatmentStatus(0);
+    setServiceID('');
+    setServiceName('');
+    setServiceStatus(0);
 
     if(scroll) {
       if(window.innerWidth < 1280){
@@ -181,7 +181,7 @@ const Data = ({ match, history, loading, error }) => {
       }
     }
 
-    setTreatment({
+    setService({
       nama: '',
     });
 
@@ -190,12 +190,12 @@ const Data = ({ match, history, loading, error }) => {
 
   const [isLoading, setIsLoading] = useState(false);
 
-  const getTreatment = async (params) => {
+  const getService = async (params) => {
     try {
       setIsLoading(true);
-      const res = await treatmentAPI.get("", params);
-      dispatch({type: "GET_TREATMENT_LIST", payload: res.data.data});
-      dispatch({type: "GET_TOTAL_PAGE_TREATMENT_LIST", payload: res.data.pagination.totalPage});
+      const res = await serviceAPI.get("", params);
+      dispatch({type: "GET_SERVICE_LIST", payload: res.data.data});
+      dispatch({type: "GET_TOTAL_PAGE_SERVICE_LIST", payload: res.data.pagination.totalPage});
     } catch (e) {
       console.log(e);
     } finally {
@@ -203,7 +203,7 @@ const Data = ({ match, history, loading, error }) => {
     }
   };
 
-  const getTreatmentById = async (e, id) => {
+  const getServiceById = async (e, id) => {
     e.preventDefault();
     resetForm(e);
     setDataStatus("update");
@@ -220,18 +220,18 @@ const Data = ({ match, history, loading, error }) => {
     }
 
     try {
-      const res = await treatmentAPI.get("", `/${id}`);
+      const res = await serviceAPI.get("", `/${id}`);
       let data = res.data.data[0];
 
       // console.log(data);
 
-      setTreatmentID(data.id);
-      setTreatment({
+      setServiceID(data.id);
+      setService({
         nama: data.nama,
       });
-      setTreatmentStatus(data.is_active);
+      setServiceStatus(data.is_active);
 
-      // console.log(treatment);
+      // console.log(service);
 
     } catch (e) {
       console.log(e);
@@ -242,7 +242,7 @@ const Data = ({ match, history, loading, error }) => {
 
   function ButtonActive() {
     return <>
-    <Button color="success" size="xs" onClick={(e) => statusById(e, treatmentID)}>
+    <Button color="success" size="xs" onClick={(e) => statusById(e, serviceID)}>
       <i className="simple-icon-drawer"></i>&nbsp;Aktifkan
     </Button><span>&nbsp;&nbsp;</span>
     </>;
@@ -250,7 +250,7 @@ const Data = ({ match, history, loading, error }) => {
 
   function ButtonArchive() {
     return <>
-    <Button color="warning" size="xs" onClick={(e) => statusById(e, treatmentID)}>
+    <Button color="warning" size="xs" onClick={(e) => statusById(e, serviceID)}>
       <i className="simple-icon-drawer"></i>&nbsp;Arsipkan
     </Button><span>&nbsp;&nbsp;</span>
     </>;
@@ -260,9 +260,9 @@ const Data = ({ match, history, loading, error }) => {
     if(userData.roles.includes('isDev') ||
       userData.roles.includes('isManager') ||
       userData.roles.includes('isAdmin')) {
-      if (treatmentID && treatmentStatus == 1) {
+      if (serviceID && serviceStatus == 1) {
         return <ButtonArchive/>;
-      } else if (treatmentID && treatmentStatus == 0) {
+      } else if (serviceID && serviceStatus == 0) {
         return <ButtonActive/>;
       } else {
         return null;
@@ -272,19 +272,19 @@ const Data = ({ match, history, loading, error }) => {
     }
   }
 
-  const [treatmentName, setTreatmentName] = useState('');
+  const [serviceName, setServiceName] = useState('');
 
   const statusById = async (e, id) => {
     e.preventDefault();
 
     setModalArchive(true);
     try {
-      const res = await treatmentAPI.get("", `/${id}`);
+      const res = await serviceAPI.get("", `/${id}`);
       let data = res.data.data[0];
 
-      setTreatmentID(data.id);
-      setTreatmentStatus(data.is_active);
-      setTreatmentName(data.tipe);
+      setServiceID(data.id);
+      setServiceStatus(data.is_active);
+      setServiceName(data.tipe);
     } catch (e) {
       console.log(e);
     }
@@ -294,8 +294,8 @@ const Data = ({ match, history, loading, error }) => {
     e.preventDefault();
 
     try {
-      if (treatmentStatus == 1) {
-        const response = await treatmentAPI.archive("", treatmentID);
+      if (serviceStatus == 1) {
+        const response = await serviceAPI.archive("", serviceID);
 
         if (response.status == 200) {
           let data = await response.data.data;
@@ -303,7 +303,7 @@ const Data = ({ match, history, loading, error }) => {
 
           Swal.fire({
             title: "Sukses!",
-            html: `Arsip tindakan sukses`,
+            html: `Arsip layanan sukses`,
             icon: "success",
             confirmButtonColor: "#008ecc",
           });
@@ -312,7 +312,7 @@ const Data = ({ match, history, loading, error }) => {
         } else {
           Swal.fire({
             title: "Gagal!",
-            html: `Arsip tindakan gagal: ${response.message}`,
+            html: `Arsip layanan gagal: ${response.message}`,
             icon: "error",
             confirmButtonColor: "#008ecc",
             confirmButtonText: "Coba lagi",
@@ -321,7 +321,7 @@ const Data = ({ match, history, loading, error }) => {
           throw Error(`Error status: ${response.status}`);
         }
       } else {
-        const response = await treatmentAPI.activate("", treatmentID);
+        const response = await serviceAPI.activate("", serviceID);
 
         if (response.status == 200) {
           let data = await response.data.data;
@@ -329,7 +329,7 @@ const Data = ({ match, history, loading, error }) => {
 
           Swal.fire({
             title: "Sukses!",
-            html: `Aktivasi tindakan sukses`,
+            html: `Aktivasi layanan sukses`,
             icon: "success",
             confirmButtonColor: "#008ecc",
           });
@@ -338,7 +338,7 @@ const Data = ({ match, history, loading, error }) => {
         } else {
           Swal.fire({
             title: "Gagal!",
-            html: `Aktivasi tindakan gagal: ${response.message}`,
+            html: `Aktivasi layanan gagal: ${response.message}`,
             icon: "error",
             confirmButtonColor: "#008ecc",
             confirmButtonText: "Coba lagi",
@@ -366,11 +366,11 @@ const Data = ({ match, history, loading, error }) => {
 
     setModalDelete(true);
     try {
-      const res = await treatmentAPI.get("", `/${id}`);
+      const res = await serviceAPI.get("", `/${id}`);
       let data = res.data.data[0];
 
-      setTreatmentID(data.id);
-      setTreatmentName(data.tipe);
+      setServiceID(data.id);
+      setServiceName(data.tipe);
     } catch (e) {
       console.log(e);
     }
@@ -380,7 +380,7 @@ const Data = ({ match, history, loading, error }) => {
     e.preventDefault();
 
     try {
-      const response = await treatmentAPI.delete("", treatmentID);
+      const response = await serviceAPI.delete("", serviceID);
 
       if (response.status == 200) {
         let data = await response.data.data;
@@ -388,7 +388,7 @@ const Data = ({ match, history, loading, error }) => {
 
         Swal.fire({
           title: "Sukses!",
-          html: `Hapus tindakan sukses`,
+          html: `Hapus layanan sukses`,
           icon: "success",
           confirmButtonColor: "#008ecc",
         });
@@ -397,7 +397,7 @@ const Data = ({ match, history, loading, error }) => {
       } else {
         Swal.fire({
           title: "Gagal!",
-          html: `Hapus tindakan gagal: ${response.message}`,
+          html: `Hapus layanan gagal: ${response.message}`,
           icon: "error",
           confirmButtonColor: "#008ecc",
           confirmButtonText: "Coba lagi",
@@ -442,7 +442,7 @@ const Data = ({ match, history, loading, error }) => {
       params = `${params}&page=${currentPage}`;
     }
 
-    getTreatment(params);
+    getService(params);
 
   }, [limit, searchName, searchStatus, sortBy, sortOrder, currentPage ]);
 
@@ -465,7 +465,7 @@ const Data = ({ match, history, loading, error }) => {
               <CardTitle>
                 <Row>
                   <Colxx sm="12" md="12" xl="12">
-                    Data Tindakan
+                    Data Layanan
                   </Colxx>
                 </Row>
               </CardTitle>
@@ -503,7 +503,7 @@ const Data = ({ match, history, loading, error }) => {
                 <thead>
                   <tr>
                     <th className="center-xy" style={{ width: '40px' }}>#</th>
-                    <th>Tindakan</th>
+                    <th>Layanan</th>
                     <th className="center-xy" style={{ width: '55px' }}>&nbsp;</th>
                   </tr>
                 </thead>
@@ -517,9 +517,9 @@ const Data = ({ match, history, loading, error }) => {
                     <td>&nbsp;</td>
                   </tr>
                   ) : 
-                  treatmentData.length > 0 ? (
-                    treatmentData.map((data) => (
-                      <tr key={data.id} onClick={(e) => getTreatmentById(e, data.id)} style={{ cursor: 'pointer'}} className={`${rowSelected == data.id && 'row-selected'}`}>
+                  serviceData.length > 0 ? (
+                    serviceData.map((data) => (
+                      <tr key={data.id} onClick={(e) => getServiceById(e, data.id)} style={{ cursor: 'pointer'}} className={`${rowSelected == data.id && 'row-selected'}`}>
                         <th scope="row" style={{ textAlign: "center", verticalAlign: 'middle' }}>
                           {startNumber++}
                         </th>
@@ -533,7 +533,7 @@ const Data = ({ match, history, loading, error }) => {
                         </td>
                         <td style={{ textAlign: "center", verticalAlign: 'middle' }}>
                           <Button color="secondary" size="xs" className="button-xs"
-                            onClick={(e) => getTreatmentById(e, data.id)}
+                            onClick={(e) => getServiceById(e, data.id)}
                             >
                             <i className="simple-icon-arrow-right-circle"></i>
                           </Button>
@@ -554,7 +554,7 @@ const Data = ({ match, history, loading, error }) => {
               </Table>
               <Pagination
                 currentPage={currentPage}
-                totalPage={treatmentTotalPage}
+                totalPage={serviceTotalPage}
                 onChangePage={(i) => setCurrentPage(i)}
               />
             </CardBody>
@@ -566,14 +566,14 @@ const Data = ({ match, history, loading, error }) => {
               <CardTitle>
                 <Row>
                   <Colxx sm="5" md="6" xl="6">
-                    Form Manajemen Tindakan
+                    Form Manajemen Layanan
                   </Colxx>
                   <Colxx sm="7" md="6" xl="6" style={{ textAlign: 'right' }}>
                     {<IsActive/>}
                     {(userData.roles.includes('isDev') ||
-                    userData.roles.includes('isManager')) && treatmentID &&
+                    userData.roles.includes('isManager')) && serviceID &&
                       <Button color="danger" size="xs"
-                        onClick={(e) => deleteById(e, treatmentID)}
+                        onClick={(e) => deleteById(e, serviceID)}
                         >
                         <i className="simple-icon-trash"></i>&nbsp;Hapus
                       </Button>
@@ -600,7 +600,7 @@ const Data = ({ match, history, loading, error }) => {
                         name="nama"
                         id="nama"
                         placeholder="Nama"
-                        value={treatment.nama}
+                        value={service.nama}
                         onChange={onChange}
                         required={true}
                       />
@@ -624,7 +624,7 @@ const Data = ({ match, history, loading, error }) => {
                     &nbsp;&nbsp;
                     <Button
                       color="primary"
-                      onClick={(e) => onTreatmentSubmit(e)}
+                      onClick={(e) => onServiceSubmit(e)}
                     >
                       Simpan
                     </Button>
@@ -639,9 +639,9 @@ const Data = ({ match, history, loading, error }) => {
           isOpen={modalArchive}
           toggle={() => setModalArchive(!modalArchive)}
         >
-          <ModalHeader>Arsip Tindakan</ModalHeader>
+          <ModalHeader>Arsip Layanan</ModalHeader>
           <ModalBody>
-            <h5>Apakah Anda ingin {treatmentStatus == 1 ?  'mengarsipkan'  : 'aktivasi' } <b>{treatmentName}</b>?</h5>
+            <h5>Apakah Anda ingin {serviceStatus == 1 ?  'mengarsipkan'  : 'aktivasi' } <b>{serviceName}</b>?</h5>
           </ModalBody>
           <ModalFooter>
             <Button
@@ -662,9 +662,9 @@ const Data = ({ match, history, loading, error }) => {
           isOpen={modalDelete}
           toggle={() => setModalDelete(!modalDelete)}
         >
-          <ModalHeader>Hapus Tindakan</ModalHeader>
+          <ModalHeader>Hapus Layanan</ModalHeader>
           <ModalBody>
-            <h5>Apakah Anda ingin menghapus <b>{treatmentName}</b>?</h5>
+            <h5>Apakah Anda ingin menghapus <b>{serviceName}</b>?</h5>
           </ModalBody>
           <ModalFooter>
             <Button
@@ -688,7 +688,7 @@ const Data = ({ match, history, loading, error }) => {
         className="float-btn"
         onClick={(e) => resetForm(e, true)}
       >
-        <i className="iconsminds-library"></i> Tambah Tindakan
+        <i className="iconsminds-library"></i> Tambah Layanan
       </Button>
     </>
   );

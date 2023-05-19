@@ -62,6 +62,17 @@ const api = {
     archivePrice: '/harga-tindakan/archive',
     activatePrice: '/harga-tindakan/activate'
   },
+  service: {
+    all: '/layanan',
+    list: '/daftar-layanan', // MASTER OF 'NAMA LAYANAN' FIELD
+    archiveList: '/daftar-layanan/archive',
+    activateList: '/daftar-layanan/activate',
+    clinicList: '/daftar-layanan/klinik',
+    price: '/harga-layanan', // MASTER OF 'HARGA LAYANAN' FIELD,
+    clinicPrice: '/harga-layanan/klinik', // MASTER OF 'HARGA LAYANAN' FIELD,
+    archivePrice: '/harga-layanan/archive',
+    activatePrice: '/harga-layanan/activate'
+  },
   disease: '/penyakit', // MASTER OF 'PENYAKIT' FIELD
   medicine: '/obat', // MASTER OF 'OBAT' FIELD
   lab: {

@@ -1944,7 +1944,7 @@ const Data = ({ match, history, loading, error }) => {
 
                 <Row>
                   <Colxx sm={6}>
-                    <Label>* Wajib diisi</Label>
+                    <Label>* ) Wajib diisi</Label>
                   </Colxx>
                   <Colxx sm={6} className="text-right">
                     <Button

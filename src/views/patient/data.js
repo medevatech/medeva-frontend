@@ -275,7 +275,45 @@ const Data = ({ match }) => {
     setSelectedInsurance(displaySelectInsurance);
   };
 
-  const [allergy, setAllergy] = useState([]);
+  // const [allergy, setAllergy] = useState([]);
+
+  const [allergy, setAllergy] = useState([
+    { id: "", id_pasien: patientID, id_alergi: "" }
+  ]);
+
+  const addAllergyFields = () => {
+    let newfieldAllergy = { id: "", id_pasien: patientID, id_alergi: "" };
+    setAllergy([...allergy, newfieldAllergy]);
+
+    let newfieldDropdownAllergy = { label: "" };
+    setSelectedAllergy([...selectedAllergy, newfieldDropdownAllergy]);
+  };
+
+  const removeAllergyFields = (id, index) => {
+    let dataAllergy = [...allergy];
+    let displaySelectAllergy = [...selectedAllergy];
+
+    dataAllergy.splice(index, 1);
+    displaySelectAllergy.splice(index, 1);
+
+    setAllergy(dataAllergy);
+    setSelectedAllergy(displaySelectAllergy);
+  };
+
+  const handleAllergyChange = (index, event) => {
+    let dataAllergy = [...allergy];
+    let displaySelectAllergy = [...selectedAllergy];
+
+    if (event.name === "id_alergi"){
+      dataAllergy[index][event.name] = event.value;
+      displaySelectAllergy[index]["label"] = event.value;
+    } else {
+      dataAllergy[index][event.target.name] = event.target.value;
+    }
+
+    setAllergy(dataAllergy);
+    setSelectedAllergy(displaySelectAllergy);
+  };
 
   const [patient, setPatient] = useState({
     tipe_kitas: '',
@@ -1770,26 +1808,62 @@ const Data = ({ match }) => {
                     </FormGroup>
                   </Colxx>
 
-                  <Colxx sm={12}>
+                  <Colxx sm={6}>
                     <FormGroup>
                       <Label>Alergi</Label>
-                      <Select
-                        components={{ Input: CustomSelectInput }}
-                        className="react-select"
-                        classNamePrefix="react-select"
-                        isMulti
-                        name="alergi"
-                        id="alergi"
-                        value={selectAllergy.filter(item => selectedAllergy.includes(item.value)) || ''}
-                        options={selectAllergy}
-                        onChange={onChange}
-                      />
+                      {allergy.map((input, index) => {
+                        return (
+                          // <InputGroup
+                          //   key={index}
+                          //   className="input-group-insurance"
+                          // >
+                          <>
+                            <Select
+                              key={index}
+                              components={{ Input: CustomSelectInput }}
+                              className="react-select select-allergy"
+                              classNamePrefix="react-select"
+                              // isMulti
+                              name="alergi"
+                              id="alergi"
+                              // value={selectAllergy.filter(item => selectedAllergy.includes(item.value)) || ''}
+                              value={selectAllergy.find(item => item.value === allergy[index].id_alergi) || ''}
+                              options={selectAllergy}
+                              // onChange={onChange}
+                              onChange={(event) =>
+                                handleAllergyChange(index, event)
+                              }
+                            />
+                            {index > 0 && (
+                              <Button
+                                color="danger"
+                                style={{ float: "right" }}
+                                onClick={() =>
+                                  removeAllergyFields(input.id, index)
+                                }
+                                className="remove-allergy"
+                              >
+                                <i className="simple-icon-trash"></i>
+                              </Button>
+                            )}
+                          </>
+                          // </InputGroup>
+                        );
+                      })}
+                      <Button
+                        color="primary"
+                        // style={{ float: "right" }}
+                        className="mb-2"
+                        onClick={addAllergyFields}
+                      >
+                        Tambah
+                      </Button>
                     </FormGroup>
                   </Colxx>
 
-                  <Colxx sm={12}>
+                  <Colxx sm={6}>
                     <FormGroup>
-                      <Label style={{ lineHeight: '3' }}>Asuransi</Label>
+                      <Label>Asuransi</Label>
                       {insurance.map((input, index) => {
                         return (
                           <InputGroup

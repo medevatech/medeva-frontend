@@ -39,6 +39,8 @@ import labAPI from "api/lab";
 import labTreatmentAPI from "api/lab/treatment";
 import treatmentAPI from "api/treatment"
 import treatmentListAPI from "api/treatment/list";
+import serviceAPI from "api/service"
+import serviceListAPI from "api/service/list";
 import referenceAPI from "api/reference"
 import diagnoseReferenceAPI from "api/reference/diagnose"
 import divisionReferenceAPI from "api/reference/division";
@@ -109,7 +111,8 @@ const FormRecord = ({ match, history }) => {
   const [dataStatusDiagnosis, setDataDiagnosis] = useState("add");
   const [dataStatusReciept, setDataReciept] = useState("add");
   const [dataStatusCheckup, setDataCheckup] = useState("add");
-  const [dataStatusAction, setDataAction] = useState("add");
+  const [dataStatusTreatment, setDataTreatment] = useState("add");
+  const [dataStatusService, setDataService] = useState("add");
   const [dataStatusReference, setDataStatusReference] = useState("add");
   const [dataStatusDiagnoseReference, setDataStatusDiagnoseReference] = useState("add");
 
@@ -510,52 +513,100 @@ const FormRecord = ({ match, history }) => {
     // console.log('handle selectLabTreatmentArray', selectLabTreatmentArray);
   };
 
-  const [action, setAction] = useState([
+  const [treatment, setTreatment] = useState([
     { id: '', id_kunjungan: recordID, id_tindakan: "", catatan: "" }
   ]);
-  const [selectAction, setSelectAction] = useState([]);
-  const [selectedAction, setSelectedAction] = useState([{ label: ""}]);
+  const [selectTreatment, setSelectTreatment] = useState([]);
+  const [selectedTreatment, setSelectedTreatment] = useState([{ label: ""}]);
 
-  const addActionFields = () => {
-    let newfieldAction = { id: '', id_kunjungan: recordID, id_tindakan: "", catatan: "" }
-    setAction([...action, newfieldAction]);
+  const addTreatmentFields = () => {
+    let newfieldTreatment = { id: '', id_kunjungan: recordID, id_tindakan: "", catatan: "" }
+    setTreatment([...treatment, newfieldTreatment]);
 
-    let newfieldDropdownAction = { label: "" };
-    setSelectedAction([...selectedAction, newfieldDropdownAction]);
+    let newfieldDropdownTreatment = { label: "" };
+    setSelectedTreatment([...selectedTreatment, newfieldDropdownTreatment]);
   };
 
-  const removeActionFields = (id, index) => {
-    let dataAction = [...action];
-    let displaySelectAction = [...selectedAction];
+  const removeTreatmentFields = (id, index) => {
+    let dataTreatment = [...treatment];
+    let displaySelectTreatment = [...selectedTreatment];
 
-    dataAction.splice(index, 1);
-    displaySelectAction.splice(index, 1);
+    dataTreatment.splice(index, 1);
+    displaySelectTreatment.splice(index, 1);
 
-    setAction(dataAction);
-    setSelectedAction(displaySelectAction);
+    setTreatment(dataTreatment);
+    setSelectedTreatment(displaySelectTreatment);
 
-    // console.log('remove action', action);
-    // console.log('remove selectedAction', selectedAction);
+    // console.log('remove treatment', treatment);
+    // console.log('remove selectedTreatment', selectedTreatment);
   };
 
-  const handleActionChange = (index, event) => {
-    // console.log('handleActionChange', event);
+  const handleTreatmentChange = (index, event) => {
+    // console.log('handleTreatmentChange', event);
 
-    let dataAction = [...action];
-    let displaySelectAction = [...selectedAction];
+    let dataTreatment = [...treatment];
+    let displaySelectTreatment = [...selectedTreatment];
 
     if (event.name === "id_tindakan"){
-        dataAction[index][event.name] = event.value;
-        displaySelectAction[index]["label"] = event.label;
+        dataTreatment[index][event.name] = event.value;
+        displaySelectTreatment[index]["label"] = event.label;
     } else {
-        dataAction[index][event.target.name] = event.target.value;
+        dataTreatment[index][event.target.name] = event.target.value;
     }
 
-    setAction(dataAction);
-    setSelectedAction(displaySelectAction);
+    setTreatment(dataTreatment);
+    setSelectedTreatment(displaySelectTreatment);
 
-    // console.log('handle action', action);
-    // console.log('handle selectedAction', selectedAction);
+    // console.log('handle treatment', treatment);
+    // console.log('handle selectedTreatment', selectedTreatment);
+  };
+
+  const [service, setService] = useState([
+    { id: '', id_kunjungan: recordID, id_layanan: "", catatan: "" }
+  ]);
+  const [selectService, setSelectService] = useState([]);
+  const [selectedService, setSelectedService] = useState([{ label: ""}]);
+
+  const addServiceFields = () => {
+    let newfieldService = { id: '', id_kunjungan: recordID, id_layanan: "", catatan: "" }
+    setService([...service, newfieldService]);
+
+    let newfieldDropdownService = { label: "" };
+    setSelectedService([...selectedService, newfieldDropdownService]);
+  };
+
+  const removeServiceFields = (id, index) => {
+    let dataService = [...service];
+    let displaySelectService = [...selectedService];
+
+    dataService.splice(index, 1);
+    displaySelectService.splice(index, 1);
+
+    setService(dataService);
+    setSelectedService(displaySelectService);
+
+    // console.log('remove service', service);
+    // console.log('remove selectedService', selectedService);
+  };
+
+  const handleServiceChange = (index, event) => {
+    // console.log('handleServiceChange', event);
+
+    let dataService = [...service];
+    let displaySelectService = [...selectedService];
+
+    if (event.name === "id_tindakan"){
+        dataService[index][event.name] = event.value;
+        displaySelectService[index]["label"] = event.label;
+    } else {
+        dataService[index][event.target.name] = event.target.value;
+    }
+
+    setService(dataService);
+    setSelectedService(displaySelectService);
+
+    // console.log('handle service', service);
+    // console.log('handle selectedService', selectedService);
   };
 
   const [reference, setReference] = useState([
@@ -601,9 +652,6 @@ const FormRecord = ({ match, history }) => {
       displaySelectDiagnoseReference[index]["label"] = event.label;
     } else if(event.target.name === "tipe_diagnosis_rujukan") {
 
-      console.log('event.target.id', event.target.id);
-      console.log('event.target.checked', event.target.checked);
-
       if(event.target.id === 'tipe_wd_rujukan' && event.target.checked === true) {
         wd_rujukan = true;
       } else if(event.target.id === 'tipe_wd_rujukan' && event.target.checked === false) {
@@ -616,8 +664,8 @@ const FormRecord = ({ match, history }) => {
         dd_rujukan = false;
       }
 
-      displaySelectDiagnoseReference[index]['tipe_wd'] = wd_rujukan;
-      displaySelectDiagnoseReference[index]['tipe_dd'] = dd_rujukan;
+      dataDiagnoseReference[index]['tipe_wd'] = wd_rujukan;
+      dataDiagnoseReference[index]['tipe_dd'] = dd_rujukan;
     }
 
     setDiagnoseReference(dataDiagnoseReference);
@@ -803,7 +851,8 @@ const FormRecord = ({ match, history }) => {
         // onDiagnosisSubmit(e);
         // onRecieptSubmit(e);
         // onCheckupSubmit(e);
-	      // onActionSubmit(e);
+	      // onTreatmentSubmit(e);
+	      // onServiceSubmit(e);
         // onReferenceSubmit(e);
         // onDiagnoseReferenceSubmit(e);
       }
@@ -1064,14 +1113,14 @@ const FormRecord = ({ match, history }) => {
     }
   };
 
-  const onActionSubmit = async (e) => {
+  const onTreatmentSubmit = async (e) => {
     e.preventDefault();
 
-    // console.log(action);
-    for (var i = 0; i < action.length; i++) {
-      if(action[i].id === '') {
+    // console.log(treatment);
+    for (var i = 0; i < treatment.length; i++) {
+      if(treatment[i].id === '') {
         try {
-          const response = await treatmentAPI.add(action[i]);
+          const response = await treatmentAPI.add(treatment[i]);
           // console.log(response);
 
           if (response.status == 200) {
@@ -1108,7 +1157,7 @@ const FormRecord = ({ match, history }) => {
         }
       } else {
         try {
-          const response = await treatmentAPI.update(action[i], action[i].id);
+          const response = await treatmentAPI.update(treatment[i], treatment[i].id);
           // console.log(response);
 
           if (response.status == 200) {
@@ -1126,6 +1175,90 @@ const FormRecord = ({ match, history }) => {
             Swal.fire({
               title: "Gagal!",
               html: `Ubah tindakan gagal: ${response.message}`,
+              icon: "error",
+              confirmButtonColor: "#008ecc",
+              confirmButtonText: "Coba lagi",
+            });
+
+            throw Error(`Error status: ${response.status}`);
+          }
+        } catch (e) {
+          Swal.fire({
+            title: "Gagal!",
+            html: e,
+            icon: "error",
+            confirmButtonColor: "#008ecc",
+            confirmButtonText: "Coba lagi",
+          });
+
+          console.log(e);
+        }
+      }
+    }
+  };
+
+  const onServiceSubmit = async (e) => {
+    e.preventDefault();
+
+    // console.log(service);
+    for (var i = 0; i < service.length; i++) {
+      if(service[i].id === '') {
+        try {
+          const response = await serviceAPI.add(service[i]);
+          // console.log(response);
+
+          if (response.status == 200) {
+            let data = await response.data.data;
+            // console.log(data);
+
+            Swal.fire({
+              title: "Sukses!",
+              html: `Tambah layanan sukses`,
+              icon: "success",
+              confirmButtonColor: "#008ecc",
+            });
+            
+          } else {
+            Swal.fire({
+              title: "Gagal!",
+              html: `Tambah layanan gagal: ${response.message}`,
+              icon: "error",
+              confirmButtonColor: "#008ecc",
+              confirmButtonText: "Coba lagi",
+            });
+
+            throw Error(`Error status: ${response.status}`);
+          }
+        } catch (e) {
+          Swal.fire({
+            title: "Gagal!",
+            html: e,
+            icon: "error",
+            confirmButtonColor: "#008ecc",
+            confirmButtonText: "Coba lagi",
+          });
+          console.log(e);
+        }
+      } else {
+        try {
+          const response = await serviceAPI.update(service[i], service[i].id);
+          // console.log(response);
+
+          if (response.status == 200) {
+            let data = await response.data.data;
+            // console.log(data);
+
+            Swal.fire({
+              title: "Sukses!",
+              html: `Ubah layanan sukses`,
+              icon: "success",
+              confirmButtonColor: "#008ecc",
+            });
+            
+          } else {
+            Swal.fire({
+              title: "Gagal!",
+              html: `Ubah layanan gagal: ${response.message}`,
               icon: "error",
               confirmButtonColor: "#008ecc",
               confirmButtonText: "Coba lagi",
@@ -1540,14 +1673,14 @@ const FormRecord = ({ match, history }) => {
       const response = await treatmentListAPI.get("", "?limit=1000");
       // console.log(response);
 
-      setSelectAction([]);
+      setSelectTreatment([]);
 
       if (response.status === 200) {
         let data = response.data.data;
         // console.log(data);
       
         for (var i = 0; i < data.length; i++) {
-          setSelectAction((current) => [
+          setSelectTreatment((current) => [
             ...current,
             { label: data[i].nama, value: data[i].id, key: data[i].id, name: 'id_tindakan' },
           ]);
@@ -1972,7 +2105,7 @@ const FormRecord = ({ match, history }) => {
                                   {index > 0 && (
                                     <Button
                                       color="danger"
-                                      // style={{ float: "right" }}
+                                      style={{ float: "right" }}
                                       onClick={() =>
                                           removeDiagnosisFields(input.id, index)
                                       }
@@ -2042,7 +2175,7 @@ const FormRecord = ({ match, history }) => {
                                           />
                                       </FormGroup>
                                   </Colxx>
-                                  <Colxx sm={3} md={3} xl={3}>
+                                  <Colxx sm={2} md={2} xl={2} className="custom-column-record-reciept custom-column-record-reciept-pcs">
                                       <FormGroup>
                                         <Label for="jumlah">
                                             Jumlah
@@ -2071,7 +2204,7 @@ const FormRecord = ({ match, history }) => {
                                         </InputGroup>
                                       </FormGroup>
                                   </Colxx>
-                                  <Colxx sm={2} md={2} xl={2}>
+                                  <Colxx sm={2} md={2} xl={2} className="custom-column-record-reciept">
                                       <FormGroup>
                                         <Label for="frekuensi">
                                             Frekuensi
@@ -2196,7 +2329,7 @@ const FormRecord = ({ match, history }) => {
                             <Colxx sm={5} md={5} xl={5}>
                                 <FormGroup>
                                   <Label for="id_pemeriksaan">
-                                    Layanan (pilih laboratorium terlebih dahulu)
+                                    Layanan (pilih laboratorium dahulu)
                                   </Label>
                                   <Select
                                       components={{ Input: CustomSelectInput }}
@@ -2257,22 +2390,22 @@ const FormRecord = ({ match, history }) => {
                   </CardTitle>
 
                   <FormGroup>
-                    {action.map((input, index) => {
+                    {treatment.map((input, index) => {
                         return (
                           <FormGroup row key={index}>
                             <Colxx sm={6} md={6} xl={6}>
                                 <FormGroup>
                                     <Label for="id_tindakan">
-                                        Layanan
+                                        Tindakan
                                     </Label>
                                     <Select
                                         components={{ Input: CustomSelectInput }}
                                         className="react-select"
                                         classNamePrefix="react-select"
                                         name="id_tindakan"
-                                        value={selectAction.find(item => item.value === action[index].id_tindakan) || ''}
-                                        options={selectAction}
-                                        onChange={(event) => handleActionChange(index, event)}
+                                        value={selectTreatment.find(item => item.value === treatment[index].id_tindakan) || ''}
+                                        options={selectTreatment}
+                                        onChange={(event) => handleTreatmentChange(index, event)}
                                     />
                                 </FormGroup>
                             </Colxx>
@@ -2287,8 +2420,8 @@ const FormRecord = ({ match, history }) => {
                                       id="catatan"
                                       placeholder="Catatan"
                                       style={{minHeight: '150px'}}
-                                      value={action[index].catatan}
-                                      onChange={(event) => handleActionChange(index, event)}
+                                      value={treatment[index].catatan}
+                                      onChange={(event) => handleTreatmentChange(index, event)}
                                   />
                                 </FormGroup>
                             </Colxx>
@@ -2303,7 +2436,7 @@ const FormRecord = ({ match, history }) => {
                                         color="danger"
                                         // style={{ float: "right" }}
                                         onClick={() =>
-                                            removeActionFields(input.id, index)
+                                            removeTreatmentFields(input.id, index)
                                         }
                                         className="remove-reciept"
                                       >
@@ -2320,9 +2453,85 @@ const FormRecord = ({ match, history }) => {
                       color="primary"
                       // style={{ float: "right" }}
                       // className="mb-2"
-                      onClick={addActionFields}
+                      onClick={addTreatmentFields}
                     >
                       Tambah Tindakan
+                    </Button>
+                  </FormGroup>
+
+                  
+
+                  <CardTitle className="my-4">
+                    Tata Laksana | Layanan
+                  </CardTitle>
+
+                  <FormGroup>
+                    {service.map((input, index) => {
+                        return (
+                          <FormGroup row key={index}>
+                            <Colxx sm={6} md={6} xl={6}>
+                                <FormGroup>
+                                    <Label for="id_layanan">
+                                        Layanan
+                                    </Label>
+                                    <Select
+                                        components={{ Input: CustomSelectInput }}
+                                        className="react-select"
+                                        classNamePrefix="react-select"
+                                        name="id_layanan"
+                                        value={selectService.find(item => item.value === treatment[index].id_layanan) || ''}
+                                        options={selectService}
+                                        onChange={(event) => handleServiceChange(index, event)}
+                                    />
+                                </FormGroup>
+                            </Colxx>
+                            <Colxx sm={5} md={5} xl={5}>
+                                <FormGroup>
+                                  <Label for="catatan">
+                                    Catatan Tambahan
+                                  </Label>
+                                  <Input
+                                      type="textarea"
+                                      name="catatan"
+                                      id="catatan"
+                                      placeholder="Catatan"
+                                      style={{minHeight: '150px'}}
+                                      value={treatment[index].catatan}
+                                      onChange={(event) => handleServiceChange(index, event)}
+                                  />
+                                </FormGroup>
+                            </Colxx>
+                            {index > 0 && (
+                                <Colxx sm={1} md={1} xl={1}>
+                                    <FormGroup>
+                                      <Label>
+                                          &nbsp;&nbsp;
+                                      </Label>
+                                      <br/>
+                                      <Button
+                                        color="danger"
+                                        // style={{ float: "right" }}
+                                        onClick={() =>
+                                            removeServiceFields(input.id, index)
+                                        }
+                                        className="remove-reciept"
+                                      >
+                                        <i className="simple-icon-trash"></i>
+                                      </Button>
+                                    </FormGroup>
+                                </Colxx>
+                            )}
+                          </FormGroup>
+                        )
+                    })}
+
+                    <Button
+                      color="primary"
+                      // style={{ float: "right" }}
+                      // className="mb-2"
+                      onClick={addServiceFields}
+                    >
+                      Tambah Layanan
                     </Button>
                   </FormGroup>
 
