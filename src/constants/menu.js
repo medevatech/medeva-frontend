@@ -47,13 +47,6 @@ const data = [
     to: `/employee`,
     roles: [ "isDev", "isManager", "isAdmin" ],
   },
-  // {
-  //   id: 'schedule',
-  //   icon: 'iconsminds-calendar-4',
-  //   label: 'Jadwal',
-  //   to: `/schedule`,
-  //   roles: [ "isDev", "isManager", "isAdmin", "isResepsionis", "isPerawat", "isDokter" ],
-  // },
   {
     id: 'division',
     icon: 'iconsminds-office',
@@ -78,6 +71,26 @@ const data = [
         label: 'Harga Layanan',
         to: `/treatment/price`,
         roles: [ "isDev", "isManager", "isAdmin" ],
+      },
+    ]
+  },
+  {
+    id: 'schedule',
+    icon: 'iconsminds-calendar-4',
+    label: 'Jaga',
+    to: `/schedule`,
+    subs: [
+      {
+        icon: 'iconsminds-arrow-into',
+        label: 'Shift',
+        to: `/schedule/shift`,
+        roles: [ "isDev", "isManager", "isAdmin", "isResepsionis", "isPerawat", "isDokter" ],
+      },
+      {
+        icon: 'iconsminds-calendar-1',
+        label: 'Jadwal',
+        to: `/schedule/data`,
+        roles: [ "isDev", "isManager", "isAdmin", "isResepsionis", "isPerawat", "isDokter" ],
       },
     ]
   },

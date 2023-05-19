@@ -5,6 +5,9 @@ import { connect } from 'react-redux';
 import AppLayout from 'layout/AppLayout';
 import { ProtectedRoute } from 'helpers/authHelper';
 
+const Shift = React.lazy(() =>
+  import(/* webpackChunkName: "views-schedule-shift" */ './shift')
+);
 const Data = React.lazy(() =>
   import(/* webpackChunkName: "views-schedule-data" */ './data')
 );
@@ -21,7 +24,12 @@ const App = ({ match }) => {
               render={(props) => <Data {...props} />}
             /> */}
             <ProtectedRoute
-              path={`${match.url}`}
+              path={`${match.url}/shift`}
+              component={Shift}
+              roles={[ "isDev", "isManager", "isAdmin", "isResepsionis", "isPerawat", "isDokter" ]}
+            />
+            <ProtectedRoute
+              path={`${match.url}/data`}
               component={Data}
               roles={[ "isDev", "isManager", "isAdmin", "isResepsionis", "isPerawat", "isDokter" ]}
             />

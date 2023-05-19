@@ -87,9 +87,6 @@ const Data = ({ match }) => {
               <CardBody>
                 <CardTitle className="mb-4">
                   Data Jadwal
-                  <Button color="primary" style={{float: 'right'}} className="mb-4">
-                    Tambah Jadwal
-                  </Button>
                 </CardTitle>
                 <FormGroup className="mt-4">
                   <Label for="jadwalCari">
@@ -204,7 +201,7 @@ const Data = ({ match }) => {
                       <Button color="primary" style={{float: 'right'}} className="mb-2" onClick={addScheduleRoutine}>
                           Tambah
                         </Button>
-                      <h6>Jadwal Jaga Rutin</h6>
+                      <h6>Jadwal Rutin</h6>
                       <Separator className="schedule-separator"/>
                     </Colxx>
 

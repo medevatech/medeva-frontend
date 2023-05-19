@@ -62,6 +62,7 @@ const Data = ({ match, history, loading, error }) => {
 
   const [modalArchive, setModalArchive] = useState(false);
   const [modalDelete, setModalDelete] = useState(false);
+  const [modalAddList, setModalAddList] = useState(false);
   const [treatmentID, setTreatmentID] = useState('');
   const [treatmentStatus, setTreatmentStatus] = useState(0);
 
@@ -127,8 +128,12 @@ const Data = ({ match, history, loading, error }) => {
     }
   };
 
+  const [treatment, setTreatment] = useState({
+    nama: ''
+  });
+
   const onChange = (e) => {
-    console.log('e', e);
+    // console.log('e', e);
 
     if (e.name === 'id_klinik') {
         setTreatmentPrice(current => {
@@ -146,6 +151,61 @@ const Data = ({ match, history, loading, error }) => {
 
     // console.log('treatmentPrice', treatmentPrice);
   }
+
+  const onChangeList = (e) => {
+    // console.log('e', e);
+
+    setTreatment(current => {
+        return { ...current, [e.target.name]: e.target.value }
+    })
+
+    // console.log('treatment', treatment);
+  }
+
+  const onTreatmentListSubmit = async (e) => {
+    e.preventDefault();
+    setModalAddList(false);
+    onLoadDaftarTindakan();
+
+    try {
+      const response = await treatmentAPI.add(treatment);
+      // console.log(response);
+
+      if (response.status == 200) {
+        let data = await response.data.data;
+        // console.log(data);
+
+        Swal.fire({
+          title: "Sukses!",
+          html: `Tambah layanan sukses`,
+          icon: "success",
+          confirmButtonColor: "#008ecc",
+        });
+
+        resetForm(e);
+      } else {
+        Swal.fire({
+          title: "Gagal!",
+          html: `Tambah layanan gagal: ${response.message}`,
+          icon: "error",
+          confirmButtonColor: "#008ecc",
+          confirmButtonText: "Coba lagi",
+        });
+
+        throw Error(`Error status: ${response.status}`);
+      }
+    } catch (e) {
+      Swal.fire({
+        title: "Gagal!",
+        html: e,
+        icon: "error",
+        confirmButtonColor: "#008ecc",
+        confirmButtonText: "Coba lagi",
+      });
+
+      console.log(e);
+    }
+  };
 
   const onTreatmentSubmit = async (e) => {
     e.preventDefault();
@@ -684,7 +744,7 @@ const Data = ({ match, history, loading, error }) => {
               </CardTitle>
               <Form>
                 <FormGroup row>
-                  <Colxx sm={4}>
+                  <Colxx lg={4} className="col-tp-4">
                     <FormGroup>
                       <Label for="id_klinik">Klinik
                         <span
@@ -709,10 +769,10 @@ const Data = ({ match, history, loading, error }) => {
                     </FormGroup>
                   </Colxx>
 
-                  <Colxx sm={4}>
+                  <Colxx lg={3} className="col-tp-3" style={{ paddingRight: '5px' }}>
                     <FormGroup>
                       <Label for="tipe">
-                        Tindakan
+                        Layanan
                         <span
                           className="required text-danger"
                           aria-required="true"
@@ -735,7 +795,23 @@ const Data = ({ match, history, loading, error }) => {
                     </FormGroup>
                   </Colxx>
 
-                  <Colxx sm={4}>
+                  <Colxx lg={1} className="col-tp-1" style={{ paddingLeft: '5px' }}>
+                    <FormGroup>
+                      <Label>
+                        &nbsp;
+                      </Label>
+                      <br/>
+                      <Button
+                        color="primary"
+                        className="btn-sm"
+                        onClick={() => setModalAddList(true)}
+                      >
+                        Tambah
+                      </Button>
+                    </FormGroup>
+                  </Colxx>
+
+                  <Colxx lg={4} className="col-tp-4">
                     <FormGroup>
                       <Label for="tipe">
                         Harga (Rp)
@@ -831,6 +907,61 @@ const Data = ({ match, history, loading, error }) => {
             <Button color="primary" onClick={(e) => onDeleteSubmit(e)}>
               Ya
             </Button>{" "}
+          </ModalFooter>
+        </Modal>
+
+        <Modal
+          isOpen={modalAddList}
+          toggle={() => setModalAddList(!modalAddList)}
+        >
+          <ModalHeader>Tambah Layanan</ModalHeader>
+          <ModalBody>
+            <FormGroup>
+              <Label for="nama">
+                Nama
+                <span
+                  className="required text-danger"
+                  aria-required="true"
+                >
+                  {" "}
+                  *
+                </span>
+              </Label>
+              <Input
+                type="text"
+                name="nama"
+                id="nama"
+                placeholder="Nama"
+                value={treatment.nama}
+                onChange={onChangeList}
+                required={true}
+              />
+            </FormGroup>
+          </ModalBody>
+          <ModalFooter>
+            <Colxx sm={6}>
+              <Label>* Wajib diisi</Label>
+            </Colxx>
+            <Colxx sm={6} className="text-right">
+              <Row>
+                <Colxx sm={6} className="responsive-modal-button">
+                  <Button
+                    type="button"
+                    outline
+                    color="danger"
+                    onClick={() => setModalAddList(false)}
+                  >
+                    Batal
+                  </Button>
+                  &nbsp;&nbsp;
+                </Colxx>
+                <Colxx sm={6} className="responsive-modal-button">
+                  <Button color="primary" onClick={(e) => onTreatmentListSubmit(e)}>
+                    Simpan
+                  </Button>
+                </Colxx>
+              </Row>
+            </Colxx>
           </ModalFooter>
         </Modal>
           
