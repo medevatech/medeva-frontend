@@ -3,9 +3,29 @@ import { getAuthHeader, getOriginHeader, serializeQueryParams, getJSONHeader } f
 import baseApi from 'service/api-general'
 
 const schedule = {
-  all: (payloads) => {
-    const url = api.schedule
-    return baseApi.post(url, payloads, { headers: getOriginHeader() })
-  }
-}
-export default schedule
+  get: (payloads, options) => {
+    const url = api.schedule + options;
+    return baseApi.get(url, payloads, { headers: getOriginHeader() });
+  },
+  add: (payloads) => {
+    const url = api.schedule;
+    return baseApi.get(url, payloads, { headers: getOriginHeader() });
+  },
+  update: (payloads, id) => {
+    const url = api.schedule + `/${id}`;
+    return baseApi.put(url, payloads, { headers: getOriginHeader() });
+  },
+  archive: (payloads, id) => {
+    const url = api.schedule + `/archive/${id}`;
+    return baseApi.put(url, payloads, { headers: getOriginHeader() });
+  },
+  activate: (payloads, id) => {
+    const url = api.schedule + `/activate/${id}`;
+    return baseApi.put(url, payloads, { headers: getOriginHeader() });
+  },
+  delete: (payloads, id) => {
+    const url = api.schedule.all + `/${id}`;
+    return baseApi.delete(url, payloads, { headers: getOriginHeader() });
+  },
+};
+export default schedule;

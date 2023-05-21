@@ -6,7 +6,6 @@ import {
   Input,
   CardTitle,
   InputGroup,
-  InputGroupAddon,
   FormGroup,
   Label,
   CustomInput,
@@ -14,10 +13,6 @@ import {
   Form,
   Table,
   Badge,
-  Nav,
-  NavItem,
-  TabContent,
-  TabPane,
 } from 'reactstrap';
 import { NavLink, useLocation } from 'react-router-dom';
 import classnames from 'classnames';
@@ -34,18 +29,22 @@ import { Colxx, Separator } from 'components/common/CustomBootstrap';
 
 import CustomSelectInput from 'components/common/CustomSelectInput';
 
-import { Wizard, Steps, Step } from 'react-albus';
-import TopNavigation from 'components/wizard/TopNavigation';
-
 import vitalSignsAPI from "api/vital-signs";
+import diagnoseAPI from "api/diagnose";
 import diseaseAPI from "api/disease";
+import recieptAPI from "api/reciept"
 import medicineAPI from "api/medicine";
+import inspectSupportAPI from 'api/inspect/support';
 import labAPI from "api/lab";
-import inspectListAPI from "api/inspect";
-import treatmentListAPI from "api/treatment-list";
-import labTreatmentAPI from "api/lab-treatment";
-import divisionReferenceAPI from "api/division-reference";
-import hospitalReferenceAPI from "api/hospital-reference";
+import labTreatmentAPI from "api/lab/treatment";
+import treatmentAPI from "api/treatment"
+import treatmentListAPI from "api/treatment/list";
+import serviceAPI from "api/service"
+import serviceListAPI from "api/service/list";
+import referenceAPI from "api/reference"
+import diagnoseReferenceAPI from "api/reference/diagnose"
+import divisionReferenceAPI from "api/reference/division";
+import hospitalReferenceAPI from "api/reference/hospital";
 import recordAPI from "api/record";
 import Swal from "sweetalert2";
 
@@ -68,10 +67,10 @@ const selectPrognosa = [
 ];
 
 const selectType = [
-  { label: 'Promotif', value: 'Promotif', key: 0, name: 'tipe' },
-  { label: 'Preventif', value: 'Preventif', key: 1, name: 'tipe' },
-  { label: 'Rawat Inap', value: 'Rawat Inap', key: 2, name: 'tipe' },
-  { label: 'Rawat Jalan', value: 'Rawat Jalan', key: 3, name: 'tipe' }
+  { label: 'Rawat Jalan', value: 'Rawat Jalan', key: 0, name: 'tipe' },
+  { label: 'Rawat Inap', value: 'Rawat Inap', key: 1, name: 'tipe' },
+  { label: 'Promotif', value: 'Promotif', key: 2, name: 'tipe' },
+  { label: 'Preventif', value: 'Preventif', key: 3, name: 'tipe' }
 ];
 
 const selectPcs = [
@@ -108,7 +107,14 @@ let selectLabTreatmentArray = [];
 const FormRecord = ({ match, history }) => {
   const dispatch = useDispatch();
   const location = useLocation();
-  const [dataStatus, setDataStatus] = useState("add");
+  const [dataStatusRecord, setDataRecord] = useState("add");
+  const [dataStatusDiagnosis, setDataDiagnosis] = useState("add");
+  const [dataStatusReciept, setDataReciept] = useState("add");
+  const [dataStatusCheckup, setDataCheckup] = useState("add");
+  const [dataStatusTreatment, setDataTreatment] = useState("add");
+  const [dataStatusService, setDataService] = useState("add");
+  const [dataStatusReference, setDataStatusReference] = useState("add");
+  const [dataStatusDiagnoseReference, setDataStatusDiagnoseReference] = useState("add");
 
   let patientID = "";
   let patientData = "";
@@ -142,7 +148,6 @@ const FormRecord = ({ match, history }) => {
   const [startDateTime, setStartDateTime] = useState(new Date());
   const [endDateTime, setEndDateTime] = useState(new Date());
   const [isChecked, setIsChecked] = useState(false);
-  const [activeTab, setActiveTab] = useState('resep');
 
   const [vitalSignsID, setVitalSignsID] = useState('');
   const [watchID, setWatchID] = useState('');
@@ -195,7 +200,8 @@ const FormRecord = ({ match, history }) => {
     prognosa: '',
     kasus_kll: false,
     status_pulang: '',
-    keluhan: ''
+    keluhan: '',
+    catatan_tambahan: '',
   });
 
   const onChange = (e, name = "") => {
@@ -259,12 +265,12 @@ const FormRecord = ({ match, history }) => {
   }
 
   const [diagnosis, setDiagnosis] = useState([
-    { id: Math.random(), id_kunjungan: recordID, id_penyakit: "", tipe_wd: false, tipe_dd: false }
+    { id: '', id_kunjungan: recordID, id_penyakit: "", tipe_wd: false, tipe_dd: false }
   ]);
   const [selectedDiagnosis, setSelectedDiagnosis] = useState([{ label: ""}]);
 
   const addDiagnosisFields = () => {
-    let newfieldDiagnosis = { id: Math.random(), id_kunjungan: recordID, id_penyakit: "", tipe_wd: false, tipe_dd: false };
+    let newfieldDiagnosis = { id: '', id_kunjungan: recordID, id_penyakit: "", tipe_wd: false, tipe_dd: false };
     setDiagnosis([...diagnosis, newfieldDiagnosis]);
 
     let newfieldDropdownDiagnosis = { label: "" };
@@ -321,7 +327,7 @@ const FormRecord = ({ match, history }) => {
   };
 
   const [reciept, setReciept] = useState([
-    { id: Math.random(), id_kunjungan: recordID, id_obat: "", jumlah: 0, satuan: "", frekuensi: 0, periode: "", aturan_pakai: "", metode_konsumsi: "" }
+    { id: '', id_kunjungan: recordID, id_obat: "", jumlah: 0, satuan: "", frekuensi: 0, periode: "", aturan_pakai: "", metode_konsumsi: "" }
   ]);
   const [selectedMedicine, setSelectedMedicine] = useState([]);
   const [selectedPcs, setSelectedPcs] = useState([{ label: '' }]);
@@ -330,7 +336,7 @@ const FormRecord = ({ match, history }) => {
   const [selectedConsume, setSelectedConsume] = useState([{ label: '' }]);
 
   const addRecieptFields = () => {
-    let newfieldReciept = { id: Math.random(), id_kunjungan: recordID, id_obat: "", jumlah: 0, satuan: "", frekuensi: 0, periode: "", aturan_pakai: "", metode_konsumsi: "" }
+    let newfieldReciept = { id: '', id_kunjungan: recordID, id_obat: "", jumlah: 0, satuan: "", frekuensi: 0, periode: "", aturan_pakai: "", metode_konsumsi: "" }
     setReciept([...reciept, newfieldReciept]);
 
     // let newfieldDropdownMedicine = { label: "" };
@@ -424,18 +430,15 @@ const FormRecord = ({ match, history }) => {
   };
 
   const [checkup, setCheckup] = useState([
-    { id: Math.random(), id_kunjungan: recordID, id_laboratorium: "", id_pemeriksaan: "" }
+    { id: '', id_kunjungan: recordID, id_laboratorium: "", id_pemeriksaan: "" }
   ]);
   const [selectLab, setSelectLab] = useState([]);
   const [selectedLab, setSelectedLab] = useState([{ label: "" }]);
-  const [selectInspect, setSelectInspect] = useState([]);
-  const [selectInspectByTreatment, setSelectInspectByTreatment] = useState([]);
   const [selectLabTreatment, setSelectLabTreatment] = useState([]);
-  const [selectInspectByLabTreatment, setSelectInspectByLabTreatment] = useState([]);
   const [selectedInspect, setSelectedInspect] = useState([{ label: "" }]);
 
   const addCheckupFields = () => {
-    let newfieldCheckup = { id: Math.random(), id_kunjungan: recordID, id_laboratorium: "", id_pemeriksaan: "" }
+    let newfieldCheckup = { id: '', id_kunjungan: recordID, id_laboratorium: "", id_pemeriksaan: "" }
     setCheckup([...checkup, newfieldCheckup]);
 
     let newfieldDropdownLab = { label: "" };
@@ -443,24 +446,38 @@ const FormRecord = ({ match, history }) => {
 
     let newfieldDropdownInspect = { label: "" };
     setSelectedInspect([...selectedInspect, newfieldDropdownInspect]);
+
+    let newfieldDropdownLayananLab = [];
+    setSelectLabTreatment([...selectLabTreatment, newfieldDropdownLayananLab]);
+
+    let newfieldDropdownLayananLabArray = [];
+    selectLabTreatmentArray.push(newfieldDropdownLayananLabArray);
   };
 
   const removeCheckupFields = (id, index) => {
     let dataCheckup = [...checkup];
     let displaySelectLab = [...selectedLab];
     let displaySelectInspect = [...selectedInspect];
+    let displaySelectTreatment = [...selectLabTreatment];
+    let displaySelectTreatmentArray = selectLabTreatmentArray;
 
     dataCheckup.splice(index, 1);
     displaySelectLab.splice(index, 1);
     displaySelectInspect.splice(index, 1);
+    displaySelectTreatment.splice(index, 1);
+    displaySelectTreatmentArray.splice(index, 1);
 
     setCheckup(dataCheckup);
     setSelectedLab(displaySelectLab);
     setSelectedInspect(displaySelectInspect);
+    setSelectLabTreatment(displaySelectTreatment);
+    selectLabTreatmentArray = displaySelectTreatmentArray;
 
-    console.log('remove checkup', checkup);
-    console.log('remove selectedLab', selectedLab);
-    console.log('remove selectedInspect', selectedInspect);
+    // console.log('remove checkup', checkup);
+    // console.log('remove selectedLab', selectedLab);
+    // console.log('remove selectedInspect', selectedInspect);
+    // console.log('remove selectLabTreatment', selectLabTreatment);
+    // console.log('remove selectLabTreatmentArray', selectLabTreatmentArray);
   };
 
   const handleCheckupChange = (index, event) => {
@@ -469,12 +486,13 @@ const FormRecord = ({ match, history }) => {
     let dataCheckup = [...checkup];
     let displaySelectLab = [...selectedLab];
     let displaySelectInspect = [...selectedInspect];
+    // let displaySelectTreatment = [...selectLabTreatment];
+    let displaySelectTreatmentArray = selectLabTreatmentArray;
 
     if (event.name === "id_laboratorium"){
+      changeLayananLab(index, event.value);
       dataCheckup[index][event.name] = event.value;
       displaySelectLab[index]["label"] = event.label;
-
-      changeLayananLab(event.value);
     } else if (event.name === "id_pemeriksaan"){
       dataCheckup[index][event.name] = event.value;
       displaySelectInspect[index]["label"] = event.label;
@@ -485,105 +503,154 @@ const FormRecord = ({ match, history }) => {
     setCheckup(dataCheckup);
     setSelectedLab(displaySelectLab);
     setSelectedInspect(displaySelectInspect);
+    // setSelectLabTreatment(displaySelectTreatment);
+    selectLabTreatmentArray = displaySelectTreatmentArray;
 
     // console.log('handle checkup', checkup);
     // console.log('handle selectedLab', selectedLab);
     // console.log('handle selectedInspect', selectedInspect);
+    // console.log('handle selectLabTreatment', selectLabTreatment);
+    // console.log('handle selectLabTreatmentArray', selectLabTreatmentArray);
   };
 
-  const [action, setAction] = useState([
-    { id: Math.random(), id_kunjungan: recordID, id_tindakan: "", catatan: "" }
+  const [treatment, setTreatment] = useState([
+    { id: '', id_kunjungan: recordID, id_tindakan: "", catatan: "" }
   ]);
-  const [selectAction, setSelectAction] = useState([]);
-  const [selectedAction, setSelectedAction] = useState([{ label: ""}]);
+  const [selectTreatment, setSelectTreatment] = useState([]);
+  const [selectedTreatment, setSelectedTreatment] = useState([{ label: ""}]);
 
-  const addActionFields = () => {
-    let newfieldAction = { id: Math.random(), id_kunjungan: recordID, id_tindakan: "", catatan: "" }
-    setAction([...action, newfieldAction]);
+  const addTreatmentFields = () => {
+    let newfieldTreatment = { id: '', id_kunjungan: recordID, id_tindakan: "", catatan: "" }
+    setTreatment([...treatment, newfieldTreatment]);
 
-    let newfieldDropdownAction = { label: "" };
-    setSelectedAction([...selectedAction, newfieldDropdownAction]);
+    let newfieldDropdownTreatment = { label: "" };
+    setSelectedTreatment([...selectedTreatment, newfieldDropdownTreatment]);
   };
 
-  const removeActionFields = (id, index) => {
-    let dataAction = [...action];
-    let displaySelectAction = [...selectedAction];
+  const removeTreatmentFields = (id, index) => {
+    let dataTreatment = [...treatment];
+    let displaySelectTreatment = [...selectedTreatment];
 
-    dataAction.splice(index, 1);
-    displaySelectAction.splice(index, 1);
+    dataTreatment.splice(index, 1);
+    displaySelectTreatment.splice(index, 1);
 
-    setAction(dataAction);
-    setSelectedAction(displaySelectAction);
+    setTreatment(dataTreatment);
+    setSelectedTreatment(displaySelectTreatment);
 
-    console.log('remove action', action);
-    // console.log('remove selectedAction', selectedAction);
+    // console.log('remove treatment', treatment);
+    // console.log('remove selectedTreatment', selectedTreatment);
   };
 
-  const handleActionChange = (index, event) => {
-    console.log('handleActionChange', event);
+  const handleTreatmentChange = (index, event) => {
+    // console.log('handleTreatmentChange', event);
 
-    let dataAction = [...action];
-    let displaySelectAction = [...selectedAction];
+    let dataTreatment = [...treatment];
+    let displaySelectTreatment = [...selectedTreatment];
 
     if (event.name === "id_tindakan"){
-        dataAction[index][event.name] = event.value;
-        displaySelectAction[index]["label"] = event.label;
+        dataTreatment[index][event.name] = event.value;
+        displaySelectTreatment[index]["label"] = event.label;
     } else {
-        dataAction[index][event.target.name] = event.target.value;
+        dataTreatment[index][event.target.name] = event.target.value;
     }
 
-    setAction(dataAction);
-    setSelectedAction(displaySelectAction);
+    setTreatment(dataTreatment);
+    setSelectedTreatment(displaySelectTreatment);
 
-    // console.log('handle action', action);
-    // console.log('handle selectedAction', selectedAction);
+    // console.log('handle treatment', treatment);
+    // console.log('handle selectedTreatment', selectedTreatment);
+  };
+
+  const [service, setService] = useState([
+    { id: '', id_kunjungan: recordID, id_layanan: "", catatan: "" }
+  ]);
+  const [selectService, setSelectService] = useState([]);
+  const [selectedService, setSelectedService] = useState([{ label: ""}]);
+
+  const addServiceFields = () => {
+    let newfieldService = { id: '', id_kunjungan: recordID, id_layanan: "", catatan: "" }
+    setService([...service, newfieldService]);
+
+    let newfieldDropdownService = { label: "" };
+    setSelectedService([...selectedService, newfieldDropdownService]);
+  };
+
+  const removeServiceFields = (id, index) => {
+    let dataService = [...service];
+    let displaySelectService = [...selectedService];
+
+    dataService.splice(index, 1);
+    displaySelectService.splice(index, 1);
+
+    setService(dataService);
+    setSelectedService(displaySelectService);
+
+    // console.log('remove service', service);
+    // console.log('remove selectedService', selectedService);
+  };
+
+  const handleServiceChange = (index, event) => {
+    // console.log('handleServiceChange', event);
+
+    let dataService = [...service];
+    let displaySelectService = [...selectedService];
+
+    if (event.name === "id_tindakan"){
+        dataService[index][event.name] = event.value;
+        displaySelectService[index]["label"] = event.label;
+    } else {
+        dataService[index][event.target.name] = event.target.value;
+    }
+
+    setService(dataService);
+    setSelectedService(displaySelectService);
+
+    // console.log('handle service', service);
+    // console.log('handle selectedService', selectedService);
   };
 
   const [reference, setReference] = useState([
-    { id: Math.random(), id_rujukan: "", id_poli: "", id_rs: "", anamnesis: "", terapi: "", catatan: "" }
+    { id: '', id_rujukan: "", id_poli: "", id_rs: "", anamnesis: "", terapi: "", catatan: "" }
   ]);
-  const [referenceDiagnosis, setReferenceDiagnosis] = useState([
-    { id: Math.random(), id_rujukan: "", id_penyakit: "", tipe_wd: false, tipe_dd: false }
+  const [diagnoseReference, setDiagnoseReference] = useState([
+    { id: '', id_rujukan: "", id_penyakit: "", tipe_wd: false, tipe_dd: false }
   ]);
-  const [selectedReferenceDiagnosis, setSelectedReferenceDiagnosis] = useState([{ label: ""}]);
+  const [selectedDiagnoseReference, setSelectedDiagnoseReference] = useState([{ label: ""}]);
 
-  const addReferenceDiagnosisFields = () => {
-    let newfieldReferenceDiagnosis = { id: Math.random(), id_rujukan: "", id_penyakit: "", tipe_wd: false, tipe_dd: false };
-    setReferenceDiagnosis([...referenceDiagnosis, newfieldReferenceDiagnosis]);
+  const addDiagnoseReferenceFields = () => {
+    let newfieldDiagnoseReference = { id: '', id_rujukan: "", id_penyakit: "", tipe_wd: false, tipe_dd: false };
+    setDiagnoseReference([...diagnoseReference, newfieldDiagnoseReference]);
 
-    let newfieldDropdownReferenceDiagnosis = { label: "" };
-    setSelectedReferenceDiagnosis([...selectedReferenceDiagnosis, newfieldDropdownReferenceDiagnosis]);
+    let newfieldDropdownDiagnoseReference = { label: "" };
+    setSelectedDiagnoseReference([...selectedDiagnoseReference, newfieldDropdownDiagnoseReference]);
   };
 
-  const removeReferenceDiagnosisFields = (id, index) => {
-    let dataReferenceDiagnosis = [...referenceDiagnosis];
-    let displaySelectReferenceDiagnosis = [...selectedReferenceDiagnosis];
+  const removeDiagnoseReferenceFields = (id, index) => {
+    let dataDiagnoseReference = [...diagnoseReference];
+    let displaySelectDiagnoseReference = [...selectedDiagnoseReference];
 
-    dataReferenceDiagnosis.splice(index, 1);
-    displaySelectReferenceDiagnosis.splice(index, 1);
+    dataDiagnoseReference.splice(index, 1);
+    displaySelectDiagnoseReference.splice(index, 1);
 
-    setReferenceDiagnosis(dataReferenceDiagnosis);
-    setSelectedReferenceDiagnosis(displaySelectReferenceDiagnosis);
+    setDiagnoseReference(dataDiagnoseReference);
+    setSelectedDiagnoseReference(displaySelectDiagnoseReference);
 
-    // console.log('remove referenceDiagnosis', referenceDiagnosis);
-    // console.log('remove selectedReferenceDiagnosis', selectedReferenceDiagnosis);
+    // console.log('remove diagnoseReference', diagnoseReference);
+    // console.log('remove selectedDiagnoseReference', selectedDiagnoseReference);
   };
 
   let wd_rujukan = false; let dd_rujukan = false;
 
-  const handleReferenceDiagnosisChange = (index, event) => {
-    // console.log('handleReferenceDiagnosisChange', event);
+  const handleDiagnoseReferenceChange = (index, event) => {
+    // console.log('handleDiagnoseReferenceChange', event);
 
-    let dataReferenceDiagnosis = [...referenceDiagnosis];
-    let displaySelectReferenceDiagnosis = [...selectedReferenceDiagnosis];
+    let dataDiagnoseReference = [...diagnoseReference];
+    let displaySelectDiagnoseReference = [...selectedDiagnoseReference];
 
     if (event.name === "id_penyakit"){
-      dataReferenceDiagnosis[index][event.name] = event.value;
-      displaySelectReferenceDiagnosis[index]["label"] = event.label;
+      dataDiagnoseReference[index][event.name] = event.value;
+      displaySelectDiagnoseReference[index]["label"] = event.label;
     } else if(event.target.name === "tipe_diagnosis_rujukan") {
-
-      console.log('event.target.id', event.target.id);
-      console.log('event.target.checked', event.target.checked);
 
       if(event.target.id === 'tipe_wd_rujukan' && event.target.checked === true) {
         wd_rujukan = true;
@@ -597,19 +664,19 @@ const FormRecord = ({ match, history }) => {
         dd_rujukan = false;
       }
 
-      displaySelectReferenceDiagnosis[index]['tipe_wd'] = wd_rujukan;
-      displaySelectReferenceDiagnosis[index]['tipe_dd'] = dd_rujukan;
+      dataDiagnoseReference[index]['tipe_wd'] = wd_rujukan;
+      dataDiagnoseReference[index]['tipe_dd'] = dd_rujukan;
     }
 
-    setReferenceDiagnosis(dataReferenceDiagnosis);
-    setSelectedReferenceDiagnosis(displaySelectReferenceDiagnosis);
+    setDiagnoseReference(dataDiagnoseReference);
+    setSelectedDiagnoseReference(displaySelectDiagnoseReference);
 
-    console.log('handle referenceDiagnosis', referenceDiagnosis);
-    // console.log('handle selectedReferenceDiagnosis', selectedReferenceDiagnosis);
+    console.log('handle diagnoseReference', diagnoseReference);
+    // console.log('handle selectedDiagnoseReference', selectedDiagnoseReference);
   };
 
   const handleReferenceChange = (e) => {
-    console.log('handleReferenceChange', e);
+    // console.log('handleReferenceChange', e);
 
     if (e.name === 'id_poli') {
       setReference(current => {
@@ -629,14 +696,14 @@ const FormRecord = ({ match, history }) => {
       })
     }
 
-    console.log('reference', reference);
+    // console.log('reference', reference);
   };
 
   const getRecordByPatientId = async (e, id) => {
     // resetForm(e);
 
     if(id){
-      setDataStatus("update");
+      setDataRecord("update");
 
       try {
         const res = await recordAPI.get("", `/${id}`);
@@ -656,7 +723,8 @@ const FormRecord = ({ match, history }) => {
           prognosa: data.prognosa,
           kasus_kll: data.kasus_kll,
           status_pulang: data.status_pulang,
-          keluhan: data.keluhan
+          keluhan: data.keluhan,
+          catatan_tambahan: data.catatan_tambahan,
         });
 
         setSelectedType({tipe: data.tipe ? e.value : ''});
@@ -674,7 +742,7 @@ const FormRecord = ({ match, history }) => {
         console.log(e);
       }
     } else {
-      setDataStatus("add");
+      setDataRecord("add");
 
       setRecord({
         id_jaga: watchID,
@@ -687,18 +755,19 @@ const FormRecord = ({ match, history }) => {
         prognosa: '',
         kasus_kll: '',
         status_pulang: '',
-        keluhan: ''
+        keluhan: '',
+        catatan_tambahan: ''
       });
     }
 
-    // console.log(dataStatus);
+    // console.log(dataStatusRecord);
   };
 
   const onRecordSubmit = async (e) => {
     e.preventDefault();
 
     // console.log(record);
-    if(dataStatus === 'add') {
+    if(dataStatusRecord === 'add') {
       try {
         const response = await recordAPI.add(record);
         // console.log(response);
@@ -714,8 +783,9 @@ const FormRecord = ({ match, history }) => {
             confirmButtonColor: "#008ecc",
           });
 
-          resetForm(e);
-          history.push("/record");
+          // resetForm(e);
+          // history.push("/record");
+
         } else {
           Swal.fire({
             title: "Gagal!",
@@ -738,7 +808,7 @@ const FormRecord = ({ match, history }) => {
 
         console.log(e);
       }
-    } else if(dataStatus === 'update') {
+    } else if(dataStatusRecord === 'update' && recordID) {
       try {
         const response = await recordAPI.update(record, recordID);
         // console.log(response);
@@ -754,8 +824,8 @@ const FormRecord = ({ match, history }) => {
             confirmButtonColor: "#008ecc",
           });
 
-          resetForm(e);
-          history.push("/record");
+          // resetForm(e);
+          // history.push("/record");
         } else {
           Swal.fire({
             title: "Gagal!",
@@ -777,9 +847,606 @@ const FormRecord = ({ match, history }) => {
         });
 
         console.log(e);
+      } finally {
+        // onDiagnosisSubmit(e);
+        // onRecieptSubmit(e);
+        // onCheckupSubmit(e);
+	      // onTreatmentSubmit(e);
+	      // onServiceSubmit(e);
+        // onReferenceSubmit(e);
+        // onDiagnoseReferenceSubmit(e);
       }
     } else {
-      console.log('dataStatus undefined')
+      console.log('dataStatusRecord undefined')
+    }
+  };
+
+  const onDiagnosisSubmit = async (e) => {
+    e.preventDefault();
+
+    // console.log(diagnosis);
+    for (var i = 0; i < diagnosis.length; i++) {
+      if(diagnosis[i].id === '') {
+        try {
+          const response = await diagnoseAPI.add(diagnosis[i]);
+          // console.log(response);
+
+          if (response.status == 200) {
+            let data = await response.data.data;
+            // console.log(data);
+
+            Swal.fire({
+              title: "Sukses!",
+              html: `Tambah diagnosis sukses`,
+              icon: "success",
+              confirmButtonColor: "#008ecc",
+            });
+            
+          } else {
+            Swal.fire({
+              title: "Gagal!",
+              html: `Tambah diagnosis gagal: ${response.message}`,
+              icon: "error",
+              confirmButtonColor: "#008ecc",
+              confirmButtonText: "Coba lagi",
+            });
+
+            throw Error(`Error status: ${response.status}`);
+          }
+        } catch (e) {
+          Swal.fire({
+            title: "Gagal!",
+            html: e,
+            icon: "error",
+            confirmButtonColor: "#008ecc",
+            confirmButtonText: "Coba lagi",
+          });
+          console.log(e);
+        }
+      } else {
+        try {
+          const response = await recieptAPI.update(diagnosis[i], diagnosis[i].id);
+          // console.log(response);
+
+          if (response.status == 200) {
+            let data = await response.data.data;
+            // console.log(data);
+
+            Swal.fire({
+              title: "Sukses!",
+              html: `Ubah diagnosis sukses`,
+              icon: "success",
+              confirmButtonColor: "#008ecc",
+            });
+            
+          } else {
+            Swal.fire({
+              title: "Gagal!",
+              html: `Ubah diagnosis gagal: ${response.message}`,
+              icon: "error",
+              confirmButtonColor: "#008ecc",
+              confirmButtonText: "Coba lagi",
+            });
+
+            throw Error(`Error status: ${response.status}`);
+          }
+        } catch (e) {
+          Swal.fire({
+            title: "Gagal!",
+            html: e,
+            icon: "error",
+            confirmButtonColor: "#008ecc",
+            confirmButtonText: "Coba lagi",
+          });
+
+          console.log(e);
+        }
+      }
+    }
+  };
+
+  const onRecieptSubmit = async (e) => {
+    e.preventDefault();
+
+    // console.log(reciept);
+    for (var i = 0; i < reciept.length; i++) {
+      if(reciept[i].id === '') {
+        try {
+          const response = await recieptAPI.add(reciept[i]);
+          // console.log(response);
+
+          if (response.status == 200) {
+            let data = await response.data.data;
+            // console.log(data);
+
+            Swal.fire({
+              title: "Sukses!",
+              html: `Tambah resep sukses`,
+              icon: "success",
+              confirmButtonColor: "#008ecc",
+            });
+            
+          } else {
+            Swal.fire({
+              title: "Gagal!",
+              html: `Tambah resep gagal: ${response.message}`,
+              icon: "error",
+              confirmButtonColor: "#008ecc",
+              confirmButtonText: "Coba lagi",
+            });
+
+            throw Error(`Error status: ${response.status}`);
+          }
+        } catch (e) {
+          Swal.fire({
+            title: "Gagal!",
+            html: e,
+            icon: "error",
+            confirmButtonColor: "#008ecc",
+            confirmButtonText: "Coba lagi",
+          });
+          console.log(e);
+        }
+      } else {
+        try {
+          const response = await recieptAPI.update(reciept[i], reciept[i].id);
+          // console.log(response);
+
+          if (response.status == 200) {
+            let data = await response.data.data;
+            // console.log(data);
+
+            Swal.fire({
+              title: "Sukses!",
+              html: `Ubah resep sukses`,
+              icon: "success",
+              confirmButtonColor: "#008ecc",
+            });
+            
+          } else {
+            Swal.fire({
+              title: "Gagal!",
+              html: `Ubah resep gagal: ${response.message}`,
+              icon: "error",
+              confirmButtonColor: "#008ecc",
+              confirmButtonText: "Coba lagi",
+            });
+
+            throw Error(`Error status: ${response.status}`);
+          }
+        } catch (e) {
+          Swal.fire({
+            title: "Gagal!",
+            html: e,
+            icon: "error",
+            confirmButtonColor: "#008ecc",
+            confirmButtonText: "Coba lagi",
+          });
+
+          console.log(e);
+        }
+      }
+    }
+  };
+
+  const onCheckupSubmit = async (e) => {
+    e.preventDefault();
+
+    // console.log(checkup);
+    for (var i = 0; i < checkup.length; i++) {
+      if(checkup[i].id === '') {
+        try {
+          const response = await inspectSupportAPI.add(checkup[i]);
+          // console.log(response);
+
+          if (response.status == 200) {
+            let data = await response.data.data;
+            // console.log(data);
+
+            Swal.fire({
+              title: "Sukses!",
+              html: `Tambah pemeriksaan sukses`,
+              icon: "success",
+              confirmButtonColor: "#008ecc",
+            });
+            
+          } else {
+            Swal.fire({
+              title: "Gagal!",
+              html: `Tambah pemeriksaan gagal: ${response.message}`,
+              icon: "error",
+              confirmButtonColor: "#008ecc",
+              confirmButtonText: "Coba lagi",
+            });
+
+            throw Error(`Error status: ${response.status}`);
+          }
+        } catch (e) {
+          Swal.fire({
+            title: "Gagal!",
+            html: e,
+            icon: "error",
+            confirmButtonColor: "#008ecc",
+            confirmButtonText: "Coba lagi",
+          });
+          console.log(e);
+        }
+      } else {
+        try {
+          const response = await inspectSupportAPI.update(checkup[i], checkup[i].id);
+          // console.log(response);
+
+          if (response.status == 200) {
+            let data = await response.data.data;
+            // console.log(data);
+
+            Swal.fire({
+              title: "Sukses!",
+              html: `Ubah pemeriksaan sukses`,
+              icon: "success",
+              confirmButtonColor: "#008ecc",
+            });
+            
+          } else {
+            Swal.fire({
+              title: "Gagal!",
+              html: `Ubah pemeriksaan gagal: ${response.message}`,
+              icon: "error",
+              confirmButtonColor: "#008ecc",
+              confirmButtonText: "Coba lagi",
+            });
+
+            throw Error(`Error status: ${response.status}`);
+          }
+        } catch (e) {
+          Swal.fire({
+            title: "Gagal!",
+            html: e,
+            icon: "error",
+            confirmButtonColor: "#008ecc",
+            confirmButtonText: "Coba lagi",
+          });
+
+          console.log(e);
+        }
+      }
+    }
+  };
+
+  const onTreatmentSubmit = async (e) => {
+    e.preventDefault();
+
+    // console.log(treatment);
+    for (var i = 0; i < treatment.length; i++) {
+      if(treatment[i].id === '') {
+        try {
+          const response = await treatmentAPI.add(treatment[i]);
+          // console.log(response);
+
+          if (response.status == 200) {
+            let data = await response.data.data;
+            // console.log(data);
+
+            Swal.fire({
+              title: "Sukses!",
+              html: `Tambah tindakan sukses`,
+              icon: "success",
+              confirmButtonColor: "#008ecc",
+            });
+            
+          } else {
+            Swal.fire({
+              title: "Gagal!",
+              html: `Tambah tindakan gagal: ${response.message}`,
+              icon: "error",
+              confirmButtonColor: "#008ecc",
+              confirmButtonText: "Coba lagi",
+            });
+
+            throw Error(`Error status: ${response.status}`);
+          }
+        } catch (e) {
+          Swal.fire({
+            title: "Gagal!",
+            html: e,
+            icon: "error",
+            confirmButtonColor: "#008ecc",
+            confirmButtonText: "Coba lagi",
+          });
+          console.log(e);
+        }
+      } else {
+        try {
+          const response = await treatmentAPI.update(treatment[i], treatment[i].id);
+          // console.log(response);
+
+          if (response.status == 200) {
+            let data = await response.data.data;
+            // console.log(data);
+
+            Swal.fire({
+              title: "Sukses!",
+              html: `Ubah tindakan sukses`,
+              icon: "success",
+              confirmButtonColor: "#008ecc",
+            });
+            
+          } else {
+            Swal.fire({
+              title: "Gagal!",
+              html: `Ubah tindakan gagal: ${response.message}`,
+              icon: "error",
+              confirmButtonColor: "#008ecc",
+              confirmButtonText: "Coba lagi",
+            });
+
+            throw Error(`Error status: ${response.status}`);
+          }
+        } catch (e) {
+          Swal.fire({
+            title: "Gagal!",
+            html: e,
+            icon: "error",
+            confirmButtonColor: "#008ecc",
+            confirmButtonText: "Coba lagi",
+          });
+
+          console.log(e);
+        }
+      }
+    }
+  };
+
+  const onServiceSubmit = async (e) => {
+    e.preventDefault();
+
+    // console.log(service);
+    for (var i = 0; i < service.length; i++) {
+      if(service[i].id === '') {
+        try {
+          const response = await serviceAPI.add(service[i]);
+          // console.log(response);
+
+          if (response.status == 200) {
+            let data = await response.data.data;
+            // console.log(data);
+
+            Swal.fire({
+              title: "Sukses!",
+              html: `Tambah layanan sukses`,
+              icon: "success",
+              confirmButtonColor: "#008ecc",
+            });
+            
+          } else {
+            Swal.fire({
+              title: "Gagal!",
+              html: `Tambah layanan gagal: ${response.message}`,
+              icon: "error",
+              confirmButtonColor: "#008ecc",
+              confirmButtonText: "Coba lagi",
+            });
+
+            throw Error(`Error status: ${response.status}`);
+          }
+        } catch (e) {
+          Swal.fire({
+            title: "Gagal!",
+            html: e,
+            icon: "error",
+            confirmButtonColor: "#008ecc",
+            confirmButtonText: "Coba lagi",
+          });
+          console.log(e);
+        }
+      } else {
+        try {
+          const response = await serviceAPI.update(service[i], service[i].id);
+          // console.log(response);
+
+          if (response.status == 200) {
+            let data = await response.data.data;
+            // console.log(data);
+
+            Swal.fire({
+              title: "Sukses!",
+              html: `Ubah layanan sukses`,
+              icon: "success",
+              confirmButtonColor: "#008ecc",
+            });
+            
+          } else {
+            Swal.fire({
+              title: "Gagal!",
+              html: `Ubah layanan gagal: ${response.message}`,
+              icon: "error",
+              confirmButtonColor: "#008ecc",
+              confirmButtonText: "Coba lagi",
+            });
+
+            throw Error(`Error status: ${response.status}`);
+          }
+        } catch (e) {
+          Swal.fire({
+            title: "Gagal!",
+            html: e,
+            icon: "error",
+            confirmButtonColor: "#008ecc",
+            confirmButtonText: "Coba lagi",
+          });
+
+          console.log(e);
+        }
+      }
+    }
+  };
+
+  const onReferenceSubmit = async (e) => {
+    e.preventDefault();
+
+    // console.log(reference);
+    if(dataStatusReference === 'add') {
+      try {
+        const response = await referenceAPI.add(reference);
+        // console.log(response);
+
+        if (response.status == 200) {
+          let data = await response.data.data;
+          // console.log(data);
+
+          Swal.fire({
+            title: "Sukses!",
+            html: `Tambah rujukan sukses`,
+            icon: "success",
+            confirmButtonColor: "#008ecc",
+          });
+          
+        } else {
+          Swal.fire({
+            title: "Gagal!",
+            html: `Tambah rujukan gagal: ${response.message}`,
+            icon: "error",
+            confirmButtonColor: "#008ecc",
+            confirmButtonText: "Coba lagi",
+          });
+
+          throw Error(`Error status: ${response.status}`);
+        }
+      } catch (e) {
+        Swal.fire({
+          title: "Gagal!",
+          html: e,
+          icon: "error",
+          confirmButtonColor: "#008ecc",
+          confirmButtonText: "Coba lagi",
+        });
+
+        console.log(e);
+      }
+    } else if(dataStatusReference === 'update') {
+      try {
+        const response = await referenceAPI.update(reference, reference.id);
+        // console.log(response);
+
+        if (response.status == 200) {
+          let data = await response.data.data;
+          // console.log(data);
+
+          Swal.fire({
+            title: "Sukses!",
+            html: `Ubah rujukan sukses`,
+            icon: "success",
+            confirmButtonColor: "#008ecc",
+          });
+          
+        } else {
+          Swal.fire({
+            title: "Gagal!",
+            html: `Ubah rujukan gagal: ${response.message}`,
+            icon: "error",
+            confirmButtonColor: "#008ecc",
+            confirmButtonText: "Coba lagi",
+          });
+
+          throw Error(`Error status: ${response.status}`);
+        }
+      } catch (e) {
+        Swal.fire({
+          title: "Gagal!",
+          html: e,
+          icon: "error",
+          confirmButtonColor: "#008ecc",
+          confirmButtonText: "Coba lagi",
+        });
+
+        console.log(e);
+      }
+    } else {
+      console.log('dataStatusRecord undefined')
+    }
+  };
+
+  const onDiagnoseReferenceSubmit = async (e) => {
+    e.preventDefault();
+
+    // console.log(diagnoseReference);
+    for (var i = 0; i < diagnoseReference.length; i++) {
+      if(diagnoseReference[i].id === '') {
+        try {
+          const response = await diagnoseReferenceAPI.add(diagnoseReference[i]);
+          // console.log(response);
+
+          if (response.status == 200) {
+            let data = await response.data.data;
+            // console.log(data);
+
+            Swal.fire({
+              title: "Sukses!",
+              html: `Tambah diagnosis rujukan sukses`,
+              icon: "success",
+              confirmButtonColor: "#008ecc",
+            });
+            
+          } else {
+            Swal.fire({
+              title: "Gagal!",
+              html: `Tambah diagnosis rujukan gagal: ${response.message}`,
+              icon: "error",
+              confirmButtonColor: "#008ecc",
+              confirmButtonText: "Coba lagi",
+            });
+
+            throw Error(`Error status: ${response.status}`);
+          }
+        } catch (e) {
+          Swal.fire({
+            title: "Gagal!",
+            html: e,
+            icon: "error",
+            confirmButtonColor: "#008ecc",
+            confirmButtonText: "Coba lagi",
+          });
+          console.log(e);
+        }
+      } else {
+        try {
+          const response = await diagnoseReferenceAPI.update(diagnoseReference[i], diagnoseReference[i].id);
+          // console.log(response);
+
+          if (response.status == 200) {
+            let data = await response.data.data;
+            // console.log(data);
+
+            Swal.fire({
+              title: "Sukses!",
+              html: `Ubah diagnosis rujukan sukses`,
+              icon: "success",
+              confirmButtonColor: "#008ecc",
+            });
+            
+          } else {
+            Swal.fire({
+              title: "Gagal!",
+              html: `Ubah diagnosis rujukan gagal: ${response.message}`,
+              icon: "error",
+              confirmButtonColor: "#008ecc",
+              confirmButtonText: "Coba lagi",
+            });
+
+            throw Error(`Error status: ${response.status}`);
+          }
+        } catch (e) {
+          Swal.fire({
+            title: "Gagal!",
+            html: e,
+            icon: "error",
+            confirmButtonColor: "#008ecc",
+            confirmButtonText: "Coba lagi",
+          });
+
+          console.log(e);
+        }
+      }
     }
   };
 
@@ -798,7 +1465,8 @@ const FormRecord = ({ match, history }) => {
       prognosa: '',
       kasus_kll: false,
       status_pulang: '',
-      keluhan: ''
+      keluhan: '',
+      catatan_tambahan: ''
     });
     
     setIsChecked(false);
@@ -809,7 +1477,6 @@ const FormRecord = ({ match, history }) => {
     onLoadPenyakit();
     onLoadObat();
     onLoadLab();
-    // onLoadPemeriksaan();
     onLoadTindakan();
     onLoadPoliRujukan();
     onLoadRSRujukan();
@@ -892,74 +1559,7 @@ const FormRecord = ({ match, history }) => {
     }
   };
 
-  // let selectInspectByTreatmentArray = [];
-
-  // const onLoadPemeriksaanByLayananId = async (id) => {
-  //   try {
-  //     const response = await inspectListAPI.getByTreatment("", id);
-  //     // console.log(response);
-
-  //     selectInspectByTreatmentArray = [];
-  //     // setSelectInspectByTreatment([]);
-
-  //     if (response.status === 200) {
-  //       let data = response.data.data;
-  //       // console.log(data);
-      
-  //       for (var i = 0; i < data.length; i++) {
-  //         setSelectInspectByTreatment((current) => [
-  //           ...current,
-  //           { label: data[i].nama, value: data[i].id, key: data[i].id, name: 'id_pemeriksaan' },
-  //         ]);
-
-  //         // selectInspectByTreatment.push({ label: data[i].nama, value: data[i].id, key: data[i].id, name: 'id_pemeriksaan' });
-  //         selectInspectByTreatmentArray.push({ label: data[i].nama, value: data[i].id, key: data[i].id, name: 'id_pemeriksaan' });
-  //       }
-  //     } else {
-  //       throw Error(`Error status: ${response.status}`);
-  //     }
-  //   } catch (e) {
-  //     console.log(e);
-  //   } finally {
-  //     selectInspectByTreatmentArray = [];
-  //     // setSelectInspectByTreatment([]);
-  //   }
-  // };
-
-  // const onLoadPemeriksaan = async () => {
-  //   try {
-  //     const response = await inspectListAPI.get("", "?limit=1000");
-  //     // console.log(response);
-
-  //     setSelectInspect([]);
-
-  //     if (response.status === 200) {
-  //       let data = response.data.data;
-  //       // console.log(data);
-      
-  //       for (var i = 0; i < data.length; i++) {
-  //         // onLoadPemeriksaanByLayananId(data[i].id_layanan_lab);
-
-  //         setSelectInspect((current) => [
-  //           ...current,
-  //           { 
-  //             label: data[i].id_layanan_lab,
-  //             // options: selectInspectByTreatment
-  //             // options: selectInspectByTreatmentArray
-  //           },
-  //         ]);
-  //       }
-  //     } else {
-  //       throw Error(`Error status: ${response.status}`);
-  //     }
-  //   } catch (e) {
-  //     console.log(e);
-  //   } finally {
-      
-  //   }
-  // };
-
-  const onLoadPemeriksaanByLayananLab = async (id_lab, kategori) => {
+  const onLoadPemeriksaanByLayananLab = async (index, id_lab, kategori) => {
     // selectInspectByLabTreatmentArray = [];
 
     try {
@@ -981,17 +1581,45 @@ const FormRecord = ({ match, history }) => {
     } catch (e) {
       console.log(e);
     } finally {
-      selectLabTreatmentArray.push({ 
+      // var newLoopTreatmentByLab = { label: kategori, options: selectInspectByLabTreatmentArray };
+      
+      // setSelectLabTreatment((current) => [
+      //   ...current, { label: kategori, options: selectInspectByLabTreatmentArray }
+      // ]);
+
+      // setSelectLabTreatment(current => [
+      //     ...current,
+      //     {
+      //       label: kategori,
+      //       options: selectInspectByLabTreatmentArray
+      //     }
+      // ])
+
+      // setSelectLabTreatment({ label: kategori, options: selectInspectByLabTreatmentArray });
+
+      if(selectLabTreatment[index] !== undefined) {
+        selectLabTreatment[index].push({ 
+          label: kategori,
+          options: selectInspectByLabTreatmentArray
+        });
+      }
+
+      selectLabTreatmentArray[index].push({ 
         label: kategori,
         options: selectInspectByLabTreatmentArray
       });
 
       selectInspectByLabTreatmentArray = [];
+
+      // console.log('selectLabTreatment', selectLabTreatment);
+      // console.log('selectLabTreatmentArray', selectLabTreatmentArray);
     }
   };
 
-  const changeLayananLab = async (id_lab) => {
-    selectLabTreatmentArray = [];
+  const changeLayananLab = async (index, id_lab) => {
+    // setSelectLabTreatment([]);
+    selectLabTreatment[index] = [];
+    selectLabTreatmentArray[index] = [];
     selectInspectByLabTreatmentArray = [];
 
     try {
@@ -1003,7 +1631,7 @@ const FormRecord = ({ match, history }) => {
         // console.log(data);
       
         for (var i = 0; i < data.length; i++) {
-          onLoadPemeriksaanByLayananLab(id_lab, data[i].kategori);
+          onLoadPemeriksaanByLayananLab(index, id_lab, data[i].kategori);
 
           // selectLabTreatmentArray.push({ 
           //   label: data[i].kategori,
@@ -1023,19 +1651,36 @@ const FormRecord = ({ match, history }) => {
     }
   };
 
+  const valueOfSelectTreatment = (index, event = null) => {
+    // if(selectLabTreatmentArray[index] !== undefined){
+    //   selectLabTreatmentArray[index].map((data, i) => 
+    //     data.options.find(item => item.value === checkup[index].id_pemeriksaan) || ''
+    //   )
+    // }
+
+    if(selectLabTreatment[index] !== undefined){
+      // changeLayananLab(index, event);
+      // changeLayananLab(index, checkup[index].id_laboratorium);
+
+      selectLabTreatment[index].map((data, i) => 
+        data.options.find(item => item.value === checkup[index].id_pemeriksaan) || ''
+      )
+    }
+  }
+
   const onLoadTindakan = async () => {
     try {
       const response = await treatmentListAPI.get("", "?limit=1000");
       // console.log(response);
 
-      setSelectAction([]);
+      setSelectTreatment([]);
 
       if (response.status === 200) {
         let data = response.data.data;
         // console.log(data);
       
         for (var i = 0; i < data.length; i++) {
-          setSelectAction((current) => [
+          setSelectTreatment((current) => [
             ...current,
             { label: data[i].nama, value: data[i].id, key: data[i].id, name: 'id_tindakan' },
           ]);
@@ -1151,7 +1796,14 @@ const FormRecord = ({ match, history }) => {
     } catch (e) {
       console.log(e);
     } finally {
-        recordID && getRecordByPatientId("", recordID);
+        recordID &&
+        getRecordByPatientId("", recordID);
+      // getDiagnosisByRecordId(recordID);
+      // getRecieptByRecordId(recordID);
+      // getCheckupByRecordId(recordID);
+      // getTreatmentByRecordId(recordID);
+      // getReferenceByRecordId(recordID);
+      // getDiagnoseReferenceByRecordId(recordID);
     }
   };
 
@@ -1159,7 +1811,6 @@ const FormRecord = ({ match, history }) => {
     onLoadPenyakit();
     onLoadObat();
     onLoadLab();
-    // onLoadPemeriksaan();
     onLoadTindakan();
     onLoadPoliRujukan();
     onLoadRSRujukan();
@@ -1256,798 +1907,841 @@ const FormRecord = ({ match, history }) => {
                     Form Registrasi Rekam Medis
                     {/* <span style={{ fontWeight: 'bold' }}>{patientData.nama_lengkap}</span> */}
                 </CardTitle>
-                <Form className="wizard wizard-default">
-                    <Wizard>
-                        <TopNavigation
-                            className="justify-content-center"
-                            disableNav={false}
-                            topNavClick={topNavClick}
-                        />
-                        <Steps>
-                            <Step
-                                id="step1"
-                                name="Rekam Medis"
-                            >
-                                <div className="wizard-basic-step">
-                                <FormGroup row>
-                                    <Colxx sm={6}>
-                                        <FormGroup>
-                                            <Label for="tipe">
-                                            Tipe Rekam Medis
-                                            </Label>
-                                            <Select
-                                            components={{ Input: CustomSelectInput }}
-                                            className="react-select"
-                                            classNamePrefix="react-select"
-                                            name="tipe"
-                                            value={selectType.find(item => item.value === record.tipe) || ''}
-                                            // value={selectedType}
-                                            // onChange={setSelectedType}
-                                            options={selectType}
-                                            // value={record.tipe}
-                                            onChange={onChange}
-                                            />
-                                        </FormGroup>
-                                    </Colxx>
+                <Form>
+                  <FormGroup row>
+                    <Colxx sm={6}>
+                        <FormGroup>
+                            <Label for="tipe">
+                            Tipe Rekam Medis
+                            </Label>
+                            <Select
+                            components={{ Input: CustomSelectInput }}
+                            className="react-select"
+                            classNamePrefix="react-select"
+                            name="tipe"
+                            value={selectType.find(item => item.value === record.tipe) || ''}
+                            // value={selectedType}
+                            // onChange={setSelectedType}
+                            options={selectType}
+                            // value={record.tipe}
+                            onChange={onChange}
+                            />
+                        </FormGroup>
+                    </Colxx>
 
-                                    <Colxx sm={6}>
-                                        <FormGroup>
-                                            <Label>
-                                            Kasus Kecelakaan Lalu Lintas
-                                            </Label>
-                                            <CustomInput
-                                            checked={isChecked}
-                                            type="checkbox"
-                                            name="kasus_kll"
-                                            id="kasus_kll"
-                                            label="Kecelakaan Lalu Lintas"
-                                            value={record.kasus_kll}
-                                            onChange={onChange}
-                                            />
-                                        </FormGroup>
-                                    </Colxx>
+                    <Colxx sm={5}>
+                        <FormGroup>
+                            <Label>
+                            Kasus Kecelakaan Lalu Lintas
+                            </Label>
+                            <CustomInput
+                            checked={isChecked}
+                            type="checkbox"
+                            name="kasus_kll"
+                            id="kasus_kll"
+                            label="Kecelakaan Lalu Lintas"
+                            value={record.kasus_kll}
+                            onChange={onChange}
+                            />
+                        </FormGroup>
+                    </Colxx>
 
-                                    <Colxx sm={12}>
-                                        <FormGroup>
-                                            <Label for="anamnesis">
-                                            Anamnesis
-                                            </Label>
-                                            <Input
-                                            type="textarea"
-                                            name="anamnesis"
-                                            id="anamnesis"
-                                            placeholder="Anamnesis"
-                                            style={{minHeight: '100'}}
-                                            value={record.anamnesis}
-                                            onChange={onChange}
-                                            />
-                                        </FormGroup>
-                                    </Colxx>
+                    <Colxx sm={11}>
+                        <FormGroup>
+                            <Label for="keluhan">
+                            Keluhan
+                            </Label>
+                            <Input
+                            type="textarea"
+                            name="keluhan"
+                            id="keluhan"
+                            placeholder="Keluhan"
+                            style={{minHeight: '250px'}}
+                            value={record.keluhan}
+                            onChange={onChange}
+                            />
+                        </FormGroup>
+                    </Colxx>
 
-                                    <Colxx sm={12}>
-                                        <FormGroup>
-                                            <Label for="pemeriksaan_fisik">
-                                            Pemeriksaan Fisik
-                                            </Label>
-                                            <Input
-                                            type="textarea"
-                                            name="pemeriksaan_fisik"
-                                            id="pemeriksaan_fisik"
-                                            placeholder="Pemeriksaan Fisik"
-                                            style={{minHeight: '100'}}
-                                            value={record.pemeriksaan_fisik}
-                                            onChange={onChange}
-                                            />
-                                        </FormGroup>
-                                    </Colxx>
+                    <Colxx sm={6}>
+                        <FormGroup>
+                            <Label for="anamnesis">
+                            Anamnesis
+                            </Label>
+                            <Input
+                            type="textarea"
+                            name="anamnesis"
+                            id="anamnesis"
+                            placeholder="Anamnesis"
+                            style={{minHeight: '250px'}}
+                            value={record.anamnesis}
+                            onChange={onChange}
+                            />
+                        </FormGroup>
+                    </Colxx>
 
-                                    <Colxx sm={6}>
-                                        <FormGroup>
-                                            <Label for="prognosa">
-                                            Prognosa
-                                            </Label>
-                                            <Select
-                                            components={{ Input: CustomSelectInput }}
-                                            className="react-select"
-                                            classNamePrefix="react-select"
-                                            name="prognosa"
-                                            value={selectPrognosa.find(item => item.value === record.prognosa) || ''}
-                                            // value={selectedPrognosa}
-                                            // onChange={setSelectedPrognosa}
-                                            options={selectPrognosa}
-                                            // value={record.prognosa}
-                                            onChange={onChange}
-                                            />
-                                        </FormGroup>
-                                    </Colxx>
+                    <Colxx sm={5}>
+                        <FormGroup>
+                            <Label for="pemeriksaan_fisik">
+                            Pemeriksaan Fisik
+                            </Label>
+                            <Input
+                            type="textarea"
+                            name="pemeriksaan_fisik"
+                            id="pemeriksaan_fisik"
+                            placeholder="Pemeriksaan Fisik"
+                            style={{minHeight: '250px'}}
+                            value={record.pemeriksaan_fisik}
+                            onChange={onChange}
+                            />
+                        </FormGroup>
+                    </Colxx>
 
-                                    <Colxx sm={6}>
-                                        <FormGroup>
-                                            <Label for="status_pulang">
-                                            Status Pulang<span className="required text-danger" aria-required="true"> *</span>
-                                            </Label>
-                                            <Select
-                                            components={{ Input: CustomSelectInput }}
-                                            className="react-select"
-                                            classNamePrefix="react-select"
-                                            name="status_pulang"
-                                            // value={selectedVisitation}
-                                            value={selectVisitation.find(item => item.value === record.status_pulang) || ''}
-                                            // onChange={setSelectedVisitation}
-                                            options={selectVisitation}
-                                            required
-                                            // value={record.status_pulang}
-                                            onChange={onChange}
-                                            />
-                                        </FormGroup>
-                                    </Colxx>
+                    <Colxx sm={6}>
+                        <FormGroup>
+                            <Label for="prognosa">
+                            Prognosa
+                            </Label>
+                            <Select
+                            components={{ Input: CustomSelectInput }}
+                            className="react-select"
+                            classNamePrefix="react-select"
+                            name="prognosa"
+                            value={selectPrognosa.find(item => item.value === record.prognosa) || ''}
+                            // value={selectedPrognosa}
+                            // onChange={setSelectedPrognosa}
+                            options={selectPrognosa}
+                            // value={record.prognosa}
+                            onChange={onChange}
+                            />
+                        </FormGroup>
+                    </Colxx>
 
-                                    <Colxx sm={12}>
-                                        <FormGroup>
-                                            <Label for="keluhan">
-                                            Keluhan
-                                            </Label>
-                                            <Input
-                                            type="textarea"
-                                            name="keluhan"
-                                            id="keluhan"
-                                            placeholder="Keluhan"
-                                            style={{minHeight: '100'}}
-                                            value={record.keluhan}
-                                            onChange={onChange}
-                                            />
-                                        </FormGroup>
-                                    </Colxx>
-                                </FormGroup>
-                                </div>
-                            </Step>
-                            <Step id="step2" name="Diagnosis">
-                                <div className="wizard-basic-step">
-                                    <FormGroup row>
-                                        {diagnosis.map((input, index) => {
-                                            return (
-                                              <React.Fragment key={index}>
-                                                  <Colxx sm={5}>
-                                                      <FormGroup>
-                                                          <Label for="id_penyakit">
-                                                              Penyakit
-                                                              {/* <span
-                                                              className="required text-danger"
-                                                              aria-required="true"
-                                                              >
-                                                              {" "}
-                                                              *
-                                                              </span> */}
-                                                          </Label>
-                                                          <Select
-                                                              components={{ Input: CustomSelectInput }}
-                                                              className="react-select"
-                                                              classNamePrefix="react-select"
-                                                              name="id_penyakit"
-                                                              value={selectedDisease.find(item => item.value === diagnosis[index].id_penyakit) || ''}
-                                                              options={selectedDisease}
-                                                              onChange={(event) => handleDiagnosisChange(index, event)}
-                                                          />
-                                                      </FormGroup>
-                                                  </Colxx>
-                                                  <Colxx sm={7}>
-                                                      <FormGroup>
-                                                          <Label for="tipe_diagnosis">
-                                                              Tipe
-                                                          </Label>
-                                                          <Row>
-                                                              <Colxx sm={6} md={5} xl={5}>
-                                                                  <CustomInput
-                                                                    checked={diagnosis[index].tipe_wd}
-                                                                    type="checkbox"
-                                                                    name="tipe_diagnosis"
-                                                                    id="tipe_wd"
-                                                                    label="Working Diagnosis"
-                                                                    // value={diagnosis[index].tipe_wd}
-                                                                    onChange={(event) => handleDiagnosisChange(index, event)}
-                                                                  />
-                                                              </Colxx>
-                                                              <Colxx sm={5} md={6} xl={6}>
-                                                                  <CustomInput
-                                                                    checked={diagnosis[index].tipe_dd}
-                                                                    type="checkbox"
-                                                                    name="tipe_diagnosis"
-                                                                    id="tipe_dd"
-                                                                    label="Differential Diagnosis"
-                                                                    // value={diagnosis[index].tipe_dd}
-                                                                    onChange={(event) => handleDiagnosisChange(index, event)}
-                                                                  />
-                                                              </Colxx>
-                                                              <Colxx sm={1} md={1} xl={1}>
-                                                                  {index > 0 && (
-                                                                    <Button
-                                                                      color="danger"
-                                                                      style={{ float: "right" }}
-                                                                      onClick={() =>
-                                                                          removeDiagnosisFields(input.id, index)
-                                                                      }
-                                                                      className="remove-diagnosis"
-                                                                    >
-                                                                      <i className="simple-icon-trash"></i>
-                                                                    </Button>
-                                                                  )}
-                                                              </Colxx>
-                                                          </Row>
-                                                      </FormGroup>
-                                                  </Colxx>
-                                              </React.Fragment>
-                                            )
-                                        })}
+                    <Colxx sm={5}>
+                        <FormGroup>
+                            <Label for="status_pulang">
+                            Status Pulang<span className="required text-danger" aria-required="true"> *</span>
+                            </Label>
+                            <Select
+                            components={{ Input: CustomSelectInput }}
+                            className="react-select"
+                            classNamePrefix="react-select"
+                            name="status_pulang"
+                            // value={selectedVisitation}
+                            value={selectVisitation.find(item => item.value === record.status_pulang) || ''}
+                            // onChange={setSelectedVisitation}
+                            options={selectVisitation}
+                            required
+                            // value={record.status_pulang}
+                            onChange={onChange}
+                            />
+                        </FormGroup>
+                    </Colxx>
+                  </FormGroup>
 
-                                        <Colxx sm={12} className="mt-2">
-                                          <Button
-                                            color="primary"
-                                            // style={{ float: "right" }}
-                                            // className="mb-2"
-                                            onClick={addDiagnosisFields}
+                  <CardTitle className="my-4">
+                      Diagnosis
+                  </CardTitle>
+
+                  <FormGroup row>
+                    {diagnosis.map((input, index) => {
+                        return (
+                          <React.Fragment key={index}>
+                              <Colxx sm={6}>
+                                  <FormGroup>
+                                      <Label for="id_penyakit">
+                                          Penyakit
+                                          {/* <span
+                                          className="required text-danger"
+                                          aria-required="true"
                                           >
-                                            Tambah Diagnosis
-                                          </Button>
-                                        </Colxx>
+                                          {" "}
+                                          *
+                                          </span> */}
+                                      </Label>
+                                      <Select
+                                          components={{ Input: CustomSelectInput }}
+                                          className="react-select"
+                                          classNamePrefix="react-select"
+                                          name="id_penyakit"
+                                          value={selectedDisease.find(item => item.value === diagnosis[index].id_penyakit) || ''}
+                                          options={selectedDisease}
+                                          onChange={(event) => handleDiagnosisChange(index, event)}
+                                      />
+                                  </FormGroup>
+                              </Colxx>
+                              <Colxx sm={5}>
+                                  <FormGroup>
+                                      <Label for="tipe_diagnosis">
+                                          Tipe
+                                      </Label>
+                                      <Row>
+                                          <Colxx sm={6} md={5} xl={5}>
+                                              <CustomInput
+                                                checked={diagnosis[index].tipe_wd}
+                                                type="checkbox"
+                                                name="tipe_diagnosis"
+                                                id="tipe_wd"
+                                                label="Working Diagnosis"
+                                                // value={diagnosis[index].tipe_wd}
+                                                onChange={(event) => handleDiagnosisChange(index, event)}
+                                              />
+                                          </Colxx>
+                                          <Colxx sm={5} md={6} xl={6}>
+                                              <CustomInput
+                                                checked={diagnosis[index].tipe_dd}
+                                                type="checkbox"
+                                                name="tipe_diagnosis"
+                                                id="tipe_dd"
+                                                label="Differential Diagnosis"
+                                                // value={diagnosis[index].tipe_dd}
+                                                onChange={(event) => handleDiagnosisChange(index, event)}
+                                              />
+                                          </Colxx>
+                                      </Row>
+                                  </FormGroup>
+                              </Colxx>
+                              <Colxx sm={1} md={1} xl={1}>
+                                  {index > 0 && (
+                                    <Button
+                                      color="danger"
+                                      style={{ float: "right" }}
+                                      onClick={() =>
+                                          removeDiagnosisFields(input.id, index)
+                                      }
+                                      className="remove-diagnosis"
+                                    >
+                                      <i className="simple-icon-trash"></i>
+                                    </Button>
+                                  )}
+                              </Colxx>
+                          </React.Fragment>
+                        )
+                    })}
+
+                    <Colxx sm={12} className="mt-2">
+                      <Button
+                        color="primary"
+                        // style={{ float: "right" }}
+                        // className="mb-2"
+                        onClick={addDiagnosisFields}
+                      >
+                        Tambah Diagnosis
+                      </Button>
+                    </Colxx>
+                  </FormGroup>
+
+                  <FormGroup row>
+                    <Colxx sm={11}>
+                        <FormGroup>
+                            <Label for="catatan_tambahan">
+                            Catatan Tambahan
+                            </Label>
+                            <Input
+                            type="textarea"
+                            name="catatan_tambahan"
+                            id="catatan_tambahan"
+                            placeholder="Catatan Tambahan"
+                            style={{minHeight: '150px'}}
+                            value={record.catatan_tambahan}
+                            onChange={onChange}
+                            />
+                        </FormGroup>
+                    </Colxx>
+                  </FormGroup>
+
+                  <CardTitle className="my-4">
+                    Tata Laksana | Resep
+                  </CardTitle>
+
+                  <FormGroup>
+                    {reciept.map((input, index) => {
+                        return (
+                          <div key={index} className="med-record-form">
+                              <FormGroup row>
+                                  <Colxx sm={6} md={6} xl={6}>
+                                      <FormGroup>
+                                          <Label for="id_obat">
+                                              Obat
+                                          </Label>
+                                          <Select
+                                              components={{ Input: CustomSelectInput }}
+                                              className="react-select"
+                                              classNamePrefix="react-select"
+                                              name="id_obat"
+                                              value={selectedMedicine.find(item => item.value === reciept[index].id_obat) || ''}
+                                              options={selectedMedicine}
+                                              onChange={(event) => handleRecieptChange(index, event)}
+                                          />
+                                      </FormGroup>
+                                  </Colxx>
+                                  <Colxx sm={2} md={2} xl={2} className="custom-column-record-reciept custom-column-record-reciept-pcs">
+                                      <FormGroup>
+                                        <Label for="jumlah">
+                                            Jumlah
+                                        </Label>
+                                        <InputGroup>
+                                            <Input
+                                                type="number"
+                                                name="jumlah"
+                                                id="jumlah"
+                                                placeholder="Jumlah"
+                                                className="input-reciept"
+                                                value={reciept[index].jumlah}
+                                                pattern="[0-9]*"
+                                                onChange={(event) => handleRecieptChange(index, event)}
+                                            />
+                                            <Select
+                                                addonType="prepend"
+                                                components={{ Input: CustomSelectInput }}
+                                                className="react-select select-reciept"
+                                                classNamePrefix="react-select"
+                                                name="satuan"
+                                                value={selectedPcs.find(item => item.label === reciept[index].satuan) || ''}
+                                                options={selectPcs}
+                                                onChange={(event) => handleRecieptChange(index, event)}
+                                            />
+                                        </InputGroup>
+                                      </FormGroup>
+                                  </Colxx>
+                                  <Colxx sm={2} md={2} xl={2} className="custom-column-record-reciept">
+                                      <FormGroup>
+                                        <Label for="frekuensi">
+                                            Frekuensi
+                                        </Label>
+                                        <InputGroup>
+                                            <Input
+                                                type="number"
+                                                name="frekuensi"
+                                                id="frekuensi"
+                                                placeholder="Frekuensi"
+                                                className="input-reciept"
+                                                value={reciept[index].frekuensi}
+                                                pattern="[0-9]*"
+                                                onChange={(event) => handleRecieptChange(index, event)}
+                                            />
+                                            <Select
+                                                addonType="prepend"
+                                                components={{ Input: CustomSelectInput }}
+                                                className="react-select select-reciept"
+                                                classNamePrefix="react-select"
+                                                name="periode"
+                                                value={selectedPeriod.find(item => item.label === reciept[index].periode) || ''}
+                                                options={selectPeriod}
+                                                onChange={(event) => handleRecieptChange(index, event)}
+                                            />
+                                        </InputGroup>
+                                      </FormGroup>
+                                  </Colxx>
+                              </FormGroup>
+                              <FormGroup row>
+                                  <Colxx sm={6} md={6} xl={6}>
+                                      <FormGroup>
+                                        <Label for="aturan_pakai">
+                                            Aturan Pakai
+                                        </Label>
+                                        <Select
+                                            components={{ Input: CustomSelectInput }}
+                                            className="react-select"
+                                            classNamePrefix="react-select"
+                                            name="aturan_pakai"
+                                            value={selectedRules.find(item => item.label === reciept[index].aturan_pakai) || ''}
+                                            options={selectRules}
+                                            onChange={(event) => handleRecieptChange(index, event)}
+                                        />
+                                      </FormGroup>
+                                  </Colxx>
+                                  <Colxx sm={5} md={5} xl={5}>
+                                      <FormGroup>
+                                          <Label for="metode_konsumsi">
+                                              Metode Konsumsi
+                                          </Label>
+                                          <Select
+                                              components={{ Input: CustomSelectInput }}
+                                              className="react-select"
+                                              classNamePrefix="react-select"
+                                              name="metode_konsumsi"
+                                              value={selectedConsume.find(item => item.label === reciept[index].metode_konsumsi) || ''}
+                                              options={selectConsume}
+                                              onChange={(event) => handleRecieptChange(index, event)}
+                                          />
+                                      </FormGroup>
+                                  </Colxx>
+                                  {index > 0 && (
+                                      <Colxx sm={1} md={1} xl={1}>
+                                          <FormGroup>
+                                            <Label>
+                                                &nbsp;&nbsp;
+                                            </Label>
+                                            <br/>
+                                            <Button
+                                              color="danger"
+                                              // style={{ float: "right" }}
+                                              onClick={() =>
+                                                  removeRecieptFields(input.id, index)
+                                              }
+                                              className="remove-reciept"
+                                            >
+                                              <i className="simple-icon-trash"></i>
+                                            </Button>
+                                          </FormGroup>
+                                      </Colxx>
+                                  )}
+                              </FormGroup>
+                          </div>
+                        )
+                    })}
+
+                    <Button
+                      color="primary"
+                      // style={{ float: "right" }}
+                      // className="mb-2"
+                      onClick={addRecieptFields}
+                    >
+                      Tambah Resep
+                    </Button>
+                  </FormGroup>
+
+                  <CardTitle className="my-4">
+                    Tata Laksana | Pemeriksaan
+                  </CardTitle>
+
+                  <FormGroup>
+                    {checkup.map((input, index) => {
+                        return (
+                          <FormGroup row key={index}>
+                            <Colxx sm={6} md={6} xl={6}>
+                                <FormGroup>
+                                    <Label for="id_laboratorium">
+                                        Laboratorium
+                                    </Label>
+                                    <Select
+                                        components={{ Input: CustomSelectInput }}
+                                        className="react-select"
+                                        classNamePrefix="react-select"
+                                        name="id_laboratorium"
+                                        value={selectLab.find(item => item.value === checkup[index].id_laboratorium) || ''}
+                                        options={selectLab}
+                                        onChange={(event) => handleCheckupChange(index, event)}
+                                    />
+                                </FormGroup>
+                            </Colxx>
+                            <Colxx sm={5} md={5} xl={5}>
+                                <FormGroup>
+                                  <Label for="id_pemeriksaan">
+                                    Layanan (pilih laboratorium dahulu)
+                                  </Label>
+                                  <Select
+                                      components={{ Input: CustomSelectInput }}
+                                      className="react-select"
+                                      classNamePrefix="react-select"
+                                      name="id_pemeriksaan"
+                                      // value={selectLabTreatment[index].find(item => item.value === checkup[index].id_pemeriksaan) || ''}
+                                      // options={selectLabTreatmentArray[index]}
+                                      // value={selectLabTreatmentArray.find(item => item.value === checkup[index].id_pemeriksaan) || ''}
+                                      // value={valueOfSelectTreatment(index)}
+                                      value={
+                                        selectLabTreatment[index] !== undefined &&
+                                        selectLabTreatment[index].map((data, i) => 
+                                          data.options.find(item => item.value === checkup[index].id_pemeriksaan) || ''
+                                        )
+                                      }
+                                      options={selectLabTreatment[index]}
+                                      onChange={(event) => handleCheckupChange(index, event)}
+                                  />
+                                </FormGroup>
+                            </Colxx>
+                            {index > 0 && (
+                                <Colxx sm={1} md={1} xl={1}>
+                                    <FormGroup>
+                                      <Label>
+                                          &nbsp;&nbsp;
+                                      </Label>
+                                      <br/>
+                                      <Button
+                                        color="danger"
+                                        // style={{ float: "right" }}
+                                        onClick={(event) =>
+                                            removeCheckupFields(input.id, index)
+                                        }
+                                        className="remove-reciept"
+                                      >
+                                        <i className="simple-icon-trash"></i>
+                                      </Button>
                                     </FormGroup>
-                                </div>
-                            </Step>
-                            <Step id="step3" name="Tata Laksana">
-                                <div className="wizard-basic-step" id="nav-tata-laksana">
-                                    <TabContent activeTab={activeTab}>
-                                        <TabPane tabId="resep">
-                                            <FormGroup>
-                                                {reciept.map((input, index) => {
-                                                    return (
-                                                      <div key={index} className="med-record-form">
-                                                          <FormGroup row>
-                                                              <Colxx sm={10} md={10} xl={10}>
-                                                                  <FormGroup>
-                                                                      <Label for="id_obat">
-                                                                          Obat
-                                                                      </Label>
-                                                                      <Select
-                                                                          components={{ Input: CustomSelectInput }}
-                                                                          className="react-select"
-                                                                          classNamePrefix="react-select"
-                                                                          name="id_obat"
-                                                                          value={selectedMedicine.find(item => item.value === reciept[index].id_obat) || ''}
-                                                                          options={selectedMedicine}
-                                                                          onChange={(event) => handleRecieptChange(index, event)}
-                                                                      />
-                                                                  </FormGroup>
-                                                              </Colxx>
-                                                          </FormGroup>
-                                                          <FormGroup row>
-                                                              <Colxx sm={5} md={5} xl={5}>
-                                                                  <FormGroup>
-                                                                    <Label for="jumlah">
-                                                                        Jumlah
-                                                                    </Label>
-                                                                    <InputGroup>
-                                                                        <Input
-                                                                            type="number"
-                                                                            name="jumlah"
-                                                                            id="jumlah"
-                                                                            placeholder="Jumlah"
-                                                                            className="input-reciept"
-                                                                            value={reciept[index].jumlah}
-                                                                            pattern="[0-9]*"
-                                                                            onChange={(event) => handleRecieptChange(index, event)}
-                                                                        />
-                                                                        <Select
-                                                                            addonType="prepend"
-                                                                            components={{ Input: CustomSelectInput }}
-                                                                            className="react-select select-reciept"
-                                                                            classNamePrefix="react-select"
-                                                                            name="satuan"
-                                                                            value={selectedPcs.find(item => item.label === reciept[index].satuan) || ''}
-                                                                            options={selectPcs}
-                                                                            onChange={(event) => handleRecieptChange(index, event)}
-                                                                        />
-                                                                    </InputGroup>
-                                                                  </FormGroup>
-                                                              </Colxx>
-                                                              <Colxx sm={5} md={5} xl={5}>
-                                                                  <FormGroup>
-                                                                    <Label for="frekuensi">
-                                                                        Frekuensi
-                                                                    </Label>
-                                                                    <InputGroup>
-                                                                        <Input
-                                                                            type="number"
-                                                                            name="frekuensi"
-                                                                            id="frekuensi"
-                                                                            placeholder="Frekuensi"
-                                                                            className="input-reciept"
-                                                                            value={reciept[index].frekuensi}
-                                                                            pattern="[0-9]*"
-                                                                            onChange={(event) => handleRecieptChange(index, event)}
-                                                                        />
-                                                                        <Select
-                                                                            addonType="prepend"
-                                                                            components={{ Input: CustomSelectInput }}
-                                                                            className="react-select select-reciept"
-                                                                            classNamePrefix="react-select"
-                                                                            name="periode"
-                                                                            value={selectedPeriod.find(item => item.label === reciept[index].periode) || ''}
-                                                                            options={selectPeriod}
-                                                                            onChange={(event) => handleRecieptChange(index, event)}
-                                                                        />
-                                                                    </InputGroup>
-                                                                  </FormGroup>
-                                                              </Colxx>
-                                                          </FormGroup>
-                                                          <FormGroup row>
-                                                              <Colxx sm={5} md={5} xl={5}>
-                                                                  <FormGroup>
-                                                                    <Label for="aturan_pakai">
-                                                                        Aturan Pakai
-                                                                    </Label>
-                                                                    <Select
-                                                                        components={{ Input: CustomSelectInput }}
-                                                                        className="react-select"
-                                                                        classNamePrefix="react-select"
-                                                                        name="aturan_pakai"
-                                                                        value={selectedRules.find(item => item.label === reciept[index].aturan_pakai) || ''}
-                                                                        options={selectRules}
-                                                                        onChange={(event) => handleRecieptChange(index, event)}
-                                                                    />
-                                                                  </FormGroup>
-                                                              </Colxx>
-                                                              <Colxx sm={5} md={5} xl={5}>
-                                                                  <FormGroup>
-                                                                      <Label for="metode_konsumsi">
-                                                                          Metode Konsumsi
-                                                                      </Label>
-                                                                      <Select
-                                                                          components={{ Input: CustomSelectInput }}
-                                                                          className="react-select"
-                                                                          classNamePrefix="react-select"
-                                                                          name="metode_konsumsi"
-                                                                          value={selectedConsume.find(item => item.label === reciept[index].metode_konsumsi) || ''}
-                                                                          options={selectConsume}
-                                                                          onChange={(event) => handleRecieptChange(index, event)}
-                                                                      />
-                                                                  </FormGroup>
-                                                              </Colxx>
-                                                              {index > 0 && (
-                                                                  <Colxx sm={2} md={2} xl={2}>
-                                                                      <FormGroup>
-                                                                        <Label>
-                                                                            &nbsp;&nbsp;
-                                                                        </Label>
-                                                                        <br/>
-                                                                        <Button
-                                                                          color="danger"
-                                                                          // style={{ float: "right" }}
-                                                                          onClick={() =>
-                                                                              removeRecieptFields(input.id, index)
-                                                                          }
-                                                                          className="remove-reciept"
-                                                                        >
-                                                                          <i className="simple-icon-trash"></i>
-                                                                        </Button>
-                                                                      </FormGroup>
-                                                                  </Colxx>
-                                                              )}
-                                                          </FormGroup>
-                                                      </div>
-                                                    )
-                                                })}
+                                </Colxx>
+                            )}
+                          </FormGroup>
+                        )
+                    })}
 
-                                                <Button
-                                                  color="primary"
-                                                  // style={{ float: "right" }}
-                                                  // className="mb-2"
-                                                  onClick={addRecieptFields}
-                                                >
-                                                  Tambah Resep
-                                                </Button>
-                                            </FormGroup>
-                                        </TabPane>
-                                        <TabPane tabId="pemeriksaan">
-                                            <FormGroup>
-                                              {checkup.map((input, index) => {
-                                                  return (
-                                                    <FormGroup row key={index}>
-                                                      <Colxx sm={5} md={5} xl={5}>
-                                                          <FormGroup>
-                                                              <Label for="id_laboratorium">
-                                                                  Laboratorium
-                                                              </Label>
-                                                              <Select
-                                                                  components={{ Input: CustomSelectInput }}
-                                                                  className="react-select"
-                                                                  classNamePrefix="react-select"
-                                                                  name="id_laboratorium"
-                                                                  value={selectLab.find(item => item.value === checkup[index].id_laboratorium) || ''}
-                                                                  options={selectLab}
-                                                                  onChange={(event) => handleCheckupChange(index, event)}
-                                                              />
-                                                          </FormGroup>
-                                                      </Colxx>
-                                                      <Colxx sm={5} md={5} xl={5}>
-                                                          <FormGroup>
-                                                            <Label for="id_pemeriksaan">
-                                                              Layanan (pilih laboratorium terlebih dahulu)
-                                                            </Label>
-                                                            <Select
-                                                                components={{ Input: CustomSelectInput }}
-                                                                className="react-select"
-                                                                classNamePrefix="react-select"
-                                                                name="id_pemeriksaan"
-                                                                // value={selectLabTreatment.find(item => item.value === checkup[index].id_pemeriksaan) || ''}
-                                                                // options={selectLabTreatment}
-                                                                value={selectLabTreatmentArray.find(item => item.value === checkup[index].id_pemeriksaan) || ''}
-                                                                options={selectLabTreatmentArray}
-                                                                onChange={(event) => handleCheckupChange(index, event)}
-                                                            />
-                                                          </FormGroup>
-                                                      </Colxx>
-                                                      {index > 0 && (
-                                                          <Colxx sm={2} md={2} xl={2}>
-                                                              <FormGroup>
-                                                                <Label>
-                                                                    &nbsp;&nbsp;
-                                                                </Label>
-                                                                <br/>
-                                                                <Button
-                                                                  color="danger"
-                                                                  // style={{ float: "right" }}
-                                                                  onClick={() =>
-                                                                      removeCheckupFields(input.id, index)
-                                                                  }
-                                                                  className="remove-reciept"
-                                                                >
-                                                                  <i className="simple-icon-trash"></i>
-                                                                </Button>
-                                                              </FormGroup>
-                                                          </Colxx>
-                                                      )}
-                                                    </FormGroup>
-                                                  )
-                                              })}
+                    <Button
+                      color="primary"
+                      // style={{ float: "right" }}
+                      // className="mb-2"
+                      onClick={addCheckupFields}
+                    >
+                      Tambah Pemeriksaan
+                    </Button>
+                  </FormGroup>
 
-                                              <Button
-                                                color="primary"
-                                                // style={{ float: "right" }}
-                                                // className="mb-2"
-                                                onClick={addCheckupFields}
-                                              >
-                                                Tambah Pemeriksaan
-                                              </Button>
-                                            </FormGroup>
-                                        </TabPane>
-                                        <TabPane tabId="tindakan">
-                                            <FormGroup>
-                                                {action.map((input, index) => {
-                                                    return (
-                                                      <FormGroup row key={index}>
-                                                        <Colxx sm={5} md={5} xl={5}>
-                                                            <FormGroup>
-                                                                <Label for="id_tindakan">
-                                                                    Tindakan
-                                                                </Label>
-                                                                <Select
-                                                                    components={{ Input: CustomSelectInput }}
-                                                                    className="react-select"
-                                                                    classNamePrefix="react-select"
-                                                                    name="id_tindakan"
-                                                                    value={selectAction.find(item => item.value === action[index].id_tindakan) || ''}
-                                                                    options={selectAction}
-                                                                    onChange={(event) => handleActionChange(index, event)}
-                                                                />
-                                                            </FormGroup>
-                                                        </Colxx>
-                                                        <Colxx sm={5} md={5} xl={5}>
-                                                            <FormGroup>
-                                                              <Label for="catatan">
-                                                                Catatan Tambahan
-                                                              </Label>
-                                                              <Input
-                                                                  type="textarea"
-                                                                  name="catatan"
-                                                                  id="catatan"
-                                                                  placeholder="Catatan"
-                                                                  style={{minHeight: '100px'}}
-                                                                  value={action[index].catatan}
-                                                                  onChange={(event) => handleActionChange(index, event)}
-                                                              />
-                                                            </FormGroup>
-                                                        </Colxx>
-                                                        {index > 0 && (
-                                                            <Colxx sm={2} md={2} xl={2}>
-                                                                <FormGroup>
-                                                                  <Label>
-                                                                      &nbsp;&nbsp;
-                                                                  </Label>
-                                                                  <br/>
-                                                                  <Button
-                                                                    color="danger"
-                                                                    // style={{ float: "right" }}
-                                                                    onClick={() =>
-                                                                        removeActionFields(input.id, index)
-                                                                    }
-                                                                    className="remove-reciept"
-                                                                  >
-                                                                    <i className="simple-icon-trash"></i>
-                                                                  </Button>
-                                                                </FormGroup>
-                                                            </Colxx>
-                                                        )}
-                                                      </FormGroup>
-                                                    )
-                                                })}
+                  <CardTitle className="my-4">
+                    Tata Laksana | Tindakan
+                  </CardTitle>
 
-                                                <Button
-                                                  color="primary"
-                                                  // style={{ float: "right" }}
-                                                  // className="mb-2"
-                                                  onClick={addActionFields}
-                                                >
-                                                  Tambah Tindakan
-                                                </Button>
-                                            </FormGroup>
-                                        </TabPane>
-                                        <TabPane tabId="rujukan">
-                                            <FormGroup>
-                                                <FormGroup row>
-                                                  {referenceDiagnosis.map((input, index) => {
-                                                      return (
-                                                        <React.Fragment key={index}>
-                                                            <Colxx sm={5}>
-                                                                <FormGroup>
-                                                                    <Label for="id_penyakit">
-                                                                        Penyakit
-                                                                        {/* <span
-                                                                        className="required text-danger"
-                                                                        aria-required="true"
-                                                                        >
-                                                                        {" "}
-                                                                        *
-                                                                        </span> */}
-                                                                    </Label>
-                                                                    <Select
-                                                                        components={{ Input: CustomSelectInput }}
-                                                                        className="react-select"
-                                                                        classNamePrefix="react-select"
-                                                                        name="id_penyakit_rujukan"
-                                                                        value={selectedDisease.find(item => item.value === referenceDiagnosis[index].id_penyakit) || ''}
-                                                                        options={selectedDisease}
-                                                                        onChange={(event) => handleReferenceDiagnosisChange(index, event)}
-                                                                    />
-                                                                </FormGroup>
-                                                            </Colxx>
-                                                            <Colxx sm={7}>
-                                                                <FormGroup>
-                                                                    <Label for="tipe_diagnosis_rujukan">
-                                                                        Tipe
-                                                                    </Label>
-                                                                    <Row>
-                                                                        <Colxx sm={6} md={5} xl={5}>
-                                                                            <CustomInput
-                                                                              checked={referenceDiagnosis[index].tipe_wd}
-                                                                              type="checkbox"
-                                                                              name="tipe_diagnosis_rujukan"
-                                                                              id="tipe_wd_rujukan"
-                                                                              label="Working Diagnosis"
-                                                                              // value={referenceDiagnosis.tipe_wd}
-                                                                              onChange={(event) => handleReferenceDiagnosisChange(index, event)}
-                                                                            />
-                                                                        </Colxx>
-                                                                        <Colxx sm={5} md={6} xl={6}>
-                                                                            <CustomInput
-                                                                              checked={referenceDiagnosis[index].tipe_dd}
-                                                                              type="checkbox"
-                                                                              name="tipe_diagnosis_rujukan"
-                                                                              id="tipe_dd_rujukan"
-                                                                              label="Differential Diagnosis"
-                                                                              // value={referenceDiagnosis.tipe_dd}
-                                                                              onChange={(event) => handleReferenceDiagnosisChange(index, event)}
-                                                                            />
-                                                                        </Colxx>
-                                                                        <Colxx sm={1} md={1} xl={1}>
-                                                                            {index > 0 && (
-                                                                              <Button
-                                                                                color="danger"
-                                                                                style={{ float: "right" }}
-                                                                                onClick={() =>
-                                                                                    removeReferenceDiagnosisFields(input.id, index)
-                                                                                }
-                                                                                className="remove-diagnosis"
-                                                                              >
-                                                                                <i className="simple-icon-trash"></i>
-                                                                              </Button>
-                                                                            )}
-                                                                        </Colxx>
-                                                                    </Row>
-                                                                </FormGroup>
-                                                            </Colxx>
-                                                        </React.Fragment>
-                                                      )
-                                                  })}
-
-                                                  <Colxx sm={12} className="mt-2">
-                                                    <FormGroup>
-                                                      <Button
-                                                        color="primary"
-                                                        // style={{ float: "right" }}
-                                                        // className="mb-2"
-                                                        onClick={addReferenceDiagnosisFields}
-                                                      >
-                                                        Tambah Diagnosis Rujukan
-                                                      </Button>
-                                                    </FormGroup>
-                                                  </Colxx>
-
-                                                  <Colxx sm={5} md={5} xl={5}>
-                                                      <FormGroup>
-                                                          <Label for="id_poli">
-                                                              Poli / Divisi<span className="required text-danger" aria-required="true"> *</span>
-                                                          </Label>
-                                                          <Select
-                                                              components={{ Input: CustomSelectInput }}
-                                                              className="react-select"
-                                                              classNamePrefix="react-select"
-                                                              name="id_poli"
-                                                              value={selectedDivision.find(item => item.value === reference.id_poli) || ''}
-                                                              options={selectedDivision}
-                                                              onChange={(event) => handleReferenceChange(index, event)}
-                                                          />
-                                                      </FormGroup>
-                                                  </Colxx>
-                                                  <Colxx sm={5} md={5} xl={5}>
-                                                      <FormGroup>
-                                                          <Label for="id_poli">
-                                                              Rumah Sakit
-                                                          </Label>
-                                                          <Select
-                                                              components={{ Input: CustomSelectInput }}
-                                                              className="react-select"
-                                                              classNamePrefix="react-select"
-                                                              name="id_poli"
-                                                              value={selectedHospital.find(item => item.value === reference.id_poli) || ''}
-                                                              options={selectedHospital}
-                                                              onChange={(event) => handleReferenceChange(index, event)}
-                                                          />
-                                                      </FormGroup>
-                                                  </Colxx>
-                                                  <Colxx sm={5} md={5} xl={5}>
-                                                      <FormGroup>
-                                                        <Label for="anamnesis">
-                                                          Anamnesis
-                                                        </Label>
-                                                        <Input
-                                                            type="textarea"
-                                                            name="anamnesis"
-                                                            id="anamnesis"
-                                                            placeholder="Anamnesis"
-                                                            style={{minHeight: '100px'}}
-                                                            value={reference.anamnesis}
-                                                            onChange={(event) => handleReferenceChange(index, event)}
-                                                        />
-                                                      </FormGroup>
-                                                  </Colxx>
-                                                  <Colxx sm={5} md={5} xl={5}>
-                                                      <FormGroup>
-                                                        <Label for="terapi">
-                                                          Terapi
-                                                        </Label>
-                                                        <Input
-                                                            type="textarea"
-                                                            name="terapi"
-                                                            id="terapi"
-                                                            placeholder="Terapi"
-                                                            style={{minHeight: '100px'}}
-                                                            value={reference.terapi}
-                                                            onChange={(event) => handleReferenceChange(index, event)}
-                                                        />
-                                                      </FormGroup>
-                                                  </Colxx>
-                                                  <Colxx sm={10} md={10} xl={10}>
-                                                      <FormGroup>
-                                                        <Label for="catatan">
-                                                          Catatan Tambahan
-                                                        </Label>
-                                                        <Input
-                                                            type="textarea"
-                                                            name="catatan"
-                                                            id="catatan"
-                                                            placeholder="Catatan"
-                                                            style={{minHeight: '100px'}}
-                                                            value={reference.catatan}
-                                                            onChange={(event) => handleReferenceChange(index, event)}
-                                                        />
-                                                      </FormGroup>
-                                                  </Colxx>
-                                              </FormGroup>
-                                            </FormGroup>
-                                        </TabPane>
-                                    </TabContent>
-                                    
-                                    <Nav tabs className="separator-tabs ml-0 mt-5">
-                                        <NavItem>
-                                            <a
-                                                className={classnames({
-                                                  active: activeTab === 'resep',
-                                                  'nav-link': true,
-                                                })}
-                                                aria-disabled="true"
-                                                onClick={() => setActiveTab('resep')}
-                                            >
-                                                Resep
-                                            </a>
-                                        </NavItem>
-                                        <NavItem>
-                                            <a
-                                                className={classnames({
-                                                  active: activeTab === 'pemeriksaan',
-                                                  'nav-link': true,
-                                                })}
-                                                aria-disabled="true"
-                                                onClick={() => setActiveTab('pemeriksaan')}
-                                            >
-                                                Pemeriksaan
-                                            </a>
-                                        </NavItem>
-                                        <NavItem>
-                                            <a
-                                                className={classnames({
-                                                  active: activeTab === 'tindakan',
-                                                  'nav-link': true,
-                                                })}
-                                                aria-disabled="true"
-                                                onClick={() => setActiveTab('tindakan')}
-                                            >
-                                                Tindakan
-                                            </a>
-                                        </NavItem>
-                                        <NavItem>
-                                            <a
-                                                className={classnames({
-                                                  active: activeTab === 'rujukan',
-                                                  'nav-link': true,
-                                                })}
-                                                aria-disabled="true"
-                                                onClick={() => setActiveTab('rujukan')}
-                                            >
-                                                Rujukan
-                                            </a>
-                                        </NavItem>
-                                    </Nav>
-                                </div>
-                            </Step> 
-                        </Steps>
-                        <Row>
-                            <Colxx sm={6}>
-                                <Label>
-                                    * ) Wajib diisi
-                                </Label>
+                  <FormGroup>
+                    {treatment.map((input, index) => {
+                        return (
+                          <FormGroup row key={index}>
+                            <Colxx sm={6} md={6} xl={6}>
+                                <FormGroup>
+                                    <Label for="id_tindakan">
+                                        Tindakan
+                                    </Label>
+                                    <Select
+                                        components={{ Input: CustomSelectInput }}
+                                        className="react-select"
+                                        classNamePrefix="react-select"
+                                        name="id_tindakan"
+                                        value={selectTreatment.find(item => item.value === treatment[index].id_tindakan) || ''}
+                                        options={selectTreatment}
+                                        onChange={(event) => handleTreatmentChange(index, event)}
+                                    />
+                                </FormGroup>
                             </Colxx>
-                            <Colxx sm={6} className="text-right">
-                                <Button
-                                    type="button"
-                                    color="light"
-                                    onClick={(e) => history.push("/record")}>
-                                        Kembali
-                                </Button>
-                                &nbsp;&nbsp;
-                                <Button
-                                    type="button"
-                                    outline
-                                    color="danger"
-                                    onClick={(e) => resetForm(e)}>
-                                        Batal
-                                </Button>
-                                &nbsp;&nbsp;
-                                <Button color="primary" 
-                                    onClick={(e) => onRecordSubmit(e)}>
-                                    Simpan
-                                </Button>
+                            <Colxx sm={5} md={5} xl={5}>
+                                <FormGroup>
+                                  <Label for="catatan">
+                                    Catatan Tambahan
+                                  </Label>
+                                  <Input
+                                      type="textarea"
+                                      name="catatan"
+                                      id="catatan"
+                                      placeholder="Catatan"
+                                      style={{minHeight: '150px'}}
+                                      value={treatment[index].catatan}
+                                      onChange={(event) => handleTreatmentChange(index, event)}
+                                  />
+                                </FormGroup>
                             </Colxx>
-                        </Row>
-                    </Wizard>
+                            {index > 0 && (
+                                <Colxx sm={1} md={1} xl={1}>
+                                    <FormGroup>
+                                      <Label>
+                                          &nbsp;&nbsp;
+                                      </Label>
+                                      <br/>
+                                      <Button
+                                        color="danger"
+                                        // style={{ float: "right" }}
+                                        onClick={() =>
+                                            removeTreatmentFields(input.id, index)
+                                        }
+                                        className="remove-reciept"
+                                      >
+                                        <i className="simple-icon-trash"></i>
+                                      </Button>
+                                    </FormGroup>
+                                </Colxx>
+                            )}
+                          </FormGroup>
+                        )
+                    })}
+
+                    <Button
+                      color="primary"
+                      // style={{ float: "right" }}
+                      // className="mb-2"
+                      onClick={addTreatmentFields}
+                    >
+                      Tambah Tindakan
+                    </Button>
+                  </FormGroup>
+
+                  
+
+                  <CardTitle className="my-4">
+                    Tata Laksana | Layanan
+                  </CardTitle>
+
+                  <FormGroup>
+                    {service.map((input, index) => {
+                        return (
+                          <FormGroup row key={index}>
+                            <Colxx sm={6} md={6} xl={6}>
+                                <FormGroup>
+                                    <Label for="id_layanan">
+                                        Layanan
+                                    </Label>
+                                    <Select
+                                        components={{ Input: CustomSelectInput }}
+                                        className="react-select"
+                                        classNamePrefix="react-select"
+                                        name="id_layanan"
+                                        value={selectService.find(item => item.value === treatment[index].id_layanan) || ''}
+                                        options={selectService}
+                                        onChange={(event) => handleServiceChange(index, event)}
+                                    />
+                                </FormGroup>
+                            </Colxx>
+                            <Colxx sm={5} md={5} xl={5}>
+                                <FormGroup>
+                                  <Label for="catatan">
+                                    Catatan Tambahan
+                                  </Label>
+                                  <Input
+                                      type="textarea"
+                                      name="catatan"
+                                      id="catatan"
+                                      placeholder="Catatan"
+                                      style={{minHeight: '150px'}}
+                                      value={treatment[index].catatan}
+                                      onChange={(event) => handleServiceChange(index, event)}
+                                  />
+                                </FormGroup>
+                            </Colxx>
+                            {index > 0 && (
+                                <Colxx sm={1} md={1} xl={1}>
+                                    <FormGroup>
+                                      <Label>
+                                          &nbsp;&nbsp;
+                                      </Label>
+                                      <br/>
+                                      <Button
+                                        color="danger"
+                                        // style={{ float: "right" }}
+                                        onClick={() =>
+                                            removeServiceFields(input.id, index)
+                                        }
+                                        className="remove-reciept"
+                                      >
+                                        <i className="simple-icon-trash"></i>
+                                      </Button>
+                                    </FormGroup>
+                                </Colxx>
+                            )}
+                          </FormGroup>
+                        )
+                    })}
+
+                    <Button
+                      color="primary"
+                      // style={{ float: "right" }}
+                      // className="mb-2"
+                      onClick={addServiceFields}
+                    >
+                      Tambah Layanan
+                    </Button>
+                  </FormGroup>
+
+                  <CardTitle className="my-4">
+                    Tata Laksana | Rujukan
+                  </CardTitle>
+
+                  <FormGroup>
+                    <FormGroup row>
+                      {diagnoseReference.map((input, index) => {
+                          return (
+                            <React.Fragment key={index}>
+                                <Colxx sm={6}>
+                                    <FormGroup>
+                                        <Label for="id_penyakit">
+                                            Penyakit
+                                            {/* <span
+                                            className="required text-danger"
+                                            aria-required="true"
+                                            >
+                                            {" "}
+                                            *
+                                            </span> */}
+                                        </Label>
+                                        <Select
+                                            components={{ Input: CustomSelectInput }}
+                                            className="react-select"
+                                            classNamePrefix="react-select"
+                                            name="id_penyakit_rujukan"
+                                            value={selectedDisease.find(item => item.value === diagnoseReference[index].id_penyakit) || ''}
+                                            options={selectedDisease}
+                                            onChange={(event) => handleDiagnoseReferenceChange(index, event)}
+                                        />
+                                    </FormGroup>
+                                </Colxx>
+                                <Colxx sm={5}>
+                                    <FormGroup>
+                                        <Label for="tipe_diagnosis_rujukan">
+                                            Tipe
+                                        </Label>
+                                        <Row>
+                                            <Colxx sm={6} md={5} xl={5}>
+                                                <CustomInput
+                                                  checked={diagnoseReference[index].tipe_wd}
+                                                  type="checkbox"
+                                                  name="tipe_diagnosis_rujukan"
+                                                  id="tipe_wd_rujukan"
+                                                  label="Working Diagnosis"
+                                                  // value={diagnoseReference.tipe_wd}
+                                                  onChange={(event) => handleDiagnoseReferenceChange(index, event)}
+                                                />
+                                            </Colxx>
+                                            <Colxx sm={5} md={6} xl={6}>
+                                                <CustomInput
+                                                  checked={diagnoseReference[index].tipe_dd}
+                                                  type="checkbox"
+                                                  name="tipe_diagnosis_rujukan"
+                                                  id="tipe_dd_rujukan"
+                                                  label="Differential Diagnosis"
+                                                  // value={diagnoseReference.tipe_dd}
+                                                  onChange={(event) => handleDiagnoseReferenceChange(index, event)}
+                                                />
+                                            </Colxx>
+                                        </Row>
+                                    </FormGroup>
+                                </Colxx>
+                                <Colxx sm={1} md={1} xl={1}>
+                                    {index > 0 && (
+                                      <Button
+                                        color="danger"
+                                        style={{ float: "right" }}
+                                        onClick={() =>
+                                            removeDiagnoseReferenceFields(input.id, index)
+                                        }
+                                        className="remove-diagnosis"
+                                      >
+                                        <i className="simple-icon-trash"></i>
+                                      </Button>
+                                    )}
+                                </Colxx>
+                            </React.Fragment>
+                          )
+                      })}
+
+                      <Colxx sm={12} className="mt-2">
+                        <FormGroup>
+                          <Button
+                            color="primary"
+                            // style={{ float: "right" }}
+                            // className="mb-2"
+                            onClick={addDiagnoseReferenceFields}
+                          >
+                            Tambah Diagnosis Rujukan
+                          </Button>
+                        </FormGroup>
+                      </Colxx>
+
+                      <Colxx sm={6} md={6} xl={6}>
+                          <FormGroup>
+                              <Label for="id_poli">
+                                  Poli / Divisi
+                                  {/* <span className="required text-danger" aria-required="true"> *</span> */}
+                              </Label>
+                              <Select
+                                  components={{ Input: CustomSelectInput }}
+                                  className="react-select"
+                                  classNamePrefix="react-select"
+                                  name="id_poli"
+                                  // value={selectedDivision.find(item => item.value === reference.id_poli) || ''}
+                                  options={selectedDivision}
+                                  onChange={(event) => handleReferenceChange(event)}
+                              />
+                          </FormGroup>
+                      </Colxx>
+                      <Colxx sm={5} md={5} xl={5}>
+                          <FormGroup>
+                              <Label for="id_poli">
+                                  Rumah Sakit
+                              </Label>
+                              <Select
+                                  components={{ Input: CustomSelectInput }}
+                                  className="react-select"
+                                  classNamePrefix="react-select"
+                                  name="id_poli"
+                                  // value={selectedHospital.find(item => item.value === reference.id_poli) || ''}
+                                  options={selectedHospital}
+                                  onChange={(event) => handleReferenceChange(event)}
+                              />
+                          </FormGroup>
+                      </Colxx>
+                      <Colxx sm={6} md={6} xl={6}>
+                          <FormGroup>
+                            <Label for="anamnesis">
+                              Anamnesis
+                            </Label>
+                            <Input
+                                type="textarea"
+                                name="anamnesis"
+                                id="anamnesis"
+                                placeholder="Anamnesis"
+                                style={{minHeight: '250px'}}
+                                value={reference.anamnesis}
+                                onChange={(event) => handleReferenceChange(event)}
+                            />
+                          </FormGroup>
+                      </Colxx>
+                      <Colxx sm={5} md={5} xl={5}>
+                          <FormGroup>
+                            <Label for="terapi">
+                              Terapi
+                            </Label>
+                            <Input
+                                type="textarea"
+                                name="terapi"
+                                id="terapi"
+                                placeholder="Terapi"
+                                style={{minHeight: '250px'}}
+                                value={reference.terapi}
+                                onChange={(event) => handleReferenceChange(event)}
+                            />
+                          </FormGroup>
+                      </Colxx>
+                      <Colxx sm={11} md={11} xl={11}>
+                          <FormGroup>
+                            <Label for="catatan">
+                              Catatan Tambahan
+                            </Label>
+                            <Input
+                                type="textarea"
+                                name="catatan"
+                                id="catatan"
+                                placeholder="Catatan"
+                                style={{minHeight: '150px'}}
+                                value={reference.catatan}
+                                onChange={(event) => handleReferenceChange(event)}
+                            />
+                          </FormGroup>
+                      </Colxx>
+                    </FormGroup>
+                  </FormGroup>
+
+                  <Row>
+                    <Colxx sm={6}>
+                        <Label>
+                            * ) Wajib diisi
+                        </Label>
+                    </Colxx>
+                    <Colxx sm={6} className="text-right">
+                        <Button
+                            type="button"
+                            color="light"
+                            onClick={(e) => history.push("/record")}>
+                                Kembali
+                        </Button>
+                        &nbsp;&nbsp;
+                        <Button
+                            type="button"
+                            outline
+                            color="danger"
+                            onClick={(e) => resetForm(e)}>
+                                Batal
+                        </Button>
+                        &nbsp;&nbsp;
+                        <Button color="primary" 
+                            onClick={(e) => onRecordSubmit(e)}>
+                            Simpan
+                        </Button>
+                    </Colxx>
+                  </Row>
+
                 </Form>
               </CardBody>
             </Card>

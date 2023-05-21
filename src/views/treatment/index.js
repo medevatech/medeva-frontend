@@ -5,8 +5,11 @@ import { connect } from 'react-redux';
 import AppLayout from 'layout/AppLayout';
 import { ProtectedRoute } from 'helpers/authHelper';
 
+const Price = React.lazy(() =>
+  import(/* webpackChunkName: "views-treatment-price" */ './price')
+);
 const Data = React.lazy(() =>
-  import(/* webpackChunkName: "views-schedule-data" */ './data')
+  import(/* webpackChunkName: "views-treatment-data" */ './data')
 );
 
 const App = ({ match }) => {
@@ -15,15 +18,20 @@ const App = ({ match }) => {
       <div className="dashboard-wrapper">
         <Suspense fallback={<div className="loading" />}>
           <Switch>
-            <Redirect exact from={`${match.url}`} to={`${match.url}`} />
+            {/* <Redirect exact from={`${match.url}`} to={`${match.url}`} /> */}
             {/* <Route
               path={`${match.url}/data`}
               render={(props) => <Data {...props} />}
             /> */}
             <ProtectedRoute
-              path={`${match.url}`}
+              path={`${match.url}/price`}
+              component={Price}
+              roles={[ "isDev", "isManager", "isAdmin" ]}
+            />
+            <ProtectedRoute
+              path={`${match.url}/list`}
               component={Data}
-              roles={[ "isDev", "isManager", "isAdmin", "isResepsionis", "isPerawat", "isDokter" ]}
+              roles={[ "isDev", "isManager", "isAdmin" ]}
             />
             <Redirect to="/error" />
           </Switch>

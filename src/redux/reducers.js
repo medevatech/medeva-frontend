@@ -13,11 +13,11 @@ import { queue, queueTotalPage } from "store/queue";
 import { disease, diseaseTotalPage } from 'store/disease';
 import { medicine, medicineTotalPage } from 'store/medicine';
 import { lab, labTotalPage } from 'store/lab';
-import { inspectList, inspectListTotalPage } from 'store/inspect-list';
-import { treatmentList, treatmentListTotalPage } from 'store/treatment-list';
-import { divisionReference, divisionReferenceTotalPage } from 'store/division-reference';
-import { hospitalReference, hospitalReferenceTotalPage } from 'store/hospital-reference';
-
+import { inspect, inspectTotalPage } from 'store/inspect';
+import { treatment, treatmentTotalPage, treatmentList, treatmentListTotalPage, treatmentPrice, treatmentPriceTotalPage } from 'store/treatment';
+import { service, serviceTotalPage, serviceList, serviceListTotalPage, servicePrice, servicePriceTotalPage } from 'store/service';
+import { diagnoseReference, diagnoseReferenceTotalPage, divisionReference, divisionReferenceTotalPage, hospitalReference, hospitalReferenceTotalPage } from 'store/reference';
+import { action, actionTotalPage } from 'store/action';
 
 import { province, city, subdistrict, ward } from 'store/address';
 
@@ -47,14 +47,28 @@ const reducers = combineReducers({
   medicineTotalPage,
   lab,
   labTotalPage,
-  inspectList,
-  inspectListTotalPage,
+  inspect,
+  inspectTotalPage,
+  treatment,
+  treatmentTotalPage,
   treatmentList,
   treatmentListTotalPage,
+  treatmentPrice,
+  treatmentPriceTotalPage,
+  diagnoseReference,
+  diagnoseReferenceTotalPage,
   divisionReference,
   divisionReferenceTotalPage,
   hospitalReference,
   hospitalReferenceTotalPage,
+  action,
+  actionTotalPage,
+  service,
+  serviceTotalPage,
+  serviceList,
+  serviceListTotalPage,
+  servicePrice,
+  servicePriceTotalPage,
 
   province,
   city, 

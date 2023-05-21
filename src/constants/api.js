@@ -31,14 +31,14 @@ const api = {
   },
   insurance: {
     all: '/asuransi',
-    patient: '/asuransi/pasien',
-    edit: '/asuransi/edit'
+    class: '/asuransi-kelas'
   },
   allergy: '/alergi', // MASTER OF 'ALERGI' FIELD
   patientAllergy: {  // JOIN TABLE ID ALERGY TO ID PATIENT AND ID RECORD
     all: '/alergi-pasien',
     patient: '/alergi-pasien/pasien'
   },
+  participant: '/peserta',
   queue: '/antrian',
   vitalSigns: {
     all:  '/vital-signs',
@@ -46,21 +46,50 @@ const api = {
   },
   record: {
     all: '/kunjungan',
-    patient: '/kunjungan/pasien'
+    patient: '/kunjungan/pasien',
+    temp: '/temp-kunjungan', // JOIN TABLE ID RECORD TO ID VITAL SIGNS
   },
-  tempRecord: '/temp-kunjungan', // JOIN TABLE ID RECORD TO ID VITAL SIGNS
+  diagnose: '/diagnosis',
+  reciept: '/resep',
+  treatment: {
+    all: '/tindakan',
+    list: '/daftar-tindakan', // MASTER OF 'NAMA TINDAKAN' FIELD
+    archiveList: '/daftar-tindakan/archive',
+    activateList: '/daftar-tindakan/activate',
+    clinicList: '/daftar-tindakan/klinik',
+    price: '/harga-tindakan', // MASTER OF 'HARGA TINDAKAN' FIELD,
+    clinicPrice: '/harga-tindakan/klinik', // MASTER OF 'HARGA TINDAKAN' FIELD,
+    archivePrice: '/harga-tindakan/archive',
+    activatePrice: '/harga-tindakan/activate'
+  },
+  service: {
+    all: '/layanan',
+    list: '/daftar-layanan', // MASTER OF 'NAMA LAYANAN' FIELD
+    archiveList: '/daftar-layanan/archive',
+    activateList: '/daftar-layanan/activate',
+    clinicList: '/daftar-layanan/klinik',
+    price: '/harga-layanan', // MASTER OF 'HARGA LAYANAN' FIELD,
+    clinicPrice: '/harga-layanan/klinik', // MASTER OF 'HARGA LAYANAN' FIELD,
+    archivePrice: '/harga-layanan/archive',
+    activatePrice: '/harga-layanan/activate'
+  },
   disease: '/penyakit', // MASTER OF 'PENYAKIT' FIELD
   medicine: '/obat', // MASTER OF 'OBAT' FIELD
-  lab: '/laboratorium', // MASTER OF 'LABORATORIUM' FIELD
-  labTreatment: '/layanan-laboratorium', // JOIN TABLE ID LAB TO ID PEMERIKSAAN
-  treatmentList: '/daftar-tindakan', // MASTER OF 'TINDAKAN' FIELD
-  divisionReference: '/poli', // MASTER OF 'POLI RUJUKAN' FIELD
-  hospitalReference: '/rs', // MASTER OF 'RS RUJUKAN' FIELD
+  lab: {
+    all: '/laboratorium', // MASTER OF 'LABORATORIUM' FIELD
+    treatment: '/layanan-laboratorium', // JOIN TABLE ID LAB TO ID PEMERIKSAAN
+  },
+  reference: {
+    all: '/rujukan',
+    diagnose: '/diagnosis-rujukan', // MASTER OF 'POLI RUJUKAN' FIELD
+    division: '/poli', // MASTER OF 'POLI RUJUKAN' FIELD
+    hospital: '/rs', // MASTER OF 'RS RUJUKAN' FIELD
+  },
   inspect: {
-    all: '/pemeriksaan',
-    treatment: '/pemeriksaan/layanan-lab',
-  }, // MASTER OF 'PEMERIKSAAN' FIELD
-  inspectSupport: '/pemeriksaan-penunjang', // JOIN TABLE ID RECORD TO ID LAB TO ID INSPECT
+    all: '/pemeriksaan', // MASTER OF 'PEMERIKSAAN' FIELD
+    treatment: '/pemeriksaan/layanan-lab', // GET LAB BY TREATMENT
+    support: '/pemeriksaan-penunjang', // JOIN TABLE ID RECORD TO ID LAB TO ID INSPECT
+  }
 }
 
 export default api

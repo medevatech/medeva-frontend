@@ -2,10 +2,10 @@ import api from 'constants/api'
 import { getAuthHeader, getOriginHeader, serializeQueryParams, getJSONHeader } from 'utils/http'
 import baseApi from 'service/api-general'
 
-const tempRecord = {
+const temp = {
   all: (payloads) => {
-    const url = api.tempRecord
+    const url = api.record.temp
     return baseApi.post(url, payloads, { headers: getOriginHeader() })
   }
 }
-export default tempRecord
+export default temp

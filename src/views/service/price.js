@@ -33,11 +33,13 @@ import Pagination from "components/common/Pagination";
 
 import CustomSelectInput from "components/common/CustomSelectInput";
 
-import divisionAPI from "api/division";
+import serviceAPI from "api/service/list";
+import servicePriceAPI from "api/service/price";
 import clinicAPI from "api/clinic";
 import Swal from "sweetalert2";
 
 import loader from '../../assets/img/loading.gif';
+import { currencyFormat } from "utils";
 
 const userData = JSON.parse(localStorage.getItem('user_data'));
 
@@ -49,22 +51,25 @@ const selectStatusF = [
 
 const Data = ({ match, history, loading, error }) => {
   const dispatch = useDispatch();
-  const divisionData = useSelector(state => state.division);
-  const divisionTotalPage = useSelector(state => state.divisionTotalPage);
+  const serviceData = useSelector(state => state.servicePrice);
+  const serviceTotalPage = useSelector(state => state.servicePriceTotalPage);
   const [dataStatus, setDataStatus] = useState("add");
   const [rowSelected, setRowSelected] = useState(null);
 
   const [selectedKlinik, setSelectedKlinik] = useState([]);
+  const [selectedService, setSelectedService] = useState([]);
   const [selectedKlinikF, setSelectedKlinikF] = useState([{ label: "Semua", value: "", key: 0, name: 'id_klinik' }]);
 
   const [modalArchive, setModalArchive] = useState(false);
   const [modalDelete, setModalDelete] = useState(false);
-  const [divisionID, setDivisionID] = useState('');
-  const [divisionStatus, setDivisionStatus] = useState(0);
+  const [modalAddList, setModalAddList] = useState(false);
+  const [serviceID, setServiceID] = useState('');
+  const [serviceStatus, setServiceStatus] = useState(0);
 
-  const [division, setDivision] = useState({
-    tipe: '',
-    id_klinik: ''
+  const [servicePrice, setServicePrice] = useState({
+    id_daftar_layanan: '',
+    id_klinik: '',
+    harga: '',
   });
 
   const onLoadKlinik = async () => {
@@ -98,28 +103,116 @@ const Data = ({ match, history, loading, error }) => {
     }
   };
 
+  const onLoadDaftarLayanan = async () => {
+    try {
+      const response = await serviceAPI.get("", "?limit=1000");
+      // console.log(response);
+
+      setSelectedService([]);
+
+      if (response.status === 200) {
+        let data = response.data.data;
+        // console.log(data);
+      
+        for (var i = 0; i < data.length; i++) {
+          setSelectedService((current) => [
+            ...current,
+            { label: data[i].nama, value: data[i].id, key: data[i].id, name: 'id_daftar_layanan' },
+          ]);
+        }
+      } else {
+        throw Error(`Error status: ${response.status}`);
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  const [service, setService] = useState({
+    nama: ''
+  });
+
   const onChange = (e) => {
     // console.log('e', e);
 
     if (e.name === 'id_klinik') {
-      setDivision(current => {
-          return { ...current, id_klinik: e ? e.value : ''}
-      })
+        setServicePrice(current => {
+            return { ...current, id_klinik: e ? e.value : ''}
+        })
+    } else if (e.name === 'id_daftar_layanan') {
+        setServicePrice(current => {
+            return { ...current, id_daftar_layanan: e ? e.value : ''}
+        })
     } else {
-      setDivision(current => {
-          return { ...current, [e.target.name]: e.target.value }
-      })
+        setServicePrice(current => {
+            return { ...current, [e.target.name]: e.target.value }
+        })
     }
 
-    // console.log('division', division);
+    // console.log('servicePrice', servicePrice);
   }
 
-  const onDivisionSubmit = async (e) => {
+  const onChangeList = (e) => {
+    // console.log('e', e);
+
+    setService(current => {
+        return { ...current, [e.target.name]: e.target.value }
+    })
+
+    // console.log('service', service);
+  }
+
+  const onServiceListSubmit = async (e) => {
+    e.preventDefault();
+    setModalAddList(false);
+    onLoadDaftarLayanan();
+
+    try {
+      const response = await serviceAPI.add(service);
+      // console.log(response);
+
+      if (response.status == 200) {
+        let data = await response.data.data;
+        // console.log(data);
+
+        Swal.fire({
+          title: "Sukses!",
+          html: `Tambah layanan sukses`,
+          icon: "success",
+          confirmButtonColor: "#008ecc",
+        });
+
+        resetForm(e);
+      } else {
+        Swal.fire({
+          title: "Gagal!",
+          html: `Tambah layanan gagal: ${response.message}`,
+          icon: "error",
+          confirmButtonColor: "#008ecc",
+          confirmButtonText: "Coba lagi",
+        });
+
+        throw Error(`Error status: ${response.status}`);
+      }
+    } catch (e) {
+      Swal.fire({
+        title: "Gagal!",
+        html: e,
+        icon: "error",
+        confirmButtonColor: "#008ecc",
+        confirmButtonText: "Coba lagi",
+      });
+
+      console.log(e);
+    }
+  };
+
+  const onServiceSubmit = async (e) => {
     e.preventDefault();
 
     if(dataStatus === 'add') {
       try {
-        const response = await divisionAPI.add(division);
+        const response = await servicePriceAPI.add(servicePrice);
         // console.log(response);
   
         if (response.status == 200) {
@@ -128,7 +221,7 @@ const Data = ({ match, history, loading, error }) => {
   
           Swal.fire({
             title: "Sukses!",
-            html: `Tambah poli / divisi sukses`,
+            html: `Tambah harga layanan sukses`,
             icon: "success",
             confirmButtonColor: "#008ecc",
           });
@@ -137,7 +230,7 @@ const Data = ({ match, history, loading, error }) => {
         } else {
           Swal.fire({
             title: "Gagal!",
-            html: `Tambah poli / divisi gagal: ${response.message}`,
+            html: `Tambah harga layanan gagal: ${response.message}`,
             icon: "error",
             confirmButtonColor: "#008ecc",
             confirmButtonText: "Coba lagi",
@@ -158,7 +251,7 @@ const Data = ({ match, history, loading, error }) => {
       }
     } else if (dataStatus === 'update') {
       try {
-        const response = await divisionAPI.update(division, divisionID);
+        const response = await servicePriceAPI.update(servicePrice, serviceID);
         // console.log(response);
   
         if (response.status == 200) {
@@ -167,7 +260,7 @@ const Data = ({ match, history, loading, error }) => {
   
           Swal.fire({
             title: "Sukses!",
-            html: `Ubah poli / divisi sukses`,
+            html: `Ubah harga layanan sukses`,
             icon: "success",
             confirmButtonColor: "#008ecc",
           });
@@ -176,7 +269,7 @@ const Data = ({ match, history, loading, error }) => {
         } else {
           Swal.fire({
             title: "Gagal!",
-            html: `Ubah poli / divisi gagal: ${response.message}`,
+            html: `Ubah harga layanan gagal: ${response.message}`,
             icon: "error",
             confirmButtonColor: "#008ecc",
             confirmButtonText: "Coba lagi",
@@ -203,9 +296,9 @@ const Data = ({ match, history, loading, error }) => {
   const resetForm = (e, scroll = false) => {
     e.preventDefault();
 
-    setDivisionID('');
-    setDivisionName('');
-    setDivisionStatus(0);
+    setServiceID('');
+    setServiceName('');
+    setServiceStatus(0);
 
     if(scroll) {
       if(window.innerWidth < 1280){
@@ -219,26 +312,29 @@ const Data = ({ match, history, loading, error }) => {
       }
     }
 
-    setDivision({
-      tipe: '',
-      id_klinik: ''
+    setServicePrice({
+      id_daftar_layanan: serviceID,
+      id_klinik: '',
+      harga: '',
     });
     
     setSelectedKlinik([]);
     setSelectedKlinikF([{ label: "Semua", value: "", key: 0, name: 'id_klinik' }]);
+    setSelectedService([]);
 
     setDataStatus("add");
     onLoadKlinik();
+    onLoadDaftarLayanan();
   };
 
   const [isLoading, setIsLoading] = useState(false);
 
-  const getDivision = async (params) => {
+  const getServicePrice = async (params) => {
     try {
       setIsLoading(true);
-      const res = await divisionAPI.get("", params);
-      dispatch({type: "GET_DIVISION", payload: res.data.data});
-      dispatch({type: "GET_TOTAL_PAGE_DIVISION", payload: res.data.pagination.totalPage});
+      const res = await servicePriceAPI.get("", params);
+      dispatch({type: "GET_SERVICE_PRICE", payload: res.data.data});
+      dispatch({type: "GET_TOTAL_PAGE_SERVICE_PRICE", payload: res.data.pagination.totalPage});
     } catch (e) {
       console.log(e);
     } finally {
@@ -246,7 +342,7 @@ const Data = ({ match, history, loading, error }) => {
     }
   };
 
-  const getDivisionById = async (e, id) => {
+  const getServicePriceById = async (e, id) => {
     e.preventDefault();
     resetForm(e);
     setDataStatus("update");
@@ -263,19 +359,20 @@ const Data = ({ match, history, loading, error }) => {
     }
 
     try {
-      const res = await divisionAPI.get("", `/${id}`);
+      const res = await servicePriceAPI.get("", `/${id}`);
       let data = res.data.data[0];
 
       // console.log(data);
 
-      setDivisionID(data.id);
-      setDivision({
-        tipe: data.tipe,
-        id_klinik: data.id_klinik
+      setServiceID(data.id);
+      setServicePrice({
+        id_daftar_layanan: data.id_daftar_layanan,
+        id_klinik: data.id_klinik,
+        harga: data.harga
       });
-      setDivisionStatus(data.is_active);
+      setServiceStatus(data.is_active);
 
-      // console.log(division);
+    //   console.log(servicePrice);
 
     } catch (e) {
       console.log(e);
@@ -286,7 +383,7 @@ const Data = ({ match, history, loading, error }) => {
 
   function ButtonActive() {
     return <>
-    <Button color="success" size="xs" onClick={(e) => statusById(e, divisionID)}>
+    <Button color="success" size="xs" onClick={(e) => statusById(e, serviceID)}>
       <i className="simple-icon-drawer"></i>&nbsp;Aktifkan
     </Button><span>&nbsp;&nbsp;</span>
     </>;
@@ -294,7 +391,7 @@ const Data = ({ match, history, loading, error }) => {
 
   function ButtonArchive() {
     return <>
-    <Button color="warning" size="xs" onClick={(e) => statusById(e, divisionID)}>
+    <Button color="warning" size="xs" onClick={(e) => statusById(e, serviceID)}>
       <i className="simple-icon-drawer"></i>&nbsp;Arsipkan
     </Button><span>&nbsp;&nbsp;</span>
     </>;
@@ -304,9 +401,9 @@ const Data = ({ match, history, loading, error }) => {
     if(userData.roles.includes('isDev') ||
       userData.roles.includes('isManager') ||
       userData.roles.includes('isAdmin')) {
-      if (divisionID && divisionStatus == 1) {
+      if (serviceID && serviceStatus == 1) {
         return <ButtonArchive/>;
-      } else if (divisionID && divisionStatus == 0) {
+      } else if (serviceID && serviceStatus == 0) {
         return <ButtonActive/>;
       } else {
         return null;
@@ -316,19 +413,19 @@ const Data = ({ match, history, loading, error }) => {
     }
   }
 
-  const [divisionName, setDivisionName] = useState('');
+  const [serviceName, setServiceName] = useState('');
 
   const statusById = async (e, id) => {
     e.preventDefault();
 
     setModalArchive(true);
     try {
-      const res = await divisionAPI.get("", `/${id}`);
+      const res = await serviceAPI.get("", `/${id}`);
       let data = res.data.data[0];
 
-      setDivisionID(data.id);
-      setDivisionStatus(data.is_active);
-      setDivisionName(data.tipe);
+      setServiceID(data.id);
+      setServiceStatus(data.is_active);
+      setServiceName(data.nama);
     } catch (e) {
       console.log(e);
     }
@@ -338,8 +435,8 @@ const Data = ({ match, history, loading, error }) => {
     e.preventDefault();
 
     try {
-      if (divisionStatus == 1) {
-        const response = await divisionAPI.archive("", divisionID);
+      if (serviceStatus == 1) {
+        const response = await servicePriceAPI.archive("", serviceID);
 
         if (response.status == 200) {
           let data = await response.data.data;
@@ -347,7 +444,7 @@ const Data = ({ match, history, loading, error }) => {
 
           Swal.fire({
             title: "Sukses!",
-            html: `Arsip poli / divisi sukses`,
+            html: `Arsip harga layanan sukses`,
             icon: "success",
             confirmButtonColor: "#008ecc",
           });
@@ -356,7 +453,7 @@ const Data = ({ match, history, loading, error }) => {
         } else {
           Swal.fire({
             title: "Gagal!",
-            html: `Arsip poli / divisi gagal: ${response.message}`,
+            html: `Arsip harga layanan gagal: ${response.message}`,
             icon: "error",
             confirmButtonColor: "#008ecc",
             confirmButtonText: "Coba lagi",
@@ -365,7 +462,7 @@ const Data = ({ match, history, loading, error }) => {
           throw Error(`Error status: ${response.status}`);
         }
       } else {
-        const response = await divisionAPI.activate("", divisionID);
+        const response = await servicePriceAPI.activate("", serviceID);
 
         if (response.status == 200) {
           let data = await response.data.data;
@@ -373,7 +470,7 @@ const Data = ({ match, history, loading, error }) => {
 
           Swal.fire({
             title: "Sukses!",
-            html: `Aktivasi poli / divisi sukses`,
+            html: `Aktivasi harga layanan sukses`,
             icon: "success",
             confirmButtonColor: "#008ecc",
           });
@@ -382,7 +479,7 @@ const Data = ({ match, history, loading, error }) => {
         } else {
           Swal.fire({
             title: "Gagal!",
-            html: `Aktivasi poli / divisi gagal: ${response.message}`,
+            html: `Aktivasi harga layanan gagal: ${response.message}`,
             icon: "error",
             confirmButtonColor: "#008ecc",
             confirmButtonText: "Coba lagi",
@@ -410,11 +507,11 @@ const Data = ({ match, history, loading, error }) => {
 
     setModalDelete(true);
     try {
-      const res = await divisionAPI.get("", `/${id}`);
+      const res = await servicePriceAPI.get("", `/${id}`);
       let data = res.data.data[0];
 
-      setDivisionID(data.id);
-      setDivisionName(data.tipe);
+      setServiceID(data.id);
+      setServiceName(data.nama);
     } catch (e) {
       console.log(e);
     }
@@ -424,7 +521,7 @@ const Data = ({ match, history, loading, error }) => {
     e.preventDefault();
 
     try {
-      const response = await divisionAPI.delete("", divisionID);
+      const response = await servicePriceAPI.delete("", serviceID);
 
       if (response.status == 200) {
         let data = await response.data.data;
@@ -432,7 +529,7 @@ const Data = ({ match, history, loading, error }) => {
 
         Swal.fire({
           title: "Sukses!",
-          html: `Hapus poli / divisi sukses`,
+          html: `Hapus harga layanan sukses`,
           icon: "success",
           confirmButtonColor: "#008ecc",
         });
@@ -441,7 +538,7 @@ const Data = ({ match, history, loading, error }) => {
       } else {
         Swal.fire({
           title: "Gagal!",
-          html: `Hapus poli / divisi gagal: ${response.message}`,
+          html: `Hapus harga layanan gagal: ${response.message}`,
           icon: "error",
           confirmButtonColor: "#008ecc",
           confirmButtonText: "Coba lagi",
@@ -490,8 +587,9 @@ const Data = ({ match, history, loading, error }) => {
       params = `${params}&page=${currentPage}`;
     }
 
-    getDivision(params);
+    getServicePrice(params);
     onLoadKlinik();
+    onLoadDaftarLayanan();
 
   }, [limit, searchName, searchKlinik, searchStatus, sortBy, sortOrder, currentPage ]);
 
@@ -514,18 +612,8 @@ const Data = ({ match, history, loading, error }) => {
               <CardTitle>
                 <Row>
                   <Colxx sm="12" md="12" xl="12">
-                    Data Poli / Divisi
+                    Data Layanan Klinik
                   </Colxx>
-                  {/* <Colxx sm="12" md="4" xl="4">
-                    <Button
-                      color="primary"
-                      style={{ float: "right" }}
-                      className="mb-4"
-                      onClick={resetForm}
-                    >
-                      Tambah
-                    </Button>
-                  </Colxx> */}
                 </Row>
               </CardTitle>
               <FormGroup row style={{ margin: '0px', width: '100%' }}>
@@ -575,7 +663,7 @@ const Data = ({ match, history, loading, error }) => {
                 <thead>
                   <tr>
                     <th className="center-xy" style={{ width: '40px' }}>#</th>
-                    <th>Poli / Divisi</th>
+                    <th>Layanan</th>
                     <th className="center-xy" style={{ width: '55px' }}>&nbsp;</th>
                   </tr>
                 </thead>
@@ -589,15 +677,15 @@ const Data = ({ match, history, loading, error }) => {
                     <td>&nbsp;</td>
                   </tr>
                   ) : 
-                  divisionData.length > 0 ? (
-                    divisionData.map((data) => (
-                      <tr key={data.id} onClick={(e) => getDivisionById(e, data.id)} style={{ cursor: 'pointer'}} className={`${rowSelected == data.id && 'row-selected'}`}>
+                  serviceData.length > 0 ? (
+                    serviceData.map((data) => (
+                      <tr key={data.id} onClick={(e) => getServicePriceById(e, data.id)} style={{ cursor: 'pointer'}} className={`${rowSelected == data.id && 'row-selected'}`}>
                         <th scope="row" style={{ textAlign: "center", verticalAlign: 'middle' }}>
                           {startNumber++}
                         </th>
                         <td>
-                          <h6 style={{ fontWeight: 'bold' }} className="max-text">{data.nama_divisi}</h6>
-                          {data.nama_klinik ? data.nama_klinik : "-"}<br/>
+                          <h6 style={{ fontWeight: 'bold' }} className="max-text">{data.nama}</h6>
+                          {data.nama_klinik ? data.nama_klinik : "-"}, {data.harga ? currencyFormat(data.harga) : "-"}<br/>
                           {data.is_active == 1 ? (
                             <Badge color="success" className="mt-2">Aktif</Badge>
                           ) : (
@@ -606,7 +694,7 @@ const Data = ({ match, history, loading, error }) => {
                         </td>
                         <td style={{ textAlign: "center", verticalAlign: 'middle' }}>
                           <Button color="secondary" size="xs" className="button-xs"
-                            onClick={(e) => getDivisionById(e, data.id)}
+                            onClick={(e) => getServicePriceById(e, data.id)}
                             >
                             <i className="simple-icon-arrow-right-circle"></i>
                           </Button>
@@ -627,7 +715,7 @@ const Data = ({ match, history, loading, error }) => {
               </Table>
               <Pagination
                 currentPage={currentPage}
-                totalPage={divisionTotalPage}
+                totalPage={serviceTotalPage}
                 onChangePage={(i) => setCurrentPage(i)}
               />
             </CardBody>
@@ -639,14 +727,14 @@ const Data = ({ match, history, loading, error }) => {
               <CardTitle>
                 <Row>
                   <Colxx sm="5" md="6" xl="6">
-                    Form Manajemen Poli / Divisi
+                    Form Manajemen Harga Layanan
                   </Colxx>
                   <Colxx sm="7" md="6" xl="6" style={{ textAlign: 'right' }}>
                     {<IsActive/>}
                     {(userData.roles.includes('isDev') ||
-                    userData.roles.includes('isManager')) && divisionID &&
+                    userData.roles.includes('isManager')) && serviceID &&
                       <Button color="danger" size="xs"
-                        onClick={(e) => deleteById(e, divisionID)}
+                        onClick={(e) => deleteById(e, serviceID)}
                         >
                         <i className="simple-icon-trash"></i>&nbsp;Hapus
                       </Button>
@@ -656,7 +744,7 @@ const Data = ({ match, history, loading, error }) => {
               </CardTitle>
               <Form>
                 <FormGroup row>
-                  <Colxx sm={6}>
+                  <Colxx lg={4} className="col-tp-4">
                     <FormGroup>
                       <Label for="id_klinik">Klinik
                         <span
@@ -674,18 +762,60 @@ const Data = ({ match, history, loading, error }) => {
                         name="id_klinik"
                         id="id_klinik"
                         options={selectedKlinik}
-                        value={selectedKlinik.find(item => item.value === division.id_klinik) || ''}
-                        // value={division.id_klinik}
+                        value={selectedKlinik.find(item => item.value === servicePrice.id_klinik) || ''}
                         onChange={onChange}
                         required
                       />
                     </FormGroup>
                   </Colxx>
 
-                  <Colxx sm={6}>
+                  <Colxx lg={3} className="col-tp-3" style={{ paddingRight: '0px' }}>
                     <FormGroup>
                       <Label for="tipe">
-                        Nama
+                        Layanan
+                        <span
+                          className="required text-danger"
+                          aria-required="true"
+                        >
+                          {" "}
+                          *
+                        </span>
+                      </Label>
+                      <Select
+                        components={{ Input: CustomSelectInput }}
+                        className="react-select"
+                        classNamePrefix="react-select"
+                        name="id_daftar_layanan"
+                        id="id_daftar_layanan"
+                        options={selectedService}
+                        value={selectedService.find(item => item.value === servicePrice.id_daftar_layanan) || ''}
+                        onChange={onChange}
+                        required
+                      />
+                    </FormGroup>
+                  </Colxx>
+
+                  <Colxx lg={1} className="col-tp-1" style={{ paddingLeft: '0px' }}>
+                    <FormGroup>
+                      <Label>
+                        &nbsp;
+                      </Label>
+                      <br/>
+                      <Button
+                        color="primary"
+                        className="btn-sm"
+                        onClick={() => setModalAddList(true)}
+                        style={{ borderRadius: '0 5px 5px 0', padding: '0.45rem', border: '2px solid #008ecc' }}
+                      >
+                        Tambah
+                      </Button>
+                    </FormGroup>
+                  </Colxx>
+
+                  <Colxx lg={4} className="col-tp-4">
+                    <FormGroup>
+                      <Label for="tipe">
+                        Harga (Rp)
                         <span
                           className="required text-danger"
                           aria-required="true"
@@ -695,11 +825,12 @@ const Data = ({ match, history, loading, error }) => {
                         </span>
                       </Label>
                       <Input
-                        type="text"
-                        name="tipe"
-                        id="tipe"
-                        placeholder="Nama"
-                        value={division.tipe}
+                        type="number"
+                        name="harga"
+                        id="harga"
+                        placeholder="Harga"
+                        value={servicePrice.harga}
+                        pattern="[0-9]*"
                         onChange={onChange}
                         required={true}
                       />
@@ -723,7 +854,7 @@ const Data = ({ match, history, loading, error }) => {
                     &nbsp;&nbsp;
                     <Button
                       color="primary"
-                      onClick={(e) => onDivisionSubmit(e)}
+                      onClick={(e) => onServiceSubmit(e)}
                     >
                       Simpan
                     </Button>
@@ -738,9 +869,9 @@ const Data = ({ match, history, loading, error }) => {
           isOpen={modalArchive}
           toggle={() => setModalArchive(!modalArchive)}
         >
-          <ModalHeader>Arsip Poli / Divisi</ModalHeader>
+          <ModalHeader>Arsip Layanan</ModalHeader>
           <ModalBody>
-            <h5>Apakah Anda ingin {divisionStatus == 1 ?  'mengarsipkan'  : 'aktivasi' } <b>{divisionName}</b>?</h5>
+            <h5>Apakah Anda ingin {serviceStatus == 1 ?  'mengarsipkan'  : 'aktivasi' } <b>{serviceName}</b>?</h5>
           </ModalBody>
           <ModalFooter>
             <Button
@@ -761,9 +892,9 @@ const Data = ({ match, history, loading, error }) => {
           isOpen={modalDelete}
           toggle={() => setModalDelete(!modalDelete)}
         >
-          <ModalHeader>Hapus Poli / Divisi</ModalHeader>
+          <ModalHeader>Hapus Layanan</ModalHeader>
           <ModalBody>
-            <h5>Apakah Anda ingin menghapus <b>{divisionName}</b>?</h5>
+            <h5>Apakah Anda ingin menghapus <b>{serviceName}</b>?</h5>
           </ModalBody>
           <ModalFooter>
             <Button
@@ -779,6 +910,55 @@ const Data = ({ match, history, loading, error }) => {
             </Button>{" "}
           </ModalFooter>
         </Modal>
+
+        <Modal
+          isOpen={modalAddList}
+          toggle={() => setModalAddList(!modalAddList)}
+        >
+          <ModalHeader>Tambah Layanan</ModalHeader>
+          <ModalBody>
+            <FormGroup>
+              <Label for="nama">
+                Nama
+                <span
+                  className="required text-danger"
+                  aria-required="true"
+                >
+                  {" "}
+                  *
+                </span>
+              </Label>
+              <Input
+                type="text"
+                name="nama"
+                id="nama"
+                placeholder="Nama"
+                value={service.nama}
+                onChange={onChangeList}
+                required={true}
+              />
+            </FormGroup>
+          </ModalBody>
+          <ModalFooter>
+            <Colxx sm={6} className="responsive-modal-button">
+              <Label className="text-left">* ) Wajib diisi</Label>
+            </Colxx>
+            <Colxx sm={6} className="responsive-modal-button text-right">
+              <Button
+                type="button"
+                outline
+                color="danger"
+                onClick={() => setModalAddList(false)}
+              >
+                Batal
+              </Button>
+              &nbsp;&nbsp;
+              <Button color="primary" onClick={(e) => onServiceListSubmit(e)}>
+                Simpan
+              </Button>
+            </Colxx>
+          </ModalFooter>
+        </Modal>
           
       </Row>
 
@@ -787,7 +967,7 @@ const Data = ({ match, history, loading, error }) => {
         className="float-btn"
         onClick={(e) => resetForm(e, true)}
       >
-        <i className="iconsminds-male-female"></i> Tambah Poli / Divisi
+        <i className="iconsminds-wallet"></i> Tambah Layanan
       </Button>
     </>
   );

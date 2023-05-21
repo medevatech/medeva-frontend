@@ -2,22 +2,18 @@ import api from 'constants/api'
 import { getAuthHeader, getOriginHeader, serializeQueryParams, getJSONHeader } from 'utils/http'
 import baseApi from 'service/api-general'
 
-const insurance = {
-  get: (payloads, options) => {
-    const url = api.insurance.all + options
+const support = {
+  get: (payloads) => {
+    const url = api.inspect.support
     return baseApi.get(url, payloads, { headers: getOriginHeader() })
   },
   add: (payloads) => {
-    const url = api.insurance.all
+    const url = api.inspect.support
     return baseApi.post(url, payloads, { headers: getOriginHeader() })
   },
-  update: (payloads, id) => {
-    const url = api.insurance.all + id
-    return baseApi.put(url, payloads, { headers: getOriginHeader() })
-  },
-  edit: (payloads, id) => {
-    const url = api.insurance.all + `${id}`
+  update: (payloads) => {
+    const url = api.inspect.support
     return baseApi.put(url, payloads, { headers: getOriginHeader() })
   },
 }
-export default insurance
+export default support

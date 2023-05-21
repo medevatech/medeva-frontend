@@ -34,6 +34,7 @@ import CustomSelectInput from "components/common/CustomSelectInput";
 
 import patientAPI from "api/patient";
 import insuranceAPI from "api/insurance";
+import insuranceClassAPI from "api/insurance/class";
 import patientAllergyAPI from "api/patient-allergy";
 import Swal from "sweetalert2";
 
@@ -48,8 +49,9 @@ const selectKITAS = [
 ];
 
 const selectInsurance = [
-  { label: "BPJS", value: "BPJS", key: 0, name: "tipe_asuransi" },
-  { label: "Lainnya", value: "Lainnya", key: 1, name: "tipe_asuransi" },
+  { label: "PPS/Kapitasi", value: "PPS/Kapitasi", key: 0, name: "tipe_asuransi" },
+  { label: "FFS Paket", value: "FFS Paket", key: 1, name: "tipe_asuransi" },
+  { label: "FFS Non-Paket", value: "FFS Non-Paket", key: 2, name: "tipe_asuransi" },
 ];
 
 const selectAllergy = [
@@ -198,7 +200,10 @@ const Data = ({ match }) => {
   const dispatch = useDispatch();
   const patientAll = useSelector(state => state.patient);
   const patientTotalPage = useSelector(state => state.patientTotalPage);
-  const [dataStatus, setDataStatus] = useState("add");
+  const [dataStatusPatient, setDataStatusPatient] = useState("add");
+  const [dataStatusAllergy, setDataStatusAllergy] = useState("add");
+  const [dataStatusInsurance, setDataStatusInsurance] = useState("add");
+  const [rowSelected, setRowSelected] = useState(null);
 
   const [selectedKITAS, setSelectedKITAS] = useState("");
   const [selectedNationality, setSelectedNationality] = useState("");
@@ -218,6 +223,7 @@ const Data = ({ match }) => {
   const [selectSubdistrict, setSelectSubdistrict] = useState([]);
   const [selectWard, setSelectWard] = useState([]);
 
+  const [selectedInsuranceClass, setSelectedInsuranceClass] = useState([]);
   const [selectedInsurance, setSelectedInsurance] = useState([{ label: ""}]);
   // const [selectedAllergy, setSelectedAllergy] = useState([{ label: ""}]);
   const [selectedAllergy, setSelectedAllergy] = useState([]);
@@ -231,78 +237,83 @@ const Data = ({ match }) => {
   const [insuranceID, setInsuranceID] = useState('');
   const [allergyID, setAllergyID] = useState('');
 
-  const [insurance, setInsurance] = useState([]);
-
-  const [newInsurance, setNewInsurance] = useState([
-    { id: Math.random(), tipe_asuransi: "", nomor_asuransi: "" }
+  const [insurance, setInsurance] = useState([
+    { id: insuranceID, tipe_asuransi: "", nomor_asuransi: "" }
   ]);
 
   const addInsuranceFields = () => {
-    let newfieldInsurance = { id: Math.random(), tipe_asuransi: "", nomor_asuransi: "" };
-    setNewInsurance([...newInsurance, newfieldInsurance]);
+    let newfieldInsurance = { id: '', tipe_asuransi: "", nomor_asuransi: "" };
+    setInsurance([...insurance, newfieldInsurance]);
 
     let newfieldDropdownInsurance = { label: "" };
     setSelectedInsurance([...selectedInsurance, newfieldDropdownInsurance]);
   };
 
   const removeInsuranceFields = (id, index) => {
-    let dataInsurance1 = [...newInsurance];
-    dataInsurance1.splice(index, 1);
-    setNewInsurance(dataInsurance1);
-  };
+    let dataInsurance = [...insurance];
+    let displaySelectInsurance = [...selectedInsurance];
 
-  const handleInsuranceChange = (index, event) => {
-    let dataInsurance2 = [...newInsurance]; let displaySelectInsurance = [...selectedInsurance];
-    if (event.name === "tipe_asuransi"){
-      dataInsurance2[index][event.name] = event.value;
-      displaySelectInsurance[index]["label"] = event.value;
-    } else {
-      dataInsurance2[index][event.target.name] = event.target.value;
-    }
+    dataInsurance.splice(index, 1);
+    displaySelectInsurance.splice(index, 1);
 
-    setNewInsurance(dataInsurance2);
+    setInsurance(dataInsurance);
     setSelectedInsurance(displaySelectInsurance);
   };
 
-  // const [allergy, setAllergy] = useState({
-  //   id_pasien: '',
-  //   id_alergi: '',
-  //   id_kunjungan_dicatat: '',
-  //   id_kunjungan_dihapus: ''
-  // });
+  const handleInsuranceChange = (index, event) => {
+    let dataInsurance = [...insurance];
+    let displaySelectInsurance = [...selectedInsurance];
 
-  // const [selectAllergy, setSelectAlergi] = useState([
-  //   { id: Math.random(), nama: "", alergi: "" }
-  // ]);
+    if (event.name === "tipe_asuransi"){
+      dataInsurance[index][event.name] = event.value;
+      displaySelectInsurance[index]["label"] = event.value;
+    } else {
+      dataInsurance[index][event.target.name] = event.target.value;
+    }
 
-  // const addAllergyFields = () => {
-  //   let newfieldAllergy = { id: Math.random(), nama: "", alergi: "" };
-  //   setSelectAlergi([...selectAllergy, newfieldAllergy]);
+    setInsurance(dataInsurance);
+    setSelectedInsurance(displaySelectInsurance);
+  };
 
-  //   let newfieldDropdownAllergy = { label: "" };
-  //   setSelectedAllergy([...selectedAllergy, newfieldDropdownAllergy]);
-  // };
+  // const [allergy, setAllergy] = useState([]);
 
-  // const removeAllergyFields = (id, index) => {
-  //   let dataAllergy1 = [...selectAllergy];
-  //   dataAllergy1.splice(index, 1);
-  //   setSelectAlergi(dataAllergy1);
-  // };
+  const [allergy, setAllergy] = useState([
+    { id: "", id_pasien: patientID, id_alergi: "" }
+  ]);
 
-  // const handleAllergyAdd = (index, event) => {
-  //   let dataAllergy2 = [...selectAllergy]; let displaySelectAllergy = [...selectedAllergy];
-  //   if (event.target.name === "alergi"){
-  //     dataAllergy2[index][event.target.name] = event.value;
-  //     displaySelectAllergy[index]["label"] = event.value;
-  //   } else {
-  //     dataAllergy2[index][event.target.name] = event.target.value;
-  //   }
+  const addAllergyFields = () => {
+    let newfieldAllergy = { id: "", id_pasien: patientID, id_alergi: "" };
+    setAllergy([...allergy, newfieldAllergy]);
 
-  //   setSelectAlergi(dataAllergy2);
-  //   setSelectedAllergy(displaySelectAllergy);
-  // };
+    let newfieldDropdownAllergy = { label: "" };
+    setSelectedAllergy([...selectedAllergy, newfieldDropdownAllergy]);
+  };
 
-  const [allergy, setAllergy] = useState([]);
+  const removeAllergyFields = (id, index) => {
+    let dataAllergy = [...allergy];
+    let displaySelectAllergy = [...selectedAllergy];
+
+    dataAllergy.splice(index, 1);
+    displaySelectAllergy.splice(index, 1);
+
+    setAllergy(dataAllergy);
+    setSelectedAllergy(displaySelectAllergy);
+  };
+
+  const handleAllergyChange = (index, event) => {
+    let dataAllergy = [...allergy];
+    let displaySelectAllergy = [...selectedAllergy];
+
+    if (event.name === "id_alergi"){
+      dataAllergy[index][event.name] = event.value;
+      displaySelectAllergy[index]["label"] = event.value;
+    } else {
+      dataAllergy[index][event.target.name] = event.target.value;
+    }
+
+    setAllergy(dataAllergy);
+    setSelectedAllergy(displaySelectAllergy);
+  };
 
   const [patient, setPatient] = useState({
     tipe_kitas: '',
@@ -331,8 +342,6 @@ const Data = ({ match }) => {
     nama_kecamatan: '',
     nama_kelurahan: ''
   });
-
-  const [ processPatient, setProcessPatient ] = useState(0);
 
   const onLoadProvinsi = async () => {
     try {
@@ -439,6 +448,31 @@ const Data = ({ match }) => {
     }
   };
 
+  const onLoadKelasAsuransi = async () => {
+    try {
+      const response = await insuranceClassAPI.get("", "?limit=1000");
+      // console.log(response);
+
+      setSelectedInsuranceClass([]);
+
+      if (response.status === 200) {
+        let data = response.data.data;
+        // console.log(data);
+      
+        for (var i = 0; i < data.length; i++) {
+          setSelectedInsuranceClass((current) => [
+            ...current,
+            { label: data[i].nama_klinik, value: data[i].id, key: data[i].id, name: 'id_klinik' },
+          ]);
+        }
+      } else {
+        throw Error(`Error status: ${response.status}`);
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
   const onChange = (e) => {
     // console.log('e', e);
 
@@ -519,106 +553,116 @@ const Data = ({ match }) => {
     // console.log('patient', patient);
   }
 
-  const onInsuranceSubmit = async (e, processPatient = 0) => {
-    // e.preventDefault();
+  const onPatientSubmit = async (e) => {
+    e.preventDefault();
 
-    if(dataStatus === 'add') {
-      if(newInsurance) {
-        newInsurance.map((data, index) => {
-          insurance.push({ id_pasien: patientID, tipe_asuransi: data.tipe_asuransi, nomor_asuransi: data.nomor_asuransi });
-        })
-      }
-  
-      console.log(insurance);
-
-      for (var i = 0; i < insurance.length; i++) {
-        try {
-          const response = await insuranceAPI.add(insurance[i]);
-          // console.log(response);
-  
-          if (response.status == 200) {
-            let data = await response.data.data;
-            // console.log(data);
-  
-            // Swal.fire({
-            //   title: "Sukses!",
-            //   html: `Tambah asuransi pasien sukses`,
-            //   icon: "success",
-            //   confirmButtonColor: "#008ecc",
-            // });
-            
-          } else {
-            // Swal.fire({
-            //   title: "Gagal!",
-            //   html: `Tambah asuransi pasien gagal`,
-            //   icon: "error",
-            //   confirmButtonColor: "#008ecc",
-            //   confirmButtonText: "Coba lagi",
-            // });
-  
-            throw Error(`Error status: ${response.status}`);
-          }
-        } catch (e) {
-          // Swal.fire({
-          //   title: "Gagal!",
-          //   html: e,
-          //   icon: "error",
-          //   confirmButtonColor: "#008ecc",
-          //   confirmButtonText: "Coba lagi",
-          // });
-  
-          console.log(e);
-        }
-      }
-    } else if (dataStatus === 'update') {
+    if(dataStatusPatient === 'add') {
       try {
-        const response = await insuranceAPI.update(insurance, insuranceID);
+        const response = await patientAPI.add(patient);
+        // console.log(response);
+
+        if (response.status == 200) {
+          let data = await response.data.data;
+          // console.log(data);
+
+          Swal.fire({
+            title: "Sukses!",
+            html: `Tambah pasien sukses`,
+            icon: "success",
+            confirmButtonColor: "#008ecc",
+          });
+
+          setPatientID(data.id);
+        } else {
+          Swal.fire({
+            title: "Gagal!",
+            html: `Tambah pasien gagal`,
+            icon: "error",
+            confirmButtonColor: "#008ecc",
+            confirmButtonText: "Coba lagi",
+          });
+
+          throw Error(`Error status: ${response.status}`);
+        }
+      } catch (e) {
+        Swal.fire({
+          title: "Gagal!",
+          html: e,
+          icon: "error",
+          confirmButtonColor: "#008ecc",
+          confirmButtonText: "Coba lagi",
+        });
+
+        console.log(e);
+      } finally {
+        if(selectedAllergy.length > 0 && patientID) {
+          onAllergySubmit();
+        }
+        
+        if(insurance.length > 0 && patientID) {
+          onInsuranceSubmit();
+        }
+        
+        resetForm(e);
+      }
+    } else if (dataStatusPatient === 'update') {
+      try {
+        const response = await patientAPI.update(patient, patientID);
         // console.log(response);
   
         if (response.status == 200) {
           let data = await response.data.data;
           // console.log(data);
   
-          // Swal.fire({
-          //   title: "Sukses!",
-          //   html: `Ubah asuransi pasien sukses`,
-          //   icon: "success",
-          //   confirmButtonColor: "#008ecc",
-          // });
+          Swal.fire({
+            title: "Sukses!",
+            html: `Ubah pasien sukses`,
+            icon: "success",
+            confirmButtonColor: "#008ecc",
+          });
 
+          setPatientID(patientID);
         } else {
-          // Swal.fire({
-          //   title: "Gagal!",
-          //   html: `Ubah asuransi pasien gagal: ${response.message}`,
-          //   icon: "error",
-          //   confirmButtonColor: "#008ecc",
-          //   confirmButtonText: "Coba lagi",
-          // });
+          Swal.fire({
+            title: "Gagal!",
+            html: `Ubah pasien gagal: ${response.message}`,
+            icon: "error",
+            confirmButtonColor: "#008ecc",
+            confirmButtonText: "Coba lagi",
+          });
   
           throw Error(`Error status: ${response.status}`);
         }
       } catch (e) {
-        // Swal.fire({
-        //   title: "Gagal!",
-        //   html: e,
-        //   icon: "error",
-        //   confirmButtonColor: "#008ecc",
-        //   confirmButtonText: "Coba lagi",
-        // });
+        Swal.fire({
+          title: "Gagal!",
+          html: e,
+          icon: "error",
+          confirmButtonColor: "#008ecc",
+          confirmButtonText: "Coba lagi",
+        });
   
         console.log(e);
+      } finally {
+        if(selectedAllergy.length > 0 && patientID) {
+          onAllergySubmit();
+        }
+        
+        if(insurance.length > 0 && patientID) {
+          onInsuranceSubmit();
+        }
+
+        resetForm(e);
       }
     } else {
-      console.log('dataStatus undefined')
+      console.log('dataStatusPatient undefined')
     }
+  };
 
-    setProcessPatient(0);
-  }
-
-  const onAllergySubmit = async (e, processPatient = 0) => {
+  const onAllergySubmit = async (e) => {
     // e.preventDefault();
 
-    if(dataStatus === 'add') {
+    if(dataStatusAllergy === 'add') {
       if(selectedAllergy) {
         selectedAllergy.map((data, index) => {
           allergy.push({ id_pasien: patientID, alergi: data });
@@ -663,7 +707,7 @@ const Data = ({ match }) => {
           console.log(e);
         }
       }
-    } else if (dataStatus === 'update') {
+    } else if (dataStatusAllergy === 'update') {
       // if(selectedAllergy) {
       //   selectedAllergy.map((data, index) => {
       //     allergy.push({ id_pasien: allergyID, id_pasien: patientID, alergi: data });
@@ -709,112 +753,118 @@ const Data = ({ match }) => {
         }
       }
     } else {
-      console.log('dataStatus undefined')
-    }
-
-    if(newInsurance.length > 0 && patientID) {
-      setProcessPatient(2)
-    } else {
-      resetForm(e);
+      console.log('dataStatusAllergy undefined')
     }
   }
 
-  const onPatientSubmit = async (e) => {
-    e.preventDefault();
-
-    if(dataStatus === 'add') {
-      try {
-        const response = await patientAPI.add(patient);
-        // console.log(response);
-
-        if (response.status == 200) {
-          let data = await response.data.data;
-          // console.log(data);
-
-          Swal.fire({
-            title: "Sukses!",
-            html: `Tambah pasien sukses`,
-            icon: "success",
-            confirmButtonColor: "#008ecc",
-          });
-
-          setPatientID(data.id);
-        } else {
-          Swal.fire({
-            title: "Gagal!",
-            html: `Tambah pasien gagal`,
-            icon: "error",
-            confirmButtonColor: "#008ecc",
-            confirmButtonText: "Coba lagi",
-          });
-
-          throw Error(`Error status: ${response.status}`);
-        }
-      } catch (e) {
-        Swal.fire({
-          title: "Gagal!",
-          html: e,
-          icon: "error",
-          confirmButtonColor: "#008ecc",
-          confirmButtonText: "Coba lagi",
-        });
-
-        console.log(e);
-      }
-    } else if (dataStatus === 'update') {
-      try {
-        const response = await patientAPI.update(patient, patientID);
-        // console.log(response);
-  
-        if (response.status == 200) {
-          let data = await response.data.data;
-          // console.log(data);
-  
-          Swal.fire({
-            title: "Sukses!",
-            html: `Ubah pasien sukses`,
-            icon: "success",
-            confirmButtonColor: "#008ecc",
-          });
-
-          setPatientID(patientID);
-        } else {
-          Swal.fire({
-            title: "Gagal!",
-            html: `Ubah pasien gagal: ${response.message}`,
-            icon: "error",
-            confirmButtonColor: "#008ecc",
-            confirmButtonText: "Coba lagi",
-          });
-  
-          throw Error(`Error status: ${response.status}`);
-        }
-      } catch (e) {
-        Swal.fire({
-          title: "Gagal!",
-          html: e,
-          icon: "error",
-          confirmButtonColor: "#008ecc",
-          confirmButtonText: "Coba lagi",
-        });
-  
-        console.log(e);
-      }
-    } else {
-      console.log('dataStatus undefined')
-    }
-    
-    if(selectedAllergy.length > 0 && patientID) {
-      setProcessPatient(1);
-    } else if(newInsurance.length > 0 && patientID) {
-      setProcessPatient(2);
-    } else {
-      resetForm(e);
-    }
-  };
-
-  const resetForm = (e) => {
+  const onInsuranceSubmit = async (e) => {
     // e.preventDefault();
+
+    if(dataStatusInsurance === 'add') {
+      if(insurance) {
+        insurance.map((data, index) => {
+          insurance.push({ id_pasien: patientID, tipe_asuransi: data.tipe_asuransi, nomor_asuransi: data.nomor_asuransi });
+        })
+      }
+  
+      console.log(insurance);
+
+      for (var i = 0; i < insurance.length; i++) {
+        try {
+          const response = await insuranceAPI.add(insurance[i]);
+          // console.log(response);
+  
+          if (response.status == 200) {
+            let data = await response.data.data;
+            // console.log(data);
+  
+            // Swal.fire({
+            //   title: "Sukses!",
+            //   html: `Tambah asuransi pasien sukses`,
+            //   icon: "success",
+            //   confirmButtonColor: "#008ecc",
+            // });
+            
+          } else {
+            // Swal.fire({
+            //   title: "Gagal!",
+            //   html: `Tambah asuransi pasien gagal`,
+            //   icon: "error",
+            //   confirmButtonColor: "#008ecc",
+            //   confirmButtonText: "Coba lagi",
+            // });
+  
+            throw Error(`Error status: ${response.status}`);
+          }
+        } catch (e) {
+          // Swal.fire({
+          //   title: "Gagal!",
+          //   html: e,
+          //   icon: "error",
+          //   confirmButtonColor: "#008ecc",
+          //   confirmButtonText: "Coba lagi",
+          // });
+  
+          console.log(e);
+        }
+      }
+    } else if (dataStatusInsurance === 'update') {
+      try {
+        const response = await insuranceAPI.update(insurance, insuranceID);
+        // console.log(response);
+  
+        if (response.status == 200) {
+          let data = await response.data.data;
+          // console.log(data);
+  
+          // Swal.fire({
+          //   title: "Sukses!",
+          //   html: `Ubah asuransi pasien sukses`,
+          //   icon: "success",
+          //   confirmButtonColor: "#008ecc",
+          // });
+
+        } else {
+          // Swal.fire({
+          //   title: "Gagal!",
+          //   html: `Ubah asuransi pasien gagal: ${response.message}`,
+          //   icon: "error",
+          //   confirmButtonColor: "#008ecc",
+          //   confirmButtonText: "Coba lagi",
+          // });
+  
+          throw Error(`Error status: ${response.status}`);
+        }
+      } catch (e) {
+        // Swal.fire({
+        //   title: "Gagal!",
+        //   html: e,
+        //   icon: "error",
+        //   confirmButtonColor: "#008ecc",
+        //   confirmButtonText: "Coba lagi",
+        // });
+  
+        console.log(e);
+      }
+    } else {
+      console.log('dataStatusInsurance undefined')
+    }
+  }
+
+  const resetForm = (e, scroll = false) => {
+    // e.preventDefault();
+
+    if(scroll) {
+      if(window.innerWidth < 1280){
+        const element = document.getElementById('manage-form-tab-mobile');
+        if (element) {
+          window.scroll({
+            top: element,
+            behavior: "smooth"
+          })
+        }
+      }
+    }
     
     setPatient({
       tipe_kitas: '',
@@ -858,13 +908,14 @@ const Data = ({ match }) => {
     setSelectedAllergy([]);
     setAllergy([]);
 
-    setNewInsurance([{ id: Math.random(), tipe_asuransi: "", nomor_asuransi: "", name: "tipe_asuransi" }]);
+    setInsurance([{ id: Math.random(), tipe_asuransi: "", nomor_asuransi: "", name: "tipe_asuransi" }]);
     setSelectedInsurance([{ label: ""}]);
-    setInsurance([]);
 
-    setProcessPatient(0);
-    setDataStatus("add");
+    setDataStatusPatient("add");
+    setDataStatusAllergy("add");
+    setDataStatusInsurance("add");
     onLoadProvinsi();
+    onLoadKelasAsuransi();
   };
 
   const [isLoading, setIsLoading] = useState(false);
@@ -886,7 +937,18 @@ const Data = ({ match }) => {
   const getPatientById = async (e, id) => {
     e.preventDefault();
     resetForm(e);
-    setDataStatus("update");
+    setDataStatusPatient("update");
+    setRowSelected(id);
+
+    if(window.innerWidth < 1280){
+      const element = document.getElementById('manage-form-tab-mobile');
+      if (element) {
+        window.scroll({
+          top: element,
+          behavior: "smooth"
+        })
+      }
+    }
 
     try {
       const res = await patientAPI.get("", `/${id}`);
@@ -919,9 +981,6 @@ const Data = ({ match }) => {
       setPatientStatus(data.is_active);
       // console.log(patient);
 
-      getAllergyByPatientId("", data.id);
-      getInsuranceByPatientId("", data.id);
-
       setSelectedMaritalStatus({spesialis: data.status_menikah ? e.value : ''});
       setSelectedReligion({agama: data.agama ? e.value : ''});
       setSelectedNationality({kewarganegaraan: data.kewarganegaraan ? e.value : ''});
@@ -948,11 +1007,14 @@ const Data = ({ match }) => {
       changeKota(id_provinsi, editAddress);
     } catch (e) {
       console.log(e);
+    } finally {
+      getAllergyByPatientId(patientID);
+      getInsuranceByPatientId(patientID);
     }
-    // console.log(dataStatus);
+    // console.log(dataStatusPatient);
   };
 
-  const getAllergyByPatientId = async (e, id) => {
+  const getAllergyByPatientId = async (id) => {
     setAllergy([]);
     setSelectedAllergy([{ label: '' }]);
 
@@ -970,12 +1032,16 @@ const Data = ({ match }) => {
           ]);
         })
       }
+
+      setDataStatusAllergy("edit");
     } catch (e) {
       console.log(e);
+
+      setDataStatusAllergy("add");
     }
   };
 
-  const getInsuranceByPatientId = async (e, id) => {
+  const getInsuranceByPatientId = async (id) => {
     try {
       const res = await insuranceAPI.getByPatient("", `/${id}`);
       let data = res.data.data;
@@ -983,37 +1049,42 @@ const Data = ({ match }) => {
 
       if(data) {
         setInsurance([]);
-        setNewInsurance([]);
         setSelectedInsurance([]);
+        setSelectedInsuranceClass([]);
 
         data.map((data, index) => {
-          insurance.push({ id: data.id, id_pasien: patientID, tipe_asuransi: data.tipe_asuransi, nomor_asuransi: data.nomor_asuransi });
-          // newInsurance.push({ id: Math.random(), tipe_asuransi: data.tipe_asuransi, nomor_asuransi: data.nomor_asuransi });
-          // selectedInsurance.push({ label: data.tipe_asuransi });
+          console('data', data);
+          console('index', index);
+          // insurance.push({ id: data.id, id_pasien: patientID, tipe_asuransi: data.tipe_asuransi, nomor_asuransi: data.nomor_asuransi });
+          //   // insurance.push({ id: Math.random(), tipe_asuransi: data.tipe_asuransi, nomor_asuransi: data.nomor_asuransi });
+          //   // selectedInsurance.push({ label: data.tipe_asuransi });
 
-          var newfieldInsurance = { id: data.id, tipe_asuransi: data.tipe_asuransi, nomor_asuransi: data.nomor_asuransi };
-          // console.log(newfieldInsurance);
-          setNewInsurance((current) => [
-            ...current, newfieldInsurance
-          ]);
-          // setNewInsurance([...newInsurance, newfieldInsurance]);
-          // newInsurance.push({ id: data.id, tipe_asuransi: data.tipe_asuransi, nomor_asuransi: data.nomor_asuransi });
-
-          var newfieldDropdownInsurance = { label: data.tipe_asuransi };
-          // console.log(newfieldDropdownInsurance);
-          // setSelectedInsurance((current) => [
-          //   ...current, newfieldDropdownInsurance
+          // var newfieldInsurance = { id: data.id, tipe_asuransi: data.tipe_asuransi, nomor_asuransi: data.nomor_asuransi };
+          //   // console.log(newfieldInsurance);
+          // setInsurance((current) => [
+          //   ...current, newfieldInsurance
           // ]);
-          setSelectedInsurance([...selectedInsurance, newfieldDropdownInsurance]);
-          // selectedInsurance.push({ label: data.tipe_asuransi });
+          //   // setInsurance([...insurance, newfieldInsurance]);
+          //   // insurance.push({ id: data.id, tipe_asuransi: data.tipe_asuransi, nomor_asuransi: data.nomor_asuransi });
+
+          // var newfieldDropdownInsurance = { label: data.tipe_asuransi };
+          //   // console.log(newfieldDropdownInsurance);
+          //   // setSelectedInsurance((current) => [
+          //   //   ...current, newfieldDropdownInsurance
+          //   // ]);
+          // setSelectedInsurance([...selectedInsurance, newfieldDropdownInsurance]);
+          //   // selectedInsurance.push({ label: data.tipe_asuransi });
         })
 
         console.log('insurance', insurance);
-        console.log('newInsurance', newInsurance);
         console.log('selectedInsurance', selectedInsurance);
       }
+
+      setDataStatusInsurance("edit");
     } catch (e) {
       console.log(e);
+
+      setDataStatusInsurance("add");
     }
   };
 
@@ -1021,7 +1092,8 @@ const Data = ({ match }) => {
     return <>
     <Button color="success" size="xs" onClick={(e) => statusById(e, patientID)}>
       <i className="simple-icon-drawer"></i>&nbsp;Aktifkan
-    </Button><span>&nbsp;&nbsp;</span>
+    </Button>
+    {/* <span>&nbsp;&nbsp;</span> */}
     </>;
   }
 
@@ -1029,7 +1101,8 @@ const Data = ({ match }) => {
     return <>
     <Button color="warning" size="xs" onClick={(e) => statusById(e, patientID)}>
       <i className="simple-icon-drawer"></i>&nbsp;Arsipkan
-    </Button><span>&nbsp;&nbsp;</span>
+    </Button>
+    {/* <span>&nbsp;&nbsp;</span> */}
     </>;
   }
 
@@ -1220,6 +1293,7 @@ const Data = ({ match }) => {
 
     getPatient(params);
     onLoadProvinsi();
+    onLoadKelasAsuransi();
 
     if(selectedCity.length > 0 && editAddress.status === 2) {
       let id_kota = selectedCity.find(item => item.value === editAddress.nama_kota).key;
@@ -1231,21 +1305,8 @@ const Data = ({ match }) => {
       changeKelurahan(id_kecamatan, editAddress);
     }
 
-    if(processPatient === 1 && patientID) {
-      onAllergySubmit("", 1);
-    }
-
-    if(processPatient === 2 && patientID) {
-      // onInsuranceSubmit("", 2);
-    }
-      
-    // if(dataStatus === 'update' && patientID) {
-    //   getAllergyByPatientId("", patientID);
-    //   getInsuranceByPatientId("", patientID);
-    // }
-
-  // }, [limit, searchName, searchStatus, sortBy, sortOrder, currentPage, editAddress, processPatient, patientAll, patientTotalPage]);
-  }, [limit, searchName, searchStatus, sortBy, sortOrder, currentPage, editAddress, processPatient]);
+  // }, [limit, searchName, searchStatus, sortBy, sortOrder, currentPage, editAddress, patientAll, patientTotalPage]);
+  }, [limit, searchName, searchStatus, sortBy, sortOrder, currentPage, editAddress]);
 
   let startNumber = 1;
 
@@ -1260,15 +1321,15 @@ const Data = ({ match }) => {
   return (
     <>
       <Row>
-        <Colxx sm="12" md="12" xl="4" className="mb-4">
+        <Colxx sm="12" md="12" xl="4" className="mb-4 switch-table">
           <Card className="mb-4">
             <CardBody>
-              <CardTitle style={{ marginBottom: 0 }}>
+              <CardTitle>
                 <Row>
-                  <Colxx sm="12" md="8" xl="8">
+                  <Colxx sm="12" md="12" xl="12">
                   Data Pasien
                   </Colxx>
-                  <Colxx sm="12" md="4" xl="4">
+                  {/* <Colxx sm="12" md="4" xl="4">
                     <Button
                       color="primary"
                       style={{ float: "right" }}
@@ -1277,7 +1338,7 @@ const Data = ({ match }) => {
                     >
                       Tambah
                     </Button>
-                  </Colxx>
+                  </Colxx> */}
                 </Row>
               </CardTitle>
               <FormGroup row style={{ margin: '0px', width: '100%' }}>
@@ -1310,7 +1371,7 @@ const Data = ({ match }) => {
                   </Button>
                 </InputGroupAddon>
               </InputGroup>
-              <Table>
+              <Table hover>
                 <thead>
                   <tr>
                     <th className="center-xy" style={{ width: '40px' }}>#</th>
@@ -1329,7 +1390,7 @@ const Data = ({ match }) => {
                   </tr>
                   ) : patientAll.length > 0 ? (
                     patientAll.map((data) => (
-                      <tr key={data.id} onClick={(e) => getPatientById(e, data.id)} style={{ cursor: 'pointer'}}>
+                      <tr key={data.id} onClick={(e) => getPatientById(e, data.id)} style={{ cursor: 'pointer' }} className={`${rowSelected == data.id && 'row-selected'}`}>
                         <th scope="row" style={{ textAlign: "center", verticalAlign: 'middle' }}>
                           {startNumber++}
                         </th>
@@ -1400,7 +1461,8 @@ const Data = ({ match }) => {
             </CardBody>
           </Card>
         </Colxx>
-        <Colxx sm="12" md="12" xl="8" className="mb-4">
+
+        <Colxx sm="12" md="12" xl="8" className="mb-4 manage-form" id="manage-form-tab-mobile">
           <Card className="mb-8">
             <CardBody>
               <CardTitle>
@@ -1410,14 +1472,14 @@ const Data = ({ match }) => {
                   </Colxx>
                   <Colxx sm="7" md="6" xl="6" style={{ textAlign: 'right' }}>
                     {<IsActive/>}
-                    {(userData.roles.includes('isDev') ||
+                    {/* {(userData.roles.includes('isDev') ||
                     userData.roles.includes('isManager')) && patientID &&
                       <Button color="danger" size="xs"
                         onClick={(e) => deleteById(e, patientID)}
                         >
                         <i className="simple-icon-trash"></i>&nbsp;Hapus Data
                       </Button>
-                    }
+                    } */}
                   </Colxx>
                 </Row>
               </CardTitle>
@@ -1746,27 +1808,63 @@ const Data = ({ match }) => {
                     </FormGroup>
                   </Colxx>
 
-                  <Colxx sm={12}>
+                  <Colxx sm={6}>
                     <FormGroup>
                       <Label>Alergi</Label>
-                      <Select
-                        components={{ Input: CustomSelectInput }}
-                        className="react-select"
-                        classNamePrefix="react-select"
-                        isMulti
-                        name="alergi"
-                        id="alergi"
-                        value={selectAllergy.filter(item => selectedAllergy.includes(item.value)) || ''}
-                        options={selectAllergy}
-                        onChange={onChange}
-                      />
+                      {allergy.map((input, index) => {
+                        return (
+                          // <InputGroup
+                          //   key={index}
+                          //   className="input-group-insurance"
+                          // >
+                          <>
+                            <Select
+                              key={index}
+                              components={{ Input: CustomSelectInput }}
+                              className="react-select select-allergy"
+                              classNamePrefix="react-select"
+                              // isMulti
+                              name="alergi"
+                              id="alergi"
+                              // value={selectAllergy.filter(item => selectedAllergy.includes(item.value)) || ''}
+                              value={selectAllergy.find(item => item.value === allergy[index].id_alergi) || ''}
+                              options={selectAllergy}
+                              // onChange={onChange}
+                              onChange={(event) =>
+                                handleAllergyChange(index, event)
+                              }
+                            />
+                            {index > 0 && (
+                              <Button
+                                color="danger"
+                                style={{ float: "right" }}
+                                onClick={() =>
+                                  removeAllergyFields(input.id, index)
+                                }
+                                className="remove-allergy"
+                              >
+                                <i className="simple-icon-trash"></i>
+                              </Button>
+                            )}
+                          </>
+                          // </InputGroup>
+                        );
+                      })}
+                      <Button
+                        color="primary"
+                        // style={{ float: "right" }}
+                        className="mb-2"
+                        onClick={addAllergyFields}
+                      >
+                        Tambah
+                      </Button>
                     </FormGroup>
                   </Colxx>
 
-                  {/* <Colxx sm={12}>
+                  <Colxx sm={6}>
                     <FormGroup>
-                      <Label style={{ lineHeight: '3' }}>Asuransi</Label>
-                      {newInsurance.map((input, index) => {
+                      <Label>Asuransi</Label>
+                      {insurance.map((input, index) => {
                         return (
                           <InputGroup
                             key={index}
@@ -1778,7 +1876,7 @@ const Data = ({ match }) => {
                               className="react-select select-insurance"
                               classNamePrefix="react-select"
                               name="tipe_asuransi"
-                              // value={selectedInsurance.label}
+                              value={selectInsurance.find(item => item.value === insurance[index].tipe_asuransi) || ''}
                               options={selectInsurance}
                               onChange={(event) =>
                                 handleInsuranceChange(index, event)
@@ -1789,7 +1887,7 @@ const Data = ({ match }) => {
                               name="nomor_asuransi"
                               placeholder="No. Asuransi"
                               className="input-insurance"
-                              value={input.nomor_asuransi}
+                              value={insurance[index].nomor_asuransi}
                               onChange={(event) =>
                                 handleInsuranceChange(index, event)
                               }
@@ -1818,7 +1916,7 @@ const Data = ({ match }) => {
                         Tambah
                       </Button>
                     </FormGroup>
-                  </Colxx> */}
+                  </Colxx>
                 </FormGroup>
 
                 <Row>
@@ -1894,6 +1992,14 @@ const Data = ({ match }) => {
           </ModalFooter>
         </Modal>
       </Row>
+
+      <Button
+        color="primary"
+        className="float-btn"
+        onClick={(e) => resetForm(e, true)}
+      >
+        <i className="iconsminds-add-user"></i> Tambah Pasien
+      </Button>
     </>
   );
 };

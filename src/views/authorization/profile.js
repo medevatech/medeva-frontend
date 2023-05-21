@@ -415,10 +415,6 @@ const Data = ({ match, history, loading, error }) => {
       //       return { ...current, status_menikah: 'Belum Menikah' }
       //     })
       //   }
-      } else if (e.target.name && e.target.name === 'password') {
-        setEmployeePassword(current => {
-            return { ...current, password: e.target.value }
-        })
       } else if (e.target.name && e.target.name !== 'jenis_kelamin') {
         setEmployee(current => {
             return { ...current, [e.target.name]: e.target.value }
@@ -451,6 +447,11 @@ const Data = ({ match, history, loading, error }) => {
   
           resetForm(e);
           getEmployeeById(userData.id);
+
+          if(employee.password) {
+            localStorage.clear();
+            history.push('../');
+          }
         } else {
           Swal.fire({
             title: "Gagal!",
@@ -480,7 +481,6 @@ const Data = ({ match, history, loading, error }) => {
 
     setEmployeeID('');
     setEmployeeUsername('');
-    setEmployeePassword({ password: '' });
 
     setEmployee({
       username: '',
@@ -666,32 +666,7 @@ const Data = ({ match, history, loading, error }) => {
     // console.log(dataStatus);
   };
 
-  const [employeePassword, setEmployeePassword] = useState({
-    // id: employeeID,
-    password: ''
-  });
-
   const [employeeUsername, setEmployeeUsername] = useState('');
-
-  const changePasswordById = async (e, id) => {
-    // e.preventDefault();
-    // resetForm(e);
-
-    try {
-      const res = await employeeAPI.get("", `/${id}`);
-      let data = res.data.data[0];
-
-      // console.log(data);
-
-      setEmployeeID(data.id);
-      setEmployeeUsername(data.username);
-      setEmployeePassword({ password: '' });
-    } catch (e) {
-      console.log(e);
-    }
-
-    // console.log(dataStatus);
-  };
 
   useEffect(() => {
     getEmployeeById(userData.id);
@@ -773,7 +748,7 @@ const Data = ({ match, history, loading, error }) => {
         // console.log('selectedRole onUpdate', selectedRole);
       }
   // }, [ editAddress, selectedRole ]);
-  }, [ editAddress ]);
+  }, [ ]);
 
   return (
     <AppLayout>

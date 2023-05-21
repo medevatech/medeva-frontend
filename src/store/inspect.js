@@ -1,6 +1,8 @@
-const divisionReference = (state = [], action) => {
+
+
+const inspect = (state = [], action) => {
     switch (action.type) {
-        case "GET_DIVISIONREFERENCE":
+        case "GET_INSPECT":
             return action.payload;
             break;
         default:
@@ -9,9 +11,9 @@ const divisionReference = (state = [], action) => {
     }
 }
 
-const divisionReferenceTotalPage = (state = 0, action) => {
+const inspectTotalPage = (state = 0, action) => {
     switch (action.type) {
-        case "GET_TOTAL_PAGE_DIVISIONREFERENCE":
+        case "GET_TOTAL_PAGE_INSPECT":
             return action.payload;
             break;
         default:
@@ -20,4 +22,4 @@ const divisionReferenceTotalPage = (state = 0, action) => {
     }
 }
 
-export { divisionReference, divisionReferenceTotalPage } ;
+export { inspect, inspectTotalPage } ;

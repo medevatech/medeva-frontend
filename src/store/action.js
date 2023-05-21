@@ -1,6 +1,6 @@
-const hospitalReference = (state = [], action) => {
+const action = (state = [], action) => {
     switch (action.type) {
-        case "GET_HOSPITALREFERENCE":
+        case "GET_ACTION":
             return action.payload;
             break;
         default:
@@ -9,9 +9,9 @@ const hospitalReference = (state = [], action) => {
     }
 }
 
-const hospitalReferenceTotalPage = (state = 0, action) => {
+const actionTotalPage = (state = 0, action) => {
     switch (action.type) {
-        case "GET_TOTAL_PAGE_HOSPITALREFERENCE":
+        case "GET_TOTAL_PAGE_ACTION":
             return action.payload;
             break;
         default:
@@ -20,4 +20,4 @@ const hospitalReferenceTotalPage = (state = 0, action) => {
     }
 }
 
-export { hospitalReference, hospitalReferenceTotalPage } ;
+export { action, actionTotalPage } ;

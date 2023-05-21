@@ -194,6 +194,7 @@ const Data = ({ match, history, loading, error }) => {
   const employeeData = useSelector(state => state.employee);
   const employeeTotalPage = useSelector(state => state.employeeTotalPage);
   const [dataStatus, setDataStatus] = useState("add");
+  const [rowSelected, setRowSelected] = useState(null);
 
   const [selectedTypeF, setSelectedTypeF] = useState("");
   const [selectedSpecialistF, setSelectedSpecialistF] = useState("");
@@ -605,8 +606,20 @@ const Data = ({ match, history, loading, error }) => {
     }
   };
 
-  const resetForm = (e) => {
+  const resetForm = (e, scroll = false) => {
     e.preventDefault();
+
+    if(scroll) {
+      if(window.innerWidth < 1280){
+        const element = document.getElementById('manage-form-tab-mobile');
+        if (element) {
+          window.scroll({
+            top: element,
+            behavior: "smooth"
+          })
+        }
+      }
+    }
 
     setEmployeeID('');
     setEmployeeUsername('');
@@ -696,6 +709,17 @@ const Data = ({ match, history, loading, error }) => {
     setDataStatus("update");
     setFieldColumn({ username: 6, email: 6 });
     setOpenPassword('none');
+    setRowSelected(id);
+
+    if(window.innerWidth < 1280){
+      const element = document.getElementById('manage-form-tab-mobile');
+      if (element) {
+        window.scroll({
+          top: element,
+          behavior: "smooth"
+        })
+      }
+    }
 
     try {
       const res = await employeeAPI.get("", `/${id}`);
@@ -1254,15 +1278,15 @@ const Data = ({ match, history, loading, error }) => {
   return (
     <>
       <Row>
-        <Colxx sm="12" md="12" xl="4" className="mb-4">
+        <Colxx sm="12" md="12" xl="4" className="mb-4 switch-table">
           <Card className="mb-4">
             <CardBody>
-              <CardTitle style={{ marginBottom: 0 }}>
+              <CardTitle>
                 <Row>
-                  <Colxx sm="12" md="8" xl="8">
+                  <Colxx sm="12" md="12" xl="12">
                     Data Karyawan & Tenaga Kesehatan
                   </Colxx>
-                  <Colxx sm="12" md="4" xl="4">
+                  {/* <Colxx sm="12" md="4" xl="4">
                     <Button
                       color="primary"
                       style={{ float: "right" }}
@@ -1271,7 +1295,7 @@ const Data = ({ match, history, loading, error }) => {
                     >
                       Tambah
                     </Button>
-                  </Colxx>
+                  </Colxx> */}
                 </Row>
               </CardTitle>
               <FormGroup row style={{ margin: '0px', width: '100%' }}>
@@ -1335,7 +1359,7 @@ const Data = ({ match, history, loading, error }) => {
                   </Button>
                 </InputGroupAddon>
               </InputGroup>
-              <Table>
+              <Table hover>
                 <thead>
                   <tr>
                     <th className="center-xy" style={{ width: '40px' }}>#</th>
@@ -1355,7 +1379,7 @@ const Data = ({ match, history, loading, error }) => {
                   ) : 
                   employeeData.length > 0 ? (
                     employeeData.map((data) => (
-                      <tr key={data.id} onClick={(e) => getEmployeeById(e, data.id)} style={{ cursor: 'pointer'}}>
+                      <tr key={data.id} onClick={(e) => getEmployeeById(e, data.id)} style={{ cursor: 'pointer'}} className={`${rowSelected == data.id && 'row-selected'}`}>
                         <th scope="row" style={{ textAlign: "center", verticalAlign: 'middle' }}>
                           {startNumber++}
                         </th>
@@ -1397,7 +1421,7 @@ const Data = ({ match, history, loading, error }) => {
             </CardBody>
           </Card>
         </Colxx>
-        <Colxx sm="12" md="12" xl="8" className="mb-4">
+        <Colxx sm="12" md="12" xl="8" className="mb-4 manage-form" id="manage-form-tab-mobile">
           <Card className="mb-8">
             <CardBody>
               <CardTitle>
@@ -1424,7 +1448,7 @@ const Data = ({ match, history, loading, error }) => {
                       <Button color="danger" size="xs"
                         onClick={(e) => deleteById(e, employeeID)}
                         >
-                        <i className="simple-icon-trash"></i>&nbsp;Hapus Akun
+                        <i className="simple-icon-trash"></i>&nbsp;Hapus
                       </Button>
                     }
                   </Colxx>
@@ -1920,7 +1944,7 @@ const Data = ({ match, history, loading, error }) => {
 
                 <Row>
                   <Colxx sm={6}>
-                    <Label>* Wajib diisi</Label>
+                    <Label>* ) Wajib diisi</Label>
                   </Colxx>
                   <Colxx sm={6} className="text-right">
                     <Button
@@ -2036,6 +2060,14 @@ const Data = ({ match, history, loading, error }) => {
         </Modal>
           
       </Row>
+
+      <Button
+        color="primary"
+        className="float-btn"
+        onClick={(e) => resetForm(e, true)}
+      >
+        <i className="iconsminds-male-female"></i> Tambah Karyawan
+      </Button>
     </>
   );
 };

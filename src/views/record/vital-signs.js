@@ -64,6 +64,7 @@ const VitalSigns = ({ match }) => {
   const queueAll = useSelector(state => state.queue);
   const queueTotalPage = useSelector(state => state.queueTotalPage);
   const [dataStatus, setDataStatus] = useState("add");
+  const [rowSelected, setRowSelected] = useState(null);
 
   // const [selectDivision, setSelectDivision] = useState([]);
   const [selectedDivisionF, setSelectedDivisionF] = useState([{ label: "Semua", value: "", key: 0, name: 'id_klinik' }]);
@@ -268,8 +269,9 @@ const VitalSigns = ({ match }) => {
   const getVitalSignsByPatientId = async (e, id, data) => {
     e.preventDefault();
     resetForm(e);
+    setRowSelected(id);
 
-    console.log(data);
+    // console.log(data);
 
     setPatientID(id);
     setPatientData(data);
@@ -428,7 +430,7 @@ const VitalSigns = ({ match }) => {
                     </Button>
                   </InputGroupAddon>
                 </InputGroup>
-                <Table>
+                <Table hover>
                   <thead>
                     <tr>
                       <th className="center-xy" style={{ width: '40px' }}>#</th>
@@ -447,7 +449,7 @@ const VitalSigns = ({ match }) => {
                     </tr>
                     ) : queueAll.length > 0 ? (
                         queueAll.map((data) => (
-                          <tr key={data.id} onClick={(e) => getVitalSignsByPatientId(e, data.id_pasien, data)} style={{ cursor: 'pointer'}}>
+                          <tr key={data.id} onClick={(e) => getVitalSignsByPatientId(e, data.id_pasien, data)} style={{ cursor: 'pointer'}} className={`${rowSelected == data.id && 'row-selected'}`}>
                               <th scope="row" className="center-xy">{startNumber++}</th>
                               <td className="icon-column">
                                 <i className="simple-icon-magnifier queue-icon"></i><br/>
