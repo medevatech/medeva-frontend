@@ -13,13 +13,13 @@ const data = [
     to: `/patient`,
     roles: [ "isDev", "isResepsionis", "isPerawat", "isDokter" ],
   },
-  {
-    id: 'queue',
-    icon: 'iconsminds-profile',
-    label: 'Antrian',
-    to: `/queue`,
-    roles: [ "isDev", "isResepsionis", "isPerawat", "isDokter" ],
-  },
+  // {
+  //   id: 'queue',
+  //   icon: 'iconsminds-profile',
+  //   label: 'Antrian',
+  //   to: `/queue`,
+  //   roles: [ "isDev", "isResepsionis", "isPerawat", "isDokter" ],
+  // },
   {
     id: 'record',
     icon: 'iconsminds-stethoscope',
@@ -94,25 +94,25 @@ const data = [
       },
     ]
   },
-  {
-    id: 'schedule',
-    icon: 'iconsminds-calendar-4',
-    label: 'Jaga',
-    to: `/schedule`,
-    subs: [
-      {
-        icon: 'iconsminds-arrow-into',
-        label: 'Shift',
-        to: `/schedule/shift`,
-        roles: [ "isDev", "isManager", "isAdmin", "isResepsionis", "isPerawat", "isDokter" ],
-      },
-      {
-        icon: 'iconsminds-calendar-1',
-        label: 'Jadwal',
-        to: `/schedule/data`,
-        roles: [ "isDev", "isManager", "isAdmin", "isResepsionis", "isPerawat", "isDokter" ],
-      },
-    ]
-  },
+  // {
+  //   id: 'schedule',
+  //   icon: 'iconsminds-calendar-4',
+  //   label: 'Jaga',
+  //   to: `/schedule`,
+  //   subs: [
+  //     {
+  //       icon: 'iconsminds-arrow-into',
+  //       label: 'Shift',
+  //       to: `/schedule/shift`,
+  //       roles: [ "isDev", "isManager", "isAdmin", "isResepsionis", "isPerawat", "isDokter" ],
+  //     },
+  //     {
+  //       icon: 'iconsminds-calendar-1',
+  //       label: 'Jadwal',
+  //       to: `/schedule/data`,
+  //       roles: [ "isDev", "isManager", "isAdmin", "isResepsionis", "isPerawat", "isDokter" ],
+  //     },
+  //   ]
+  // },
 ];
 export default data;

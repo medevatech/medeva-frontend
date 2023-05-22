@@ -7,12 +7,16 @@ const kelas = {
     const url = api.insurance.class + options
     return baseApi.get(url, payloads, { headers: getOriginHeader() })
   },
+  getByInsurance: (payloads, options) => {
+    const url = api.insurance.classByInsurance + options
+    return baseApi.get(url, payloads, { headers: getOriginHeader() })
+  },
   add: (payloads) => {
     const url = api.insurance.class
     return baseApi.post(url, payloads, { headers: getOriginHeader() })
   },
   update: (payloads, id) => {
-    const url = api.insurance.class + id
+    const url = api.insurance.class + `${id}`
     return baseApi.put(url, payloads, { headers: getOriginHeader() })
   },
   edit: (payloads, id) => {

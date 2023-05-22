@@ -117,7 +117,21 @@ label {
     display: inline-block;
 }
 
-.input-insurance, .input-allergy {
+.input-insurance:not(:first-of-type) {
+    // background-color: yellow;
+}
+
+.input-insurance:not(:first-of-type) {
+    width: 89%;
+    display: inline-block;
+}
+
+// .input-insurance:not(:first-of-type) {
+//     width: 89%;
+//     display: inline-block;
+// }
+
+.input-allergy {
     // width: 70%;
     // margin-right: 10px;
 }

@@ -31,14 +31,18 @@ const api = {
   },
   insurance: {
     all: '/asuransi',
-    class: '/asuransi-kelas'
+    class: '/asuransi-kelas',
+    classByInsurance: '/asuransi-kelas/asuransi'
   },
   allergy: '/alergi', // MASTER OF 'ALERGI' FIELD
   patientAllergy: {  // JOIN TABLE ID ALERGY TO ID PATIENT AND ID RECORD
     all: '/alergi-pasien',
     patient: '/alergi-pasien/pasien'
   },
-  participant: '/peserta',
+  participant: {  // JOIN TABLE ID ALERGY TO ID PATIENT AND ID RECORD
+    all: '/peserta',
+    patient: '/peserta/pasien'
+  },
   queue: '/antrian',
   vitalSigns: {
     all:  '/vital-signs',
