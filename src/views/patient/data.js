@@ -240,6 +240,7 @@ const Data = ({ match }) => {
   const [modalDelete, setModalDelete] = useState(false);
   const [patientStatus, setPatientStatus] = useState(0);
   const [patientName, setPatientName] = useState('');
+  const [patientSubmit, setPatientSubmit] = useState('');
 
   const [patientID, setPatientID] = useState('');
 
@@ -317,7 +318,7 @@ const Data = ({ match }) => {
     setAllergy(dataAllergy);
     // setSelectedAllergy(displaySelectAllergy);
 
-    if(dataStatusInsurance === "update"){
+    if(dataStatusAllergy === "update"){
       setTempAllergy(dataAllergy);
       onDeletePatientAllergy(id);
     }
@@ -659,7 +660,8 @@ const Data = ({ match }) => {
   }
 
   const onPatientSubmit = async (e) => {
-    e.preventDefault();
+    // e.preventDefault();
+    setPatientSubmit("process");
 
     if(dataStatusPatient === 'add') {
       try {
@@ -699,16 +701,6 @@ const Data = ({ match }) => {
         });
 
         console.log(e);
-      } finally {
-        // if(selectedAllergy.length > 0 && patientID) {
-
-        if(allergy.length > 0 && patientID) {
-          onAllergySubmit(e);
-        }
-        
-        if(insurance.length > 0 && patientID) {
-          onInsuranceSubmit(e);
-        }
       }
     } else if (dataStatusPatient === 'update') {
       try {
@@ -748,28 +740,20 @@ const Data = ({ match }) => {
         });
   
         console.log(e);
-      } finally {
-        // if(selectedAllergy.length > 0 && patientID) {
-
-        if(allergy.length > 0 && patientID) {
-          onAllergySubmit(e);
-        }
-        
-        if(insurance.length > 0 && patientID) {
-          onInsuranceSubmit(e);
-        }
       }
     } else {
       console.log('dataStatusPatient undefined')
     }
-        
-    resetForm(e);
+
+    setPatientSubmit("done");
   };
 
   const onAllergySubmit = async (e) => {
-    e.preventDefault();
+    // e.preventDefault();
 
     for (var i = 0; i < allergy.length; i++) {
+      allergy[i].id_pasien = patientID;
+
       if(allergy[i].id !== '' && allergy[i].id_alergi !== tempAllergy[i].id_alergi) {
         onAllergyEdit(allergy[i]);
       } else if(allergy[i].id === '') {
@@ -857,9 +841,11 @@ const Data = ({ match }) => {
   }
 
   const onInsuranceSubmit = async (e) => {
-    e.preventDefault();
+    // e.preventDefault();
 
     for (var i = 0; i < insurance.length; i++) {
+      insurance[i].id_pasien = patientID;
+
       if(insurance[i].id !== '' && (insurance[i].id_asuransi !== tempInsurance[i].id_asuransi || insurance[i].nomor_asuransi !== tempInsurance[i].nomor_asuransi)) {
         onInsuranceEdit(insurance[i]);
       } else if(insurance[i].id === '') {
@@ -1454,6 +1440,22 @@ const Data = ({ match }) => {
     }
   };
 
+  // const onSubmit = async (e) => {
+  //   onPatientSubmit(e);
+
+  //   function waitForIt(){
+  //     if (patientSubmit === "process") {
+  //       setTimeout(function(){
+  //         waitForIt()
+  //       }, 100);
+  //     } else {
+  //       console.log('patientID', patientID);
+  //       console.log('allergy', allergy);
+  //       console.log('insurance', insurance);
+  //     };
+  //   }
+  // }
+
   const [currentPage, setCurrentPage] = useState(1);
   const [searchName, setSearchName] = useState("");
   const [searchStatus, setSearchStatus] = useState("");
@@ -1491,8 +1493,28 @@ const Data = ({ match }) => {
       changeKelurahan(id_kecamatan, editAddress);
     }
 
+    if (patientSubmit === "done") {
+      setTimeout(() => {
+        // console.log('patientID', patientID);
+
+        if(allergy.length > 0 && patientID) {
+          // console.log('allergy', allergy);
+          onAllergySubmit();
+        }
+        
+        if(insurance.length > 0 && patientID) {
+          // console.log('insurance', insurance);
+          onInsuranceSubmit();
+        }
+
+        setTimeout(() => {
+          resetForm();
+        }, 2000)
+      }, 1000);
+    }
+
   // }, [limit, searchName, searchStatus, sortBy, sortOrder, currentPage, editAddress, patientAll, patientTotalPage]);
-  }, [limit, searchName, searchStatus, sortBy, sortOrder, currentPage, editAddress]);
+  }, [limit, searchName, searchStatus, sortBy, sortOrder, currentPage, editAddress, patientSubmit]);
 
   let startNumber = 1;
 
