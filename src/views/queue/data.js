@@ -408,14 +408,14 @@ const Data = ({ match }) => {
     } else {
       params = `${params}?limit=10`;
     }
+    if (currentPage !== "1") {
+      params = `${params}&page=${currentPage}`;
+    }
     if (searchDivisiF !== "") {
       params = `${params}&searchDivisi=${searchDivisiF}`;
     }
     if (searchDivisiName !== "") {
       params = `${params}&searchDivisiName=${searchDivisiName}`;
-    }
-    if (currentPage !== "1") {
-      params = `${params}&page=${currentPage}`;
     }
     getSchedule(params);
     getScheduleById(searchDivisi);
