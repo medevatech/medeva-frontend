@@ -7,6 +7,10 @@ const service = {
     const url = api.service.all + options
     return baseApi.get(url, payloads, { headers: getOriginHeader() })
   },
+  getByRecord: (payloads, options) => {
+    const url = api.service.record + options
+    return baseApi.get(url, payloads, { headers: getOriginHeader() })
+  },
   add: (payloads) => {
     const url = api.service.all
     return baseApi.post(url, payloads, { headers: getOriginHeader() })
@@ -14,6 +18,10 @@ const service = {
   update: (payloads, id) => {
     const url = api.service.all + `/${id}`
     return baseApi.put(url, payloads, { headers: getOriginHeader() })
+  },
+  delete: (payloads, id) => {
+    const url = api.service.all + `/${id}`
+    return baseApi.delete(url, payloads, { headers: getOriginHeader() })
   },
 }
 export default service

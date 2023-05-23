@@ -236,6 +236,7 @@ const Data = ({ match }) => {
   const [selectInsurance, setSelectInsurance] = useState([]);
   const [selectInsuranceClass, setSelectInsuranceClass] = useState([]);
 
+  const [disabledInsuranceClass, setDisabledInsuranceClass] = useState([{0: false}]);
   const [modalArchive, setModalArchive] = useState(false);
   const [modalDelete, setModalDelete] = useState(false);
   const [patientStatus, setPatientStatus] = useState(0);
@@ -255,20 +256,14 @@ const Data = ({ match }) => {
   const addInsuranceFields = () => {
     let newfieldInsurance = { id: '', id_pasien: patientID, id_asuransi: "", id_asuransi_kelas: "", nomor_asuransi: "" };
     setInsurance([...insurance, newfieldInsurance]);
-
-    // let newfieldDropdownInsurance = { label: "" };
-    // setSelectedInsurance([...selectedInsurance, newfieldDropdownInsurance]);
   };
 
   const removeInsuranceFields = (id, index) => {
     let dataInsurance = [...insurance];
-    // let displaySelectInsurance = [...selectedInsurance];
 
     dataInsurance.splice(index, 1);
-    // displaySelectInsurance.splice(index, 1);
 
     setInsurance(dataInsurance);
-    // setSelectedInsurance(displaySelectInsurance);
 
     if(dataStatusInsurance === "update"){
       setTempInsurance(dataInsurance);
@@ -278,12 +273,16 @@ const Data = ({ match }) => {
 
   const handleInsuranceChange = (index, event) => {
     let dataInsurance = [...insurance];
-    // let displaySelectInsurance = [...selectedInsurance];
 
     if (event.name === "id_asuransi"){
       dataInsurance[index][event.name] = event.value;
-      
       changeKelasAsuransi(index, event.value);
+
+      if (event.value !== "") {
+        disabledInsuranceClass[index] = false;
+      } else {
+        disabledInsuranceClass[index] = true;
+      }
     } else if (event.name === "id_asuransi_kelas"){
       dataInsurance[index][event.name] = event.value;
     } else {
@@ -291,7 +290,6 @@ const Data = ({ match }) => {
     }
 
     setInsurance(dataInsurance);
-    // setSelectedInsurance(displaySelectInsurance);
   };
 
   // const [allergy, setAllergy] = useState([]);
@@ -303,20 +301,14 @@ const Data = ({ match }) => {
   const addAllergyFields = () => {
     let newfieldAllergy = { id: "", id_pasien: patientID, id_alergi: "" };
     setAllergy([...allergy, newfieldAllergy]);
-
-    // let newfieldDropdownAllergy = { label: "" };
-    // setSelectedAllergy([...selectedAllergy, newfieldDropdownAllergy]);
   };
 
   const removeAllergyFields = (id, index) => {
     let dataAllergy = [...allergy];
-    // let displaySelectAllergy = [...selectedAllergy];
 
     dataAllergy.splice(index, 1);
-    // displaySelectAllergy.splice(index, 1);
 
     setAllergy(dataAllergy);
-    // setSelectedAllergy(displaySelectAllergy);
 
     if(dataStatusAllergy === "update"){
       setTempAllergy(dataAllergy);
@@ -326,17 +318,14 @@ const Data = ({ match }) => {
 
   const handleAllergyChange = (index, event) => {
     let dataAllergy = [...allergy];
-    // let displaySelectAllergy = [...selectedAllergy];
 
     if (event.name === "id_alergi"){
       dataAllergy[index][event.name] = event.value;
-      // displaySelectAllergy[index]["label"] = event.value;
     } else {
       dataAllergy[index][event.target.name] = event.target.value;
     }
 
     setAllergy(dataAllergy);
-    // setSelectedAllergy(displaySelectAllergy);
   };
 
   const [patient, setPatient] = useState({
@@ -551,7 +540,6 @@ const Data = ({ match }) => {
 
   const changeKelasAsuransi = async (index, id_asuransi) => {
     selectInsuranceClassByInsurance[index] = [];
-    // setSelectInsuranceClassByInsurance[index]([]);
 
     try {
       const response = await insuranceClassAPI.getByInsurance("", `/${id_asuransi}`);
@@ -582,16 +570,7 @@ const Data = ({ match }) => {
   const onChange = (e) => {
     // console.log('e', e);
 
-    if (e.length > 0 && e[0].name === 'id_alergi') {
-      // setSelectedAllergy(Array.isArray(e) ? e.map(x => x.value) : []);
-      // console.log('setSelectedAllergy', selectedAllergy);
-      
-      // setAllergy(Array.isArray(e) ? e.map(x => x.value) : []);
-      // console.log(allergy);
-    } else if (e.length <= 0) {
-      // setSelectedAllergy(Array.isArray(e) ? e.map(x => x.value) : []);
-      // setAllergy([]);
-    } else if (e.name === 'provinsi') {
+    if (e.name === 'provinsi') {
       setPatient(current => {
           return { ...current, provinsi: e ? e.value : ''}
       })
@@ -655,7 +634,6 @@ const Data = ({ match }) => {
       }
     }
 
-    // console.log('allergy', allergy);
     // console.log('patient', patient);
   }
 
@@ -987,14 +965,11 @@ const Data = ({ match }) => {
     setSelectCity([]);
     setSelectSubdistrict([]);
     setSelectWard([]);
-
     
     setAllergy([{ id: "", id_pasien: patientID, id_alergi: "" }]);
-    // setSelectedAllergy([{ label: ""}]);
-
     setInsurance([{ id: '', id_pasien: patientID, id_asuransi: "", id_asuransi_kelas: "", nomor_asuransi: "" }]);
-    // setSelectedInsurance([{ label: ""}]);
 
+    setDisabledInsuranceClass([]);
     setDataStatusPatient("add");
     setDataStatusAllergy("add");
     setDataStatusInsurance("add");
@@ -1040,7 +1015,6 @@ const Data = ({ match }) => {
     try {
       const res = await patientAPI.get("", `/${id}`);
       data = res.data.data[0];
-
       // console.log(data);
 
       setPatientID(data.id);
@@ -1067,7 +1041,6 @@ const Data = ({ match }) => {
 
       setPatientName(data.nama_lengkap);
       setPatientStatus(data.is_active);
-      // console.log(patient);
 
       setSelectedMaritalStatus({spesialis: data.status_menikah ? e.value : ''});
       setSelectedReligion({agama: data.agama ? e.value : ''});
@@ -1108,7 +1081,6 @@ const Data = ({ match }) => {
   const getAllergyByPatientId = async (id) => {
     setAllergy([]);
     setTempAllergy([]);
-    // setSelectedAllergy([{ label: '' }]);
 
     try {
       const res = await patientAllergyAPI.getByPatient("", `/${id}`);
@@ -1117,9 +1089,6 @@ const Data = ({ match }) => {
 
       if(data) {
         data.map((data, index) => {
-          // setSelectedAllergy((current) => [
-          //   ...current, data.alergi
-          // ]);
 
           setAllergy((current) => [
             ...current, { id: data.id, id_pasien: data.id_pasien, id_alergi: data.id_alergi }
@@ -1128,9 +1097,6 @@ const Data = ({ match }) => {
           setTempAllergy((current) => [
             ...current, { id: data.id, id_pasien: data.id_pasien, id_alergi: data.id_alergi }
           ]);
-
-          // allergy.push({ id: data.id, id_pasien: data.id_pasien, id_alergi: data.id_alergi });
-          // tempAllergy.push({ id: data.id, id_pasien: data.id_pasien, id_alergi: data.id_alergi });
         })
       }
 
@@ -1141,7 +1107,6 @@ const Data = ({ match }) => {
       setAllergy([{ id: '', id_pasien: patientID, id_alergi: "" }]);
       setTempAllergy([{ id: '', id_pasien: patientID, id_alergi: "" }]);
 
-      // setSelectedAllergy([{ label: '' }]);
       setDataStatusAllergy("add");
     }
   };
@@ -1174,7 +1139,6 @@ const Data = ({ match }) => {
       setInsurance([{ id: '', id_pasien: patientID, id_asuransi: "", id_asuransi_kelas: "", nomor_asuransi: "" }]);
       setTempInsurance([{ id: '', id_pasien: patientID, id_asuransi: "", id_asuransi_kelas: "", nomor_asuransi: "" }]);
 
-      // setSelectedAllergy([{ label: '' }]);
       setDataStatusInsurance("add");
     }
   };
@@ -1184,7 +1148,6 @@ const Data = ({ match }) => {
     <Button color="success" size="xs" onClick={(e) => statusById(e, patientID)}>
       <i className="simple-icon-drawer"></i>&nbsp;Aktifkan
     </Button>
-    {/* <span>&nbsp;&nbsp;</span> */}
     </>;
   }
 
@@ -1193,7 +1156,6 @@ const Data = ({ match }) => {
     <Button color="warning" size="xs" onClick={(e) => statusById(e, patientID)}>
       <i className="simple-icon-drawer"></i>&nbsp;Arsipkan
     </Button>
-    {/* <span>&nbsp;&nbsp;</span> */}
     </>;
   }
 
@@ -1440,22 +1402,6 @@ const Data = ({ match }) => {
     }
   };
 
-  // const onSubmit = async (e) => {
-  //   onPatientSubmit(e);
-
-  //   function waitForIt(){
-  //     if (patientSubmit === "process") {
-  //       setTimeout(function(){
-  //         waitForIt()
-  //       }, 100);
-  //     } else {
-  //       console.log('patientID', patientID);
-  //       console.log('allergy', allergy);
-  //       console.log('insurance', insurance);
-  //     };
-  //   }
-  // }
-
   const [currentPage, setCurrentPage] = useState(1);
   const [searchName, setSearchName] = useState("");
   const [searchStatus, setSearchStatus] = useState("");
@@ -1495,15 +1441,12 @@ const Data = ({ match }) => {
 
     if (patientSubmit === "done") {
       setTimeout(() => {
-        // console.log('patientID', patientID);
 
         if(allergy.length > 0 && patientID) {
-          // console.log('allergy', allergy);
           onAllergySubmit();
         }
         
         if(insurance.length > 0 && patientID) {
-          // console.log('insurance', insurance);
           onInsuranceSubmit();
         }
 
@@ -1537,16 +1480,6 @@ const Data = ({ match }) => {
                   <Colxx sm="12" md="12" xl="12">
                   Data Pasien
                   </Colxx>
-                  {/* <Colxx sm="12" md="4" xl="4">
-                    <Button
-                      color="primary"
-                      style={{ float: "right" }}
-                      className="mb-4"
-                      onClick={resetForm}
-                    >
-                      Tambah
-                    </Button>
-                  </Colxx> */}
                 </Row>
               </CardTitle>
               <FormGroup row style={{ margin: '0px', width: '100%' }}>
@@ -1604,7 +1537,6 @@ const Data = ({ match }) => {
                         </th>
                         <td>
                           <h6 style={{ fontWeight: 'bold' }} className="max-text">{data.nama_lengkap}</h6>
-                          {/* {data.jenis_kelamin.substring(0,1)}, {data.tanggal_lahir}<br/> */}
                           {data.jenis_kelamin.substring(0,1)}, {new Date().getFullYear() - data.tanggal_lahir.substring(0,4)} tahun<br/>
                           {data.tipe_kitas} {data.nomor_kitas}<br/>
                           {data.is_active == 1 ? (
@@ -1612,7 +1544,6 @@ const Data = ({ match }) => {
                           ) : (
                             <Badge color="warning" className="mt-2">Non-Aktif</Badge>
                           )}
-                          {/* {data.nomor_hp} */}
                         </td>
                         <td style={{ textAlign: "center", verticalAlign: 'middle' }}>
                           <Button color="secondary" size="xs" className="button-xs"
@@ -1620,32 +1551,6 @@ const Data = ({ match }) => {
                             >
                             <i className="simple-icon-arrow-right-circle"></i>
                           </Button>
-                          {/* {' '}
-                          {data.is_active == 1 ? (
-                            <Button
-                              color="success"
-                              size="xs"
-                              className="button-xs"
-                              onClick={(e) => statusById(e, data.id)}
-                            >
-                              <i className="simple-icon-drawer"></i>
-                            </Button>
-                          ) : (
-                            <Button
-                              color="warning"
-                              size="xs"
-                              className="button-xs"
-                              onClick={(e) => statusById(e, data.id)}
-                            >
-                              <i className="simple-icon-drawer"></i>
-                            </Button>
-                          )}
-                          {' '} */}
-                          {/* <Button color="danger" size="xs" className="button-xs"
-                            // onClick={}
-                            >
-                            <i className="simple-icon-trash"></i>
-                          </Button> */}
                         </td>
                       </tr>
                     ))
@@ -1680,14 +1585,6 @@ const Data = ({ match }) => {
                   </Colxx>
                   <Colxx sm="7" md="6" xl="6" style={{ textAlign: 'right' }}>
                     {<IsActive/>}
-                    {/* {(userData.roles.includes('isDev') ||
-                    userData.roles.includes('isManager')) && patientID &&
-                      <Button color="danger" size="xs"
-                        onClick={(e) => deleteById(e, patientID)}
-                        >
-                        <i className="simple-icon-trash"></i>&nbsp;Hapus Data
-                      </Button>
-                    } */}
                   </Colxx>
                 </Row>
               </CardTitle>
@@ -2021,10 +1918,6 @@ const Data = ({ match }) => {
                       <Label>Alergi</Label>
                       {allergy.map((input, index) => {
                         return (
-                          // <InputGroup
-                          //   key={index}
-                          //   className="input-group-insurance"
-                          // >
                           <React.Fragment key={index}>
                             <Select
                               components={{ Input: CustomSelectInput }}
@@ -2033,10 +1926,8 @@ const Data = ({ match }) => {
                               // isMulti
                               name="id_alergi"
                               id="id_alergi"
-                              // value={selectAllergy.filter(item => selectedAllergy.includes(item.value)) || ''}
                               value={selectAllergy.find(item => item.value === allergy[index].id_alergi) || ''}
                               options={selectAllergy}
-                              // onChange={onChange}
                               onChange={(event) =>
                                 handleAllergyChange(index, event)
                               }
@@ -2054,7 +1945,6 @@ const Data = ({ match }) => {
                               </Button>
                             )}
                           </React.Fragment>
-                          // </InputGroup>
                         );
                       })}
                       <Button
@@ -2070,7 +1960,14 @@ const Data = ({ match }) => {
 
                   <Colxx sm={6}>
                     <FormGroup>
-                      <Label>Asuransi</Label>
+                      <Row>
+                        <Colxx sm={6}>
+                          <Label>Asuransi</Label>
+                        </Colxx>
+                        <Colxx sm={6} className="insurance-class-label">
+                          <Label>Kelas Asuransi</Label>
+                        </Colxx>
+                      </Row>
                       {insurance.map((input, index) => {
                         return (
                           <Row key={index}>
@@ -2098,20 +1995,15 @@ const Data = ({ match }) => {
                                   className="react-select"
                                   classNamePrefix="react-select"
                                   name="id_asuransi_kelas"
-                                  // value={selectInsuranceClass.find(item => item.value === insurance[index].id_asuransi_kelas) || ''}
-                                  // options={selectInsuranceClass}
                                   value={
                                     selectInsuranceClassByInsurance[index] !== undefined &&
                                       selectInsuranceClassByInsurance[index].find(item => item.value === insurance[index].id_asuransi_kelas) || ''
-
-                                      // selectInsuranceClassByInsurance[index].map((data, i) => 
-                                        // data.find(item => item.value === insurance[index].id_asuransi_kelas) || ''
-                                      // )
                                   }
                                   options={selectInsuranceClassByInsurance[index]}
                                   onChange={(event) =>
                                     handleInsuranceChange(index, event)
                                   }
+                                  isDisabled={disabledInsuranceClass[index]}
                                 />
                               </FormGroup>
                             </Colxx>

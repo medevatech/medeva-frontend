@@ -7,6 +7,10 @@ const diagnose = {
     const url = api.diagnose.all + options
     return baseApi.get(url, payloads, { headers: getOriginHeader() })
   },
+  getByRecord: (payloads, options) => {
+    const url = api.diagnose.record + options
+    return baseApi.get(url, payloads, { headers: getOriginHeader() })
+  },
   add: (payloads) => {
     const url = api.diagnose.all
     return baseApi.post(url, payloads, { headers: getOriginHeader() })
@@ -14,6 +18,10 @@ const diagnose = {
   update: (payloads, id) => {
     const url = api.diagnose.all + `/${id}`
     return baseApi.put(url, payloads, { headers: getOriginHeader() })
+  },
+  delete: (payloads, id) => {
+    const url = api.diagnose.all + `/${id}`
+    return baseApi.delete(url, payloads, { headers: getOriginHeader() })
   },
 }
 export default diagnose

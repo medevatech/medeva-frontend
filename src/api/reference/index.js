@@ -7,6 +7,10 @@ const reference = {
     const url = api.reference.all + options
     return baseApi.get(url, payloads, { headers: getOriginHeader() })
   },
+  getByRecord: (payloads, options) => {
+    const url = api.reference.record + options
+    return baseApi.get(url, payloads, { headers: getOriginHeader() })
+  },
   add: (payloads) => {
     const url = api.reference.all
     return baseApi.post(url, payloads, { headers: getOriginHeader() })

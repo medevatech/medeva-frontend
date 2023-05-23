@@ -484,6 +484,10 @@ label {
         text-overflow: ellipsis;
         white-space: nowrap;
     }
+
+    .insurance-class-label {
+        display: none;
+    }
 }
 
 @media (min-width: 576px) {
