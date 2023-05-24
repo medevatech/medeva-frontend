@@ -85,7 +85,10 @@ const api = {
     activatePrice: '/harga-layanan/activate',
     record: '/layanan/kunjungan'
   },
-  disease: '/penyakit', // MASTER OF 'PENYAKIT' FIELD
+  disease: {
+    all: '/penyakit', // MASTER OF 'PENYAKIT' FIELD
+    getAll: 'penyakit/all'
+  },
   medicine: '/obat', // MASTER OF 'OBAT' FIELD
   lab: {
     all: '/laboratorium', // MASTER OF 'LABORATORIUM' FIELD

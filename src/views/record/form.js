@@ -24,7 +24,7 @@ import 'react-rater/lib/react-rater.css';
 
 import moment from "moment";
 import Select from 'react-select';
-import Async, { useAsync } from 'react-select/async';
+import { AsyncPaginate } from 'react-select-async-paginate';
 import { Colxx, Separator } from 'components/common/CustomBootstrap';
 
 import CustomSelectInput from 'components/common/CustomSelectInput';
@@ -1313,24 +1313,26 @@ const FormRecord = ({ match, history }) => {
     onLoadRSRujukan();
   };
 
-  const [selectDisease, setSelectDisease] = useState([]);
+  const [selectDisease, setSelectDisease] = useState([{ label: "Pilih Penyakit" , value: "", key: 0, name: 'id_penyakit' }]);
 
   const onLoadPenyakit = async () => {
     try {
-      const response = await diseaseAPI.get("", "?limit=1000");
+      const response = await diseaseAPI.getAll("", "");
       // console.log(response);
 
-      setSelectDisease([{ label: "Pilih Penyakit" , value: "", key: 0, name: 'id_penyakit' }]);
+      // currentPage === 1 && setSelectDisease([{ label: "Pilih Penyakit" , value: "", key: 0, name: 'id_penyakit' }]);
 
       if (response.status === 200) {
         let data = response.data.data;
         // console.log(data);
       
         for (var i = 0; i < data.length; i++) {
-          setSelectDisease((current) => [
-            ...current,
-            { label: data[i].kode_icd10 + " - " + data[i].nama_penyakit  , value: data[i].id, key: data[i].id, name: 'id_penyakit' },
-          ]);
+          // setSelectDisease((current) => [
+          //   ...current,
+          //   { label: data[i].kode_icd10 + " - " + data[i].nama_penyakit  , value: data[i].id, key: data[i].id, name: 'id_penyakit' },
+          // ]);
+
+          selectDisease.push({ label: data[i].kode_icd10 + " - " + data[i].nama_penyakit  , value: data[i].id, key: data[i].id, name: 'id_penyakit' });
         }
       } else {
         throw Error(`Error status: ${response.status}`);
@@ -1372,7 +1374,7 @@ const FormRecord = ({ match, history }) => {
 
   const onLoadLab = async () => {
     try {
-      const response = await labAPI.get("", "?limit=00");
+      const response = await labAPI.get("", "?limit=1000");
       // console.log(response);
 
       setSelectLab([{ label: "Pilih Laboratorim" , value: "", key: 0, name: 'id_lab' }]);
@@ -1517,7 +1519,7 @@ const FormRecord = ({ match, history }) => {
 
   const onLoadPoliRujukan = async () => {
     try {
-      const response = await divisionReferenceAPI.get("", "?limit=10000");
+      const response = await divisionReferenceAPI.get("", "?limit=1000");
       // console.log(response);
 
       setSelectDivisionReference([{ label: "Pilih Poli / Divisi" , value: "", key: 0, name: 'id_poli' }]);
@@ -2194,6 +2196,41 @@ const FormRecord = ({ match, history }) => {
     }
   };
 
+  const options = selectDisease;
+
+  const sleep = (ms = number) =>
+    new Promise((resolve) => {
+      setTimeout(() => {
+        resolve(undefined);
+      }, ms);
+  });
+
+  const loadOptions = async (search, prevOptions) => {
+    await sleep(1000);
+  
+    let filteredOptions = [{value: 0, label: ''}];
+    if (!search) {
+      filteredOptions = options;
+    } else {
+      const searchLower = search.toLowerCase();
+
+      filteredOptions = options.filter(({ label }) =>
+        label.toLowerCase().includes(searchLower)
+      );
+    }
+
+    const hasMore = filteredOptions.length > prevOptions.length + 10;
+    const slicedOptions = filteredOptions.slice(
+      prevOptions.length,
+      prevOptions.length + 10
+    );
+  
+    return {
+      options: slicedOptions,
+      hasMore
+    };
+  };
+
   return (
     <>
       <Row>
@@ -2426,7 +2463,7 @@ const FormRecord = ({ match, history }) => {
                                           *
                                           </span> */}
                                       </Label>
-                                      <Select
+                                      {/* <Select
                                           components={{ Input: CustomSelectInput }}
                                           className="react-select"
                                           classNamePrefix="react-select"
@@ -2435,6 +2472,17 @@ const FormRecord = ({ match, history }) => {
                                           options={selectDisease}
                                           onChange={(event) => handleDiagnosisChange(index, event)}
                                           cacheOptions
+                                      /> */}
+                                      <AsyncPaginate
+                                        loadOptions={loadOptions}
+                                        additional={{
+                                          page: 1,
+                                        }}
+                                        className="react-select"
+                                        classNamePrefix="react-select"
+                                        name="id_penyakit"
+                                        value={selectDisease.find(item => item.value === diagnosis[index].id_penyakit) || ''}
+                                        onChange={(event) => handleDiagnosisChange(index, event)}
                                       />
                                   </FormGroup>
                               </Colxx>
@@ -2924,7 +2972,7 @@ const FormRecord = ({ match, history }) => {
                                             *
                                             </span> */}
                                         </Label>
-                                        <Select
+                                        {/* <Select
                                             components={{ Input: CustomSelectInput }}
                                             className="react-select"
                                             classNamePrefix="react-select"
@@ -2932,6 +2980,17 @@ const FormRecord = ({ match, history }) => {
                                             value={selectDisease.find(item => item.value === diagnoseReference[index].id_penyakit) || ''}
                                             options={selectDisease}
                                             onChange={(event) => handleDiagnoseReferenceChange(index, event)}
+                                        /> */}
+                                        <AsyncPaginate
+                                          loadOptions={loadOptions}
+                                          additional={{
+                                            page: 1,
+                                          }}
+                                          className="react-select"
+                                          classNamePrefix="react-select"
+                                          name="id_penyakit_rujukan"
+                                          value={selectDisease.find(item => item.value === diagnoseReference[index].id_penyakit) || ''}
+                                          onChange={(event) => handleDiagnoseReferenceChange(index, event)}
                                         />
                                     </FormGroup>
                                 </Colxx>
