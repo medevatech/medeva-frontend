@@ -24,6 +24,7 @@ import 'react-rater/lib/react-rater.css';
 
 import moment from "moment";
 import Select from 'react-select';
+import Async, { useAsync } from 'react-select/async';
 import { Colxx, Separator } from 'components/common/CustomBootstrap';
 
 import CustomSelectInput from 'components/common/CustomSelectInput';
@@ -279,6 +280,10 @@ const FormRecord = ({ match, history }) => {
         dd = false;
       }
 
+      if(dataDiagnosis[index]['id_penyakit'] === '') {
+        wd = false; dd = false;
+      }
+
       dataDiagnosis[index]['tipe_wd'] = wd;
       dataDiagnosis[index]['tipe_dd'] = dd;
     }
@@ -497,6 +502,10 @@ const FormRecord = ({ match, history }) => {
         dd_rujukan = true;
       } else if(event.target.id === 'tipe_dd_rujukan' && event.target.checked === false) {
         dd_rujukan = false;
+      }
+
+      if(dataDiagnoseReference[index]['id_penyakit'] === '') {
+        wd = false; dd = false;
       }
 
       dataDiagnoseReference[index]['tipe_wd'] = wd_rujukan;
@@ -1187,7 +1196,8 @@ const FormRecord = ({ match, history }) => {
       diagnoseReference[i].id_rujukan = referenceID;
 
       if(diagnoseReference[i].id !== '' && diagnoseReference[i].id_penyakit !== tempDiagnoseReference[i].id_penyakit ||
-        diagnoseReference[i].id !== '' && diagnoseReference[i].tipe_wd !== tempDiagnoseReference[i].tipe_wd) {
+        diagnoseReference[i].id !== '' && diagnoseReference[i].tipe_wd !== tempDiagnoseReference[i].tipe_wd ||
+        diagnoseReference[i].id !== '' && diagnoseReference[i].tipe_dd !== tempDiagnoseReference[i].tipe_dd) {
         onDiagnosisReferenceEdit(diagnoseReference[i]);
       } else if(allergy[i].id === '') {
         onDiagnosisReferenceAdd(diagnoseReference[i]);
@@ -1310,7 +1320,7 @@ const FormRecord = ({ match, history }) => {
       const response = await diseaseAPI.get("", "?limit=1000");
       // console.log(response);
 
-      setSelectDisease([]);
+      setSelectDisease([{ label: "Pilih Penyakit" , value: "", key: 0, name: 'id_penyakit' }]);
 
       if (response.status === 200) {
         let data = response.data.data;
@@ -1337,7 +1347,7 @@ const FormRecord = ({ match, history }) => {
       const response = await medicineAPI.get("", "?limit=1000");
       // console.log(response);
 
-      setSelectMedicine([]);
+      setSelectMedicine([{ label: "Pilih Obat" , value: "", key: 0, name: 'id_obat' }]);
 
       if (response.status === 200) {
         let data = response.data.data;
@@ -1362,10 +1372,10 @@ const FormRecord = ({ match, history }) => {
 
   const onLoadLab = async () => {
     try {
-      const response = await labAPI.get("", "?limit=1000");
+      const response = await labAPI.get("", "?limit=00");
       // console.log(response);
 
-      setSelectLab([]);
+      setSelectLab([{ label: "Pilih Laboratorim" , value: "", key: 0, name: 'id_lab' }]);
 
       if (response.status === 200) {
         let data = response.data.data;
@@ -1389,6 +1399,10 @@ const FormRecord = ({ match, history }) => {
     try {
       const response = await labTreatmentAPI.get("", `?limit=1000&searchLaboratorium=${id_lab}&searchKategori=${kategori}`);
       // console.log(response);
+
+      selectInspectByLabTreatmentArray.push({
+        label: "Pilih Pemeriksaan Laboratorium", value: "", key: 0, name: 'id_pemeriksaan'
+      });
 
       if (response.status === 200) {
         let data = response.data.data;
@@ -1452,7 +1466,7 @@ const FormRecord = ({ match, history }) => {
       const response = await treatmentListAPI.get("", "?limit=1000");
       // console.log(response);
 
-      setSelectTreatment([]);
+      setSelectTreatment([{ label: "Pilih Tindakan" , value: "", key: 0, name: 'id_daftar_tindakan' }]);
 
       if (response.status === 200) {
         let data = response.data.data;
@@ -1479,7 +1493,7 @@ const FormRecord = ({ match, history }) => {
       const response = await serviceListAPI.get("", "?limit=1000");
       // console.log(response);
 
-      setSelectService([]);
+      setSelectService([{ label: "Pilih Layanan" , value: "", key: 0, name: 'id_daftar_layanan' }]);
 
       if (response.status === 200) {
         let data = response.data.data;
@@ -1503,10 +1517,10 @@ const FormRecord = ({ match, history }) => {
 
   const onLoadPoliRujukan = async () => {
     try {
-      const response = await divisionReferenceAPI.get("", "?limit=1000");
+      const response = await divisionReferenceAPI.get("", "?limit=10000");
       // console.log(response);
 
-      setSelectDivisionReference([]);
+      setSelectDivisionReference([{ label: "Pilih Poli / Divisi" , value: "", key: 0, name: 'id_poli' }]);
 
       if (response.status === 200) {
         let data = response.data.data;
@@ -1533,7 +1547,7 @@ const FormRecord = ({ match, history }) => {
       const response = await hospitalReferenceAPI.get("", "?limit=1000");
       // console.log(response);
 
-      setSelectHospitalReference([]);
+      setSelectHospitalReference([{ label: "Pilih Rumah Sakit" , value: "", key: 0, name: 'id_rs' }]);
 
       if (response.status === 200) {
         let data = response.data.data;
@@ -1605,16 +1619,6 @@ const FormRecord = ({ match, history }) => {
       // console.log(vitalSigns);
     } catch (e) {
       console.log(e);
-    } finally {
-       if(recordID){
-        getRecordByPatientId(recordID);
-        getDiagnoseByRecordId(recordID);
-        getRecieptByRecordId(recordID);
-        getCheckupByRecordId(recordID);
-        getTreatmentByRecordId(recordID);
-        getServiceByRecordId(recordID);
-        getReferenceByRecordId(recordID);
-       }
     }
   };
 
@@ -1896,6 +1900,16 @@ const FormRecord = ({ match, history }) => {
     onLoadRSRujukan();
 
     getVitalSignsByPatientId(patientID, patientData);
+    
+    if(recordID){
+      getRecordByPatientId(recordID);
+      getDiagnoseByRecordId(recordID);
+      getRecieptByRecordId(recordID);
+      getCheckupByRecordId(recordID);
+      getTreatmentByRecordId(recordID);
+      getServiceByRecordId(recordID);
+      getReferenceByRecordId(recordID);
+    }
 
     if (recordSubmit === "done") {
       setTimeout(() => {
@@ -2420,6 +2434,7 @@ const FormRecord = ({ match, history }) => {
                                           value={selectDisease.find(item => item.value === diagnosis[index].id_penyakit) || ''}
                                           options={selectDisease}
                                           onChange={(event) => handleDiagnosisChange(index, event)}
+                                          cacheOptions
                                       />
                                   </FormGroup>
                               </Colxx>
@@ -2452,8 +2467,13 @@ const FormRecord = ({ match, history }) => {
                                       </Row>
                                   </FormGroup>
                               </Colxx>
-                              <Colxx sm={1} md={1} xl={1}>
-                                  {index > 0 && (
+                              {index > 0 && (
+                                <Colxx sm={1} md={1} xl={1}>
+                                  <FormGroup>
+                                    <Label>
+                                      &nbsp;&nbsp;
+                                    </Label>
+                                    <br/>
                                     <Button
                                       color="danger"
                                       style={{ float: "right" }}
@@ -2464,8 +2484,9 @@ const FormRecord = ({ match, history }) => {
                                     >
                                       <i className="simple-icon-trash"></i>
                                     </Button>
-                                  )}
-                              </Colxx>
+                                  </FormGroup>
+                                </Colxx>
+                              )}
                           </React.Fragment>
                         )
                     })}
@@ -2945,20 +2966,26 @@ const FormRecord = ({ match, history }) => {
                                         </Row>
                                     </FormGroup>
                                 </Colxx>
-                                <Colxx sm={1} md={1} xl={1}>
-                                    {index > 0 && (
+                                {index > 0 && (
+                                  <Colxx sm={1} md={1} xl={1}>
+                                    <FormGroup>
+                                      <Label>
+                                        &nbsp;&nbsp;
+                                      </Label>
+                                      <br/>
                                       <Button
                                         color="danger"
                                         style={{ float: "right" }}
                                         onClick={() =>
-                                            removeDiagnoseReferenceFields(input.id, index)
+                                          removeDiagnoseReferenceFields(input.id, index)
                                         }
                                         className="remove-diagnosis"
                                       >
                                         <i className="simple-icon-trash"></i>
                                       </Button>
-                                    )}
-                                </Colxx>
+                                    </FormGroup>
+                                  </Colxx>
+                                )}
                             </React.Fragment>
                           )
                       })}

@@ -1125,6 +1125,7 @@ const Data = ({ match }) => {
           setInsurance((current) => [
             ...current, { id: data.id, id_pasien: data.id_pasien, id_asuransi: data.id_asuransi, id_asuransi_kelas: data.id_asuransi_kelas, nomor_asuransi: data.nomor_asuransi }
           ]);
+          changeKelasAsuransi(index, data.id_asuransi);
 
           setTempInsurance((current) => [
             ...current, { id: data.id, id_pasien: data.id_pasien, id_asuransi: data.id_asuransi, id_asuransi_kelas: data.id_asuransi_kelas, nomor_asuransi: data.nomor_asuransi }
@@ -1996,7 +1997,7 @@ const Data = ({ match }) => {
                                   classNamePrefix="react-select"
                                   name="id_asuransi_kelas"
                                   value={
-                                    selectInsuranceClassByInsurance[index] !== undefined &&
+                                    insurance[index].id_asuransi !== '' && selectInsuranceClassByInsurance[index] !== undefined &&
                                       selectInsuranceClassByInsurance[index].find(item => item.value === insurance[index].id_asuransi_kelas) || ''
                                   }
                                   options={selectInsuranceClassByInsurance[index]}
