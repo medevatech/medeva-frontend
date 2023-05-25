@@ -2078,10 +2078,10 @@ const FormRecord = ({ match, history }) => {
         }
 
         setTimeout(() => {
-          if (recordSubmit === "idle") {
-            // resetForm(e);
-            // history.push("/record");
-          }
+          // if (recordSubmit === "idle") {
+            resetForm(e);
+            history.push("/record");
+          // }
         }, 5000)
       }, 3000);
     }
