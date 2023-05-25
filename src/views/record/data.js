@@ -530,7 +530,7 @@ const Data = ({ match }) => {
                   { patientData ?
                     <Link to={{
                         pathname: `/record/form`,
-                        state: { patientID: patientID, patientData: patientData }
+                        state: { patientID: patientID, patientData: patientData, watchID: watchID }
                     }}>
                       <Button color="primary" style={{ float: "right" }} className="mb-4">
                         Tambah
@@ -576,7 +576,7 @@ const Data = ({ match }) => {
                         <td>
                             <Link to={{
                                 pathname: `/record/form`,
-                                state: { patientID: patientID, patientData: patientData, recordID: data.id }
+                                state: { patientID: patientID, patientData: patientData, recordID: data.id, watchID: watchID }
                             }}>
                               <Button color="secondary" size="xs" style={{ float: "right" }}>
                                 Ubah Data

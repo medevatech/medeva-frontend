@@ -61,35 +61,35 @@ const selectVisitation = [
 
 const selectPrognosa = [
   { label: 'Pilih Prognosa', value: '', key: 0, name: 'prognosa' },
-  { label: 'Sanam (Sembuh)', value: 'Sanam (Sembuh)', key: 0, name: 'prognosa' },
-  { label: 'Bonam (Baik)', value: 'Bonam (Baik)', key: 1, name: 'prognosa' },
-  { label: 'Malam (Buruk/Jelek)', value: 'Malam (Buruk/Jelek)', key: 2, name: 'prognosa' },
-  { label: 'Dubia Ad Sanam/Bonam (Tidak tentu/Ragu-ragu, Cenderung Sembuh/Baik)', value: 'Dubia Ad Sanam/Bonam (Tidak tentu/Ragu-ragu, Cenderung Sembuh/Baik)', key: 3, name: 'prognosa' },
-  { label: 'Dubia Ad Malam (Tidak tentu/Ragu-ragu, Cenderung Buruk/Jelek)', value: 'Dubia Ad Malam (Tidak tentu/Ragu-ragu, Cenderung Buruk/Jelek)', key: 4, name: 'prognosa' },
+  { label: 'Sanam (Sembuh)', value: 'Sanam (Sembuh)', key: 1, name: 'prognosa' },
+  { label: 'Bonam (Baik)', value: 'Bonam (Baik)', key: 2, name: 'prognosa' },
+  { label: 'Malam (Buruk/Jelek)', value: 'Malam (Buruk/Jelek)', key: 3, name: 'prognosa' },
+  { label: 'Dubia Ad Sanam/Bonam (Tidak tentu/Ragu-ragu, Cenderung Sembuh/Baik)', value: 'Dubia Ad Sanam/Bonam (Tidak tentu/Ragu-ragu, Cenderung Sembuh/Baik)', key: 4, name: 'prognosa' },
+  { label: 'Dubia Ad Malam (Tidak tentu/Ragu-ragu, Cenderung Buruk/Jelek)', value: 'Dubia Ad Malam (Tidak tentu/Ragu-ragu, Cenderung Buruk/Jelek)', key: 5, name: 'prognosa' },
 ];
 
 const selectType = [
   { label: 'Pilih Tipe', value: '', key: 0, name: 'tipe' },
-  { label: 'Rawat Jalan', value: 'Rawat Jalan', key: 0, name: 'tipe' },
-  { label: 'Rawat Inap', value: 'Rawat Inap', key: 1, name: 'tipe' },
-  { label: 'Promotif', value: 'Promotif', key: 2, name: 'tipe' },
-  { label: 'Preventif', value: 'Preventif', key: 3, name: 'tipe' }
+  { label: 'Rawat Jalan', value: 'Rawat Jalan', key: 1, name: 'tipe' },
+  { label: 'Rawat Inap', value: 'Rawat Inap', key: 2, name: 'tipe' },
+  { label: 'Promotif', value: 'Promotif', key: 3, name: 'tipe' },
+  { label: 'Preventif', value: 'Preventif', key: 4, name: 'tipe' }
 ];
 
 const selectPcs = [
   { label: 'Pilih Satuan', value: '', key: 0, name: 'satuan' },
-  { label: 'Kapsul', value: 'Kapsul', key: 0, name: 'satuan' },
-  { label: 'Tablet', value: 'Tablet', key: 1, name: 'satuan' },
-  { label: 'Kaplet', value: 'Kaplet', key: 2, name: 'satuan' },
-  { label: 'Puyer', value: 'Puyer', key: 3, name: 'satuan' },
-  { label: 'Mili Liter', value: 'Mili Liter', key: 4, name: 'satuan' },
-  { label: 'Sendok Makan', value: 'Sendok Makan', key: 5, name: 'satuan' },
+  { label: 'Kapsul', value: 'Kapsul', key: 1, name: 'satuan' },
+  { label: 'Tablet', value: 'Tablet', key: 2, name: 'satuan' },
+  { label: 'Kaplet', value: 'Kaplet', key: 3, name: 'satuan' },
+  { label: 'Puyer', value: 'Puyer', key: 4, name: 'satuan' },
+  { label: 'mL (mililiter)', value: 'mL', key: 5, name: 'satuan' },
+  { label: 'Sendok Makan', value: 'Sendok Makan', key: 6, name: 'satuan' },
 ];
 
 const selectPeriod = [
   { label: 'Pilih Frekuensi', value: '', key: 0, name: 'periode' },
-  { label: 'Jam', value: 'Jam', key: 0, name: 'periode' },
-  { label: 'Hari', value: 'Hari', key: 1, name: 'periode' }
+  { label: 'Jam', value: 'Jam', key: 1, name: 'periode' },
+  { label: 'Hari', value: 'Hari', key: 2, name: 'periode' }
 ];
 
 const selectRules = [
@@ -111,6 +111,11 @@ const selectConsume = [
 let selectInspectByLabTreatmentArray = [];
 let selectLabTreatmentArray = [];
 
+let patientID = "";
+let patientData = "";
+let recordID = "";
+let watchID = "";
+
 const FormRecord = ({ match, history }) => {
   const dispatch = useDispatch();
   const location = useLocation();
@@ -123,29 +128,10 @@ const FormRecord = ({ match, history }) => {
   const [dataStatusReference, setDataStatusReference] = useState("add");
   const [dataStatusDiagnoseReference, setDataStatusDiagnoseReference] = useState("add");
 
-  let patientID = "";
-  let patientData = "";
-  // var recordID = "";
-  const [recordID, setRecordID] = useState("");
-
-  if (location.state) {
-    patientID = location.state.patientID;
-    patientData = location.state.patientData;
-
-    if (location.state.recordID) {
-      // recordID = location.state.recordID;
-      setRecordID(location.state.recordID);
-    }
-  } else {
-    Swal.fire({
-        title: "Gagal!",
-        html: `Data pasien tidak ditemukan`,
-        icon: "error",
-        confirmButtonColor: "#008ecc",
-    });
-
-    history.push("/record");
-  }
+  // const [patientID, setPatientID] = useState("");
+  // const [patientData, setPatientData] = useState("");
+  // const [recordID, setRecordID] = useState("");
+  // const [watchID, setWatchID] = useState('');
 
   const [startDateTime, setStartDateTime] = useState(new Date());
   const [endDateTime, setEndDateTime] = useState(new Date());
@@ -155,7 +141,6 @@ const FormRecord = ({ match, history }) => {
   const [referenceSubmit, setReferenceSubmit] = useState('');
 
   const [vitalSignsID, setVitalSignsID] = useState('');
-  const [watchID, setWatchID] = useState('');
   const [referenceID, setReferenceID] = useState('');
 
   const [ vitalSigns, setVitalSigns ] = useState({
@@ -569,6 +554,8 @@ const FormRecord = ({ match, history }) => {
 
     setRecordSubmit("process");
     record.id_vs = vitalSignsID;
+    record.id_pasien = patientID;
+    record.id_jaga = watchID;
 
     // console.log(record);
     if(dataStatusRecord === 'add') {
@@ -587,7 +574,8 @@ const FormRecord = ({ match, history }) => {
             confirmButtonColor: "#008ecc",
           });
 
-          setRecordID(data.id);
+          // setRecordID(data.id);
+          recordID = data.id;
         } else {
           Swal.fire({
             title: "Gagal!",
@@ -626,7 +614,8 @@ const FormRecord = ({ match, history }) => {
             confirmButtonColor: "#008ecc",
           });
 
-          setRecordID(recordID);
+          // setRecordID(recordID);
+          recordID = recordID;
         } else {
           Swal.fire({
             title: "Gagal!",
@@ -650,17 +639,22 @@ const FormRecord = ({ match, history }) => {
         console.log(e);
       }
     } else {
-      console.log('dataStatusRecord undefined')
+      console.log('dataStatusRecord undefined');
     }
 
     setRecordSubmit("done");
 
-    if (recordSubmit === "done" && recordID) {
-      if(reference.id_poli !== "" || reference.id_rs !== "" || reference.anamnesis !== "" || reference.terapi !== "" || reference.catatan !== "" && recordID) {
-        console.log('reference', reference);
-        onReferenceSubmit();
-      }
-    }
+    // setTimeout(() => {
+      // console.log('recordSubmit', recordSubmit);
+      // console.log('recordID', recordID);
+
+      // if (recordID) {
+        if(reference.id_poli !== "" && recordID) {
+          // console.log('reference', reference);
+          onReferenceSubmit();
+        }
+      // }
+    // }, 1000);
   };
 
   const onDiagnosisSubmit = async (e) => {
@@ -1138,6 +1132,7 @@ const FormRecord = ({ match, history }) => {
     // e.preventDefault();
 
     setReferenceSubmit("process");
+    reference.id_kunjungan = recordID;
 
     // console.log(reference);
     if(dataStatusReference === 'add') {
@@ -1157,6 +1152,10 @@ const FormRecord = ({ match, history }) => {
             icon: "success",
             confirmButtonColor: "#008ecc",
           });
+          
+          if(diagnoseReference.length > 0){
+            onDiagnoseReferenceSubmit(data.id);
+          }
         } else {
           Swal.fire({
             title: "Gagal!",
@@ -1197,6 +1196,9 @@ const FormRecord = ({ match, history }) => {
             confirmButtonColor: "#008ecc",
           });
           
+          if(diagnoseReference.length > 0){
+            onDiagnoseReferenceSubmit(reference.id);
+          }
         } else {
           Swal.fire({
             title: "Gagal!",
@@ -1222,24 +1224,30 @@ const FormRecord = ({ match, history }) => {
     } else {
       console.log('dataStatusRecord undefined')
     }
+    
+    // setTimeout(() => {
+      // console.log('referenceSubmit', referenceSubmit);
+      // console.log('referenceID', referenceID);
+
+      // if (referenceID) {
+        // setTimeout(() => {
+          // if(diagnoseReference.length > 0 && referenceID) {
+            // console.log('diagnoseReference', diagnoseReference);
+            // onDiagnoseReferenceSubmit();
+          // }
+        // }, 2000)
+      // }
+    // }, 1000);
 
     setReferenceSubmit("done");
-    
-    if (referenceSubmit === "done" && referenceID) {
-      setTimeout(() => {
-        if(diagnoseReference.length > 0 && referenceID) {
-          console.log('diagnoseReference', diagnoseReference);
-          onDiagnoseReferenceSubmit();
-        }
-      }, 2000)
-    }
+    setRecordSubmit("idle");
   };
 
-  const onDiagnoseReferenceSubmit = async (e) => {
+  const onDiagnoseReferenceSubmit = async (id_rujukan) => {
     // e.preventDefault();
 
-    for (var i = 0; i < service.length; i++) {
-      diagnoseReference[i].id_rujukan = referenceID;
+    for (var i = 0; i < diagnoseReference.length; i++) {
+      diagnoseReference[i].id_rujukan = id_rujukan;
 
       if(diagnoseReference[i].id !== '' && diagnoseReference[i].id_penyakit !== tempDiagnoseReference[i].id_penyakit ||
         diagnoseReference[i].id !== '' && diagnoseReference[i].tipe_wd !== tempDiagnoseReference[i].tipe_wd ||
@@ -1262,14 +1270,14 @@ const FormRecord = ({ match, history }) => {
 
         Swal.fire({
           title: "Sukses!",
-          html: `Tambah diagnosis rujukan sukses`,
+          html: `Tambah diagnosa rujukan sukses`,
           icon: "success",
           confirmButtonColor: "#008ecc",
         });
       } else {
         Swal.fire({
           title: "Gagal!",
-          html: `Tambah diagnosis rujukan gagal: ${response.message}`,
+          html: `Tambah diagnosa rujukan gagal: ${response.message}`,
           icon: "error",
           confirmButtonColor: "#008ecc",
           confirmButtonText: "Coba lagi",
@@ -1301,14 +1309,14 @@ const FormRecord = ({ match, history }) => {
 
         Swal.fire({
           title: "Sukses!",
-          html: `Ubah diagnosis rujukan sukses`,
+          html: `Ubah diagnosa rujukan sukses`,
           icon: "success",
           confirmButtonColor: "#008ecc",
         });
       } else {
         Swal.fire({
           title: "Gagal!",
-          html: `Ubah diagnosis rujukan gagal`,
+          html: `Ubah diagnosa rujukan gagal`,
           icon: "error",
           confirmButtonColor: "#008ecc",
           confirmButtonText: "Coba lagi",
@@ -1631,8 +1639,6 @@ const FormRecord = ({ match, history }) => {
       created_at: ''
     });
 
-    setWatchID(data.id_jaga);
-
     // console.log('patientID', patientID);
     // console.log('patientData', patientData);
 
@@ -1693,7 +1699,58 @@ const FormRecord = ({ match, history }) => {
         catatan_tambahan: data.catatan_tambahan ? data.catatan_tambahan : "",
       });
 
-      setRecordID(data.id);
+      // setRecordID(data.id);
+      recordID = data.id;
+
+      if (data.kasus_kll === true) {
+        setIsChecked(true);
+      } else {
+        setIsChecked(false);
+      }
+
+      // console.log(record);
+    } catch (e) {
+      console.log(e);
+    } finally {
+      if(recordID && recordSubmit === ""){
+        getDiagnoseByRecordId(recordID);
+        getRecieptByRecordId(recordID);
+        getCheckupByRecordId(recordID);
+        getTreatmentByRecordId(recordID);
+        getServiceByRecordId(recordID);
+        getReferenceByRecordId(recordID);
+      }
+    }
+
+    // console.log(dataStatusRecord);
+  };
+
+  const getRecordById = async (id) => {
+    setDataStatusRecord("update");  
+
+    let data = null;
+
+    try {
+      const res = await recordAPI.get("", `/${id}`);
+      data = res.data.data[0];
+
+      // console.log(data);
+
+      setRecord({
+        id_jaga: data.id_jaga,
+        id_vs: vitalSignsID,
+        id_pasien: patientID,
+        waktu_mulai: data.waktu_mulai,
+        waktu_selesai: data.waktu_selesai,
+        tipe: data.tipe,
+        anamnesis: data.anamnesis,
+        pemeriksaan_fisik: data.pemeriksaan_fisik,
+        prognosa: data.prognosa,
+        kasus_kll: data.kasus_kll,
+        status_pulang: data.status_pulang,
+        keluhan: data.keluhan,
+        catatan_tambahan: data.catatan_tambahan ? data.catatan_tambahan : "",
+      });
 
       if (data.kasus_kll === true) {
         setIsChecked(true);
@@ -1886,7 +1943,7 @@ const FormRecord = ({ match, history }) => {
     let data = null;
 
     try {
-      const res = await referenceAPI.get("", `/${id}`);
+      const res = await referenceAPI.getByRecord("", `/${id}`);
       data = res.data.data[0];
 
       // console.log(data);
@@ -1907,13 +1964,13 @@ const FormRecord = ({ match, history }) => {
     } catch (e) {
       console.log(e);
     } finally {
-      data && getDiagnoseReferenceByPatientId(data.id);
+      data && getDiagnoseReferenceByReferenceId(data.id);
     }
 
     // console.log(dataStatusRecord);
   };
 
-  const getDiagnoseReferenceByPatientId = async (id) => {
+  const getDiagnoseReferenceByReferenceId = async (id) => {
     setDiagnoseReference([]);
     setTempDiagnoseReference([]);
 
@@ -1946,6 +2003,38 @@ const FormRecord = ({ match, history }) => {
   };
 
   useEffect(() => {
+    if (location.state) {
+      // setPatientID(location.state.patientID);
+      // setPatientData(location.state.patientData);
+      // setWatchID(location.state.watchID);
+  
+      // if (location.state.recordID) {
+      //   setRecordID(location.state.recordID);
+      // }
+
+      patientID = location.state.patientID;
+      patientData = location.state.patientData;
+      watchID = location.state.watchID;
+
+      if (location.state.recordID) {
+        recordID = location.state.recordID;
+      }
+
+      // console.log('recordID', recordID);
+      // console.log('patientID', patientID);
+      // console.log('patientData', patientData);
+      // console.log('watchID', watchID);
+    } else {
+      Swal.fire({
+          title: "Gagal!",
+          html: `Data pasien tidak ditemukan`,
+          icon: "error",
+          confirmButtonColor: "#008ecc",
+      });
+  
+      history.push("/record");
+    }
+
     onLoadPenyakit();
     onLoadObat();
     onLoadLab();
@@ -1955,44 +2044,48 @@ const FormRecord = ({ match, history }) => {
     onLoadRSRujukan();
 
     getVitalSignsByPatientId(patientID, patientData);
-    getRecordByPatientId(patientID);
+    // getRecordByPatientId(patientID);
+    if (recordID) {
+      getRecordById(recordID);
+    }
 
     if (recordSubmit === "done" && recordID) {
       setTimeout(() => {
 
         if(diagnosis.length > 0 && recordID) {
-          console.log('diagnosis', diagnosis);
+          // console.log('diagnosis', diagnosis);
           onDiagnosisSubmit();
         }
         
         if(reciept.length > 0 && recordID) {
-          console.log('reciept', reciept);
+          // console.log('reciept', reciept);
           onRecieptSubmit();
         }
 
         if(checkup.length > 0 && recordID) {
-          console.log('checkup', checkup);
+          // console.log('checkup', checkup);
           onCheckupSubmit();
         }
         
         if(treatment.length > 0 && recordID) {
-          console.log('treatment', treatment);
+          // console.log('treatment', treatment);
           onTreatmentSubmit();
         }
         
         if(service.length > 0 && recordID) {
-          console.log('service', service);
+          // console.log('service', service);
           onServiceSubmit();
         }
 
         setTimeout(() => {
-          setRecordSubmit("idle");
-          // resetForm(e);
-          // history.push("/record");
+          if (recordSubmit === "idle") {
+            // resetForm(e);
+            // history.push("/record");
+          }
         }, 5000)
       }, 3000);
     }
-  }, [ recordSubmit, referenceSubmit ]);
+  }, [ recordSubmit ]);
 
   const onDeleteRecordDiagnose = async (id) => {
     try {
@@ -2204,14 +2297,14 @@ const FormRecord = ({ match, history }) => {
 
         Swal.fire({
           title: "Sukses!",
-          html: `Hapus diagnosis rujukan sukses`,
+          html: `Hapus diagnosa rujukan sukses`,
           icon: "success",
           confirmButtonColor: "#008ecc",
         });
       } else {
         Swal.fire({
           title: "Gagal!",
-          html: `Hapus diagnosis rujukan gagal: ${response.message}`,
+          html: `Hapus diagnosa rujukan gagal: ${response.message}`,
           icon: "error",
           confirmButtonColor: "#008ecc",
           confirmButtonText: "Coba lagi",
@@ -3095,7 +3188,7 @@ const FormRecord = ({ match, history }) => {
                             // className="mb-2"
                             onClick={addDiagnoseReferenceFields}
                           >
-                            Tambah Diagnosis Rujukan
+                            Tambah diagnosa rujukan
                           </Button>
                         </FormGroup>
                       </Colxx>
@@ -3103,8 +3196,7 @@ const FormRecord = ({ match, history }) => {
                       <Colxx sm={6} md={6} xl={6}>
                           <FormGroup>
                               <Label for="id_poli">
-                                  Poli / Divisi
-                                  {/* <span className="required text-danger" aria-required="true"> *</span> */}
+                                  Poli / Divisi<span className="required text-danger" aria-required="true"> *</span>
                               </Label>
                               <Select
                                   components={{ Input: CustomSelectInput }}
