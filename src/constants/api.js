@@ -55,7 +55,7 @@ const api = {
   },
   diagnose: {
     all: '/diagnosis',
-    record: '/diagnosis/kunjugan',
+    record: '/diagnosis/kunjungan',
   },
   reciept: {
     all: 'resep',

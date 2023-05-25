@@ -53,12 +53,14 @@ import loader from '../../assets/img/loading.gif';
 const userData = JSON.parse(localStorage.getItem('user_data'));
 
 const selectVisitation = [
-  { label: 'Meninggal', value: 'Meninggal', key: 0, name: 'status_pulang' },
-  { label: 'Berobat Jalan', value: 'Berobat Jalan', key: 1, name: 'status_pulang' },
-  { label: 'Rujuk', value: 'Rujuk', key: 2, name: 'status_pulang' }
+  { label: 'Pilih Status Pulang', value: '', key: 0, name: 'status_pulang' },
+  { label: 'Meninggal', value: 'Meninggal', key: 1, name: 'status_pulang' },
+  { label: 'Berobat Jalan', value: 'Berobat Jalan', key: 2, name: 'status_pulang' },
+  { label: 'Rujuk', value: 'Rujuk', key: 3, name: 'status_pulang' }
 ];
 
 const selectPrognosa = [
+  { label: 'Pilih Prognosa', value: '', key: 0, name: 'prognosa' },
   { label: 'Sanam (Sembuh)', value: 'Sanam (Sembuh)', key: 0, name: 'prognosa' },
   { label: 'Bonam (Baik)', value: 'Bonam (Baik)', key: 1, name: 'prognosa' },
   { label: 'Malam (Buruk/Jelek)', value: 'Malam (Buruk/Jelek)', key: 2, name: 'prognosa' },
@@ -67,6 +69,7 @@ const selectPrognosa = [
 ];
 
 const selectType = [
+  { label: 'Pilih Tipe', value: '', key: 0, name: 'tipe' },
   { label: 'Rawat Jalan', value: 'Rawat Jalan', key: 0, name: 'tipe' },
   { label: 'Rawat Inap', value: 'Rawat Inap', key: 1, name: 'tipe' },
   { label: 'Promotif', value: 'Promotif', key: 2, name: 'tipe' },
@@ -74,6 +77,7 @@ const selectType = [
 ];
 
 const selectPcs = [
+  { label: 'Pilih Satuan', value: '', key: 0, name: 'satuan' },
   { label: 'Kapsul', value: 'Kapsul', key: 0, name: 'satuan' },
   { label: 'Tablet', value: 'Tablet', key: 1, name: 'satuan' },
   { label: 'Kaplet', value: 'Kaplet', key: 2, name: 'satuan' },
@@ -83,22 +87,25 @@ const selectPcs = [
 ];
 
 const selectPeriod = [
+  { label: 'Pilih Frekuensi', value: '', key: 0, name: 'periode' },
   { label: 'Jam', value: 'Jam', key: 0, name: 'periode' },
   { label: 'Hari', value: 'Hari', key: 1, name: 'periode' }
 ];
 
 const selectRules = [
-  { label: 'Sebelum Makan', value: 'Sebelum Makan', key: 0, name: 'aturan_pakai' },
-  { label: 'Setelah Makan', value: 'Setelah Makan', key: 1, name: 'aturan_pakai' },
-  { label: 'Kapan Saja', value: 'Kapan Saja', key: 2, name: 'aturan_pakai' }
+  { label: 'Pilih Aturan Pakai', value: '', key: 0, name: 'aturan_pakai' },
+  { label: 'Sebelum Makan', value: 'Sebelum Makan', key: 1, name: 'aturan_pakai' },
+  { label: 'Setelah Makan', value: 'Setelah Makan', key: 2, name: 'aturan_pakai' },
+  { label: 'Kapan Saja', value: 'Kapan Saja', key: 3, name: 'aturan_pakai' }
 ];
 
 const selectConsume = [
-  { label: 'Dikunyah', value: 'Dikunyah', key: 0, name: 'metode_konsumsi' },
-  { label: 'Ditelan', value: 'Ditelan', key: 1, name: 'metode_konsumsi' },
-  { label: 'Disuntik', value: 'Disuntik', key: 2, name: 'metode_konsumsi' },
-  { label: 'Dihirup', value: 'Dihirup', key: 3, name: 'metode_konsumsi' },
-  { label: 'Lainnya', value: 'Lainnya', key: 4, name: 'metode_konsumsi' }
+  { label: 'Pilih Metode Konsumsi', value: '', key: 0, name: 'metode_konsumsi' },
+  { label: 'Dikunyah', value: 'Dikunyah', key: 1, name: 'metode_konsumsi' },
+  { label: 'Ditelan', value: 'Ditelan', key: 2, name: 'metode_konsumsi' },
+  { label: 'Disuntik', value: 'Disuntik', key: 3, name: 'metode_konsumsi' },
+  { label: 'Dihirup', value: 'Dihirup', key: 4, name: 'metode_konsumsi' },
+  { label: 'Lainnya', value: 'Lainnya', key: 5, name: 'metode_konsumsi' }
 ];
 
 let selectInspectByLabTreatmentArray = [];
@@ -118,14 +125,16 @@ const FormRecord = ({ match, history }) => {
 
   let patientID = "";
   let patientData = "";
-  let recordID = "";
+  // var recordID = "";
+  const [recordID, setRecordID] = useState("");
 
   if (location.state) {
     patientID = location.state.patientID;
     patientData = location.state.patientData;
 
     if (location.state.recordID) {
-      recordID = location.state.recordID;
+      // recordID = location.state.recordID;
+      setRecordID(location.state.recordID);
     }
   } else {
     Swal.fire({
@@ -168,7 +177,7 @@ const FormRecord = ({ match, history }) => {
 
   const [ record, setRecord ] = useState({
     id_jaga: watchID,
-    id_vs: '',
+    id_vs: vitalSignsID,
     id_pasien: patientID,
     waktu_mulai: startDateTime,
     waktu_selesai: endDateTime,
@@ -243,18 +252,28 @@ const FormRecord = ({ match, history }) => {
   const addDiagnosisFields = () => {
     let newfieldDiagnosis = { id: '', id_kunjungan: recordID, id_penyakit: "", tipe_wd: false, tipe_dd: false };
     setDiagnosis([...diagnosis, newfieldDiagnosis]);
+
+    let newfieldDiagnoseReference = { id: '', id_kunjungan: recordID, id_penyakit: "", tipe_wd: false, tipe_dd: false };
+    setDiagnoseReference([...diagnoseReference, newfieldDiagnoseReference]);
   };
 
   const removeDiagnosisFields = (id, index) => {
     let dataDiagnosis = [...diagnosis];
+    let dataDiagnoseReference = [...diagnoseReference];
 
     dataDiagnosis.splice(index, 1);
+    dataDiagnoseReference.splice(index, 1);
 
     setDiagnosis(dataDiagnosis);
+    setDiagnoseReference(dataDiagnoseReference);
 
     if(dataStatusDiagnose === "update"){
       setTempDiagnosis(dataDiagnosis);
       onDeleteRecordDiagnose(id);
+    }
+    if(dataStatusDiagnoseReference === "update"){
+      setTempDiagnoseReference(dataDiagnoseReference);
+      onDeleteDiagnoseReference(id);
     }
   };
 
@@ -264,31 +283,41 @@ const FormRecord = ({ match, history }) => {
     // console.log('handleDiagnosisChange', event);
 
     let dataDiagnosis = [...diagnosis];
+    let dataDiagnoseReference = [...diagnoseReference];
 
     if (event.name === "id_penyakit"){
       dataDiagnosis[index][event.name] = event.value;
+      dataDiagnoseReference[index][event.name] = event.value;
     } else if(event.target.name === "tipe_diagnosis") {
       if(event.target.id === 'tipe_wd' && event.target.checked === true) {
         wd = true;
+        wd_rujukan = true;
       } else if(event.target.id === 'tipe_wd' && event.target.checked === false) {
         wd = false;
+        wd_rujukan = false;
       }
       
       if(event.target.id === 'tipe_dd' && event.target.checked === true) {
         dd = true;
+        dd_rujukan = true;
       } else if(event.target.id === 'tipe_wd' && event.target.checked === false) {
         dd = false;
+        dd_rujukan = false;
       }
 
       if(dataDiagnosis[index]['id_penyakit'] === '') {
         wd = false; dd = false;
+        wd_rujukan = false; dd_rujukan = false;
       }
 
       dataDiagnosis[index]['tipe_wd'] = wd;
       dataDiagnosis[index]['tipe_dd'] = dd;
+      dataDiagnoseReference[index]['tipe_wd'] = wd_rujukan;
+      dataDiagnoseReference[index]['tipe_dd'] = dd_rujukan;
     }
 
     setDiagnosis(dataDiagnosis);
+    setDiagnoseReference(dataDiagnoseReference);
   };
 
   const [reciept, setReciept] = useState([
@@ -505,7 +534,7 @@ const FormRecord = ({ match, history }) => {
       }
 
       if(dataDiagnoseReference[index]['id_penyakit'] === '') {
-        wd = false; dd = false;
+        wd_rujukan = false; dd_rujukan = false;
       }
 
       dataDiagnoseReference[index]['tipe_wd'] = wd_rujukan;
@@ -522,7 +551,7 @@ const FormRecord = ({ match, history }) => {
       setReference(current => {
           return { ...current, id_poli: e.value }
       })
-    } else  if (e.name === 'id_rs') {
+    } else if (e.name === 'id_rs') {
       setReference(current => {
           return { ...current, id_rs: e.value }
       })
@@ -539,6 +568,7 @@ const FormRecord = ({ match, history }) => {
     // e.preventDefault();
 
     setRecordSubmit("process");
+    record.id_vs = vitalSignsID;
 
     // console.log(record);
     if(dataStatusRecord === 'add') {
@@ -550,14 +580,14 @@ const FormRecord = ({ match, history }) => {
           let data = await response.data.data;
           // console.log(data);
 
-          recordID = data.id;
-
           Swal.fire({
             title: "Sukses!",
             html: `Tambah rekam medis sukses`,
             icon: "success",
             confirmButtonColor: "#008ecc",
           });
+
+          setRecordID(data.id);
         } else {
           Swal.fire({
             title: "Gagal!",
@@ -589,14 +619,14 @@ const FormRecord = ({ match, history }) => {
           let data = await response.data.data;
           // console.log(data);
 
-          recordID = recordID;
-
           Swal.fire({
             title: "Sukses!",
             html: `Ubah rekam medis sukses`,
             icon: "success",
             confirmButtonColor: "#008ecc",
           });
+
+          setRecordID(recordID);
         } else {
           Swal.fire({
             title: "Gagal!",
@@ -624,6 +654,13 @@ const FormRecord = ({ match, history }) => {
     }
 
     setRecordSubmit("done");
+
+    if (recordSubmit === "done" && recordID) {
+      if(reference.id_poli !== "" || reference.id_rs !== "" || reference.anamnesis !== "" || reference.terapi !== "" || reference.catatan !== "" && recordID) {
+        console.log('reference', reference);
+        onReferenceSubmit();
+      }
+    }
   };
 
   const onDiagnosisSubmit = async (e) => {
@@ -636,7 +673,7 @@ const FormRecord = ({ match, history }) => {
           diagnosis[i].id !== '' && diagnosis[i].tipe_wd !== tempDiagnosis[i].tipe_wd ||
           diagnosis[i].id !== '' && diagnosis[i].tipe_dd !== tempDiagnosis[i].tipe_dd) {
         onDiagnoseEdit(diagnosis[i]);
-      } else if(allergy[i].id === '') {
+      } else if(diagnosis[i].id === '') {
         onDiagnoseAdd(diagnosis[i]);
       }
     }
@@ -734,7 +771,7 @@ const FormRecord = ({ match, history }) => {
           reciept[i].id !== '' && reciept[i].aturan_pakai !== tempReciept[i].aturan_pakai ||
           reciept[i].id !== '' && reciept[i].metode_konsumsi !== tempReciept[i].metode_konsumsi) {
         onRecieptEdit(reciept[i]);
-      } else if(allergy[i].id === '') {
+      } else if(reciept[i].id === '') {
         onRecieptAdd(reciept[i]);
       }
     }
@@ -827,7 +864,7 @@ const FormRecord = ({ match, history }) => {
       if(checkup[i].id !== '' && checkup[i].id_lab !== tempCheckup[i].id_lab ||
           checkup[i].id !== '' && checkup[i].id_pemeriksaan !== tempCheckup[i].id_pemeriksaan) {
         onCheckupEdit(checkup[i]);
-      } else if(allergy[i].id === '') {
+      } else if(checkup[i].id === '') {
         onCheckupAdd(checkup[i]);
       }
     }
@@ -920,7 +957,7 @@ const FormRecord = ({ match, history }) => {
       if(treatment[i].id !== '' && treatment[i].id_daftar_tindakan !== tempTreatment[i].id_daftar_tindakan ||
         treatment[i].id !== '' && treatment[i].catatan !== tempTreatment[i].catatan) {
         onTreatmentEdit(treatment[i]);
-      } else if(allergy[i].id === '') {
+      } else if(treatment[i].id === '') {
         onTreatmentAdd(treatment[i]);
       }
     }
@@ -1013,7 +1050,7 @@ const FormRecord = ({ match, history }) => {
       if(service[i].id !== '' && service[i].id_daftar_layanan !== tempService[i].id_daftar_layanan ||
         service[i].id !== '' && service[i].catatan !== tempService[i].catatan) {
         onServiceEdit(service[i]);
-      } else if(allergy[i].id === '') {
+      } else if(service[i].id === '') {
         onServiceAdd(service[i]);
       }
     }
@@ -1187,6 +1224,15 @@ const FormRecord = ({ match, history }) => {
     }
 
     setReferenceSubmit("done");
+    
+    if (referenceSubmit === "done" && referenceID) {
+      setTimeout(() => {
+        if(diagnoseReference.length > 0 && referenceID) {
+          console.log('diagnoseReference', diagnoseReference);
+          onDiagnoseReferenceSubmit();
+        }
+      }, 2000)
+    }
   };
 
   const onDiagnoseReferenceSubmit = async (e) => {
@@ -1199,7 +1245,7 @@ const FormRecord = ({ match, history }) => {
         diagnoseReference[i].id !== '' && diagnoseReference[i].tipe_wd !== tempDiagnoseReference[i].tipe_wd ||
         diagnoseReference[i].id !== '' && diagnoseReference[i].tipe_dd !== tempDiagnoseReference[i].tipe_dd) {
         onDiagnosisReferenceEdit(diagnoseReference[i]);
-      } else if(allergy[i].id === '') {
+      } else if(diagnoseReference[i].id === '') {
         onDiagnosisReferenceAdd(diagnoseReference[i]);
       }
     }
@@ -1288,7 +1334,7 @@ const FormRecord = ({ match, history }) => {
 
     setRecord({
       id_jaga: watchID,
-      id_vs: '',
+      id_vs: vitalSignsID,
       id_pasien: patientID,
       waktu_mulai: startDateTime,
       // waktu_selesai: endDateTime,
@@ -1377,7 +1423,7 @@ const FormRecord = ({ match, history }) => {
       const response = await labAPI.get("", "?limit=1000");
       // console.log(response);
 
-      setSelectLab([{ label: "Pilih Laboratorim" , value: "", key: 0, name: 'id_lab' }]);
+      setSelectLab([{ label: "Pilih Laboratorium" , value: "", key: 0, name: 'id_lab' }]);
 
       if (response.status === 200) {
         let data = response.data.data;
@@ -1401,10 +1447,6 @@ const FormRecord = ({ match, history }) => {
     try {
       const response = await labTreatmentAPI.get("", `?limit=1000&searchLaboratorium=${id_lab}&searchKategori=${kategori}`);
       // console.log(response);
-
-      selectInspectByLabTreatmentArray.push({
-        label: "Pilih Pemeriksaan Laboratorium", value: "", key: 0, name: 'id_pemeriksaan'
-      });
 
       if (response.status === 200) {
         let data = response.data.data;
@@ -1595,11 +1637,9 @@ const FormRecord = ({ match, history }) => {
     // console.log('patientData', patientData);
 
     try {
-      const res = await vitalSignsAPI.getByPatient("", `/${id}`);
+      const res = await vitalSignsAPI.getByPatient("", `/${id}?tanggal=${moment(new Date()).format("YYYY-MM-DD")}`);
       let data = res.data.data[0];
       // console.log('vitalSigns', data);
-
-      setVitalSignsID(data.id);
 
       setVitalSigns({
         id_pasien: data.id_pasien,
@@ -1618,6 +1658,8 @@ const FormRecord = ({ match, history }) => {
         created_at: data.created_at
       });
 
+      setVitalSignsID(data.id);
+
       // console.log(vitalSigns);
     } catch (e) {
       console.log(e);
@@ -1630,14 +1672,14 @@ const FormRecord = ({ match, history }) => {
     let data = null;
 
     try {
-      const res = await recordAPI.get("", `/${id}`);
+      const res = await recordAPI.getByPatient("", `/${id}`);
       data = res.data.data[0];
 
       // console.log(data);
 
       setRecord({
         id_jaga: data.id_jaga,
-        id_vs: data.id_vs,
+        id_vs: vitalSignsID,
         id_pasien: patientID,
         waktu_mulai: data.waktu_mulai,
         waktu_selesai: data.waktu_selesai,
@@ -1648,8 +1690,10 @@ const FormRecord = ({ match, history }) => {
         kasus_kll: data.kasus_kll,
         status_pulang: data.status_pulang,
         keluhan: data.keluhan,
-        catatan_tambahan: data.catatan_tambahan,
+        catatan_tambahan: data.catatan_tambahan ? data.catatan_tambahan : "",
       });
+
+      setRecordID(data.id);
 
       if (data.kasus_kll === true) {
         setIsChecked(true);
@@ -1660,6 +1704,15 @@ const FormRecord = ({ match, history }) => {
       // console.log(record);
     } catch (e) {
       console.log(e);
+    } finally {
+      if(recordID && recordSubmit === ""){
+        getDiagnoseByRecordId(recordID);
+        getRecieptByRecordId(recordID);
+        getCheckupByRecordId(recordID);
+        getTreatmentByRecordId(recordID);
+        getServiceByRecordId(recordID);
+        getReferenceByRecordId(recordID);
+      }
     }
 
     // console.log(dataStatusRecord);
@@ -1775,11 +1828,11 @@ const FormRecord = ({ match, history }) => {
       if(data) {
         data.map((data, index) => {
           setTreatment((current) => [
-            ...current, { id: data.id, id_kunjungan: data.id_kunjungan, id_daftar_tindakan: data.id_daftar_tindakan, catatan: data.catatan }
+            ...current, { id: data.id, id_kunjungan: data.id_kunjungan, id_daftar_tindakan: data.id_daftar_tindakan, catatan: data.catatan ? data.catatan : "" }
           ]);
 
           setTempTreatment((current) => [
-            ...current, { id: data.id, id_kunjungan: data.id_kunjungan, id_daftar_tindakan: data.id_daftar_tindakan, catatan: data.catatan }
+            ...current, { id: data.id, id_kunjungan: data.id_kunjungan, id_daftar_tindakan: data.id_daftar_tindakan, catatan: data.catatan ? data.catatan : "" }
           ]);
         })
       }
@@ -1807,11 +1860,11 @@ const FormRecord = ({ match, history }) => {
       if(data) {
         data.map((data, index) => {
           setService((current) => [
-            ...current, { id: data.id, id_kunjungan: data.id_kunjungan, id_daftar_layanan: data.id_daftar_layanan, catatan: data.catatan }
+            ...current, { id: data.id, id_kunjungan: data.id_kunjungan, id_daftar_layanan: data.id_daftar_layanan, catatan: data.catatan ? data.catatan : "" }
           ]);
 
           setTempService((current) => [
-            ...current, { id: data.id, id_kunjungan: data.id_kunjungan, id_daftar_layanan: data.id_daftar_layanan, catatan: data.catatan }
+            ...current, { id: data.id, id_kunjungan: data.id_kunjungan, id_daftar_layanan: data.id_daftar_layanan, catatan: data.catatan ? data.catatan : "" }
           ]);
         })
       }
@@ -1847,14 +1900,14 @@ const FormRecord = ({ match, history }) => {
         id_rs: data.id_rs,
         anamnesis: data.anamnesis,
         terapi: data.terapi,
-        catatan: data.catatan
+        catatan: data.catatan ? data.catatan : ""
       });
 
       // console.log(record);
     } catch (e) {
       console.log(e);
     } finally {
-      getDiagnoseReferenceByPatientId(data.id);
+      data && getDiagnoseReferenceByPatientId(data.id);
     }
 
     // console.log(dataStatusRecord);
@@ -1902,57 +1955,42 @@ const FormRecord = ({ match, history }) => {
     onLoadRSRujukan();
 
     getVitalSignsByPatientId(patientID, patientData);
-    
-    if(recordID){
-      getRecordByPatientId(recordID);
-      getDiagnoseByRecordId(recordID);
-      getRecieptByRecordId(recordID);
-      getCheckupByRecordId(recordID);
-      getTreatmentByRecordId(recordID);
-      getServiceByRecordId(recordID);
-      getReferenceByRecordId(recordID);
-    }
+    getRecordByPatientId(patientID);
 
-    if (recordSubmit === "done") {
+    if (recordSubmit === "done" && recordID) {
       setTimeout(() => {
 
         if(diagnosis.length > 0 && recordID) {
+          console.log('diagnosis', diagnosis);
           onDiagnosisSubmit();
         }
         
         if(reciept.length > 0 && recordID) {
+          console.log('reciept', reciept);
           onRecieptSubmit();
         }
 
         if(checkup.length > 0 && recordID) {
+          console.log('checkup', checkup);
           onCheckupSubmit();
         }
         
         if(treatment.length > 0 && recordID) {
+          console.log('treatment', treatment);
           onTreatmentSubmit();
         }
         
         if(service.length > 0 && recordID) {
+          console.log('service', service);
           onServiceSubmit();
-        }
-        
-        if(reference.length > 0 && recordID) {
-          onReferenceSubmit();
-        }
-
-        if (referenceSubmit === "done") {
-          setTimeout(() => {
-            if(diagnoseReference.length > 0 && referenceID) {
-              onDiagnoseReferenceSubmit();
-            }
-          }, 2000)
         }
 
         setTimeout(() => {
+          setRecordSubmit("idle");
           // resetForm(e);
           // history.push("/record");
         }, 5000)
-      }, 1000);
+      }, 3000);
     }
   }, [ recordSubmit, referenceSubmit ]);
 
@@ -3088,8 +3126,8 @@ const FormRecord = ({ match, history }) => {
                                   components={{ Input: CustomSelectInput }}
                                   className="react-select"
                                   classNamePrefix="react-select"
-                                  name="id_poli"
-                                  value={selectHospitalReference.find(item => item.value === reference.id_poli) || ''}
+                                  name="id_rs"
+                                  value={selectHospitalReference.find(item => item.value === reference.id_rs) || ''}
                                   options={selectHospitalReference}
                                   onChange={(event) => handleReferenceChange(event)}
                               />

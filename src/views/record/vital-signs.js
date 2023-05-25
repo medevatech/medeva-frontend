@@ -277,7 +277,7 @@ const VitalSigns = ({ match }) => {
     setPatientData(data);
 
     try {
-      const res = await vitalSignsAPI.getByPatient("", `/${id}`);
+      const res = await vitalSignsAPI.getByPatient("", `/${id}?tanggal=${moment(new Date()).format("YYYY-MM-DD")}`);
       let data = res.data.data[0];
 
       // console.log(data);
