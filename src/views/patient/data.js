@@ -1577,7 +1577,7 @@ const Data = ({ match }) => {
         </Colxx>
 
         <Colxx sm="12" md="12" xl="8" className="mb-4 manage-form" id="manage-form-tab-mobile">
-          <Card className="mb-8">
+          <Card className="mb-4">
             <CardBody>
               <CardTitle>
                 <Row>

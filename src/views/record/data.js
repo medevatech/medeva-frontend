@@ -213,7 +213,7 @@ const Data = ({ match }) => {
   const getVitalSignsByPatientId = async (e, id, data) => {
     // e.preventDefault();
     // resetForm(e);
-    setRowSelected(id);
+    setRowSelected(data.id);
 
     setVitalSigns({
       id_pasien: patientID,
@@ -240,7 +240,7 @@ const Data = ({ match }) => {
     // console.log('patientData', data);
 
     try {
-      const res = await vitalSignsAPI.getByPatient("", `/${id}?tanggal=${moment(new Date()).format("YYYY-MM-DD")}`);
+      const res = await vitalSignsAPI.getByPatient("", `/${id}`);
       let data = res.data.data[0];
       // console.log('vitalSigns', data);
 
@@ -549,7 +549,7 @@ const Data = ({ match }) => {
                 </CardTitle>
                 { allRecord.length > 0 && ( 
                   allRecord.map((data) => ( 
-                  <Table borderless className="med-record-table" key={data.id}>
+                  <Table className="med-record-table" key={data.id}>
                     <tbody>
                       <tr>
                         <th><h6 style={{ fontWeight: 'bold' }}>Kunjungan {data.tipe ? data.tipe : '-'}</h6></th>

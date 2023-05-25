@@ -20,4 +20,15 @@ const vitalSignsTotalPage = (state = 0, action) => {
     }
 }
 
-export { vitalSigns, vitalSignsTotalPage } ;
+const allVitalSignsByPatient = (state = [], action) => {
+    switch (action.type) {
+        case "GET_ALL_VITALSIGNS_BY_PATIENT":
+            return action.payload;
+            break;
+        default:
+            return state;
+            break;
+    }
+}
+
+export { vitalSigns, vitalSignsTotalPage, allVitalSignsByPatient } ;

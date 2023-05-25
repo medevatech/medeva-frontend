@@ -63,6 +63,7 @@ const VitalSigns = ({ match }) => {
   const dispatch = useDispatch();
   const queueAll = useSelector(state => state.queue);
   const queueTotalPage = useSelector(state => state.queueTotalPage);
+  const allVitalSigns = useSelector(state => state.allVitalSignsByPatient);
   const [dataStatus, setDataStatus] = useState("add");
   const [rowSelected, setRowSelected] = useState(null);
 
@@ -90,7 +91,8 @@ const VitalSigns = ({ match }) => {
     diastole: '',
     respiratory_rate: '',
     heart_rate: '',
-    catatan_tambahan: ''
+    catatan_tambahan: '',
+    created_at: ''
   });
 
   const onChange = (e) => {
@@ -201,6 +203,8 @@ const VitalSigns = ({ match }) => {
   const resetForm = (e) => {
     e.preventDefault();
 
+    dispatch({type: "GET_ALL_VITALSIGNS_BY_PATIENT", payload: []});
+
     setPatientID('');
     setVitalSignsID('');
     setPatientData('');
@@ -269,7 +273,7 @@ const VitalSigns = ({ match }) => {
   const getVitalSignsByPatientId = async (e, id, data) => {
     e.preventDefault();
     resetForm(e);
-    setRowSelected(id);
+    setRowSelected(data.id);
 
     // console.log(data);
 
@@ -277,7 +281,8 @@ const VitalSigns = ({ match }) => {
     setPatientData(data);
 
     try {
-      const res = await vitalSignsAPI.getByPatient("", `/${id}?tanggal=${moment(new Date()).format("YYYY-MM-DD")}`);
+      // const res = await vitalSignsAPI.getByPatient("", `/${id}?tanggal=${moment(new Date()).format("YYYY-MM-DD")}`);
+      const res = await vitalSignsAPI.getByPatient("", `/${id}`);
       let data = res.data.data[0];
 
       // console.log(data);
@@ -295,7 +300,66 @@ const VitalSigns = ({ match }) => {
         diastole: data.diastole,
         respiratory_rate: data.respiratory_rate,
         heart_rate: data.heart_rate,
-        catatan_tambahan: data.catatan_tambahan
+        catatan_tambahan: data.catatan_tambahan,
+        created_at: data.created_at
+      });
+
+      setVitalSignsID(data.id);
+  
+      setSelectedAwareness({kesadaran: data.kesadaran ? e.value : ''});
+      setDataStatus("update");
+      
+      // console.log(vitalSigns);
+    } catch (e) {
+      console.log(e);
+
+      setVitalSigns(current => {
+        return { ...current, id_pasien: patientID }
+      })
+
+      setDataStatus("add");
+    } finally {
+      getAllVitalSignsByPatientId(e, id);
+    }
+    
+    // console.log(dataStatus);
+  };
+
+  const getVitalSignsById = async (e, id) => {
+    // e.preventDefault();
+    // setRowSelected(id);
+
+    // console.log(data);
+
+    const element = document.getElementById('manage-form-tab-mobile');
+    if (element) {
+      window.scroll({
+        top: element,
+        behavior: "smooth"
+      })
+    }
+
+    try {
+      const res = await vitalSignsAPI.get("", `/${id}`);
+      let data = res.data.data[0];
+
+      // console.log(data);
+
+      setVitalSigns({
+        id_pasien: data.id_pasien,
+        keluhan: data.keluhan,
+        kesadaran: data.kesadaran,
+        temperatur: data.temperatur,
+        tinggi_badan: data.tinggi_badan,
+        berat_badan: data.berat_badan,
+        lingkar_perut: data.lingkar_perut,
+        imt: data.imt,
+        sistole: data.sistole,
+        diastole: data.diastole,
+        respiratory_rate: data.respiratory_rate,
+        heart_rate: data.heart_rate,
+        catatan_tambahan: data.catatan_tambahan,
+        created_at: data.created_at
       });
 
       setVitalSignsID(data.id);
@@ -315,6 +379,19 @@ const VitalSigns = ({ match }) => {
     }
     
     // console.log(dataStatus);
+  };
+
+  const getAllVitalSignsByPatientId = async (e, id) => {
+    dispatch({type: "GET_ALL_VITALSIGNS_BY_PATIENT", payload: []});
+
+    try {
+      const res = await vitalSignsAPI.getByPatient("", `/${id}`);
+      let data = res.data.data;
+      // dispatch({type: "GET_ALL_VITALSIGNS_BY_PATIENT", payload: data.slice(1)});
+      dispatch({type: "GET_ALL_VITALSIGNS_BY_PATIENT", payload: data});
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   const [currentPage, setCurrentPage] = useState(1);
@@ -552,8 +629,8 @@ const VitalSigns = ({ match }) => {
               </CardBody>
             </Card>
           </Colxx>
-          <Colxx sm="12" md="12" xl="8" className="mb-4">
-          <Card className="mb-8">
+          <Colxx sm="12" md="12" xl="8" className="mb-4 manage-form" id="manage-form-tab-mobile">
+            <Card className="mb-4">
               <CardBody>
                 <CardTitle>
                   <Row>
@@ -566,7 +643,7 @@ const VitalSigns = ({ match }) => {
                     </Colxx>
                     <Colxx sm="6" md="6" xl="6">
                       <Label style={{ float: 'right', lineHeight: 2 }}>
-                        {patientData ? <><br/><br/>{moment(patientData.created_at).format("DD MMM YYYY - HH:mm")}</> : 'Tanggal / Waktu' }
+                        { vitalSigns.id_pasien ? <><br/><br/>{moment(vitalSigns.created_at).format("DD MMM YYYY - HH:mm")}</> : 'Tanggal / Waktu' }
                         {/* {startDateTime} */}
                       </Label><br/>
                     </Colxx>
@@ -884,6 +961,88 @@ const VitalSigns = ({ match }) => {
                     </Colxx>
                   </Row>
                 </Form>
+              </CardBody>
+            </Card>
+            <Card className="mb-4">
+              <CardBody>
+                <CardTitle>
+                  Riwayat Pra-Konsultasi
+                  { allVitalSigns.length > 0 ?
+                    <>
+                      <br/>
+                      <Label style={{ fontWeight: 'bold' }}>{patientData.nama_lengkap}, </Label>&nbsp;
+                      <Label>
+                        {patientData.jenis_kelamin}, {new Date().getFullYear() - patientData.tanggal_lahir.substring(0,4)} tahun
+                      </Label>
+                    </> :
+                    ' Tidak Ditemukan' }
+                </CardTitle>
+                { allVitalSigns.length > 0 && ( 
+                  allVitalSigns.map((data) => ( 
+                  <Table className="med-record-table" key={data.id}>
+                    <tbody>
+                      <tr>
+                        <th>Tanggal</th>
+                        <td style={{ width: '70%' }}>{data.id_pasien ? moment(data.created_at).format("DD MMM YYYY - HH:mm") : '00/00/0000 - 00:00'}</td>
+                      </tr>
+                      <tr>
+                        <th>Keluhan</th>
+                        <td>{data.id_pasien ? data.keluhan : '-'}</td>
+                      </tr>
+                      <tr>
+                      <th>Kesadaran</th>
+                        <td>{ data.id_pasien ? data.kesadaran : '-' }</td>
+                      </tr>
+                      <tr>
+                        <th>Temperatur</th>
+                        <td>{ data.id_pasien ? data.temperatur : '0' } <sup>0</sup>C</td>
+                      </tr>
+                      <tr>
+                        <th>Tinggi Badan</th>
+                        <td>{ data.id_pasien ? data.tinggi_badan : '0' } cm</td>
+                      </tr>
+                      <tr>
+                        <th>Berat Badan</th>
+                        <td>{ data.id_pasien ? data.berat_badan : '0' } kg</td>
+                      </tr>
+                      <tr>
+                        <th>Lingkar Perut</th>
+                        <td>{ data.id_pasien ? data.lingkar_perut : '0' } cm</td>
+                      </tr>
+                      <tr>
+                        <th>Tekanan Darah</th>
+                        <td>{ data.id_pasien ? data.sistole : '0' } mmHg / { data ? data.diastole : '0' } mmHg</td>
+                      </tr>
+                      <tr>
+                        <th>IMT</th>
+                        <td>{ data.id_pasien ? data.imt : '0' } kg/m<sup>2</sup></td>
+                      </tr>
+                      <tr>
+                        <th>Tingkat Pernapasan</th>
+                        <td>{ data.id_pasien ? data.respiratory_rate : '0' } / menit</td>
+                      </tr>
+                      <tr>
+                        <th>Detak Jantung</th>
+                        <td>{ data.id_pasien ? data.heart_rate : '0' } bpm</td>
+                      </tr>
+                      <tr>
+                        <th>Catatan Tambahan</th>
+                        <td style={{ width: '70%' }}>{ data.id_pasien ? data.catatan_tambahan : '-' }</td>
+                      </tr>
+                      <tr>
+                        <th></th>
+                        <td>
+                            <Button color="secondary" size="xs" style={{ float: "right" }}
+                            onClick={(e) => getVitalSignsById(e, data.id)}
+                            >
+                              Ubah Data
+                            </Button>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </Table>
+                  ) ) 
+                )}
               </CardBody>
             </Card>
           </Colxx>
