@@ -684,20 +684,20 @@ const FormRecord = ({ match, history }) => {
         let data = await response.data.data;
         // console.log(data);
 
-        Swal.fire({
-          title: "Sukses!",
-          html: `Tambah diagnosa rekam medis sukses`,
-          icon: "success",
-          confirmButtonColor: "#008ecc",
-        });
+        // Swal.fire({
+        //   title: "Sukses!",
+        //   html: `Tambah diagnosa rekam medis sukses`,
+        //   icon: "success",
+        //   confirmButtonColor: "#008ecc",
+        // });
       } else {
-        Swal.fire({
-          title: "Gagal!",
-          html: `Tambah diagnosa rekam medis gagal: ${response.message}`,
-          icon: "error",
-          confirmButtonColor: "#008ecc",
-          confirmButtonText: "Coba lagi",
-        });
+        // Swal.fire({
+        //   title: "Gagal!",
+        //   html: `Tambah diagnosa rekam medis gagal: ${response.message}`,
+        //   icon: "error",
+        //   confirmButtonColor: "#008ecc",
+        //   confirmButtonText: "Coba lagi",
+        // });
 
         throw Error(`Error status: ${response.status}`);
       }
@@ -723,20 +723,20 @@ const FormRecord = ({ match, history }) => {
         let data = await response.data.data;
         // console.log(data);
 
-        Swal.fire({
-          title: "Sukses!",
-          html: `Ubah diagnosa rekam medis sukses`,
-          icon: "success",
-          confirmButtonColor: "#008ecc",
-        });
+        // Swal.fire({
+        //   title: "Sukses!",
+        //   html: `Ubah diagnosa rekam medis sukses`,
+        //   icon: "success",
+        //   confirmButtonColor: "#008ecc",
+        // });
       } else {
-        Swal.fire({
-          title: "Gagal!",
-          html: `Ubah diagnosa rekam medis gagal`,
-          icon: "error",
-          confirmButtonColor: "#008ecc",
-          confirmButtonText: "Coba lagi",
-        });
+        // Swal.fire({
+        //   title: "Gagal!",
+        //   html: `Ubah diagnosa rekam medis gagal`,
+        //   icon: "error",
+        //   confirmButtonColor: "#008ecc",
+        //   confirmButtonText: "Coba lagi",
+        // });
 
         throw Error(`Error status: ${response.status}`);
       }
@@ -782,20 +782,20 @@ const FormRecord = ({ match, history }) => {
         let data = await response.data.data;
         // console.log(data);
 
-        Swal.fire({
-          title: "Sukses!",
-          html: `Tambah resep rekam medis sukses`,
-          icon: "success",
-          confirmButtonColor: "#008ecc",
-        });
+        // Swal.fire({
+        //   title: "Sukses!",
+        //   html: `Tambah resep rekam medis sukses`,
+        //   icon: "success",
+        //   confirmButtonColor: "#008ecc",
+        // });
       } else {
-        Swal.fire({
-          title: "Gagal!",
-          html: `Tambah resep rekam medis gagal: ${response.message}`,
-          icon: "error",
-          confirmButtonColor: "#008ecc",
-          confirmButtonText: "Coba lagi",
-        });
+        // Swal.fire({
+        //   title: "Gagal!",
+        //   html: `Tambah resep rekam medis gagal: ${response.message}`,
+        //   icon: "error",
+        //   confirmButtonColor: "#008ecc",
+        //   confirmButtonText: "Coba lagi",
+        // });
 
         throw Error(`Error status: ${response.status}`);
       }
@@ -821,20 +821,20 @@ const FormRecord = ({ match, history }) => {
         let data = await response.data.data;
         // console.log(data);
 
-        Swal.fire({
-          title: "Sukses!",
-          html: `Ubah resep rekam medis sukses`,
-          icon: "success",
-          confirmButtonColor: "#008ecc",
-        });
+        // Swal.fire({
+        //   title: "Sukses!",
+        //   html: `Ubah resep rekam medis sukses`,
+        //   icon: "success",
+        //   confirmButtonColor: "#008ecc",
+        // });
       } else {
-        Swal.fire({
-          title: "Gagal!",
-          html: `Ubah resep rekam medis gagal`,
-          icon: "error",
-          confirmButtonColor: "#008ecc",
-          confirmButtonText: "Coba lagi",
-        });
+        // Swal.fire({
+        //   title: "Gagal!",
+        //   html: `Ubah resep rekam medis gagal`,
+        //   icon: "error",
+        //   confirmButtonColor: "#008ecc",
+        //   confirmButtonText: "Coba lagi",
+        // });
 
         throw Error(`Error status: ${response.status}`);
       }
@@ -875,20 +875,20 @@ const FormRecord = ({ match, history }) => {
         let data = await response.data.data;
         // console.log(data);
 
-        Swal.fire({
-          title: "Sukses!",
-          html: `Tambah pemeriksaan rekam medis sukses`,
-          icon: "success",
-          confirmButtonColor: "#008ecc",
-        });
+        // Swal.fire({
+        //   title: "Sukses!",
+        //   html: `Tambah pemeriksaan rekam medis sukses`,
+        //   icon: "success",
+        //   confirmButtonColor: "#008ecc",
+        // });
       } else {
-        Swal.fire({
-          title: "Gagal!",
-          html: `Tambah pemeriksaan rekam medis gagal: ${response.message}`,
-          icon: "error",
-          confirmButtonColor: "#008ecc",
-          confirmButtonText: "Coba lagi",
-        });
+        // Swal.fire({
+        //   title: "Gagal!",
+        //   html: `Tambah pemeriksaan rekam medis gagal: ${response.message}`,
+        //   icon: "error",
+        //   confirmButtonColor: "#008ecc",
+        //   confirmButtonText: "Coba lagi",
+        // });
 
         throw Error(`Error status: ${response.status}`);
       }
@@ -914,20 +914,20 @@ const FormRecord = ({ match, history }) => {
         let data = await response.data.data;
         // console.log(data);
 
-        Swal.fire({
-          title: "Sukses!",
-          html: `Ubah pemeriksaan rekam medis sukses`,
-          icon: "success",
-          confirmButtonColor: "#008ecc",
-        });
+        // Swal.fire({
+        //   title: "Sukses!",
+        //   html: `Ubah pemeriksaan rekam medis sukses`,
+        //   icon: "success",
+        //   confirmButtonColor: "#008ecc",
+        // });
       } else {
-        Swal.fire({
-          title: "Gagal!",
-          html: `Ubah pemeriksaan rekam medis gagal`,
-          icon: "error",
-          confirmButtonColor: "#008ecc",
-          confirmButtonText: "Coba lagi",
-        });
+        // Swal.fire({
+        //   title: "Gagal!",
+        //   html: `Ubah pemeriksaan rekam medis gagal`,
+        //   icon: "error",
+        //   confirmButtonColor: "#008ecc",
+        //   confirmButtonText: "Coba lagi",
+        // });
 
         throw Error(`Error status: ${response.status}`);
       }
@@ -968,20 +968,20 @@ const FormRecord = ({ match, history }) => {
         let data = await response.data.data;
         // console.log(data);
 
-        Swal.fire({
-          title: "Sukses!",
-          html: `Tambah tindakan rekam medis sukses`,
-          icon: "success",
-          confirmButtonColor: "#008ecc",
-        });
+        // Swal.fire({
+        //   title: "Sukses!",
+        //   html: `Tambah tindakan rekam medis sukses`,
+        //   icon: "success",
+        //   confirmButtonColor: "#008ecc",
+        // });
       } else {
-        Swal.fire({
-          title: "Gagal!",
-          html: `Tambah tindakan rekam medis gagal: ${response.message}`,
-          icon: "error",
-          confirmButtonColor: "#008ecc",
-          confirmButtonText: "Coba lagi",
-        });
+        // Swal.fire({
+        //   title: "Gagal!",
+        //   html: `Tambah tindakan rekam medis gagal: ${response.message}`,
+        //   icon: "error",
+        //   confirmButtonColor: "#008ecc",
+        //   confirmButtonText: "Coba lagi",
+        // });
 
         throw Error(`Error status: ${response.status}`);
       }
@@ -1007,20 +1007,20 @@ const FormRecord = ({ match, history }) => {
         let data = await response.data.data;
         // console.log(data);
 
-        Swal.fire({
-          title: "Sukses!",
-          html: `Ubah tindakan rekam medis sukses`,
-          icon: "success",
-          confirmButtonColor: "#008ecc",
-        });
+        // Swal.fire({
+        //   title: "Sukses!",
+        //   html: `Ubah tindakan rekam medis sukses`,
+        //   icon: "success",
+        //   confirmButtonColor: "#008ecc",
+        // });
       } else {
-        Swal.fire({
-          title: "Gagal!",
-          html: `Ubah tindakan rekam medis gagal`,
-          icon: "error",
-          confirmButtonColor: "#008ecc",
-          confirmButtonText: "Coba lagi",
-        });
+        // Swal.fire({
+        //   title: "Gagal!",
+        //   html: `Ubah tindakan rekam medis gagal`,
+        //   icon: "error",
+        //   confirmButtonColor: "#008ecc",
+        //   confirmButtonText: "Coba lagi",
+        // });
 
         throw Error(`Error status: ${response.status}`);
       }
@@ -1061,20 +1061,20 @@ const FormRecord = ({ match, history }) => {
         let data = await response.data.data;
         // console.log(data);
 
-        Swal.fire({
-          title: "Sukses!",
-          html: `Tambah layanan rekam medis sukses`,
-          icon: "success",
-          confirmButtonColor: "#008ecc",
-        });
+        // Swal.fire({
+        //   title: "Sukses!",
+        //   html: `Tambah layanan rekam medis sukses`,
+        //   icon: "success",
+        //   confirmButtonColor: "#008ecc",
+        // });
       } else {
-        Swal.fire({
-          title: "Gagal!",
-          html: `Tambah layanan rekam medis gagal: ${response.message}`,
-          icon: "error",
-          confirmButtonColor: "#008ecc",
-          confirmButtonText: "Coba lagi",
-        });
+        // Swal.fire({
+        //   title: "Gagal!",
+        //   html: `Tambah layanan rekam medis gagal: ${response.message}`,
+        //   icon: "error",
+        //   confirmButtonColor: "#008ecc",
+        //   confirmButtonText: "Coba lagi",
+        // });
 
         throw Error(`Error status: ${response.status}`);
       }
@@ -1100,20 +1100,20 @@ const FormRecord = ({ match, history }) => {
         let data = await response.data.data;
         // console.log(data);
 
-        Swal.fire({
-          title: "Sukses!",
-          html: `Ubah layanan rekam medis sukses`,
-          icon: "success",
-          confirmButtonColor: "#008ecc",
-        });
+        // Swal.fire({
+        //   title: "Sukses!",
+        //   html: `Ubah layanan rekam medis sukses`,
+        //   icon: "success",
+        //   confirmButtonColor: "#008ecc",
+        // });
       } else {
-        Swal.fire({
-          title: "Gagal!",
-          html: `Ubah layanan rekam medis gagal`,
-          icon: "error",
-          confirmButtonColor: "#008ecc",
-          confirmButtonText: "Coba lagi",
-        });
+        // Swal.fire({
+        //   title: "Gagal!",
+        //   html: `Ubah layanan rekam medis gagal`,
+        //   icon: "error",
+        //   confirmButtonColor: "#008ecc",
+        //   confirmButtonText: "Coba lagi",
+        // });
 
         throw Error(`Error status: ${response.status}`);
       }
@@ -1136,7 +1136,7 @@ const FormRecord = ({ match, history }) => {
     setReferenceSubmit("process");
     reference.id_kunjungan = recordID;
 
-    console.log(reference);
+    // console.log(reference);
     if(dataStatusReference === 'add') {
       try {
         const response = await referenceAPI.add(reference);
@@ -1148,24 +1148,24 @@ const FormRecord = ({ match, history }) => {
 
           setReferenceID(data.id);
 
-          Swal.fire({
-            title: "Sukses!",
-            html: `Tambah rujukan sukses`,
-            icon: "success",
-            confirmButtonColor: "#008ecc",
-          });
+          // Swal.fire({
+          //   title: "Sukses!",
+          //   html: `Tambah rujukan sukses`,
+          //   icon: "success",
+          //   confirmButtonColor: "#008ecc",
+          // });
           
           if(diagnoseReference.length > 0){
             onDiagnoseReferenceSubmit(data.id);
           }
         } else {
-          Swal.fire({
-            title: "Gagal!",
-            html: `Tambah rujukan gagal: ${response.message}`,
-            icon: "error",
-            confirmButtonColor: "#008ecc",
-            confirmButtonText: "Coba lagi",
-          });
+          // Swal.fire({
+          //   title: "Gagal!",
+          //   html: `Tambah rujukan gagal: ${response.message}`,
+          //   icon: "error",
+          //   confirmButtonColor: "#008ecc",
+          //   confirmButtonText: "Coba lagi",
+          // });
 
           throw Error(`Error status: ${response.status}`);
         }
@@ -1191,24 +1191,24 @@ const FormRecord = ({ match, history }) => {
 
           setReferenceID(reference.id);
 
-          Swal.fire({
-            title: "Sukses!",
-            html: `Ubah rujukan sukses`,
-            icon: "success",
-            confirmButtonColor: "#008ecc",
-          });
+          // Swal.fire({
+          //   title: "Sukses!",
+          //   html: `Ubah rujukan sukses`,
+          //   icon: "success",
+          //   confirmButtonColor: "#008ecc",
+          // });
           
           if(diagnoseReference.length > 0){
             onDiagnoseReferenceSubmit(reference.id);
           }
         } else {
-          Swal.fire({
-            title: "Gagal!",
-            html: `Ubah rujukan gagal: ${response.message}`,
-            icon: "error",
-            confirmButtonColor: "#008ecc",
-            confirmButtonText: "Coba lagi",
-          });
+          // Swal.fire({
+          //   title: "Gagal!",
+          //   html: `Ubah rujukan gagal: ${response.message}`,
+          //   icon: "error",
+          //   confirmButtonColor: "#008ecc",
+          //   confirmButtonText: "Coba lagi",
+          // });
 
           throw Error(`Error status: ${response.status}`);
         }
@@ -1270,20 +1270,20 @@ const FormRecord = ({ match, history }) => {
         let data = await response.data.data;
         // console.log(data);
 
-        Swal.fire({
-          title: "Sukses!",
-          html: `Tambah diagnosa rujukan sukses`,
-          icon: "success",
-          confirmButtonColor: "#008ecc",
-        });
+        // Swal.fire({
+        //   title: "Sukses!",
+        //   html: `Tambah diagnosa rujukan sukses`,
+        //   icon: "success",
+        //   confirmButtonColor: "#008ecc",
+        // });
       } else {
-        Swal.fire({
-          title: "Gagal!",
-          html: `Tambah diagnosa rujukan gagal: ${response.message}`,
-          icon: "error",
-          confirmButtonColor: "#008ecc",
-          confirmButtonText: "Coba lagi",
-        });
+        // Swal.fire({
+        //   title: "Gagal!",
+        //   html: `Tambah diagnosa rujukan gagal: ${response.message}`,
+        //   icon: "error",
+        //   confirmButtonColor: "#008ecc",
+        //   confirmButtonText: "Coba lagi",
+        // });
 
         throw Error(`Error status: ${response.status}`);
       }
@@ -1309,20 +1309,20 @@ const FormRecord = ({ match, history }) => {
         let data = await response.data.data;
         // console.log(data);
 
-        Swal.fire({
-          title: "Sukses!",
-          html: `Ubah diagnosa rujukan sukses`,
-          icon: "success",
-          confirmButtonColor: "#008ecc",
-        });
+        // Swal.fire({
+        //   title: "Sukses!",
+        //   html: `Ubah diagnosa rujukan sukses`,
+        //   icon: "success",
+        //   confirmButtonColor: "#008ecc",
+        // });
       } else {
-        Swal.fire({
-          title: "Gagal!",
-          html: `Ubah diagnosa rujukan gagal`,
-          icon: "error",
-          confirmButtonColor: "#008ecc",
-          confirmButtonText: "Coba lagi",
-        });
+        // Swal.fire({
+        //   title: "Gagal!",
+        //   html: `Ubah diagnosa rujukan gagal`,
+        //   icon: "error",
+        //   confirmButtonColor: "#008ecc",
+        //   confirmButtonText: "Coba lagi",
+        // });
 
         throw Error(`Error status: ${response.status}`);
       }
@@ -3198,7 +3198,8 @@ const FormRecord = ({ match, history }) => {
                       <Colxx sm={6} md={6} xl={6}>
                           <FormGroup>
                               <Label for="id_poli">
-                                  Poli / Divisi<span className="required text-danger" aria-required="true"> *</span>
+                                  Poli / Divisi
+                                  {/* <span className="required text-danger" aria-required="true"> *</span> */}
                               </Label>
                               <Select
                                   components={{ Input: CustomSelectInput }}

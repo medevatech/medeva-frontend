@@ -104,13 +104,6 @@ const selectConsume = [
   { label: 'Lainnya', value: 'Lainnya', key: 4, name: 'metode_konsumsi' }
 ];
 
-const filterPassedTime = (time) => {
-  const currentDate = new Date();
-  const selectedDate = new Date(time);
-
-  return currentDate.getTime() < selectedDate.getTime();
-};
-
 const Data = ({ match }) => {
   const dispatch = useDispatch();
   const queueAll = useSelector(state => state.queue);

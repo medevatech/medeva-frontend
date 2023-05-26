@@ -235,6 +235,7 @@ const Data = ({ match }) => {
   const [selectAllergy, setSelectAllergy] = useState([]);
   const [selectInsurance, setSelectInsurance] = useState([]);
   const [selectInsuranceClass, setSelectInsuranceClass] = useState([]);
+  const [insuranceClassValue, setInsuranceClassValue] = useState([]);
 
   const [disabledInsuranceClass, setDisabledInsuranceClass] = useState([{0: false}]);
   const [modalArchive, setModalArchive] = useState(false);
@@ -288,6 +289,11 @@ const Data = ({ match }) => {
     } else {
       dataInsurance[index][event.target.name] = event.target.value;
     }
+
+    // if(dataStatusInsurance === "update") {
+    //   console.log(index, insurance[index].id_asuransi_kelas);
+    //   selectInsuranceClassByInsurance[index].find(item => item.value === insurance[index].id_asuransi_kelas)
+    // }
 
     setInsurance(dataInsurance);
   };
@@ -538,7 +544,7 @@ const Data = ({ match }) => {
 
   const [selectInsuranceClassByInsurance, setSelectInsuranceClassByInsurance] = useState([]);
 
-  const changeKelasAsuransi = async (index, id_asuransi) => {
+  const changeKelasAsuransi = async (index, id_asuransi, id_asuransi_kelas = null) => {
     selectInsuranceClassByInsurance[index] = [];
 
     try {
@@ -565,6 +571,18 @@ const Data = ({ match }) => {
     } catch (e) {
       console.log(e);
     }
+
+    // console.log(index, selectInsuranceClassByInsurance[index]);
+    // console.log(index, insurance[index].id_asuransi_kelas);
+    // if (dataStatusInsurance === "update" || id_asuransi_kelas) {
+    //   let set_id_asuransi_kelas = selectInsuranceClassByInsurance[index].find(item => item.value === id_asuransi_kelas) || '';
+    //   insuranceClassValue[index] = set_id_asuransi_kelas;
+    //   console.log('set', insuranceClassValue[index]);
+    // } else {
+    //   let get_id_asuransi_kelas = selectInsuranceClassByInsurance[index].find(item => item.value === insurance[index].id_asuransi_kelas) || '';
+    //   insuranceClassValue[index] = get_id_asuransi_kelas;
+    //   console.log('get', insuranceClassValue[index]);
+    // }
   };
 
   const onChange = (e) => {
@@ -1125,7 +1143,7 @@ const Data = ({ match }) => {
           setInsurance((current) => [
             ...current, { id: data.id, id_pasien: data.id_pasien, id_asuransi: data.id_asuransi, id_asuransi_kelas: data.id_asuransi_kelas, nomor_asuransi: data.nomor_asuransi }
           ]);
-          changeKelasAsuransi(index, data.id_asuransi);
+          changeKelasAsuransi(index, data.id_asuransi, data.id_asuransi_kelas);
 
           setTempInsurance((current) => [
             ...current, { id: data.id, id_pasien: data.id_pasien, id_asuransi: data.id_asuransi, id_asuransi_kelas: data.id_asuransi_kelas, nomor_asuransi: data.nomor_asuransi }
@@ -1997,9 +2015,13 @@ const Data = ({ match }) => {
                                   classNamePrefix="react-select"
                                   name="id_asuransi_kelas"
                                   value={
-                                    insurance[index].id_asuransi !== '' && selectInsuranceClassByInsurance[index] !== undefined &&
+                                    insurance[index].id_asuransi_kelas !== undefined && selectInsuranceClassByInsurance[index] !== undefined &&
                                       selectInsuranceClassByInsurance[index].find(item => item.value === insurance[index].id_asuransi_kelas) || ''
                                   }
+                                  // value={
+                                  //   (insurance[index].id_asuransi_kelas !== undefined || selectInsuranceClassByInsurance[index] !== undefined) &&
+                                  //     insuranceClassValue[index]
+                                  // }
                                   options={selectInsuranceClassByInsurance[index]}
                                   onChange={(event) =>
                                     handleInsuranceChange(index, event)
@@ -2011,11 +2033,12 @@ const Data = ({ match }) => {
                             <Colxx sm={12}>
                               <InputGroup className="input-group-insurance">
                                 <Input
-                                  type="text"
+                                  type="number"
                                   name="nomor_asuransi"
                                   placeholder="No. Asuransi"
                                   className="input-insurance"
                                   value={insurance[index].nomor_asuransi}
+                                  pattern="[0-9]*"
                                   onChange={(event) =>
                                     handleInsuranceChange(index, event)
                                   }
