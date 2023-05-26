@@ -14,8 +14,7 @@ import {
   Table,
   Badge,
 } from 'reactstrap';
-import { NavLink, useLocation } from 'react-router-dom';
-import classnames from 'classnames';
+import { useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import 'react-tagsinput/react-tagsinput.css';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -514,13 +513,13 @@ const FormRecord = ({ match, history }) => {
   };
 
   const [treatment, setTreatment] = useState([
-    { id: '', id_kunjungan: recordID, id_tindakan: "", catatan: "" }
+    { id: '', id_kunjungan: recordID, id_daftar_tindakan: "", catatan: "" }
   ]);
   const [selectTreatment, setSelectTreatment] = useState([]);
   const [selectedTreatment, setSelectedTreatment] = useState([{ label: ""}]);
 
   const addTreatmentFields = () => {
-    let newfieldTreatment = { id: '', id_kunjungan: recordID, id_tindakan: "", catatan: "" }
+    let newfieldTreatment = { id: '', id_kunjungan: recordID, id_daftar_tindakan: "", catatan: "" }
     setTreatment([...treatment, newfieldTreatment]);
 
     let newfieldDropdownTreatment = { label: "" };
@@ -547,7 +546,7 @@ const FormRecord = ({ match, history }) => {
     let dataTreatment = [...treatment];
     let displaySelectTreatment = [...selectedTreatment];
 
-    if (event.name === "id_tindakan"){
+    if (event.name === "id_daftar_tindakan"){
         dataTreatment[index][event.name] = event.value;
         displaySelectTreatment[index]["label"] = event.label;
     } else {
@@ -562,13 +561,13 @@ const FormRecord = ({ match, history }) => {
   };
 
   const [service, setService] = useState([
-    { id: '', id_kunjungan: recordID, id_layanan: "", catatan: "" }
+    { id: '', id_kunjungan: recordID, id_daftar_layanan: "", catatan: "" }
   ]);
   const [selectService, setSelectService] = useState([]);
   const [selectedService, setSelectedService] = useState([{ label: ""}]);
 
   const addServiceFields = () => {
-    let newfieldService = { id: '', id_kunjungan: recordID, id_layanan: "", catatan: "" }
+    let newfieldService = { id: '', id_kunjungan: recordID, id_daftar_layanan: "", catatan: "" }
     setService([...service, newfieldService]);
 
     let newfieldDropdownService = { label: "" };
@@ -595,7 +594,7 @@ const FormRecord = ({ match, history }) => {
     let dataService = [...service];
     let displaySelectService = [...selectedService];
 
-    if (event.name === "id_tindakan"){
+    if (event.name === "id_daftar_layanan"){
         dataService[index][event.name] = event.value;
         displaySelectService[index]["label"] = event.label;
     } else {
@@ -1478,6 +1477,7 @@ const FormRecord = ({ match, history }) => {
     onLoadObat();
     onLoadLab();
     onLoadTindakan();
+    onLoadLayanan();
     onLoadPoliRujukan();
     onLoadRSRujukan();
   };
@@ -1682,7 +1682,32 @@ const FormRecord = ({ match, history }) => {
         for (var i = 0; i < data.length; i++) {
           setSelectTreatment((current) => [
             ...current,
-            { label: data[i].nama, value: data[i].id, key: data[i].id, name: 'id_tindakan' },
+            { label: data[i].nama, value: data[i].id, key: data[i].id, name: 'id_daftar_tindakan' },
+          ]);
+        }
+      } else {
+        throw Error(`Error status: ${response.status}`);
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  const onLoadLayanan = async () => {
+    try {
+      const response = await serviceListAPI.get("", "?limit=1000");
+      // console.log(response);
+
+      setSelectService([]);
+
+      if (response.status === 200) {
+        let data = response.data.data;
+        // console.log(data);
+      
+        for (var i = 0; i < data.length; i++) {
+          setSelectService((current) => [
+            ...current,
+            { label: data[i].nama, value: data[i].id, key: data[i].id, name: 'id_daftar_layanan' },
           ]);
         }
       } else {
@@ -1812,6 +1837,7 @@ const FormRecord = ({ match, history }) => {
     onLoadObat();
     onLoadLab();
     onLoadTindakan();
+    onLoadLayanan();
     onLoadPoliRujukan();
     onLoadRSRujukan();
 
@@ -2395,15 +2421,15 @@ const FormRecord = ({ match, history }) => {
                           <FormGroup row key={index}>
                             <Colxx sm={6} md={6} xl={6}>
                                 <FormGroup>
-                                    <Label for="id_tindakan">
+                                    <Label for="id_daftar_tindakan">
                                         Tindakan
                                     </Label>
                                     <Select
                                         components={{ Input: CustomSelectInput }}
                                         className="react-select"
                                         classNamePrefix="react-select"
-                                        name="id_tindakan"
-                                        value={selectTreatment.find(item => item.value === treatment[index].id_tindakan) || ''}
+                                        name="id_daftar_tindakan"
+                                        value={selectTreatment.find(item => item.value === treatment[index].id_daftar_tindakan) || ''}
                                         options={selectTreatment}
                                         onChange={(event) => handleTreatmentChange(index, event)}
                                     />
@@ -2471,15 +2497,15 @@ const FormRecord = ({ match, history }) => {
                           <FormGroup row key={index}>
                             <Colxx sm={6} md={6} xl={6}>
                                 <FormGroup>
-                                    <Label for="id_layanan">
+                                    <Label for="id_daftar_layanan">
                                         Layanan
                                     </Label>
                                     <Select
                                         components={{ Input: CustomSelectInput }}
                                         className="react-select"
                                         classNamePrefix="react-select"
-                                        name="id_layanan"
-                                        value={selectService.find(item => item.value === treatment[index].id_layanan) || ''}
+                                        name="id_daftar_layanan"
+                                        value={selectService.find(item => item.value === service[index].id_daftar_layanan) || ''}
                                         options={selectService}
                                         onChange={(event) => handleServiceChange(index, event)}
                                     />
@@ -2496,7 +2522,7 @@ const FormRecord = ({ match, history }) => {
                                       id="catatan"
                                       placeholder="Catatan"
                                       style={{minHeight: '150px'}}
-                                      value={treatment[index].catatan}
+                                      value={service[index].catatan}
                                       onChange={(event) => handleServiceChange(index, event)}
                                   />
                                 </FormGroup>

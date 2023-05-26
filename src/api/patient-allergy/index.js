@@ -19,5 +19,9 @@ const patientAllergy = {
     const url = api.patientAllergy.all + `/${id}`
     return baseApi.put(url, payloads, { headers: getOriginHeader() })
   },
+  delete: (payloads, id) => {
+    const url = api.patientAllergy.all + `/${id}`
+    return baseApi.delete(url, payloads, { headers: getOriginHeader() })
+  },
 }
 export default patientAllergy

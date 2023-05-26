@@ -8,12 +8,16 @@ import {
 import baseApi from "service/api-general";
 
 const shift = {
-  all: (payloads, options) => {
-    const url = api.shift + options;
-    return baseApi.post(url, payloads, { headers: getOriginHeader() });
+  get: (payloads, options) => {
+    const url = api.shift.all + options;
+    return baseApi.get(url, payloads, { headers: getOriginHeader() });
+  },
+  getByClinic: (payloads, options) => {
+    const url = api.shift.all.byClinic + options;
+    return baseApi.get(url, payloads, { headers: getOriginHeader() });
   },
   add: (payloads) => {
-    const url = api.shift;
+    const url = api.shift.all;
     return baseApi.post(url, payloads, { headers: getOriginHeader() });
   },
   archive: (payloads, id) => {
@@ -23,6 +27,10 @@ const shift = {
   activate: (payloads, id) => {
     const url = api.shift.activate + `/${id}`;
     return baseApi.post(url, payloads, { headers: getOriginHeader() });
+  },
+  delete: (payloads, id) => {
+    const url = api.shift.delete + `/${id}`;
+    return baseApi.delete(url, payloads, { headers: getOriginHeader() });
   },
 };
 export default shift;

@@ -35,7 +35,9 @@ import CustomSelectInput from "components/common/CustomSelectInput";
 import patientAPI from "api/patient";
 import insuranceAPI from "api/insurance";
 import insuranceClassAPI from "api/insurance/class";
+import allergyAPI from "api/allergy";
 import patientAllergyAPI from "api/patient-allergy";
+import participantAPI from "api/participant";
 import Swal from "sweetalert2";
 
 import loader from '../../assets/img/loading.gif';
@@ -49,17 +51,19 @@ const selectKITAS = [
 ];
 
 const selectInsurance = [
-  { label: "PPS/Kapitasi", value: "PPS/Kapitasi", key: 0, name: "tipe_asuransi" },
-  { label: "FFS Paket", value: "FFS Paket", key: 1, name: "tipe_asuransi" },
-  { label: "FFS Non-Paket", value: "FFS Non-Paket", key: 2, name: "tipe_asuransi" },
+  { label: "Pilih Asuransi", value: "", key: 0, name: "id_asuransi" },
+  { label: "PPS/Kapitasi", value: "PPS/Kapitasi", key: 1, name: "id_asuransi" },
+  { label: "FFS Paket", value: "FFS Paket", key: 2, name: "id_asuransi" },
+  { label: "FFS Non-Paket", value: "FFS Non-Paket", key: 3, name: "id_asuransi" },
 ];
 
 const selectAllergy = [
-  { label: "Alergi Obat", value: "Alergi Obat", key: 0, name: "alergi" },
-  { label: "Alergi Makanan", value: "Alergi Makanan", key: 1, name: "alergi" },
-  { label: "Alergi Kulit", value: "Alergi Kulit", key: 2, name: "alergi"},
-  { label: "Alergi Debu", value: "Alergi Debu", key: 3, name: "alergi"},
-  { label: "Lainnya", value: "Lainnya", key: 4, name: "alergi"},
+  { label: "Pilih Alergi", value: "", key: 0, name: "id_alergi" },
+  { label: "Alergi Obat", value: "Alergi Obat", key: 1, name: "id_alergi" },
+  { label: "Alergi Makanan", value: "Alergi Makanan", key: 2, name: "id_alergi" },
+  { label: "Alergi Kulit", value: "Alergi Kulit", key: 3, name: "id_alergi"},
+  { label: "Alergi Debu", value: "Alergi Debu", key: 4, name: "id_alergi"},
+  { label: "Lainnya", value: "Lainnya", key: 5, name: "id_alergi"},
 ];
 
 const selectNationality = [
@@ -228,91 +232,111 @@ const Data = ({ match }) => {
   // const [selectedAllergy, setSelectedAllergy] = useState([{ label: ""}]);
   const [selectedAllergy, setSelectedAllergy] = useState([]);
 
+  const [selectAllergy, setSelectAllergy] = useState([]);
+  const [selectInsurance, setSelectInsurance] = useState([]);
+  const [selectInsuranceClass, setSelectInsuranceClass] = useState([]);
+
   const [modalArchive, setModalArchive] = useState(false);
   const [modalDelete, setModalDelete] = useState(false);
   const [patientStatus, setPatientStatus] = useState(0);
   const [patientName, setPatientName] = useState('');
+  const [patientSubmit, setPatientSubmit] = useState('');
 
   const [patientID, setPatientID] = useState('');
-  const [insuranceID, setInsuranceID] = useState('');
-  const [allergyID, setAllergyID] = useState('');
 
   const [insurance, setInsurance] = useState([
-    { id: insuranceID, tipe_asuransi: "", nomor_asuransi: "" }
+    { id: '', id_pasien: patientID, id_asuransi: "", id_asuransi_kelas: "", nomor_asuransi: "" }
+  ]);
+
+  const [tempInsurance, setTempInsurance] = useState([
+    { id: '', id_pasien: patientID, id_asuransi: "", id_asuransi_kelas: "", nomor_asuransi: "" }
   ]);
 
   const addInsuranceFields = () => {
-    let newfieldInsurance = { id: '', tipe_asuransi: "", nomor_asuransi: "" };
+    let newfieldInsurance = { id: '', id_pasien: patientID, id_asuransi: "", id_asuransi_kelas: "", nomor_asuransi: "" };
     setInsurance([...insurance, newfieldInsurance]);
 
-    let newfieldDropdownInsurance = { label: "" };
-    setSelectedInsurance([...selectedInsurance, newfieldDropdownInsurance]);
+    // let newfieldDropdownInsurance = { label: "" };
+    // setSelectedInsurance([...selectedInsurance, newfieldDropdownInsurance]);
   };
 
   const removeInsuranceFields = (id, index) => {
     let dataInsurance = [...insurance];
-    let displaySelectInsurance = [...selectedInsurance];
+    // let displaySelectInsurance = [...selectedInsurance];
 
     dataInsurance.splice(index, 1);
-    displaySelectInsurance.splice(index, 1);
+    // displaySelectInsurance.splice(index, 1);
 
     setInsurance(dataInsurance);
-    setSelectedInsurance(displaySelectInsurance);
+    // setSelectedInsurance(displaySelectInsurance);
+
+    if(dataStatusInsurance === "update"){
+      setTempInsurance(dataInsurance);
+      onDeletePatientInsurance(id);
+    }
   };
 
   const handleInsuranceChange = (index, event) => {
     let dataInsurance = [...insurance];
-    let displaySelectInsurance = [...selectedInsurance];
+    // let displaySelectInsurance = [...selectedInsurance];
 
-    if (event.name === "tipe_asuransi"){
+    if (event.name === "id_asuransi"){
       dataInsurance[index][event.name] = event.value;
-      displaySelectInsurance[index]["label"] = event.value;
+      
+      changeKelasAsuransi(index, event.value);
+    } else if (event.name === "id_asuransi_kelas"){
+      dataInsurance[index][event.name] = event.value;
     } else {
       dataInsurance[index][event.target.name] = event.target.value;
     }
 
     setInsurance(dataInsurance);
-    setSelectedInsurance(displaySelectInsurance);
+    // setSelectedInsurance(displaySelectInsurance);
   };
 
   // const [allergy, setAllergy] = useState([]);
 
-  const [allergy, setAllergy] = useState([
-    { id: "", id_pasien: patientID, id_alergi: "" }
-  ]);
+  const [allergy, setAllergy] = useState([{ id: "", id_pasien: patientID, id_alergi: "" }]);
+
+  const [tempAllergy, setTempAllergy] = useState([{ id: "", id_pasien: patientID, id_alergi: "" }]);
 
   const addAllergyFields = () => {
     let newfieldAllergy = { id: "", id_pasien: patientID, id_alergi: "" };
     setAllergy([...allergy, newfieldAllergy]);
 
-    let newfieldDropdownAllergy = { label: "" };
-    setSelectedAllergy([...selectedAllergy, newfieldDropdownAllergy]);
+    // let newfieldDropdownAllergy = { label: "" };
+    // setSelectedAllergy([...selectedAllergy, newfieldDropdownAllergy]);
   };
 
   const removeAllergyFields = (id, index) => {
     let dataAllergy = [...allergy];
-    let displaySelectAllergy = [...selectedAllergy];
+    // let displaySelectAllergy = [...selectedAllergy];
 
     dataAllergy.splice(index, 1);
-    displaySelectAllergy.splice(index, 1);
+    // displaySelectAllergy.splice(index, 1);
 
     setAllergy(dataAllergy);
-    setSelectedAllergy(displaySelectAllergy);
+    // setSelectedAllergy(displaySelectAllergy);
+
+    if(dataStatusAllergy === "update"){
+      setTempAllergy(dataAllergy);
+      onDeletePatientAllergy(id);
+    }
   };
 
   const handleAllergyChange = (index, event) => {
     let dataAllergy = [...allergy];
-    let displaySelectAllergy = [...selectedAllergy];
+    // let displaySelectAllergy = [...selectedAllergy];
 
     if (event.name === "id_alergi"){
       dataAllergy[index][event.name] = event.value;
-      displaySelectAllergy[index]["label"] = event.value;
+      // displaySelectAllergy[index]["label"] = event.value;
     } else {
       dataAllergy[index][event.target.name] = event.target.value;
     }
 
     setAllergy(dataAllergy);
-    setSelectedAllergy(displaySelectAllergy);
+    // setSelectedAllergy(displaySelectAllergy);
   };
 
   const [patient, setPatient] = useState({
@@ -448,22 +472,104 @@ const Data = ({ match }) => {
     }
   };
 
-  const onLoadKelasAsuransi = async () => {
+  const onLoadAlergi = async () => {
     try {
-      const response = await insuranceClassAPI.get("", "?limit=1000");
+      const response = await allergyAPI.get("", "?limit=1000");
       // console.log(response);
 
-      setSelectedInsuranceClass([]);
+      setSelectAllergy([{ label: "Pilih Alergi", value: "", key: 0, name: 'id_alergi' }]);
 
       if (response.status === 200) {
         let data = response.data.data;
         // console.log(data);
       
         for (var i = 0; i < data.length; i++) {
-          setSelectedInsuranceClass((current) => [
+          setSelectAllergy((current) => [
             ...current,
-            { label: data[i].nama_klinik, value: data[i].id, key: data[i].id, name: 'id_klinik' },
+            { label: data[i].kategori  + ' - ' + data[i].nama, value: data[i].id, key: data[i].id, name: 'id_alergi' },
           ]);
+        }
+      } else {
+        throw Error(`Error status: ${response.status}`);
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  const onLoadAsuransi = async () => {
+    try {
+      const response = await insuranceAPI.get("", "?limit=1000");
+      // console.log(response);
+
+      setSelectInsurance([{ label: "Pilih Asuransi", value: "", key: 0, name: 'id_asuransi' }]);
+
+      if (response.status === 200) {
+        let data = response.data.data;
+        // console.log(data);
+      
+        for (var i = 0; i < data.length; i++) {
+          setSelectInsurance((current) => [
+            ...current,
+            { label: data[i].nama, value: data[i].id, key: data[i].id, name: 'id_asuransi' },
+          ]);
+        }
+      } else {
+        throw Error(`Error status: ${response.status}`);
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  const onLoadKelasAsuransi = async () => {
+    try {
+      const response = await insuranceClassAPI.get("", "?limit=1000");
+      // console.log(response);
+
+      setSelectInsuranceClass([{ label: "Pilih Kelas Asuransi", value: "", key: 0, name: 'id_asuransi_kelas' }]);
+
+      if (response.status === 200) {
+        let data = response.data.data;
+        // console.log(data);
+      
+        for (var i = 0; i < data.length; i++) {
+          setSelectInsuranceClass((current) => [
+            ...current,
+            { label: data[i].nama_kelas, value: data[i].id, key: data[i].id, name: 'id_asuransi_kelas' },
+          ]);
+        }
+      } else {
+        throw Error(`Error status: ${response.status}`);
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  const [selectInsuranceClassByInsurance, setSelectInsuranceClassByInsurance] = useState([]);
+
+  const changeKelasAsuransi = async (index, id_asuransi) => {
+    selectInsuranceClassByInsurance[index] = [];
+    // setSelectInsuranceClassByInsurance[index]([]);
+
+    try {
+      const response = await insuranceClassAPI.getByInsurance("", `/${id_asuransi}`);
+      // console.log(response);
+
+      if (response.status === 200) {
+        let data = response.data.data;
+        // console.log(data);
+
+        if(data){
+          data.map((data) => {
+            selectInsuranceClassByInsurance[index].push({ 
+              label: data.nama_kelas,
+              value: data.id,
+              key: data.id,
+              name: 'id_asuransi_kelas'
+            });
+          })
         }
       } else {
         throw Error(`Error status: ${response.status}`);
@@ -476,14 +582,14 @@ const Data = ({ match }) => {
   const onChange = (e) => {
     // console.log('e', e);
 
-    if (e.length > 0 && e[0].name === 'alergi') {
-      setSelectedAllergy(Array.isArray(e) ? e.map(x => x.value) : []);
+    if (e.length > 0 && e[0].name === 'id_alergi') {
+      // setSelectedAllergy(Array.isArray(e) ? e.map(x => x.value) : []);
       // console.log('setSelectedAllergy', selectedAllergy);
       
       // setAllergy(Array.isArray(e) ? e.map(x => x.value) : []);
       // console.log(allergy);
     } else if (e.length <= 0) {
-      setSelectedAllergy(Array.isArray(e) ? e.map(x => x.value) : []);
+      // setSelectedAllergy(Array.isArray(e) ? e.map(x => x.value) : []);
       // setAllergy([]);
     } else if (e.name === 'provinsi') {
       setPatient(current => {
@@ -554,7 +660,8 @@ const Data = ({ match }) => {
   }
 
   const onPatientSubmit = async (e) => {
-    e.preventDefault();
+    // e.preventDefault();
+    setPatientSubmit("process");
 
     if(dataStatusPatient === 'add') {
       try {
@@ -565,14 +672,14 @@ const Data = ({ match }) => {
           let data = await response.data.data;
           // console.log(data);
 
+          setPatientID(data.id);
+
           Swal.fire({
             title: "Sukses!",
             html: `Tambah pasien sukses`,
             icon: "success",
             confirmButtonColor: "#008ecc",
           });
-
-          setPatientID(data.id);
         } else {
           Swal.fire({
             title: "Gagal!",
@@ -594,16 +701,6 @@ const Data = ({ match }) => {
         });
 
         console.log(e);
-      } finally {
-        if(selectedAllergy.length > 0 && patientID) {
-          onAllergySubmit();
-        }
-        
-        if(insurance.length > 0 && patientID) {
-          onInsuranceSubmit();
-        }
-        
-        resetForm(e);
       }
     } else if (dataStatusPatient === 'update') {
       try {
@@ -613,6 +710,8 @@ const Data = ({ match }) => {
         if (response.status == 200) {
           let data = await response.data.data;
           // console.log(data);
+
+          setPatientID(patientID);
   
           Swal.fire({
             title: "Sukses!",
@@ -620,8 +719,6 @@ const Data = ({ match }) => {
             icon: "success",
             confirmButtonColor: "#008ecc",
           });
-
-          setPatientID(patientID);
         } else {
           Swal.fire({
             title: "Gagal!",
@@ -643,211 +740,195 @@ const Data = ({ match }) => {
         });
   
         console.log(e);
-      } finally {
-        if(selectedAllergy.length > 0 && patientID) {
-          onAllergySubmit();
-        }
-        
-        if(insurance.length > 0 && patientID) {
-          onInsuranceSubmit();
-        }
-
-        resetForm(e);
       }
     } else {
       console.log('dataStatusPatient undefined')
     }
+
+    setPatientSubmit("done");
   };
 
   const onAllergySubmit = async (e) => {
     // e.preventDefault();
 
-    if(dataStatusAllergy === 'add') {
-      if(selectedAllergy) {
-        selectedAllergy.map((data, index) => {
-          allergy.push({ id_pasien: patientID, alergi: data });
-        })
+    for (var i = 0; i < allergy.length; i++) {
+      allergy[i].id_pasien = patientID;
+
+      if(allergy[i].id !== '' && allergy[i].id_alergi !== tempAllergy[i].id_alergi) {
+        onAllergyEdit(allergy[i]);
+      } else if(allergy[i].id === '') {
+        onAllergyAdd(allergy[i]);
       }
+    }
+  }
 
-      for (var i = 0; i < allergy.length; i++) {
-        try {
-          const response = await patientAllergyAPI.add(allergy[i]);
-          // console.log(response);
+  const onAllergyAdd = async (allergy) => {
+    try {
+      const response = await patientAllergyAPI.add(allergy);
+      // console.log(response);
 
-          if (response.status == 200) {
-            let data = await response.data.data;
-            // console.log(data);
+      if (response.status == 200) {
+        let data = await response.data.data;
+        // console.log(data);
 
-            // Swal.fire({
-            //   title: "Sukses!",
-            //   html: `Tambah asuransi pasien sukses`,
-            //   icon: "success",
-            //   confirmButtonColor: "#008ecc",
-            // });
-          } else {
-            // Swal.fire({
-            //   title: "Gagal!",
-            //   html: `Tambah asuransi pasien gagal`,
-            //   icon: "error",
-            //   confirmButtonColor: "#008ecc",
-            //   confirmButtonText: "Coba lagi",
-            // });
+        Swal.fire({
+          title: "Sukses!",
+          html: `Tambah alergi pasien sukses`,
+          icon: "success",
+          confirmButtonColor: "#008ecc",
+        });
+      } else {
+        Swal.fire({
+          title: "Gagal!",
+          html: `Tambah alergi pasien gagal: ${response.message}`,
+          icon: "error",
+          confirmButtonColor: "#008ecc",
+          confirmButtonText: "Coba lagi",
+        });
 
-            throw Error(`Error status: ${response.status}`);
-          }
-        } catch (e) {
-          // Swal.fire({
-          //   title: "Gagal!",
-          //   html: e,
-          //   icon: "error",
-          //   confirmButtonColor: "#008ecc",
-          //   confirmButtonText: "Coba lagi",
-          // });
-
-          console.log(e);
-        }
+        throw Error(`Error status: ${response.status}`);
       }
-    } else if (dataStatusAllergy === 'update') {
-      // if(selectedAllergy) {
-      //   selectedAllergy.map((data, index) => {
-      //     allergy.push({ id_pasien: allergyID, id_pasien: patientID, alergi: data });
-      //   })
-      // }
+    } catch (e) {
+      Swal.fire({
+        title: "Gagal!",
+        html: e,
+        icon: "error",
+        confirmButtonColor: "#008ecc",
+        confirmButtonText: "Coba lagi",
+      });
 
-      for (var i = 0; i < allergy.length; i++) {
-        try {
-          const response = await patientAllergyAPI.update(allergy[i], allergyID);
-          // console.log(response);
-    
-          if (response.status == 200) {
-            let data = await response.data.data;
-            // console.log(data);
-    
-            // Swal.fire({
-            //   title: "Sukses!",
-            //   html: `Ubah alergi pasien sukses`,
-            //   icon: "success",
-            //   confirmButtonColor: "#008ecc",
-            // });
-          } else {
-            // Swal.fire({
-            //   title: "Gagal!",
-            //   html: `Ubah alergi pasien gagal: ${response.message}`,
-            //   icon: "error",
-            //   confirmButtonColor: "#008ecc",
-            //   confirmButtonText: "Coba lagi",
-            // });
-    
-            throw Error(`Error status: ${response.status}`);
-          }
-        } catch (e) {
-          // Swal.fire({
-          //   title: "Gagal!",
-          //   html: e,
-          //   icon: "error",
-          //   confirmButtonColor: "#008ecc",
-          //   confirmButtonText: "Coba lagi",
-          // });
-    
-          console.log(e);
-        }
+      console.log(e);
+    }
+  } 
+
+  const onAllergyEdit = async (allergy) => {
+    try {
+      const response = await patientAllergyAPI.update(allergy, allergy.id);
+      // console.log(response);
+
+      if (response.status == 200) {
+        let data = await response.data.data;
+        // console.log(data);
+
+        Swal.fire({
+          title: "Sukses!",
+          html: `Ubah alergi pasien sukses`,
+          icon: "success",
+          confirmButtonColor: "#008ecc",
+        });
+      } else {
+        Swal.fire({
+          title: "Gagal!",
+          html: `Ubah alergi pasien gagal`,
+          icon: "error",
+          confirmButtonColor: "#008ecc",
+          confirmButtonText: "Coba lagi",
+        });
+
+        throw Error(`Error status: ${response.status}`);
       }
-    } else {
-      console.log('dataStatusAllergy undefined')
+    } catch (e) {
+      Swal.fire({
+        title: "Gagal!",
+        html: e,
+        icon: "error",
+        confirmButtonColor: "#008ecc",
+        confirmButtonText: "Coba lagi",
+      });
+
+      console.log(e);
     }
   }
 
   const onInsuranceSubmit = async (e) => {
     // e.preventDefault();
 
-    if(dataStatusInsurance === 'add') {
-      if(insurance) {
-        insurance.map((data, index) => {
-          insurance.push({ id_pasien: patientID, tipe_asuransi: data.tipe_asuransi, nomor_asuransi: data.nomor_asuransi });
-        })
-      }
-  
-      console.log(insurance);
+    for (var i = 0; i < insurance.length; i++) {
+      insurance[i].id_pasien = patientID;
 
-      for (var i = 0; i < insurance.length; i++) {
-        try {
-          const response = await insuranceAPI.add(insurance[i]);
-          // console.log(response);
-  
-          if (response.status == 200) {
-            let data = await response.data.data;
-            // console.log(data);
-  
-            // Swal.fire({
-            //   title: "Sukses!",
-            //   html: `Tambah asuransi pasien sukses`,
-            //   icon: "success",
-            //   confirmButtonColor: "#008ecc",
-            // });
-            
-          } else {
-            // Swal.fire({
-            //   title: "Gagal!",
-            //   html: `Tambah asuransi pasien gagal`,
-            //   icon: "error",
-            //   confirmButtonColor: "#008ecc",
-            //   confirmButtonText: "Coba lagi",
-            // });
-  
-            throw Error(`Error status: ${response.status}`);
-          }
-        } catch (e) {
-          // Swal.fire({
-          //   title: "Gagal!",
-          //   html: e,
-          //   icon: "error",
-          //   confirmButtonColor: "#008ecc",
-          //   confirmButtonText: "Coba lagi",
-          // });
-  
-          console.log(e);
-        }
+      if(insurance[i].id !== '' && (insurance[i].id_asuransi !== tempInsurance[i].id_asuransi || insurance[i].nomor_asuransi !== tempInsurance[i].nomor_asuransi)) {
+        onInsuranceEdit(insurance[i]);
+      } else if(insurance[i].id === '') {
+        onInsuranceAdd(insurance[i]);
       }
-    } else if (dataStatusInsurance === 'update') {
-      try {
-        const response = await insuranceAPI.update(insurance, insuranceID);
-        // console.log(response);
-  
-        if (response.status == 200) {
-          let data = await response.data.data;
-          // console.log(data);
-  
-          // Swal.fire({
-          //   title: "Sukses!",
-          //   html: `Ubah asuransi pasien sukses`,
-          //   icon: "success",
-          //   confirmButtonColor: "#008ecc",
-          // });
+    }
+  }
 
-        } else {
-          // Swal.fire({
-          //   title: "Gagal!",
-          //   html: `Ubah asuransi pasien gagal: ${response.message}`,
-          //   icon: "error",
-          //   confirmButtonColor: "#008ecc",
-          //   confirmButtonText: "Coba lagi",
-          // });
-  
-          throw Error(`Error status: ${response.status}`);
-        }
-      } catch (e) {
-        // Swal.fire({
-        //   title: "Gagal!",
-        //   html: e,
-        //   icon: "error",
-        //   confirmButtonColor: "#008ecc",
-        //   confirmButtonText: "Coba lagi",
-        // });
-  
-        console.log(e);
+  const onInsuranceAdd = async (insurance) => {
+    try {
+      const response = await participantAPI.add(insurance);
+      // console.log(response);
+
+      if (response.status == 200) {
+        let data = await response.data.data;
+        // console.log(data);
+
+        Swal.fire({
+          title: "Sukses!",
+          html: `Tambah asuransi pasien sukses`,
+          icon: "success",
+          confirmButtonColor: "#008ecc",
+        });
+      } else {
+        Swal.fire({
+          title: "Gagal!",
+          html: `Tambah asuransi pasien gagal: ${response.message}`,
+          icon: "error",
+          confirmButtonColor: "#008ecc",
+          confirmButtonText: "Coba lagi",
+        });
+
+        throw Error(`Error status: ${response.status}`);
       }
-    } else {
-      console.log('dataStatusInsurance undefined')
+    } catch (e) {
+      Swal.fire({
+        title: "Gagal!",
+        html: e,
+        icon: "error",
+        confirmButtonColor: "#008ecc",
+        confirmButtonText: "Coba lagi",
+      });
+
+      console.log(e);
+    }
+  } 
+
+  const onInsuranceEdit = async (insurance) => {
+    try {
+      const response = await participantAPI.update(insurance, insurance.id);
+      // console.log(response);
+
+      if (response.status == 200) {
+        let data = await response.data.data;
+        // console.log(data);
+
+        Swal.fire({
+          title: "Sukses!",
+          html: `Ubah asuransi pasien sukses`,
+          icon: "success",
+          confirmButtonColor: "#008ecc",
+        });
+      } else {
+        Swal.fire({
+          title: "Gagal!",
+          html: `Ubah asuransi pasien gagal`,
+          icon: "error",
+          confirmButtonColor: "#008ecc",
+          confirmButtonText: "Coba lagi",
+        });
+
+        throw Error(`Error status: ${response.status}`);
+      }
+    } catch (e) {
+      Swal.fire({
+        title: "Gagal!",
+        html: e,
+        icon: "error",
+        confirmButtonColor: "#008ecc",
+        confirmButtonText: "Coba lagi",
+      });
+
+      console.log(e);
     }
   }
 
@@ -865,6 +946,10 @@ const Data = ({ match }) => {
         }
       }
     }
+
+    setPatientStatus(0);
+    setPatientName('');
+    setPatientID('');
     
     setPatient({
       tipe_kitas: '',
@@ -904,18 +989,18 @@ const Data = ({ match }) => {
     setSelectWard([]);
 
     
-    // setSelectedAllergy([{ id: Math.random(), alergi: "", name: "alergi"}]);
-    setSelectedAllergy([]);
-    setAllergy([]);
+    setAllergy([{ id: "", id_pasien: patientID, id_alergi: "" }]);
+    // setSelectedAllergy([{ label: ""}]);
 
-    setInsurance([{ id: Math.random(), tipe_asuransi: "", nomor_asuransi: "", name: "tipe_asuransi" }]);
-    setSelectedInsurance([{ label: ""}]);
+    setInsurance([{ id: '', id_pasien: patientID, id_asuransi: "", id_asuransi_kelas: "", nomor_asuransi: "" }]);
+    // setSelectedInsurance([{ label: ""}]);
 
     setDataStatusPatient("add");
     setDataStatusAllergy("add");
     setDataStatusInsurance("add");
     onLoadProvinsi();
-    onLoadKelasAsuransi();
+    onLoadAlergi();
+    onLoadAsuransi();
   };
 
   const [isLoading, setIsLoading] = useState(false);
@@ -949,10 +1034,12 @@ const Data = ({ match }) => {
         })
       }
     }
+    
+    let data = null;
 
     try {
       const res = await patientAPI.get("", `/${id}`);
-      let data = res.data.data[0];
+      data = res.data.data[0];
 
       // console.log(data);
 
@@ -978,6 +1065,7 @@ const Data = ({ match }) => {
         kelurahan: data.kelurahan,
       });
 
+      setPatientName(data.nama_lengkap);
       setPatientStatus(data.is_active);
       // console.log(patient);
 
@@ -1003,20 +1091,24 @@ const Data = ({ match }) => {
         }
       })
 
-      let id_provinsi = selectedProvince.find(item => item.value === data.provinsi).key;
-      changeKota(id_provinsi, editAddress);
+      if(data.provinsi && data.kota && data.kecamatan && data.kelurahan) {
+        let id_provinsi = selectedProvince.find(item => item.value === data.provinsi).key;
+        changeKota(id_provinsi, editAddress);
+      }
     } catch (e) {
       console.log(e);
     } finally {
-      getAllergyByPatientId(patientID);
-      getInsuranceByPatientId(patientID);
+      getAllergyByPatientId(data.id);
+      getInsuranceByPatientId(data.id);
     }
+
     // console.log(dataStatusPatient);
   };
 
   const getAllergyByPatientId = async (id) => {
     setAllergy([]);
-    setSelectedAllergy([{ label: '' }]);
+    setTempAllergy([]);
+    // setSelectedAllergy([{ label: '' }]);
 
     try {
       const res = await patientAllergyAPI.getByPatient("", `/${id}`);
@@ -1025,65 +1117,64 @@ const Data = ({ match }) => {
 
       if(data) {
         data.map((data, index) => {
-          allergy.push({ id_pasien: patientID, alergi: data.alergi });
-          // selectedAllergy.push(data.alergi);
-          setSelectedAllergy((current) => [
-            ...current, data.alergi
+          // setSelectedAllergy((current) => [
+          //   ...current, data.alergi
+          // ]);
+
+          setAllergy((current) => [
+            ...current, { id: data.id, id_pasien: data.id_pasien, id_alergi: data.id_alergi }
           ]);
+
+          setTempAllergy((current) => [
+            ...current, { id: data.id, id_pasien: data.id_pasien, id_alergi: data.id_alergi }
+          ]);
+
+          // allergy.push({ id: data.id, id_pasien: data.id_pasien, id_alergi: data.id_alergi });
+          // tempAllergy.push({ id: data.id, id_pasien: data.id_pasien, id_alergi: data.id_alergi });
         })
       }
 
-      setDataStatusAllergy("edit");
+      setDataStatusAllergy("update");
     } catch (e) {
       console.log(e);
 
+      setAllergy([{ id: '', id_pasien: patientID, id_alergi: "" }]);
+      setTempAllergy([{ id: '', id_pasien: patientID, id_alergi: "" }]);
+
+      // setSelectedAllergy([{ label: '' }]);
       setDataStatusAllergy("add");
     }
   };
 
   const getInsuranceByPatientId = async (id) => {
+    setInsurance([]);
+    setTempInsurance([]);
+
     try {
-      const res = await insuranceAPI.getByPatient("", `/${id}`);
+      const res = await participantAPI.getByPatient("", `/${id}`);
       let data = res.data.data;
       // console.log('data', data);
 
       if(data) {
-        setInsurance([]);
-        setSelectedInsurance([]);
-        setSelectedInsuranceClass([]);
-
         data.map((data, index) => {
-          console('data', data);
-          console('index', index);
-          // insurance.push({ id: data.id, id_pasien: patientID, tipe_asuransi: data.tipe_asuransi, nomor_asuransi: data.nomor_asuransi });
-          //   // insurance.push({ id: Math.random(), tipe_asuransi: data.tipe_asuransi, nomor_asuransi: data.nomor_asuransi });
-          //   // selectedInsurance.push({ label: data.tipe_asuransi });
+          setInsurance((current) => [
+            ...current, { id: data.id, id_pasien: data.id_pasien, id_asuransi: data.id_asuransi, id_asuransi_kelas: data.id_asuransi_kelas, nomor_asuransi: data.nomor_asuransi }
+          ]);
 
-          // var newfieldInsurance = { id: data.id, tipe_asuransi: data.tipe_asuransi, nomor_asuransi: data.nomor_asuransi };
-          //   // console.log(newfieldInsurance);
-          // setInsurance((current) => [
-          //   ...current, newfieldInsurance
-          // ]);
-          //   // setInsurance([...insurance, newfieldInsurance]);
-          //   // insurance.push({ id: data.id, tipe_asuransi: data.tipe_asuransi, nomor_asuransi: data.nomor_asuransi });
-
-          // var newfieldDropdownInsurance = { label: data.tipe_asuransi };
-          //   // console.log(newfieldDropdownInsurance);
-          //   // setSelectedInsurance((current) => [
-          //   //   ...current, newfieldDropdownInsurance
-          //   // ]);
-          // setSelectedInsurance([...selectedInsurance, newfieldDropdownInsurance]);
-          //   // selectedInsurance.push({ label: data.tipe_asuransi });
+          setTempInsurance((current) => [
+            ...current, { id: data.id, id_pasien: data.id_pasien, id_asuransi: data.id_asuransi, id_asuransi_kelas: data.id_asuransi_kelas, nomor_asuransi: data.nomor_asuransi }
+          ]);
         })
-
-        console.log('insurance', insurance);
-        console.log('selectedInsurance', selectedInsurance);
       }
 
-      setDataStatusInsurance("edit");
+      setDataStatusInsurance("update");
     } catch (e) {
       console.log(e);
 
+      setInsurance([{ id: '', id_pasien: patientID, id_asuransi: "", id_asuransi_kelas: "", nomor_asuransi: "" }]);
+      setTempInsurance([{ id: '', id_pasien: patientID, id_asuransi: "", id_asuransi_kelas: "", nomor_asuransi: "" }]);
+
+      // setSelectedAllergy([{ label: '' }]);
       setDataStatusInsurance("add");
     }
   };
@@ -1269,6 +1360,102 @@ const Data = ({ match }) => {
     }
   };
 
+  const onDeletePatientAllergy = async (id) => {
+    try {
+      const response = await patientAllergyAPI.delete("", id);
+
+      if (response.status == 200) {
+        let data = await response.data.data;
+        // console.log(data);
+
+        Swal.fire({
+          title: "Sukses!",
+          html: `Hapus alergi pasien sukses`,
+          icon: "success",
+          confirmButtonColor: "#008ecc",
+        });
+      } else {
+        Swal.fire({
+          title: "Gagal!",
+          html: `Hapus alergi pasien gagal: ${response.message}`,
+          icon: "error",
+          confirmButtonColor: "#008ecc",
+          confirmButtonText: "Coba lagi",
+        });
+
+        throw Error(`Error status: ${response.status}`);
+      }
+
+      // console.log(response);
+    } catch (e) {
+      Swal.fire({
+        title: "Gagal!",
+        html: e,
+        icon: "error",
+        confirmButtonColor: "#008ecc",
+        confirmButtonText: "Coba lagi",
+      });
+
+      console.log(e);
+    }
+  };
+
+  const onDeletePatientInsurance = async (id) => {
+    try {
+      const response = await participantAPI.delete("", id);
+
+      if (response.status == 200) {
+        let data = await response.data.data;
+        // console.log(data);
+
+        Swal.fire({
+          title: "Sukses!",
+          html: `Hapus asuransi pasien sukses`,
+          icon: "success",
+          confirmButtonColor: "#008ecc",
+        });
+      } else {
+        Swal.fire({
+          title: "Gagal!",
+          html: `Hapus asuransi pasien gagal: ${response.message}`,
+          icon: "error",
+          confirmButtonColor: "#008ecc",
+          confirmButtonText: "Coba lagi",
+        });
+
+        throw Error(`Error status: ${response.status}`);
+      }
+
+      // console.log(response);
+    } catch (e) {
+      Swal.fire({
+        title: "Gagal!",
+        html: e,
+        icon: "error",
+        confirmButtonColor: "#008ecc",
+        confirmButtonText: "Coba lagi",
+      });
+
+      console.log(e);
+    }
+  };
+
+  // const onSubmit = async (e) => {
+  //   onPatientSubmit(e);
+
+  //   function waitForIt(){
+  //     if (patientSubmit === "process") {
+  //       setTimeout(function(){
+  //         waitForIt()
+  //       }, 100);
+  //     } else {
+  //       console.log('patientID', patientID);
+  //       console.log('allergy', allergy);
+  //       console.log('insurance', insurance);
+  //     };
+  //   }
+  // }
+
   const [currentPage, setCurrentPage] = useState(1);
   const [searchName, setSearchName] = useState("");
   const [searchStatus, setSearchStatus] = useState("");
@@ -1293,7 +1480,8 @@ const Data = ({ match }) => {
 
     getPatient(params);
     onLoadProvinsi();
-    onLoadKelasAsuransi();
+    onLoadAlergi();
+    onLoadAsuransi();
 
     if(selectedCity.length > 0 && editAddress.status === 2) {
       let id_kota = selectedCity.find(item => item.value === editAddress.nama_kota).key;
@@ -1305,8 +1493,28 @@ const Data = ({ match }) => {
       changeKelurahan(id_kecamatan, editAddress);
     }
 
+    if (patientSubmit === "done") {
+      setTimeout(() => {
+        // console.log('patientID', patientID);
+
+        if(allergy.length > 0 && patientID) {
+          // console.log('allergy', allergy);
+          onAllergySubmit();
+        }
+        
+        if(insurance.length > 0 && patientID) {
+          // console.log('insurance', insurance);
+          onInsuranceSubmit();
+        }
+
+        setTimeout(() => {
+          resetForm();
+        }, 2000)
+      }, 1000);
+    }
+
   // }, [limit, searchName, searchStatus, sortBy, sortOrder, currentPage, editAddress, patientAll, patientTotalPage]);
-  }, [limit, searchName, searchStatus, sortBy, sortOrder, currentPage, editAddress]);
+  }, [limit, searchName, searchStatus, sortBy, sortOrder, currentPage, editAddress, patientSubmit]);
 
   let startNumber = 1;
 
@@ -1817,15 +2025,14 @@ const Data = ({ match }) => {
                           //   key={index}
                           //   className="input-group-insurance"
                           // >
-                          <>
+                          <React.Fragment key={index}>
                             <Select
-                              key={index}
                               components={{ Input: CustomSelectInput }}
                               className="react-select select-allergy"
                               classNamePrefix="react-select"
                               // isMulti
-                              name="alergi"
-                              id="alergi"
+                              name="id_alergi"
+                              id="id_alergi"
                               // value={selectAllergy.filter(item => selectedAllergy.includes(item.value)) || ''}
                               value={selectAllergy.find(item => item.value === allergy[index].id_alergi) || ''}
                               options={selectAllergy}
@@ -1846,7 +2053,7 @@ const Data = ({ match }) => {
                                 <i className="simple-icon-trash"></i>
                               </Button>
                             )}
-                          </>
+                          </React.Fragment>
                           // </InputGroup>
                         );
                       })}
@@ -1866,45 +2073,75 @@ const Data = ({ match }) => {
                       <Label>Asuransi</Label>
                       {insurance.map((input, index) => {
                         return (
-                          <InputGroup
-                            key={index}
-                            className="input-group-insurance"
-                          >
-                            <Select
-                              addonType="prepend"
-                              components={{ Input: CustomSelectInput }}
-                              className="react-select select-insurance"
-                              classNamePrefix="react-select"
-                              name="tipe_asuransi"
-                              value={selectInsurance.find(item => item.value === insurance[index].tipe_asuransi) || ''}
-                              options={selectInsurance}
-                              onChange={(event) =>
-                                handleInsuranceChange(index, event)
-                              }
-                            />
-                            <Input
-                              type="text"
-                              name="nomor_asuransi"
-                              placeholder="No. Asuransi"
-                              className="input-insurance"
-                              value={insurance[index].nomor_asuransi}
-                              onChange={(event) =>
-                                handleInsuranceChange(index, event)
-                              }
-                            />
-                            {index > 0 && (
-                              <Button
-                                color="danger"
-                                style={{ float: "right" }}
-                                onClick={() =>
-                                  removeInsuranceFields(input.id, index)
-                                }
-                                className="remove-insurance"
-                              >
-                                <i className="simple-icon-trash"></i>
-                              </Button>
-                            )}
-                          </InputGroup>
+                          <Row key={index}>
+                            <Colxx sm={6}>
+                              <FormGroup>
+                                <Select
+                                  addonType="prepend"
+                                  components={{ Input: CustomSelectInput }}
+                                  className="react-select"
+                                  classNamePrefix="react-select"
+                                  name="id_asuransi"
+                                  value={selectInsurance.find(item => item.value === insurance[index].id_asuransi) || ''}
+                                  options={selectInsurance}
+                                  onChange={(event) =>
+                                    handleInsuranceChange(index, event)
+                                  }
+                                />
+                              </FormGroup>
+                            </Colxx>
+                            <Colxx sm={6}>
+                              <FormGroup>
+                                <Select
+                                  addonType="prepend"
+                                  components={{ Input: CustomSelectInput }}
+                                  className="react-select"
+                                  classNamePrefix="react-select"
+                                  name="id_asuransi_kelas"
+                                  // value={selectInsuranceClass.find(item => item.value === insurance[index].id_asuransi_kelas) || ''}
+                                  // options={selectInsuranceClass}
+                                  value={
+                                    selectInsuranceClassByInsurance[index] !== undefined &&
+                                      selectInsuranceClassByInsurance[index].find(item => item.value === insurance[index].id_asuransi_kelas) || ''
+
+                                      // selectInsuranceClassByInsurance[index].map((data, i) => 
+                                        // data.find(item => item.value === insurance[index].id_asuransi_kelas) || ''
+                                      // )
+                                  }
+                                  options={selectInsuranceClassByInsurance[index]}
+                                  onChange={(event) =>
+                                    handleInsuranceChange(index, event)
+                                  }
+                                />
+                              </FormGroup>
+                            </Colxx>
+                            <Colxx sm={12}>
+                              <InputGroup className="input-group-insurance">
+                                <Input
+                                  type="text"
+                                  name="nomor_asuransi"
+                                  placeholder="No. Asuransi"
+                                  className="input-insurance"
+                                  value={insurance[index].nomor_asuransi}
+                                  onChange={(event) =>
+                                    handleInsuranceChange(index, event)
+                                  }
+                                />
+                                {index > 0 && (
+                                  <Button
+                                    color="danger"
+                                    style={{ float: "right" }}
+                                    onClick={() =>
+                                      removeInsuranceFields(input.id, index)
+                                    }
+                                    className="remove-insurance"
+                                  >
+                                    <i className="simple-icon-trash"></i>
+                                  </Button>
+                                )}
+                              </InputGroup>
+                            </Colxx>
+                          </Row>
                         );
                       })}
                       <Button

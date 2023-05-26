@@ -4,15 +4,15 @@ import baseApi from 'service/api-general'
 
 const allergy = {
   get: (payloads, options) => {
-    const url = api.allergy.all + options
+    const url = api.allergy + options
     return baseApi.get(url, payloads, { headers: getOriginHeader() })
   },
   add: (payloads) => {
-    const url = api.allergy.all
+    const url = api.allergy
     return baseApi.post(url, payloads, { headers: getOriginHeader() })
   },
   update: (payloads, id) => {
-    const url = api.allergy.all + id
+    const url = api.allergy + `/${id}`
     return baseApi.put(url, payloads, { headers: getOriginHeader() })
   },
 }
