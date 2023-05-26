@@ -115,10 +115,11 @@ const Data = ({ match }) => {
   const dispatch = useDispatch();
   const queueAll = useSelector(state => state.queue);
   const queueTotalPage = useSelector(state => state.queueTotalPage);
-  const allRecord = useSelector(state => state.allRecordByPatient);
+  // const allRecord = useSelector(state => state.allRecordByPatient);
   const [dataStatus, setDataStatus] = useState("add");
   const [rowSelected, setRowSelected] = useState(null);
 
+  const [allRecord, setAllRecord] = useState([]);
   const [selectedDivision, setSelectedDivision] = useState('');
   const [selectedDivisionF, setSelectedDivisionF] = useState([{ label: "Semua", value: "", key: 0, name: 'id_klinik' }]);
   const [selectedDisease, setSelectedDisease] = useState([]);
@@ -164,8 +165,8 @@ const Data = ({ match }) => {
   const resetForm = (e) => {
     e.preventDefault();
 
-    dispatch({type: "GET_ALL_RECORD_BY_PATIENT", payload: []});
-    // setAllRecord([]);
+    // dispatch({type: "GET_ALL_RECORD_BY_PATIENT", payload: []});
+    setAllRecord([]);
 
     setVitalSigns({
       id_pasien: patientID,
@@ -272,12 +273,14 @@ const Data = ({ match }) => {
   };
   
   const getAllRecordByPatientId = async (e, id) => {
-    dispatch({type: "GET_ALL_RECORD_BY_PATIENT", payload: []});
+    // dispatch({type: "GET_ALL_RECORD_BY_PATIENT", payload: []});
+    setAllRecord([]);
 
     try {
       const res = await recordAPI.getByPatient("", `/${id}`);
       let data = res.data.data;
-      dispatch({type: "GET_ALL_RECORD_BY_PATIENT", payload: data});
+      // dispatch({type: "GET_ALL_RECORD_BY_PATIENT", payload: data});
+      setAllRecord(data);
     } catch (e) {
       console.log(e);
     }
@@ -310,7 +313,7 @@ const Data = ({ match }) => {
     getQueue(params);
     
   // }, [limit, search, searchDivisi, sortBy, sortOrder, currentPage, queueAll, queueTotalPage, allRecord]);
-  }, [limit, searchName, searchDivisi, sortBy, sortOrder, currentPage, allRecord]);
+  }, [limit, searchName, searchDivisi, sortBy, sortOrder, currentPage]);
 
   let startNumber = 1;
 

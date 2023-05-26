@@ -387,6 +387,8 @@ const FormRecord = ({ match, history }) => {
       dataCheckup[index][event.target.name] = event.target.value;
     }
 
+    console.log(dataCheckup);
+
     setCheckup(dataCheckup);
     selectLabTreatmentArray = displaySelectTreatmentArray;
   };
@@ -467,9 +469,9 @@ const FormRecord = ({ match, history }) => {
     setService(dataService);
   };
 
-  const [reference, setReference] = useState([
+  const [reference, setReference] = useState(
     { id: '', id_kunjungan: recordID, id_poli: "", id_rs: "", anamnesis: "", terapi: "", catatan: "" }
-  ]);
+  );
   
   const [diagnoseReference, setDiagnoseReference] = useState([
     { id: '', id_rujukan: referenceID, id_penyakit: "", tipe_wd: false, tipe_dd: false }
@@ -546,7 +548,7 @@ const FormRecord = ({ match, history }) => {
       })
     }
 
-    // console.log('reference', reference);
+    console.log('reference', reference);
   };
 
   const onRecordSubmit = async (e) => {
@@ -1134,7 +1136,7 @@ const FormRecord = ({ match, history }) => {
     setReferenceSubmit("process");
     reference.id_kunjungan = recordID;
 
-    // console.log(reference);
+    console.log(reference);
     if(dataStatusReference === 'add') {
       try {
         const response = await referenceAPI.add(reference);
@@ -1338,7 +1340,7 @@ const FormRecord = ({ match, history }) => {
   }
 
   const resetForm = (e) => {
-    e.preventDefault();
+    // e.preventDefault();
 
     setRecord({
       id_jaga: watchID,
@@ -2079,7 +2081,7 @@ const FormRecord = ({ match, history }) => {
 
         setTimeout(() => {
           // if (recordSubmit === "idle") {
-            resetForm(e);
+            // resetForm();
             history.push("/record");
           // }
         }, 5000)
