@@ -387,7 +387,7 @@ const FormRecord = ({ match, history }) => {
       dataCheckup[index][event.target.name] = event.target.value;
     }
 
-    console.log(dataCheckup);
+    // console.log(dataCheckup);
 
     setCheckup(dataCheckup);
     selectLabTreatmentArray = displaySelectTreatmentArray;
@@ -1857,6 +1857,7 @@ const FormRecord = ({ match, history }) => {
           setCheckup((current) => [
             ...current, { id: data.id, id_kunjungan: data.id_kunjungan, id_lab: data.id_lab, id_pemeriksaan: data.id_pemeriksaan }
           ]);
+          changeLayananLab(index, data.id_lab);
 
           setTempCheckup((current) => [
             ...current, { id: data.id, id_kunjungan: data.id_kunjungan, id_lab: data.id_lab, id_pemeriksaan: data.id_pemeriksaan }
@@ -2084,10 +2085,22 @@ const FormRecord = ({ match, history }) => {
             // resetForm();
             history.push("/record");
           // }
-        }, 5000)
+        }, 5000);
       }, 3000);
     }
-  }, [ recordSubmit ]);
+
+    if(dataStatusCheckup === "update" && checkup[0].id !== ''){
+      let dataCheckup = [...checkup];
+
+      for (var i = 0; i < dataCheckup.length; i++) {
+        dataCheckup[i]['id_pemeriksaan'] = checkup[i].id_pemeriksaan;
+      }
+
+      setTimeout(() => {
+        setCheckup(dataCheckup);
+      }, 5000);
+    }
+  }, [ recordSubmit, dataStatusCheckup ]);
 
   const onDeleteRecordDiagnose = async (id) => {
     try {

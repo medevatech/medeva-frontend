@@ -1475,8 +1475,19 @@ const Data = ({ match }) => {
       }, 1000);
     }
 
+    // if(dataStatusInsurance === "update" && insurance[0].id !== ''){
+      // let dataInsurance = [...insurance];
+      // console.log(dataInsurance);
+      // dataInsurance[index]['id_asuransi_kelas'] = id_asuransi_kelas;
+      // setInsurance(dataInsurance);
+      
+      // setTimeout(() => {
+
+      // }, 5000);
+    // }
+
   // }, [limit, searchName, searchStatus, sortBy, sortOrder, currentPage, editAddress, patientAll, patientTotalPage]);
-  }, [limit, searchName, searchStatus, sortBy, sortOrder, currentPage, editAddress, patientSubmit]);
+  }, [limit, searchName, searchStatus, sortBy, sortOrder, currentPage, editAddress, patientSubmit, dataStatusInsurance]);
 
   let startNumber = 1;
 
