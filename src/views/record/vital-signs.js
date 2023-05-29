@@ -419,6 +419,8 @@ const VitalSigns = ({ match }) => {
       params = `${params}&page=${currentPage}`;
     }
 
+    setRowSelected(false);
+
     getQueue(params);
     onLoadDivisi();
 
@@ -516,7 +518,7 @@ const VitalSigns = ({ match }) => {
                     </tr>
                   </thead>
                   <tbody>
-                  {isLoading ? (
+                  {isLoading && rowSelected == false ? (
                     <tr>
                       <td>&nbsp;</td>
                       <td align="center" colSpan={2}>
@@ -625,6 +627,7 @@ const VitalSigns = ({ match }) => {
                   currentPage={currentPage}
                   totalPage={queueTotalPage}
                   onChangePage={(i) => setCurrentPage(i)}
+                  numberLimit={queueTotalPage}
                 />
               </CardBody>
             </Card>

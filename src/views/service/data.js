@@ -420,9 +420,13 @@ const Data = ({ match, history, loading, error }) => {
     }
   };
 
-  const [searchName, setSearchName] = useState("");
+  const [searchDaftarLayanan, setSearchName] = useState("");
   const [searchStatus, setSearchStatus] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [ limit, searchDaftarLayanan, searchStatus, sortBy, sortOrder ]);
 
   useEffect(() => {
     let params = "";
@@ -432,8 +436,8 @@ const Data = ({ match, history, loading, error }) => {
     } else {
       params = `${params}?limit=10`;
     }
-    if (searchName !== "") {
-      params = `${params}&searchName=${searchName}`;
+    if (searchDaftarLayanan !== "") {
+      params = `${params}&searchDaftarLayanan=${searchDaftarLayanan}`;
     }
     if (searchStatus !== "") {
       params = `${params}&searchStatus=${searchStatus}`;
@@ -442,9 +446,11 @@ const Data = ({ match, history, loading, error }) => {
       params = `${params}&page=${currentPage}`;
     }
 
+    setRowSelected(false);
+
     getService(params);
 
-  }, [limit, searchName, searchStatus, sortBy, sortOrder, currentPage ]);
+  }, [limit, searchDaftarLayanan, searchStatus, sortBy, sortOrder, currentPage ]);
 
   let startNumber = 1;
 
@@ -508,7 +514,7 @@ const Data = ({ match, history, loading, error }) => {
                   </tr>
                 </thead>
                 <tbody>
-                {isLoading ? (
+                {isLoading && rowSelected == false ? (
                   <tr>
                     <td>&nbsp;</td>
                     <td align="center">
@@ -556,6 +562,7 @@ const Data = ({ match, history, loading, error }) => {
                 currentPage={currentPage}
                 totalPage={serviceTotalPage}
                 onChangePage={(i) => setCurrentPage(i)}
+                numberLimit={serviceTotalPage}
               />
             </CardBody>
           </Card>

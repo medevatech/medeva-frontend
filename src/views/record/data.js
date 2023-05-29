@@ -284,6 +284,10 @@ const Data = ({ match }) => {
   const [searchDivisi, setSearchDivisi] = useState("");
 
   useEffect(() => {
+    setCurrentPage(1);
+  }, [ limit, searchName, searchDivisi, sortBy, sortOrder ]);
+
+  useEffect(() => {
     let params = "";
     if (limit !== "10") {
       params = `${params}?limit=${limit}`;
@@ -302,6 +306,8 @@ const Data = ({ match }) => {
     if (currentPage !== "1") {
       params = `${params}&page=${currentPage}`;
     }
+
+    setRowSelected(false);
 
     getQueue(params);
     
@@ -392,7 +398,7 @@ const Data = ({ match }) => {
                     </tr>
                   </thead>
                   <tbody>
-                  {isLoading ? (
+                  {isLoading && rowSelected == false ? (
                     <tr>
                       <td>&nbsp;</td>
                       <td align="center" colSpan={2}>
@@ -437,6 +443,7 @@ const Data = ({ match }) => {
                   currentPage={currentPage}
                   totalPage={queueTotalPage}
                   onChangePage={(i) => setCurrentPage(i)}
+                  numberLimit={queueTotalPage}
                 />
               </CardBody>
             </Card>

@@ -470,6 +470,10 @@ const Data = ({ match, history, loading, error }) => {
   const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
+    setCurrentPage(1);
+  }, [ limit, searchName, searchKlinik, searchStatus, sortBy, sortOrder ]);
+
+  useEffect(() => {
     let params = "";
     
     if (limit !== 10) {
@@ -489,6 +493,8 @@ const Data = ({ match, history, loading, error }) => {
     if (currentPage !== 1) {
       params = `${params}&page=${currentPage}`;
     }
+
+    setRowSelected(false);
 
     getDivision(params);
     onLoadKlinik();
@@ -580,7 +586,7 @@ const Data = ({ match, history, loading, error }) => {
                   </tr>
                 </thead>
                 <tbody>
-                {isLoading ? (
+                {isLoading && rowSelected == false ? (
                   <tr>
                     <td>&nbsp;</td>
                     <td align="center">
@@ -629,6 +635,7 @@ const Data = ({ match, history, loading, error }) => {
                 currentPage={currentPage}
                 totalPage={divisionTotalPage}
                 onChangePage={(i) => setCurrentPage(i)}
+                numberLimit={divisionTotalPage}
               />
             </CardBody>
           </Card>

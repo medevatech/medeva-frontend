@@ -1426,6 +1426,10 @@ const Data = ({ match }) => {
   const [searchStatus, setSearchStatus] = useState("");
 
   useEffect(() => {
+    setCurrentPage(1);
+  }, [ limit, searchName, searchStatus, sortBy, sortOrder ]);
+
+  useEffect(() => {
     let params = "";
     
     if (limit !== 10) {
@@ -1442,6 +1446,8 @@ const Data = ({ match }) => {
     if (currentPage !== 1) {
       params = `${params}&page=${currentPage}`;
     }
+
+    setRowSelected(false);
 
     getPatient(params);
     onLoadProvinsi();
@@ -1551,7 +1557,7 @@ const Data = ({ match }) => {
                   </tr>
                 </thead>
                 <tbody>
-                {isLoading ? (
+                {isLoading && rowSelected == false ? (
                   <tr>
                     <td>&nbsp;</td>
                     <td align="center">
@@ -1600,6 +1606,7 @@ const Data = ({ match }) => {
                 currentPage={currentPage}
                 totalPage={patientTotalPage}
                 onChangePage={(i) => setCurrentPage(i)}
+                numberLimit={patientTotalPage}
               />
             </CardBody>
           </Card>
