@@ -328,6 +328,16 @@ label {
     pointer-events: none;
 }
 
+#record-accordion .btn-link {
+    cursor: initial;
+    font-weight: 600;
+}
+
+#record-accordion .btn-link:hover, #record-accordion .btn-link:active, #record-accordion .btn-link:focus, #record-accordion .btn-link:visited {
+    color: #008ecc;
+    text-decoration: none;
+}
+
 @media (max-width: 1280px) {
     .remove-diagnosis, .remove-reciept {
         padding: 0.5rem 0.5rem 0.5rem 0.5rem;
