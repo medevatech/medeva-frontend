@@ -232,10 +232,8 @@ const TopNav = ({
               </span>
             </DropdownToggle>
             <DropdownMenu className="mt-3" right style={{ paddingBottom: '0px' }}>
-              <DropdownItem onClick={() => history.push("/profile")}>
-                Edit Profil
-              </DropdownItem>
-              <DropdownItem>Jadwal Jaga</DropdownItem>
+              <DropdownItem onClick={() => history.push("/profile")}>Profil Akun</DropdownItem>
+              <DropdownItem onClick={() => history.push("/individual-schedule")}>Jadwal Jaga</DropdownItem>
               <DropdownItem divider style={{ marginBottom: '0px' }}/>
               <DropdownItem onClick={() => handleLogout()} style={{ backgroundColor: '#8aaab4', color: '#fff' }}>
                 Log out
