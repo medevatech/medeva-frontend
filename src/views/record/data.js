@@ -189,6 +189,31 @@ const Data = ({ match }) => {
     setShowRecord('none');
   };
 
+  const onLoadDivisi = async () => {
+    try {
+      const response = await divisionAPI.get("", "?limit=1000");
+      // console.log(response);
+
+      setSelectedDivisionF([{ label: "Semua", value: "", key: 0, name: 'id_divisi' }]);
+
+      if (response.status === 200) {
+        let data = response.data.data;
+        // console.log(data);
+      
+        for (var i = 0; i < data.length; i++) {
+          setSelectedDivisionF((current) => [
+            ...current,
+            { label: data[i].nama_divisi, value: data[i].id, key: data[i].id, name: 'id_divisi' },
+          ]);
+        }
+      } else {
+        throw Error(`Error status: ${response.status}`);
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
   const [isLoading, setIsLoading] = useState(false);
 
   const getQueue = async (params) => {
@@ -310,6 +335,7 @@ const Data = ({ match }) => {
     setRowSelected(false);
 
     getQueue(params);
+    onLoadDivisi();
     
   // }, [limit, search, searchDivisi, sortBy, sortOrder, currentPage, queueAll, queueTotalPage, allRecord]);
   }, [limit, searchName, searchDivisi, sortBy, sortOrder, currentPage]);

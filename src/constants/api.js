@@ -22,8 +22,18 @@ const api = {
     archive: '/divisi/archive',
     activate: '/divisi/activate'
   },
-  shift: '/shift',
-  schedule: '/jaga',
+  shift: {
+    all: "/shift",
+    byClinic: "/shift/clinic",
+    archive: "/shift/archive",
+    activate: "/shift/activate",
+    delete: "/shift",
+  },
+  schedule: {
+    all: "/jaga",
+    ondvs: "/jaga/on-divisi",
+    archive: "/jaga/archive",
+  },
   patient: {
     all: '/pasien',
     archive: '/pasien/archive',

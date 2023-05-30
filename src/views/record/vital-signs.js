@@ -244,7 +244,7 @@ const VitalSigns = ({ match }) => {
         for (var i = 0; i < data.length; i++) {
           setSelectedDivisionF((current) => [
             ...current,
-            { label: data[i].tipe, value: data[i].id, key: data[i].id, name: 'id_divisi' },
+            { label: data[i].nama_divisi, value: data[i].id, key: data[i].id, name: 'id_divisi' },
           ]);
         }
       } else {

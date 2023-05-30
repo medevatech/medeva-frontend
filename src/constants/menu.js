@@ -13,13 +13,13 @@ const data = [
     to: `/patient`,
     roles: [ "isDev", "isResepsionis", "isPerawat", "isDokter" ],
   },
-  // {
-  //   id: 'queue',
-  //   icon: 'iconsminds-profile',
-  //   label: 'Antrian',
-  //   to: `/queue`,
-  //   roles: [ "isDev", "isResepsionis", "isPerawat", "isDokter" ],
-  // },
+  {
+    id: 'queue',
+    icon: 'iconsminds-profile',
+    label: 'Antrian',
+    to: `/queue`,
+    roles: [ "isDev", "isResepsionis", "isPerawat", "isDokter" ],
+  },
   {
     id: 'record',
     icon: 'iconsminds-stethoscope',
@@ -93,6 +93,13 @@ const data = [
         roles: [ "isDev", "isManager", "isAdmin" ],
       },
     ]
+  },
+  {
+    id: 'schedule',
+    icon: 'iconsminds-calendar-4',
+    label: 'Jadwal Jaga',
+    to: `/schedule`,
+    roles: [ "isDev", "isManager", "isAdmin", "isResepsionis", "isPerawat", "isDokter" ],
   },
   // {
   //   id: 'schedule',

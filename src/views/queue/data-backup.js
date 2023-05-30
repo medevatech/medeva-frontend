@@ -400,7 +400,6 @@ const Data = ({ match }) => {
   const [searchDivisi, setSearchDivisi] = useState("");
   const [searchDivisiF, setSearchDivisiF] = useState("");
   const [searchDivisiName, setSearchDivisiName] = useState("");
-  const [searchEmployee, setSearchEmployee] = useState("");
 
   useEffect(() => {
     let params = "";
@@ -409,17 +408,17 @@ const Data = ({ match }) => {
     } else {
       params = `${params}?limit=10`;
     }
-    if (currentPage !== "1") {
-      params = `${params}&page=${currentPage}`;
-    }
     if (searchDivisiF !== "") {
       params = `${params}&searchDivisi=${searchDivisiF}`;
     }
     if (searchDivisiName !== "") {
       params = `${params}&searchDivisiName=${searchDivisiName}`;
     }
+    if (currentPage !== "1") {
+      params = `${params}&page=${currentPage}`;
+    }
     getSchedule(params);
-    getScheduleById(searchEmployee);
+    getScheduleById(searchDivisi);
     // onLoadDivisi();
     // onLoadQueueByDivisi();
   }, [
@@ -427,7 +426,7 @@ const Data = ({ match }) => {
     searchName,
     searchDivisiF,
     searchDivisiName,
-    searchEmployee,
+    searchDivisi,
     sortBy,
     sortOrder,
     currentPage,
@@ -496,11 +495,6 @@ const Data = ({ match }) => {
     } catch (e) {
       console.log(e);
     }
-  };
-
-  const onChangeId = (idDivisi, idKaryawan) => {
-    setSearchDivisi(idDivisi);
-    setSearchEmployee(idKaryawan);
   };
 
   useEffect(() => {
@@ -736,7 +730,7 @@ const Data = ({ match }) => {
                     scheduleAll.map((data) => (
                       <tr
                         key={data.id}
-                        onClick={() => onChangeId(data.id_divisi, data.id)}
+                        onClick={() => setSearchDivisi(data.id_divisi)}
                         style={{ cursor: "pointer" }}
                       >
                         <th
@@ -749,7 +743,7 @@ const Data = ({ match }) => {
                           {startNumber++}
                         </th>
                         <td>
-                          <h6 style={{ fontWeight: "bold" }}>{data.tipe}</h6>
+                          <h6 style={{ fontWeight: "bold" }}>{data.divisi}</h6>
                           {data.nama_karyawan}
                           <br />
                         </td>
@@ -763,7 +757,7 @@ const Data = ({ match }) => {
                             color="secondary"
                             size="xs"
                             className="button-xs"
-                            onClick={() => onChangeId(data.id_divisi, data.id)}
+                            onClick={() => setSearchDivisi(data.id_divisi)}
                           >
                             <i className="simple-icon-arrow-right-circle"></i>
                           </Button>{" "}
@@ -797,12 +791,13 @@ const Data = ({ match }) => {
               <CardTitle>
                 <Row>
                   <Colxx sm="6" md="6" xl="6">
+                    Daftar Antrian Poli / Divisi{" "}
                     {schedule ? (
                       <>
-                        Daftar Antrian {schedule.tipe} <br />
+                        <br />
                         <br />
                         <p>{schedule.nama_karyawan}</p>
-                        {/* <p style={{ fontWeight: "normal" }}>{schedule.tipe}</p> */}
+                        <p style={{ fontWeight: "normal" }}>{schedule.tipe}</p>
                       </>
                     ) : (
                       ""
@@ -838,7 +833,7 @@ const Data = ({ match }) => {
                 </Row>
               </CardTitle>
               <Row>
-                <Colxx sm={12}>
+                <Colxx xxs="12">
                   {/* <h5 className="mb-4">
                     <IntlMessages id="sortable.basic" />
                   </h5> */}
@@ -1015,7 +1010,7 @@ const Data = ({ match }) => {
                           </tbody>
                         </Table>
                       </ReactSortable> */}
-                  <Table striped>
+                  <Table>
                     <thead>
                       <tr>
                         <th
@@ -1024,7 +1019,7 @@ const Data = ({ match }) => {
                             verticalAlign: "middle",
                           }}
                         >
-                          #
+                          No. Antrian
                         </th>
                         <th
                           style={{
@@ -1066,6 +1061,7 @@ const Data = ({ match }) => {
                         >
                           No. Kitas
                         </th>
+                        <th>&nbsp;</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -1098,7 +1094,7 @@ const Data = ({ match }) => {
                                 verticalAlign: "middle",
                               }}
                             >
-                              <h6 className="mt-2">
+                              <h7 className="mt-2">
                                 {data.prioritas === 1 ? (
                                   <Button
                                     color="danger"
@@ -1112,7 +1108,7 @@ const Data = ({ match }) => {
                                   </Button>
                                 ) : data.prioritas === 2 ? (
                                   <Button
-                                    color="warning"
+                                    color="primary"
                                     className=""
                                     size="xs"
                                     onClick={(e) =>
@@ -1135,7 +1131,7 @@ const Data = ({ match }) => {
                                 ) : (
                                   "0"
                                 )}
-                              </h6>
+                              </h7>
                             </td>
                             <td
                               style={{
@@ -1143,7 +1139,7 @@ const Data = ({ match }) => {
                                 verticalAlign: "middle",
                               }}
                             >
-                              <h6 className="mt-2">{data.nama_lengkap}</h6>
+                              <h7 className="mt-2">{data.nama_lengkap}</h7>
                             </td>
                             <td
                               style={{
@@ -1151,9 +1147,9 @@ const Data = ({ match }) => {
                                 verticalAlign: "middle",
                               }}
                             >
-                              <h6 className="mt-2">
+                              <h7 className="mt-2">
                                 {data.jenis_kelamin.substring(0, 1)}
-                              </h6>
+                              </h7>
                             </td>
                             <td
                               style={{
@@ -1161,12 +1157,12 @@ const Data = ({ match }) => {
                                 verticalAlign: "middle",
                               }}
                             >
-                              <h6 className="mt-2">
+                              <h7 className="mt-2">
                                 {new Date().getFullYear() -
                                   data.tanggal_lahir.substring(0, 4)}{" "}
                                 tahun
                                 <br />
-                              </h6>
+                              </h7>
                             </td>
                             <td
                               style={{
@@ -1174,7 +1170,7 @@ const Data = ({ match }) => {
                                 verticalAlign: "middle",
                               }}
                             >
-                              <h6 className="mt-2">{data.nomor_kitas}</h6>
+                              <h7 className="mt-2">{data.nomor_kitas}</h7>
                             </td>
                           </tr>
                         ))

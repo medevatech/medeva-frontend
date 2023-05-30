@@ -6,7 +6,7 @@ import AppLayout from 'layout/AppLayout';
 import { ProtectedRoute } from 'helpers/authHelper';
 
 const Data = React.lazy(() =>
-  import(/* webpackChunkName: "views-queue-data" */ './data')
+  import(/* webpackChunkName: "views-queue-data" */ './data-backup')
 );
 
 const App = ({ match }) => {
