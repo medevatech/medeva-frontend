@@ -61,17 +61,15 @@ const selectEmployee = [
 ];
 
 const selectDays = [
-  { label: "Pilih Hari", value: "", key: 0, name: "hari" },
-  { label: "Senin", value: "Senin", key: 1, name: "hari" },
-  { label: "Selasa", value: "Selasa", key: 2, name: "hari" },
-  { label: "Rabu", value: "Rabu", key: 3, name: "hari" },
-  { label: "Kamis", value: "Kamis", key: 4, name: "hari" },
-  { label: "Jumat", value: "Jumat", key: 5, name: "hari" },
-  { label: "Sabtu", value: "Sabtu", key: 6, name: "hari" },
-  { label: "Minggu", value: "Minggu", key: 7, name: "hari" },
+  { label: "Pilih Hari", value: 0, key: 0, name: "hari" },
+  { label: "Senin", value: 1, key: 1, name: "hari" },
+  { label: "Selasa", value: 2, key: 2, name: "hari" },
+  { label: "Rabu", value: 3, key: 3, name: "hari" },
+  { label: "Kamis", value: 4, key: 4, name: "hari" },
+  { label: "Jumat", value: 5, key: 5, name: "hari" },
+  { label: "Sabtu", value: 6, key: 6, name: "hari" },
+  { label: "Minggu", value: 7, key: 7, name: "hari" },
 ];
-
-let shiftId = "";
 
 const Data = ({ match }) => {
   const dispatch = useDispatch();
@@ -79,23 +77,21 @@ const Data = ({ match }) => {
   const clinicAll = useSelector((state) => state.clinic);
   const shiftAll = useSelector((state) => state.shift);
   const [dataStatus, setDataStatus] = useState("add");
-  const [selectedDivision, setSelectedDivision] = useState([]);
-  const [selectedDays, setSelectedDays] = useState([]);
-  const [selectedClinic, setSelectedClinic] = useState([]);
-  const [selectedType, setSelectedType] = useState([]);
+  const [rowSelected, setRowSelected] = useState(null);
+  const [selectedDivision, setSelectedDivision] = useState([
+    { label: "Semua", value: "", key: 0, name: "id_divisi" },
+  ]);
+  const [selectedClinic, setSelectedClinic] = useState([
+    { label: "Semua", value: "", key: 0, name: "id_klinik" },
+  ]);
   const [selectedEmployee, setSelectedEmployee] = useState([
     { label: "Pilih Karyawan", value: "", key: 0, name: "id_karyawan" },
   ]);
   const [isLoading, setIsLoading] = useState(false);
   const [searchDivision, setSearchDivision] = useState("");
 
-  // const [startShiftTime, setStartShiftTime] = useState(new Date());
-  // const [endShiftTime, setEndShiftTime] = useState(new Date());
-
   const [clinicId, setClinicId] = useState("");
   const [divisionId, setDivisionId] = useState("");
-  // const [shiftId, setShiftId] = useState("");
-  const [keepId, setKeepId] = useState("");
 
   const [shift, setShift] = useState([
     {
@@ -109,28 +105,6 @@ const Data = ({ match }) => {
       waktu_selesai: "",
     },
   ]);
-
-  // const [keep, setKeep] = useState([
-  //   {
-  //     id: "",
-  //     id_klinik: clinicId,
-  //     id_divisi: divisionId,
-  //     id_shift: shiftId,
-  //     id_karyawan: "",
-  //   },
-  // ]);
-
-  // // console.log(keep);
-
-  // const [tempKeep, setTempKeep] = useState([
-  //   {
-  //     id: "",
-  //     id_klinik: clinicId,
-  //     id_divisi: divisionId,
-  //     id_shift: shiftId,
-  //     id_karyawan: "",
-  //   },
-  // ]);
 
   const [tempShift, setTempShift] = useState({
     id: "",
@@ -170,7 +144,7 @@ const Data = ({ match }) => {
   };
 
   const handleShiftChange = (index, event, waktu = null) => {
-    // console.log(event);
+    console.log(event);
     let dataShift = [...shift];
     if (waktu === "tanggal") {
       dataShift[index]["tanggal"] = event;
@@ -194,17 +168,9 @@ const Data = ({ match }) => {
     setShift(dataShift);
   };
 
-  // const onChange = (e) => {
-  //   if (e.name === "id_klinik") {
-  //     setClinicId(e.value);
-  //   } else if (e.name === "id_divisi") {
-  //     setDivisionId(e.value);
-  //   }
-  //   console.log(clinicId);
-  //   console.log(divisionId);
-  // };
-
   const handleChangeId = (idClinic, idDivision) => {
+    setRowSelected(idDivision);
+
     getScheduleByDivisionId(idDivision);
     setClinicId(idClinic);
     setDivisionId(idDivision);
@@ -216,21 +182,6 @@ const Data = ({ match }) => {
     for (var i = 0; i < shift.length; i++) {
       shift[i].id_klinik = clinicId;
       shift[i].id_divisi = divisionId;
-      const newStartTime = new Date(shift[i].tanggal).setHours(
-        new Date(shift[i].waktu_mulai).getHours(),
-        new Date(shift[i].waktu_mulai).getMinutes(),
-        new Date(shift[i].waktu_mulai).getSeconds()
-      );
-      const newEndTime = new Date(shift[i].tanggal).setHours(
-        new Date(shift[i].waktu_selesai).getHours(),
-        new Date(shift[i].waktu_selesai).getMinutes(),
-        new Date(shift[i].waktu_selesai).getSeconds()
-      );
-      // const offset = shift[i].tanggal.getTimezoneOffset();
-      // const tempTanggal = new Date(
-      //   shift[i].tanggal.getTime() - offset * 60 * 1000
-      // );
-      // return shift[i].tanggal.toISOString().split("T")[0];
       const tmp = {
         id: shift[i].id,
         id_karyawan: shift[i].id_karyawan,
@@ -238,20 +189,8 @@ const Data = ({ match }) => {
         id_divisi: shift[i].id_divisi,
         hari: shift[i].hari,
         tanggal: shift[i].tanggal,
-        waktu_mulai: new Date(newStartTime).toISOString(),
-        waktu_selesai: new Date(newEndTime).toISOString(),
-        // waktu_mulai:
-        //   shift[i].waktu_mulai?.toLocaleTimeString("default", {
-        //     hour: "2-digit",
-        //     hour12: false,
-        //     minute: "2-digit",
-        //   }) || "",
-        // waktu_selesai:
-        //   shift[i].waktu_selesai?.toLocaleTimeString("default", {
-        //     hour: "2-digit",
-        //     hour12: false,
-        //     minute: "2-digit",
-        //   }) || "",
+        waktu_mulai: shift[i].waktu_mulai,
+        waktu_selesai: shift[i].waktu_selesai,
       };
       if (
         tmp.id !== "" &&
@@ -265,49 +204,8 @@ const Data = ({ match }) => {
       } else if (tmp.id === "") {
         onShiftAdd(tmp, tmp.id_karyawan);
       }
-      // if (shift[i].id_karyawan !== "" && shiftId) {
-      //   onKeepSubmit;
-      // }
     }
   };
-
-  // const onKeepSubmit = async (e) => {
-  //   e.preventDefault();
-  //   console.log("kelinik", clinicId);
-  //   for (var i = 0; i < shift.length; i++) {
-  //     keep[i].id_klinik = clinicId;
-  //     keep[i].id_divisi = divisionId;
-  //     keep[i].id_shift = shiftId;
-  //     keep[i].id_karyawan = shift[i].id_karyawan;
-  //     if (
-  //       keep[i].id !== "" &&
-  //       (keep[i].id_karyawan !== tempKeep[i].id_karyawan ||
-  //         keep[i].id_shift !== tempKeep[i].id_shift ||
-  //         keep[i].id_divisi !== tempKeep[i].id_divisi ||
-  //         keep[i].id_klinik !== tempKeep[i].id_klinik)
-  //     ) {
-  //       onKeepEdit(keep[i]);
-  //     } else if (keep[i].id === "") {
-  //       console.log(keep);
-  //       onKeepAdd(keep[i]);
-  //     }
-  //     // if (!keep?.length) {
-  //     //   onKeepAdd(shift);
-  //     //   return;
-  //     // }
-  //     // if (
-  //     //   keep[i].id !== "" &&
-  //     //   (keep[i].id_karyawan !== tempKeep[i].id_karyawan ||
-  //     //     keep[i].id_shift !== tempKeep[i].id_shift ||
-  //     //     keep[i].id_divisi !== tempKeep[i].id_divisi ||
-  //     //     keep[i].id_klinik !== tempKeep[i].id_klinik)
-  //     // ) {
-  //     //   onKeepEdit(keep[i]);
-  //     // } else if (keep[i].id === "") {
-  //     //   onKeepAdd(keep[i]);
-  //     // }
-  //   }
-  // };
 
   const onShiftAdd = async (shift, idKaryawan) => {
     try {
@@ -315,8 +213,6 @@ const Data = ({ match }) => {
       console.log("shift add", response);
       if (response.status === 200) {
         let data = await response.data.data;
-        // setShiftId(data.id);
-        shiftId = data.id;
         console.log("shift add", data);
         Swal.fire({
           title: "Sukses!",
@@ -324,7 +220,6 @@ const Data = ({ match }) => {
           icon: "success",
           confirmButtonColor: "#008ecc",
         });
-        // setShiftId(data.id);
       } else {
         Swal.fire({
           title: "Gagal!",
@@ -496,7 +391,9 @@ const Data = ({ match }) => {
   const onLoadClinic = async () => {
     try {
       const response = await clinicAPI.get("", "?limit=1000");
-      setSelectedClinic([]);
+      setSelectedClinic([
+        { label: "Semua", value: "", key: 0, name: "id_klinik" },
+      ]);
       if (response.status === 200) {
         let data = response.data.data;
         console.log("shift klinik data", data);
@@ -523,7 +420,9 @@ const Data = ({ match }) => {
     try {
       const response = await divisionAPI.get("", "?limit=1000");
       console.log("shift divisi", response);
-      setSelectedDivision([]);
+      setSelectedDivision([
+        { label: "Semua", value: "", key: 0, name: "id_divisi" },
+      ]);
       if (response.status === 200) {
         let data = response.data.data;
         console.log("shift divisi data", data);
@@ -582,8 +481,6 @@ const Data = ({ match }) => {
       console.log("databy", data);
       if (data) {
         data.map((data, index) => {
-          // const tmpStart = new Date(data.waktu_mulai);
-          // const tmpEnd = new Date(data.waktu_mulai);
           const tmpDate = new Date(data.tanggal);
           const tmpStart = new Date(data.waktu_mulai);
           const tmpEnd = new Date(data.waktu_selesai);
@@ -591,6 +488,8 @@ const Data = ({ match }) => {
             ...current,
             {
               id: data.id,
+              id_klinik: data.id_klinik,
+              id_divisi: data.id_divisi,
               id_karyawan: data.id_karyawan,
               hari: data.hari,
               tanggal: new Date(tmpDate),
@@ -602,6 +501,8 @@ const Data = ({ match }) => {
             ...current,
             {
               id: data.id,
+              id_klinik: data.id_klinik,
+              id_divisi: data.id_divisi,
               id_karyawan: data.id_karyawan,
               hari: data.hari,
               tanggal: new Date(tmpDate),
@@ -694,15 +595,6 @@ const Data = ({ match }) => {
           <Card className="mb-4">
             <CardBody>
               <CardTitle className="mb-4">Data Jadwal Jaga</CardTitle>
-              {/* <FormGroup className="mt-4">
-                <Label for="jadwalCari">Tanggal</Label>
-                <Input
-                  type="date"
-                  name="jadwalCari"
-                  id="jadwalCari"
-                  placeholder="Tanggal"
-                />
-              </FormGroup> */}
               <FormGroup className="mt-4">
                 <Label for="klinik">Klinik</Label>
                 <Select
@@ -739,7 +631,7 @@ const Data = ({ match }) => {
                   </Button>
                 </InputGroupAddon>
               </InputGroup>
-              <Table>
+              <Table hover>
                 <thead>
                   <tr>
                     <th style={{ textAlign: "center" }}>#</th>
@@ -759,12 +651,11 @@ const Data = ({ match }) => {
                     divisionData.map((data) => (
                       <tr
                         key={data.id}
-                        // onClick={() => setSearchDivisi(data.id)}
-                        // onClick={() =>
-                        //   handleSelectClinic(data.id_klinik, data.id)
-                        // }
                         onClick={() => handleChangeId(data.id_klinik, data.id)}
                         style={{ cursor: "pointer" }}
+                        className={`${
+                          rowSelected == data.id && "row-selected"
+                        }`}
                       >
                         <th
                           scope="row"
@@ -776,10 +667,10 @@ const Data = ({ match }) => {
                           {startNumber++}
                         </th>
                         <td>
-                          <h6 className="mt-2" style={{ fontWeight: "normal" }}>
+                          <h6 className="mt-2" style={{ fontWeight: "bold" }}>
                             {data.nama_divisi}
                           </h6>
-                          <h7>{data.nama_klinik}</h7>
+                          {data.nama_klinik}
                           <br />
                         </td>
                         <td
@@ -822,65 +713,7 @@ const Data = ({ match }) => {
           <Card className="mb-8">
             <CardBody>
               <CardTitle>Form Manajemen Jadwal Jaga</CardTitle>
-              {/* <Colxx sm={6}>
-                <FormGroup>
-                  <Label for="id_klinik">
-                    Klinik
-                    <span className="required text-danger" aria-required="true">
-                      {" "}
-                      *
-                    </span>
-                  </Label>
-                  <Select
-                    components={{ Input: CustomSelectInput }}
-                    className="react-select"
-                    classNamePrefix="react-select"
-                    name="id_klinik"
-                    id="id_klinik"
-                    options={selectedClinic}
-                    value={selectedClinic.find(
-                      (item) => item.value === clinicId
-                    )}
-                    isDisabled={disableClinic}
-                    onChange={onChange}
-                  />
-                </FormGroup>
-              </Colxx>
-
-              <Colxx sm={6}>
-                <FormGroup>
-                  <Label for="id_divisi">
-                    Divisi
-                    <span className="required text-danger" aria-required="true">
-                      {" "}
-                      *
-                    </span>
-                  </Label>
-                  <Select
-                    components={{ Input: CustomSelectInput }}
-                    className="react-select"
-                    classNamePrefix="react-select"
-                    name="id_divisi"
-                    id="id_divisi"
-                    options={selectedDivision}
-                    value={selectedDivision.find(
-                      (item) => item.value === divisionId
-                    )}
-                    isDisabled={disableDivision}
-                    onChange={onChange}
-                  />
-                </FormGroup>
-              </Colxx> */}
-
-              {/* <Colxx sm={12} className="my-4">
-                  Tambah
-                <h6>Shift Rutin</h6>
-                <Separator className="schedule-separator" />
-              </Colxx> */}
               <FormGroup>
-                {/* <FormGroup row>
-                  
-                </FormGroup> */}
                 {shift.map((input, index) => {
                   return (
                     <Row key={index}>
@@ -918,46 +751,6 @@ const Data = ({ match }) => {
 
                       <Colxx sm={2}>
                         <FormGroup>
-                          <Label for="tanggal">
-                            Tanggal
-                            <span
-                              className="required text-danger"
-                              aria-required="true"
-                            >
-                              {" "}
-                              **
-                            </span>
-                          </Label>
-                          {/* <Input
-                            type="date"
-                            name="tanggal"
-                            id="tanggal"
-                            placeholderText="Pilih tanggal"
-                            value={shift[index].tanggal}
-                            onChange={
-                              (event) => handleShiftChange(index, event)
-                              // console.log(event, index)
-                            }
-                            autoComplete="off"
-                            required
-                          /> */}
-                          <DatePicker
-                            name="tanggal"
-                            id="tanggal"
-                            selected={shift[index].tanggal}
-                            onChange={(event) =>
-                              handleShiftChange(index, event, "tanggal")
-                            }
-                            placeholderText="Pilih Tanggal"
-                            dateFormat="yyyy-MM-dd"
-                            autoComplete="off"
-                            required
-                          />
-                        </FormGroup>
-                      </Colxx>
-
-                      <Colxx sm={2}>
-                        <FormGroup>
                           <Label for="hari">
                             Hari
                             <span
@@ -982,6 +775,33 @@ const Data = ({ match }) => {
                             onChange={(event) =>
                               handleShiftChange(index, event)
                             }
+                            required
+                          />
+                        </FormGroup>
+                      </Colxx>
+
+                      <Colxx sm={2}>
+                        <FormGroup>
+                          <Label for="tanggal">
+                            Tanggal
+                            <span
+                              className="required text-danger"
+                              aria-required="true"
+                            >
+                              {" "}
+                              **
+                            </span>
+                          </Label>
+                          <DatePicker
+                            name="tanggal"
+                            id="tanggal"
+                            selected={shift[index].tanggal}
+                            onChange={(event) => {
+                              handleShiftChange(index, event, "tanggal");
+                            }}
+                            placeholderText="Pilih Tanggal"
+                            dateFormat="yyyy-MM-dd"
+                            autoComplete="off"
                             required
                           />
                         </FormGroup>
@@ -1051,9 +871,6 @@ const Data = ({ match }) => {
                             timeInputLabel=""
                             autoComplete="off"
                             required
-                            // disabled={!shift[index].waktu_mulai}
-                            minTime={shift[index].waktu_mulai}
-                            maxTime={new Date().setHours(23, 59, 59)}
                           />
                         </FormGroup>
                       </Colxx>

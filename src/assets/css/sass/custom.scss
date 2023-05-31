@@ -72,6 +72,18 @@ label {
     background: #e9ecef !important;
 }
 
+.react-datepicker__input-time-container {
+    margin: 0px !important;
+}
+
+.react-datepicker__input-time-container .react-datepicker-time__input-container .react-datepicker-time__input {
+    margin-left: 0px !important;
+}
+
+.react-datepicker__input-container input:disabled {
+    background: #e9ecef !important;
+}
+
 .sidebar .sub-menu ul li {
     margin-left: 15px;
 }

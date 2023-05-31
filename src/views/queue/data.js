@@ -75,246 +75,13 @@ const Data = ({ match }) => {
 
   const [patientID, setPatientID] = useState("");
   const [patientData, setPatientData] = useState("");
-  // const [vitalSignsID, setVitalSignsID] = useState("");
-
-  // const [vitalSigns, setVitalSigns] = useState({
-  //   id_pasien: patientID,
-  //   keluhan: "",
-  //   kesadaran: "",
-  //   temperatur: "",
-  //   tinggi_badan: "",
-  //   berat_badan: "",
-  //   lingkar_perut: "",
-  //   imt: "",
-  //   sistole: "",
-  //   diastole: "",
-  //   respiratory_rate: "",
-  //   heart_rate: "",
-  //   catatan_tambahan: "",
-  // });
-
-  // const onChange = (e) => {
-  //   // console.log('e', e);
-
-  //   if (e.name === "kesadaran") {
-  //     setVitalSigns((current) => {
-  //       return { ...current, kesadaran: e.value };
-  //     });
-
-  //     setSelectedAwareness(e);
-  //   } else {
-  //     setVitalSigns((current) => {
-  //       return { ...current, [e.target.name]: e.target.value };
-  //     });
-  //   }
-
-  //   // console.log('vitalSigns', vitalSigns);
-  // };
-
-  // const onVitalSignsSubmit = async (e) => {
-  //   e.preventDefault();
-
-  //   // console.log(vitalSigns);
-  //   if (dataStatus === "add") {
-  //     try {
-  //       const response = await vitalSignsAPI.add(vitalSigns);
-  //       // console.log(response);
-
-  //       if (response.status == 200) {
-  //         let data = await response.data.data;
-  //         // console.log(data);
-
-  //         Swal.fire({
-  //           title: "Sukses!",
-  //           html: `Tambah pra-konsultasi sukses`,
-  //           icon: "success",
-  //           confirmButtonColor: "#008ecc",
-  //         });
-
-  //         // resetForm(e);
-  //       } else {
-  //         Swal.fire({
-  //           title: "Gagal!",
-  //           html: `Tambah pra-konsultasi gagal: ${response.message}`,
-  //           icon: "error",
-  //           confirmButtonColor: "#008ecc",
-  //           confirmButtonText: "Coba lagi",
-  //         });
-
-  //         throw Error(`Error status: ${response.status}`);
-  //       }
-  //     } catch (e) {
-  //       Swal.fire({
-  //         title: "Gagal!",
-  //         html: e,
-  //         icon: "error",
-  //         confirmButtonColor: "#008ecc",
-  //         confirmButtonText: "Coba lagi",
-  //       });
-
-  //       console.log(e);
-  //     }
-  //   } else if (dataStatus === "update") {
-  //     try {
-  //       const response = await vitalSignsAPI.update(vitalSigns, vitalSignsID);
-  //       // console.log(response);
-
-  //       if (response.status == 200) {
-  //         let data = await response.data.data;
-  //         // console.log(data);
-
-  //         Swal.fire({
-  //           title: "Sukses!",
-  //           html: `Ubah pra-konsultasi sukses`,
-  //           icon: "success",
-  //           confirmButtonColor: "#008ecc",
-  //         });
-
-  //         // resetForm(e);
-  //       } else {
-  //         Swal.fire({
-  //           title: "Gagal!",
-  //           html: `Ubah pra-konsultasi gagal: ${response.message}`,
-  //           icon: "error",
-  //           confirmButtonColor: "#008ecc",
-  //           confirmButtonText: "Coba lagi",
-  //         });
-
-  //         throw Error(`Error status: ${response.status}`);
-  //       }
-  //     } catch (e) {
-  //       Swal.fire({
-  //         title: "Gagal!",
-  //         html: e,
-  //         icon: "error",
-  //         confirmButtonColor: "#008ecc",
-  //         confirmButtonText: "Coba lagi",
-  //       });
-
-  //       console.log(e);
-  //     }
-  //   } else {
-  //     console.log("dataStatus undefined");
-  //   }
-  // };
-
-  // const resetForm = (e) => {
-  //   e.preventDefault();
-
-  //   setPatientID("");
-  //   setVitalSignsID("");
-  //   setPatientData("");
-
-  //   setVitalSigns({
-  //     id_pasien: patientID,
-  //     keluhan: "",
-  //     kesadaran: "",
-  //     temperatur: 0,
-  //     tinggi_badan: 0,
-  //     berat_badan: 0,
-  //     lingkar_perut: 0,
-  //     imt: 0,
-  //     sistole: 0,
-  //     diastole: 0,
-  //     respiratory_rate: 0,
-  //     heart_rate: 0,
-  //     catatan_tambahan: "",
-  //   });
-
-  //   setSelectedAwareness("");
-
-  //   setDataStatus("add");
-  // };
-
-  // const onLoadDivisi = async () => {
-  //   try {
-  //     const response = await divisionAPI.get("", "?limit=1000");
-  //     // console.log(response);
-
-  //     setSelectedDivisionF([
-  //       { label: "Semua", value: "", key: 0, name: "id_divisi" },
-  //     ]);
-
-  //     if (response.status === 200) {
-  //       let data = response.data.data;
-  //       // console.log(data);
-
-  //       for (var i = 0; i < data.length; i++) {
-  //         setSelectedDivisionF((current) => [
-  //           ...current,
-  //           {
-  //             label: data[i].tipe,
-  //             value: data[i].id,
-  //             key: data[i].id,
-  //             name: "id_divisi",
-  //           },
-  //         ]);
-  //       }
-  //     } else {
-  //       throw Error(`Error status: ${response.status}`);
-  //     }
-  //   } catch (e) {
-  //     console.log(e);
-  //   }
-  // };
-
-  // const onLoadQueueByDivisi = async () => {
-  //   try {
-  //     const response = await queueAPI.get("", "?limit=1000");
-  //     // console.log(response);
-
-  //     setSelectedQueue([
-  //       { label: "Semua", value: "", key: 0, name: "id_divisi" },
-  //     ]);
-
-  //     if (response.status === 200) {
-  //       let data = response.data.data;
-  //       // console.log(data);
-
-  //       for (var i = 0; i < data.length; i++) {
-  //         setSelectedQueue((current) => [
-  //           ...current,
-  //           {
-  //             label: data[i].tipe,
-  //             value: data[i].id,
-  //             key: data[i].id,
-  //             name: "id_divisi",
-  //           },
-  //         ]);
-  //       }
-  //     } else {
-  //       throw Error(`Error status: ${response.status}`);
-  //     }
-  //   } catch (e) {
-  //     console.log(e);
-  //   }
-  // };
 
   const [isLoading, setIsLoading] = useState(false);
   const [modalAdd, setModalAdd] = useState(false);
   const [modalEditPriority, setModalEditPriority] = useState(false);
   const [queueId, setQueueId] = useState("");
 
-  const [queueData, setQueueData] = useState([
-    // {
-    //   id: 1,
-    //   no_antrian: 1,
-    //   prioritas: 1,
-    //   nama_lengkap: "Pramudia S",
-    //   jenis_kelamin: "L",
-    //   tanggal_lahir: "2000-07-10",
-    //   nomor_kitas: "3526671",
-    // },
-    // {
-    //   id: 2,
-    //   no_antrian: 2,
-    //   prioritas: 2,
-    //   nama_lengkap: "Helmi S",
-    //   jenis_kelamin: "L",
-    //   tanggal_lahir: "1999-07-10",
-    //   nomor_kitas: "3526671",
-    // },
-  ]);
+  const [rowSelected, setRowSelected] = useState(null);
 
   const selectPriority = [
     {
@@ -379,22 +146,6 @@ const Data = ({ match }) => {
     }
   };
 
-  const getQueue = async (params) => {
-    try {
-      setIsLoading(true);
-      const res = await queueAPI.get("", params);
-      dispatch({ type: "GET_QUEUE", payload: res.data.data });
-      dispatch({
-        type: "GET_TOTAL_PAGE_QUEUE",
-        payload: res.data.pagination.totalPage,
-      });
-    } catch (e) {
-      console.log(e);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   const [currentPage, setCurrentPage] = useState(1);
   const [searchName, setSearchName] = useState("");
   const [searchDivisi, setSearchDivisi] = useState("");
@@ -437,6 +188,22 @@ const Data = ({ match }) => {
 
   const defaultDate = new Date().toISOString().substr(0, 10);
   const [date, setDate] = useState(defaultDate);
+
+  const getQueue = async (params) => {
+    try {
+      setIsLoading(true);
+      const res = await queueAPI.get("", params);
+      dispatch({ type: "GET_QUEUE", payload: res.data.data });
+      dispatch({
+        type: "GET_TOTAL_PAGE_QUEUE",
+        payload: res.data.pagination.totalPage,
+      });
+    } catch (e) {
+      console.log(e);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const onLoadSchedule = async () => {
     try {
@@ -499,6 +266,7 @@ const Data = ({ match }) => {
   };
 
   const onChangeId = (idDivisi, idKaryawan) => {
+    setRowSelected(idKaryawan);
     setSearchDivisi(idDivisi);
     setSearchEmployee(idKaryawan);
   };
@@ -738,6 +506,9 @@ const Data = ({ match }) => {
                         key={data.id}
                         onClick={() => onChangeId(data.id_divisi, data.id)}
                         style={{ cursor: "pointer" }}
+                        className={`${
+                          rowSelected == data.id && "row-selected"
+                        }`}
                       >
                         <th
                           scope="row"
@@ -749,7 +520,9 @@ const Data = ({ match }) => {
                           {startNumber++}
                         </th>
                         <td>
-                          <h6 style={{ fontWeight: "bold" }}>{data.tipe}</h6>
+                          <h6 style={{ fontWeight: "bold" }}>
+                            {data.nama_divisi}
+                          </h6>
                           {data.nama_karyawan}
                           <br />
                         </td>
@@ -801,8 +574,6 @@ const Data = ({ match }) => {
                       <>
                         Daftar Antrian {schedule.tipe} <br />
                         <br />
-                        <p>{schedule.nama_karyawan}</p>
-                        {/* <p style={{ fontWeight: "normal" }}>{schedule.tipe}</p> */}
                       </>
                     ) : (
                       ""
@@ -839,182 +610,6 @@ const Data = ({ match }) => {
               </CardTitle>
               <Row>
                 <Colxx sm={12}>
-                  {/* <h5 className="mb-4">
-                    <IntlMessages id="sortable.basic" />
-                  </h5> */}
-                  {/* <ReactSortable
-                      list={queueData}
-                      setList={(list) => setQueueData(list)}
-                      tag="ul"
-                      className="list-unstyled"
-                      >
-                        {queueData.map((item) => (
-                          <li key={`basic_${item.id}`}>
-                            <p>
-                              {item.id}. {item.no_antrian}
-                            </p>
-                            <p>
-                              {item.nama_lengkap}. {item.prioritas}
-                            </p>
-                          </li>
-                        ))}
-                        <Table>
-                          <thead>
-                            <tr>
-                              <th
-                                style={{
-                                  textAlign: "center",
-                                  verticalAlign: "middle",
-                                }}
-                              >
-                                No. Antrian
-                              </th>
-                              <th
-                                style={{
-                                  textAlign: "center",
-                                  verticalAlign: "middle",
-                                }}
-                              >
-                                Prioritas
-                              </th>
-                              <th
-                                style={{
-                                  textAlign: "left",
-                                  verticalAlign: "middle",
-                                }}
-                              >
-                                Nama
-                              </th>
-                              <th
-                                style={{
-                                  textAlign: "center",
-                                  verticalAlign: "middle",
-                                }}
-                              >
-                                Jenis Kelamin
-                              </th>
-                              <th
-                                style={{
-                                  textAlign: "center",
-                                  verticalAlign: "middle",
-                                }}
-                              >
-                                Usia
-                              </th>
-                              <th
-                                style={{
-                                  textAlign: "center",
-                                  verticalAlign: "middle",
-                                }}
-                              >
-                                No. Kitas
-                              </th>
-                              <th>&nbsp;</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {isLoading ? (
-                              <tr>
-                                <td>&nbsp;</td>
-                                <td align="center" colSpan={2}>
-                                  <img
-                                    src={loader}
-                                    alt="loading..."
-                                    width="100"
-                                  />
-                                </td>
-                                <td>&nbsp;</td>
-                              </tr>
-                            ) : queueData.length > 0 ? (
-                              queueData.map((data) => (
-                                <tr
-                                  key={`basic_${data.id}`}
-                                  style={{ cursor: "pointer" }}
-                                >
-                                  <td
-                                    scope="row"
-                                    style={{
-                                      textAlign: "center",
-                                      verticalAlign: "middle",
-                                    }}
-                                  >
-                                    {data.no_antrian}
-                                  </td>
-                                  <td
-                                    style={{
-                                      textAlign: "center",
-                                      verticalAlign: "middle",
-                                    }}
-                                  >
-                                    <h7 className="mt-2">
-                                      {data.prioritas === 1 ? (
-                                        <h7>High</h7>
-                                      ) : data.prioritas === 2 ? (
-                                        <h7>Medium</h7>
-                                      ) : data.prioritas === 3 ? (
-                                        <h7>Low</h7>
-                                      ) : (
-                                        "0"
-                                      )}
-                                    </h7>
-                                  </td>
-                                  <td
-                                    style={{
-                                      textAlign: "left",
-                                      verticalAlign: "middle",
-                                    }}
-                                  >
-                                    <h7 className="mt-2">
-                                      {data.nama_lengkap}
-                                    </h7>
-                                  </td>
-                                  <td
-                                    style={{
-                                      textAlign: "center",
-                                      verticalAlign: "middle",
-                                    }}
-                                  >
-                                    <h7 className="mt-2">
-                                      {data.jenis_kelamin.substring(0, 1)}
-                                    </h7>
-                                  </td>
-                                  <td
-                                    style={{
-                                      textAlign: "center",
-                                      verticalAlign: "middle",
-                                    }}
-                                  >
-                                    <h7 className="mt-2">
-                                      {new Date().getFullYear() -
-                                        data.tanggal_lahir.substring(0, 4)}{" "}
-                                      tahun
-                                      <br />
-                                    </h7>
-                                  </td>
-                                  <td
-                                    style={{
-                                      textAlign: "center",
-                                      verticalAlign: "middle",
-                                    }}
-                                  >
-                                    <h7 className="mt-2">{data.nomor_kitas}</h7>
-                                  </td>
-                                </tr>
-                              ))
-                            ) : (
-                              <tr>
-                                <td>&nbsp;</td>
-                                <td align="center" colSpan={2}>
-                                  <h5 style={{ marginTop: "1.5rem" }}>
-                                    <b>Data tidak ditemukan</b>
-                                  </h5>
-                                </td>
-                                <td>&nbsp;</td>
-                              </tr>
-                            )}
-                          </tbody>
-                        </Table>
-                      </ReactSortable> */}
                   <Table striped>
                     <thead>
                       <tr>
@@ -1028,11 +623,11 @@ const Data = ({ match }) => {
                         </th>
                         <th
                           style={{
-                            textAlign: "center",
+                            textAlign: "left",
                             verticalAlign: "middle",
                           }}
                         >
-                          Prioritas
+                          Pasien
                         </th>
                         <th
                           style={{
@@ -1040,7 +635,7 @@ const Data = ({ match }) => {
                             verticalAlign: "middle",
                           }}
                         >
-                          Nama
+                          Jaga
                         </th>
                         <th
                           style={{
@@ -1048,23 +643,7 @@ const Data = ({ match }) => {
                             verticalAlign: "middle",
                           }}
                         >
-                          Jenis Kelamin
-                        </th>
-                        <th
-                          style={{
-                            textAlign: "center",
-                            verticalAlign: "middle",
-                          }}
-                        >
-                          Usia
-                        </th>
-                        <th
-                          style={{
-                            textAlign: "center",
-                            verticalAlign: "middle",
-                          }}
-                        >
-                          No. Kitas
+                          Prioritas
                         </th>
                       </tr>
                     </thead>
@@ -1091,6 +670,33 @@ const Data = ({ match }) => {
                               }}
                             >
                               {data.no_antrian}
+                            </td>
+                            <td
+                              style={{
+                                textAlign: "left",
+                                verticalAlign: "middle",
+                              }}
+                            >
+                              <h6
+                                style={{ fontWeight: "bold" }}
+                                className="max-text"
+                              >
+                                {data.nama_lengkap}
+                              </h6>
+                              {data.jenis_kelamin.substring(0, 1)},{" "}
+                              {new Date().getFullYear() -
+                                data.tanggal_lahir.substring(0, 4)}{" "}
+                              tahun
+                              <br />
+                              {data.tipe_kitas} {data.nomor_kitas}
+                            </td>
+                            <td
+                              style={{
+                                textAlign: "left",
+                                verticalAlign: "middle",
+                              }}
+                            >
+                              {data.nama_karyawan}
                             </td>
                             <td
                               style={{
@@ -1137,51 +743,12 @@ const Data = ({ match }) => {
                                 )}
                               </h6>
                             </td>
-                            <td
-                              style={{
-                                textAlign: "left",
-                                verticalAlign: "middle",
-                              }}
-                            >
-                              <h6 className="mt-2">{data.nama_lengkap}</h6>
-                            </td>
-                            <td
-                              style={{
-                                textAlign: "center",
-                                verticalAlign: "middle",
-                              }}
-                            >
-                              <h6 className="mt-2">
-                                {data.jenis_kelamin.substring(0, 1)}
-                              </h6>
-                            </td>
-                            <td
-                              style={{
-                                textAlign: "center",
-                                verticalAlign: "middle",
-                              }}
-                            >
-                              <h6 className="mt-2">
-                                {new Date().getFullYear() -
-                                  data.tanggal_lahir.substring(0, 4)}{" "}
-                                tahun
-                                <br />
-                              </h6>
-                            </td>
-                            <td
-                              style={{
-                                textAlign: "center",
-                                verticalAlign: "middle",
-                              }}
-                            >
-                              <h6 className="mt-2">{data.nomor_kitas}</h6>
-                            </td>
                           </tr>
                         ))
                       ) : searchDivisi === "" ? (
                         <tr>
                           <td>&nbsp;</td>
-                          <td align="center" colSpan={2}>
+                          <td align="center" colSpan={3}>
                             <h5
                               style={{
                                 marginTop: "1.5rem",
@@ -1232,7 +799,7 @@ const Data = ({ match }) => {
                   marginBottom: "12px",
                 }}
               >
-                <Label for="jaga">Divisi / Poli</Label>
+                <Label for="jaga">Nama Karyawan</Label>
                 <Select
                   components={{ Input: CustomSelectInput }}
                   className="react-select"
