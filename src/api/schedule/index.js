@@ -9,7 +9,7 @@ const schedule = {
   },
   add: (payloads) => {
     const url = api.schedule.all;
-    return baseApi.get(url, payloads, { headers: getOriginHeader() });
+    return baseApi.add(url, payloads, { headers: getOriginHeader() });
   },
   getByDivision: (payloads, options) => {
     const url = api.schedule.ondvs + options;
