@@ -852,6 +852,7 @@ const Data = ({ match }) => {
                   value={selectPriority.find(
                     (item) => item.value === queue.prioritas
                   )}
+                  defaultValue={{ label: "Low", value: '3', name: 'prioritas' }}
                   onChange={onChange}
                 />
               </Colxx>

@@ -55,7 +55,8 @@ const selectType = [
   { label: "Admin", value: "Admin", key: 1, name: "tipe" },
   { label: "Resepsionis", value: "Resepsionis", key: 2, name: "tipe" },
   { label: "Perawat", value: "Perawat", key: 3, name: "tipe" },
-  { label: "Dokter", value: "Dokter", key: 4, name: "tipe" }
+  { label: "Dokter", value: "Dokter", key: 4, name: "tipe" },
+  { label: "Manajemen", value: "Manajemen", key: 5, name: "tipe" }
 ];
 
 const selectTypeF = [
@@ -64,7 +65,8 @@ const selectTypeF = [
   { label: "Admin", value: "Admin", key: 2, name: "tipe" },
   { label: "Resepsionis", value: "Resepsionis", key: 3, name: "tipe" },
   { label: "Perawat", value: "Perawat", key: 4, name: "tipe" },
-  { label: "Dokter", value: "Dokter", key: 5, name: "tipe" }
+  { label: "Dokter", value: "Dokter", key: 5, name: "tipe" },
+  { label: "Manajemen", value: "Manajemen", key: 6, name: "tipe" }
 ];
 
 const selectStatusF = [
@@ -1309,6 +1311,19 @@ const Data = ({ match, history, loading, error }) => {
                   <Label for="tipe">
                     Tipe
                   </Label>
+                  { !userData.roles.includes('isDev') &&
+                  <Select
+                    components={{ Input: CustomSelectInput }}
+                    className="react-select"
+                    classNamePrefix="react-select"
+                    name="tipe"
+                    // value={selectedTypeF}
+                    // onChange={setSelectedTypeF}
+                    onChange={(e) => setSearchTipe(e.value)}
+                    options={selectTypeF.filter(roleChoices => roleChoices.label != 'Manajemen').map(roleChoices => roleChoices)}
+                    isSearchable={false}
+                  /> }
+                  { userData.roles.includes('isDev') &&
                   <Select
                     components={{ Input: CustomSelectInput }}
                     className="react-select"
@@ -1319,7 +1334,7 @@ const Data = ({ match, history, loading, error }) => {
                     onChange={(e) => setSearchTipe(e.value)}
                     options={selectTypeF}
                     isSearchable={false}
-                  />
+                  /> }
                 </Colxx>
                 <Colxx sm="12" md="6" style={{ paddingRight: '0px' }}>
                   <Label for="spesialis">
@@ -1536,12 +1551,13 @@ const Data = ({ match, history, loading, error }) => {
                         </span>
                       </Label>
                       <Input
-                        type="text"
+                        type="number"
                         name="nomor_kitas"
                         id="nomor_kitas"
                         placeholder="No. KITAS"
                         value={employee.nomor_kitas}
                         onChange={onChange}
+                        pattern="[0-9]*"
                       />
                     </FormGroup>
                   </Colxx>
@@ -1581,6 +1597,19 @@ const Data = ({ match, history, loading, error }) => {
                             *
                           </span>
                         </Label>
+                        { !userData.roles.includes('isDev') &&
+                        <Select
+                          components={{ Input: CustomSelectInput }}
+                          className="react-select"
+                          classNamePrefix="react-select"
+                          name="tipe"
+                          // value={selectedTypeF}
+                          // onChange={setSelectedTypeF}
+                          onChange={(e) => setSearchTipe(e.value)}
+                          options={selectType.filter(roleChoices => roleChoices.label != 'Manajemen').map(roleChoices => roleChoices)}
+                          isSearchable={false}
+                        /> }
+                        { userData.roles.includes('isDev') &&
                         <Select
                           components={{ Input: CustomSelectInput }}
                           className="react-select"
@@ -1591,7 +1620,7 @@ const Data = ({ match, history, loading, error }) => {
                           // value={selectedType}
                           options={selectType}
                           onChange={onChange}
-                        />
+                        /> }
                     </FormGroup>
                   </Colxx>
 

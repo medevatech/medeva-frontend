@@ -59,6 +59,9 @@ const selectAwareness = [
   { label: 'Coma', value: 'Coma', name: 'kesadaran' },
 ];
 
+
+let berat_badan = 0; let tinggi_badan = 0;
+
 const VitalSigns = ({ match }) => {
   const dispatch = useDispatch();
   const queueAll = useSelector(state => state.queue);
@@ -107,6 +110,27 @@ const VitalSigns = ({ match }) => {
     } else {
       setVitalSigns(current => {
           return { ...current, [e.target.name]: e.target.value }
+      })
+    }
+
+    // console.log('vitalSigns', vitalSigns);
+  }
+
+  const calculateIMT = (e) => {
+    // console.log('e', e);
+
+    if (e.target.name === "berat_badan") {
+      berat_badan = e.target.value;
+    } else if (e.target.name === "tinggi_badan") {
+      tinggi_badan = e.target.value;
+    }
+
+    if (berat_badan > 0 && tinggi_badan > 0) {
+      let imtValue = berat_badan / ((tinggi_badan / 100) ** 2);
+      // console.log('imtValue', imtValue);
+
+      setVitalSigns(current => {
+          return { ...current, imt: imtValue.toFixed(2) }
       })
     }
 
@@ -202,6 +226,8 @@ const VitalSigns = ({ match }) => {
 
   const resetForm = (e) => {
     e.preventDefault();
+
+    tinggi_badan = 0; berat_badan = 0;
 
     dispatch({type: "GET_ALL_VITALSIGNS_BY_PATIENT", payload: []});
 
@@ -304,6 +330,8 @@ const VitalSigns = ({ match }) => {
         created_at: data.created_at
       });
 
+      tinggi_badan = data.tinggi_badan; berat_badan = data.berat_badan;
+
       setVitalSignsID(data.id);
   
       setSelectedAwareness({kesadaran: data.kesadaran ? e.value : ''});
@@ -363,6 +391,8 @@ const VitalSigns = ({ match }) => {
       });
 
       setVitalSignsID(data.id);
+
+      tinggi_badan = data.tinggi_badan; berat_badan = data.berat_badan;
   
       setSelectedAwareness({kesadaran: data.kesadaran ? e.value : ''});
       setDataStatus("update");
@@ -385,7 +415,7 @@ const VitalSigns = ({ match }) => {
     dispatch({type: "GET_ALL_VITALSIGNS_BY_PATIENT", payload: []});
 
     try {
-      const res = await vitalSignsAPI.getByPatient("", `/${id}`);
+      const res = await vitalSignsAPI.getByPatient("", `/${id}?tanggal=${moment(new Date()).format("YYYY-MM-DD")}`);
       let data = res.data.data;
       // dispatch({type: "GET_ALL_VITALSIGNS_BY_PATIENT", payload: data.slice(1)});
       dispatch({type: "GET_ALL_VITALSIGNS_BY_PATIENT", payload: data});
@@ -763,6 +793,7 @@ const VitalSigns = ({ match }) => {
                             pattern="[0-9]*"
                             value={vitalSigns.tinggi_badan}
                             onChange={onChange}
+                            onKeyUp={calculateIMT}
                           />
                           <InputGroupAddon addonType="append">cm</InputGroupAddon>
                         </InputGroup>
@@ -784,6 +815,7 @@ const VitalSigns = ({ match }) => {
                             pattern="[0-9]*"
                             value={vitalSigns.berat_badan}
                             onChange={onChange}
+                            onKeyUp={calculateIMT}
                           />
                           <InputGroupAddon addonType="append">kg</InputGroupAddon>
                         </InputGroup>
@@ -863,14 +895,15 @@ const VitalSigns = ({ match }) => {
                         </Label>
                         <InputGroup>
                           <Input
-                            type="number"
+                            // type="number"
                             name="imt"
                             id="imt"
                             placeholder="IMT"
                             // required={true}
-                            pattern="[0-9]*"
+                            // pattern="[0-9]*"
                             value={vitalSigns.imt}
                             onChange={onChange}
+                            disabled
                           />
                           <InputGroupAddon addonType="append"><span className="input-group-text">kg/m<sup>2</sup></span></InputGroupAddon>
                         </InputGroup>

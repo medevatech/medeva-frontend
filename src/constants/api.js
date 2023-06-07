@@ -32,6 +32,7 @@ const api = {
   schedule: {
     all: "/jaga",
     ondvs: "/jaga/on-divisi",
+    onemployee: "/jaga/on-employee",
     archive: "/jaga/archive",
   },
   patient: {
