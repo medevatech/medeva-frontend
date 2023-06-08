@@ -30,7 +30,13 @@ const api = {
     activate: "/shift/activate",
     delete: "/shift",
   },
-  schedule: "/jaga",
+  schedule: {
+    all: "/jaga",
+    ondvs: "/jaga/on-divisi",
+    archive: "/jaga/archive",
+    distinct: "/jaga/distinct",
+    bydivision: "/jaga/dvs",
+  },
   patient: {
     all: "/pasien",
     archive: "/pasien/archive",
@@ -62,8 +68,14 @@ const api = {
     patient: "/kunjungan/pasien",
     temp: "/temp-kunjungan", // JOIN TABLE ID RECORD TO ID VITAL SIGNS
   },
-  diagnose: "/diagnosis",
-  reciept: "/resep",
+  diagnose: {
+    all: "/diagnosis",
+    record: "/diagnosis/kunjungan",
+  },
+  reciept: {
+    all: "resep",
+    record: "resep/kunjungan",
+  },
   treatment: {
     all: "/tindakan",
     list: "/daftar-tindakan", // MASTER OF 'NAMA TINDAKAN' FIELD
@@ -74,6 +86,7 @@ const api = {
     clinicPrice: "/harga-tindakan/klinik", // MASTER OF 'HARGA TINDAKAN' FIELD,
     archivePrice: "/harga-tindakan/archive",
     activatePrice: "/harga-tindakan/activate",
+    record: "/tindakan/kunjungan",
   },
   service: {
     all: "/layanan",
@@ -85,8 +98,12 @@ const api = {
     clinicPrice: "/harga-layanan/klinik", // MASTER OF 'HARGA LAYANAN' FIELD,
     archivePrice: "/harga-layanan/archive",
     activatePrice: "/harga-layanan/activate",
+    record: "/layanan/kunjungan",
   },
-  disease: "/penyakit", // MASTER OF 'PENYAKIT' FIELD
+  disease: {
+    all: "/penyakit", // MASTER OF 'PENYAKIT' FIELD
+    getAll: "penyakit/all",
+  },
   medicine: "/obat", // MASTER OF 'OBAT' FIELD
   lab: {
     all: "/laboratorium", // MASTER OF 'LABORATORIUM' FIELD
@@ -94,14 +111,18 @@ const api = {
   },
   reference: {
     all: "/rujukan",
+    record: "/rujukan/kunjungan",
     diagnose: "/diagnosis-rujukan", // MASTER OF 'POLI RUJUKAN' FIELD
     division: "/poli", // MASTER OF 'POLI RUJUKAN' FIELD
     hospital: "/rs", // MASTER OF 'RS RUJUKAN' FIELD
+    diagnoseByRecord: "/diagnosis-rujukan/kunjungan",
+    diagnoseByReference: "/diagnosis-rujukan/rujukan",
   },
   inspect: {
     all: "/pemeriksaan", // MASTER OF 'PEMERIKSAAN' FIELD
     treatment: "/pemeriksaan/layanan-lab", // GET LAB BY TREATMENT
     support: "/pemeriksaan-penunjang", // JOIN TABLE ID RECORD TO ID LAB TO ID INSPECT
+    supportByRecord: "pemeriksaan-penunjang/kunjungan",
   },
 };
 

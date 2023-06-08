@@ -760,7 +760,7 @@ const Data = ({ match, history, loading, error }) => {
                 <CardTitle>
                   <Row>
                     <Colxx sm="5" md="6" xl="6">
-                      Edit Profil Karyawan & Tenaga Kesehatan
+                      Profil Karyawan & Tenaga Kesehatan
                     </Colxx>
                   </Row>
                 </CardTitle>

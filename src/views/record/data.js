@@ -104,21 +104,15 @@ const selectConsume = [
   { label: 'Lainnya', value: 'Lainnya', key: 4, name: 'metode_konsumsi' }
 ];
 
-const filterPassedTime = (time) => {
-  const currentDate = new Date();
-  const selectedDate = new Date(time);
-
-  return currentDate.getTime() < selectedDate.getTime();
-};
-
 const Data = ({ match }) => {
   const dispatch = useDispatch();
   const queueAll = useSelector(state => state.queue);
   const queueTotalPage = useSelector(state => state.queueTotalPage);
-  const allRecord = useSelector(state => state.allRecordByPatient);
+  // const allRecord = useSelector(state => state.allRecordByPatient);
   const [dataStatus, setDataStatus] = useState("add");
   const [rowSelected, setRowSelected] = useState(null);
 
+  const [allRecord, setAllRecord] = useState([]);
   const [selectedDivision, setSelectedDivision] = useState('');
   const [selectedDivisionF, setSelectedDivisionF] = useState([{ label: "Semua", value: "", key: 0, name: 'id_klinik' }]);
   const [selectedDisease, setSelectedDisease] = useState([]);
@@ -164,8 +158,8 @@ const Data = ({ match }) => {
   const resetForm = (e) => {
     e.preventDefault();
 
-    dispatch({type: "GET_ALL_RECORD_BY_PATIENT", payload: []});
-    // setAllRecord([]);
+    // dispatch({type: "GET_ALL_RECORD_BY_PATIENT", payload: []});
+    setAllRecord([]);
 
     setVitalSigns({
       id_pasien: patientID,
@@ -195,6 +189,31 @@ const Data = ({ match }) => {
     setShowRecord('none');
   };
 
+  const onLoadDivisi = async () => {
+    try {
+      const response = await divisionAPI.get("", "?limit=1000");
+      // console.log(response);
+
+      setSelectedDivisionF([{ label: "Semua", value: "", key: 0, name: 'id_divisi' }]);
+
+      if (response.status === 200) {
+        let data = response.data.data;
+        // console.log(data);
+      
+        for (var i = 0; i < data.length; i++) {
+          setSelectedDivisionF((current) => [
+            ...current,
+            { label: data[i].nama_divisi, value: data[i].id, key: data[i].id, name: 'id_divisi' },
+          ]);
+        }
+      } else {
+        throw Error(`Error status: ${response.status}`);
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
   const [isLoading, setIsLoading] = useState(false);
 
   const getQueue = async (params) => {
@@ -213,7 +232,7 @@ const Data = ({ match }) => {
   const getVitalSignsByPatientId = async (e, id, data) => {
     // e.preventDefault();
     // resetForm(e);
-    setRowSelected(id);
+    setRowSelected(data.id);
 
     setVitalSigns({
       id_pasien: patientID,
@@ -272,12 +291,14 @@ const Data = ({ match }) => {
   };
   
   const getAllRecordByPatientId = async (e, id) => {
-    dispatch({type: "GET_ALL_RECORD_BY_PATIENT", payload: []});
+    // dispatch({type: "GET_ALL_RECORD_BY_PATIENT", payload: []});
+    setAllRecord([]);
 
     try {
       const res = await recordAPI.getByPatient("", `/${id}`);
       let data = res.data.data;
-      dispatch({type: "GET_ALL_RECORD_BY_PATIENT", payload: data});
+      // dispatch({type: "GET_ALL_RECORD_BY_PATIENT", payload: data});
+      setAllRecord(data);
     } catch (e) {
       console.log(e);
     }
@@ -286,6 +307,10 @@ const Data = ({ match }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchName, setSearchName] = useState("");
   const [searchDivisi, setSearchDivisi] = useState("");
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [ limit, searchName, searchDivisi, sortBy, sortOrder ]);
 
   useEffect(() => {
     let params = "";
@@ -307,10 +332,13 @@ const Data = ({ match }) => {
       params = `${params}&page=${currentPage}`;
     }
 
+    setRowSelected(false);
+
     getQueue(params);
+    onLoadDivisi();
     
   // }, [limit, search, searchDivisi, sortBy, sortOrder, currentPage, queueAll, queueTotalPage, allRecord]);
-  }, [limit, searchName, searchDivisi, sortBy, sortOrder, currentPage, allRecord]);
+  }, [limit, searchName, searchDivisi, sortBy, sortOrder, currentPage]);
 
   let startNumber = 1;
 
@@ -396,7 +424,7 @@ const Data = ({ match }) => {
                     </tr>
                   </thead>
                   <tbody>
-                  {isLoading ? (
+                  {isLoading && rowSelected == false ? (
                     <tr>
                       <td>&nbsp;</td>
                       <td align="center" colSpan={2}>
@@ -441,6 +469,7 @@ const Data = ({ match }) => {
                   currentPage={currentPage}
                   totalPage={queueTotalPage}
                   onChangePage={(i) => setCurrentPage(i)}
+                  numberLimit={queueTotalPage}
                 />
               </CardBody>
             </Card>
@@ -530,7 +559,7 @@ const Data = ({ match }) => {
                   { patientData ?
                     <Link to={{
                         pathname: `/record/form`,
-                        state: { patientID: patientID, patientData: patientData }
+                        state: { patientID: patientID, patientData: patientData, watchID: watchID }
                     }}>
                       <Button color="primary" style={{ float: "right" }} className="mb-4">
                         Tambah
@@ -549,7 +578,7 @@ const Data = ({ match }) => {
                 </CardTitle>
                 { allRecord.length > 0 && ( 
                   allRecord.map((data) => ( 
-                  <Table borderless className="med-record-table" key={data.id}>
+                  <Table className="med-record-table" key={data.id}>
                     <tbody>
                       <tr>
                         <th><h6 style={{ fontWeight: 'bold' }}>Kunjungan {data.tipe ? data.tipe : '-'}</h6></th>
@@ -576,7 +605,7 @@ const Data = ({ match }) => {
                         <td>
                             <Link to={{
                                 pathname: `/record/form`,
-                                state: { patientID: patientID, patientData: patientData, recordID: data.id }
+                                state: { patientID: patientID, patientData: patientData, recordID: data.id, watchID: watchID }
                             }}>
                               <Button color="secondary" size="xs" style={{ float: "right" }}>
                                 Ubah Data

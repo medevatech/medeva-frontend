@@ -24,6 +24,9 @@ const Login = React.lazy(() =>
 const Profile = React.lazy(() =>
   import(/* webpackChunkName: "user-profile" */ '../views/authorization/profile')
 );
+const individualSchedule = React.lazy(() =>
+  import(/* webpackChunkName: "user-schedule" */ '../views/authorization/individual-schedule')
+);
 
 const Dashboard = React.lazy(() =>
   import(/* webpackChunkName: "views-dashboard" */ '../views/dashboard')
@@ -116,6 +119,12 @@ const MainRouter = () => {
                 // <Route
                     path="/schedule"
                     component={Schedule}
+                    roles={[ "isDev", "isManager", "isAdmin", "isResepsionis", "isPerawat", "isDokter" ]}
+                />
+                <ProtectedRoute
+                // <Route
+                    path="/individual-schedule"
+                    component={individualSchedule}
                     roles={[ "isDev", "isManager", "isAdmin", "isResepsionis", "isPerawat", "isDokter" ]}
                 />
                 <Route

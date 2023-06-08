@@ -561,10 +561,14 @@ const Data = ({ match, history, loading, error }) => {
     }
   };
 
-  const [searchName, setSearchName] = useState("");
+  const [searchDaftarTindakan, setSearchName] = useState("");
   const [searchKlinik, setSearchKlinik] = useState("");
   const [searchStatus, setSearchStatus] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [ limit, searchDaftarTindakan, searchKlinik, searchStatus, sortBy, sortOrder ]);
 
   useEffect(() => {
     let params = "";
@@ -574,8 +578,8 @@ const Data = ({ match, history, loading, error }) => {
     } else {
       params = `${params}?limit=10`;
     }
-    if (searchName !== "") {
-      params = `${params}&searchName=${searchName}`;
+    if (searchDaftarTindakan !== "") {
+      params = `${params}&searchDaftarTindakan=${searchDaftarTindakan}`;
     }
     if (searchKlinik !== "") {
       params = `${params}&searchKlinik=${searchKlinik}`;
@@ -587,11 +591,13 @@ const Data = ({ match, history, loading, error }) => {
       params = `${params}&page=${currentPage}`;
     }
 
+    setRowSelected(false);
+
     getTreatmentPrice(params);
     onLoadKlinik();
     onLoadDaftarTindakan();
 
-  }, [limit, searchName, searchKlinik, searchStatus, sortBy, sortOrder, currentPage ]);
+  }, [limit, searchDaftarTindakan, searchKlinik, searchStatus, sortBy, sortOrder, currentPage ]);
 
   let startNumber = 1;
 
@@ -668,7 +674,7 @@ const Data = ({ match, history, loading, error }) => {
                   </tr>
                 </thead>
                 <tbody>
-                {isLoading ? (
+                {isLoading && rowSelected == false ? (
                   <tr>
                     <td>&nbsp;</td>
                     <td align="center">

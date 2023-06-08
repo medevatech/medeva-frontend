@@ -75,13 +75,246 @@ const Data = ({ match }) => {
 
   const [patientID, setPatientID] = useState("");
   const [patientData, setPatientData] = useState("");
+  // const [vitalSignsID, setVitalSignsID] = useState("");
+
+  // const [vitalSigns, setVitalSigns] = useState({
+  //   id_pasien: patientID,
+  //   keluhan: "",
+  //   kesadaran: "",
+  //   temperatur: "",
+  //   tinggi_badan: "",
+  //   berat_badan: "",
+  //   lingkar_perut: "",
+  //   imt: "",
+  //   sistole: "",
+  //   diastole: "",
+  //   respiratory_rate: "",
+  //   heart_rate: "",
+  //   catatan_tambahan: "",
+  // });
+
+  // const onChange = (e) => {
+  //   // console.log('e', e);
+
+  //   if (e.name === "kesadaran") {
+  //     setVitalSigns((current) => {
+  //       return { ...current, kesadaran: e.value };
+  //     });
+
+  //     setSelectedAwareness(e);
+  //   } else {
+  //     setVitalSigns((current) => {
+  //       return { ...current, [e.target.name]: e.target.value };
+  //     });
+  //   }
+
+  //   // console.log('vitalSigns', vitalSigns);
+  // };
+
+  // const onVitalSignsSubmit = async (e) => {
+  //   e.preventDefault();
+
+  //   // console.log(vitalSigns);
+  //   if (dataStatus === "add") {
+  //     try {
+  //       const response = await vitalSignsAPI.add(vitalSigns);
+  //       // console.log(response);
+
+  //       if (response.status == 200) {
+  //         let data = await response.data.data;
+  //         // console.log(data);
+
+  //         Swal.fire({
+  //           title: "Sukses!",
+  //           html: `Tambah pra-konsultasi sukses`,
+  //           icon: "success",
+  //           confirmButtonColor: "#008ecc",
+  //         });
+
+  //         // resetForm(e);
+  //       } else {
+  //         Swal.fire({
+  //           title: "Gagal!",
+  //           html: `Tambah pra-konsultasi gagal: ${response.message}`,
+  //           icon: "error",
+  //           confirmButtonColor: "#008ecc",
+  //           confirmButtonText: "Coba lagi",
+  //         });
+
+  //         throw Error(`Error status: ${response.status}`);
+  //       }
+  //     } catch (e) {
+  //       Swal.fire({
+  //         title: "Gagal!",
+  //         html: e,
+  //         icon: "error",
+  //         confirmButtonColor: "#008ecc",
+  //         confirmButtonText: "Coba lagi",
+  //       });
+
+  //       console.log(e);
+  //     }
+  //   } else if (dataStatus === "update") {
+  //     try {
+  //       const response = await vitalSignsAPI.update(vitalSigns, vitalSignsID);
+  //       // console.log(response);
+
+  //       if (response.status == 200) {
+  //         let data = await response.data.data;
+  //         // console.log(data);
+
+  //         Swal.fire({
+  //           title: "Sukses!",
+  //           html: `Ubah pra-konsultasi sukses`,
+  //           icon: "success",
+  //           confirmButtonColor: "#008ecc",
+  //         });
+
+  //         // resetForm(e);
+  //       } else {
+  //         Swal.fire({
+  //           title: "Gagal!",
+  //           html: `Ubah pra-konsultasi gagal: ${response.message}`,
+  //           icon: "error",
+  //           confirmButtonColor: "#008ecc",
+  //           confirmButtonText: "Coba lagi",
+  //         });
+
+  //         throw Error(`Error status: ${response.status}`);
+  //       }
+  //     } catch (e) {
+  //       Swal.fire({
+  //         title: "Gagal!",
+  //         html: e,
+  //         icon: "error",
+  //         confirmButtonColor: "#008ecc",
+  //         confirmButtonText: "Coba lagi",
+  //       });
+
+  //       console.log(e);
+  //     }
+  //   } else {
+  //     console.log("dataStatus undefined");
+  //   }
+  // };
+
+  // const resetForm = (e) => {
+  //   e.preventDefault();
+
+  //   setPatientID("");
+  //   setVitalSignsID("");
+  //   setPatientData("");
+
+  //   setVitalSigns({
+  //     id_pasien: patientID,
+  //     keluhan: "",
+  //     kesadaran: "",
+  //     temperatur: 0,
+  //     tinggi_badan: 0,
+  //     berat_badan: 0,
+  //     lingkar_perut: 0,
+  //     imt: 0,
+  //     sistole: 0,
+  //     diastole: 0,
+  //     respiratory_rate: 0,
+  //     heart_rate: 0,
+  //     catatan_tambahan: "",
+  //   });
+
+  //   setSelectedAwareness("");
+
+  //   setDataStatus("add");
+  // };
+
+  // const onLoadDivisi = async () => {
+  //   try {
+  //     const response = await divisionAPI.get("", "?limit=1000");
+  //     // console.log(response);
+
+  //     setSelectedDivisionF([
+  //       { label: "Semua", value: "", key: 0, name: "id_divisi" },
+  //     ]);
+
+  //     if (response.status === 200) {
+  //       let data = response.data.data;
+  //       // console.log(data);
+
+  //       for (var i = 0; i < data.length; i++) {
+  //         setSelectedDivisionF((current) => [
+  //           ...current,
+  //           {
+  //             label: data[i].tipe,
+  //             value: data[i].id,
+  //             key: data[i].id,
+  //             name: "id_divisi",
+  //           },
+  //         ]);
+  //       }
+  //     } else {
+  //       throw Error(`Error status: ${response.status}`);
+  //     }
+  //   } catch (e) {
+  //     console.log(e);
+  //   }
+  // };
+
+  // const onLoadQueueByDivisi = async () => {
+  //   try {
+  //     const response = await queueAPI.get("", "?limit=1000");
+  //     // console.log(response);
+
+  //     setSelectedQueue([
+  //       { label: "Semua", value: "", key: 0, name: "id_divisi" },
+  //     ]);
+
+  //     if (response.status === 200) {
+  //       let data = response.data.data;
+  //       // console.log(data);
+
+  //       for (var i = 0; i < data.length; i++) {
+  //         setSelectedQueue((current) => [
+  //           ...current,
+  //           {
+  //             label: data[i].tipe,
+  //             value: data[i].id,
+  //             key: data[i].id,
+  //             name: "id_divisi",
+  //           },
+  //         ]);
+  //       }
+  //     } else {
+  //       throw Error(`Error status: ${response.status}`);
+  //     }
+  //   } catch (e) {
+  //     console.log(e);
+  //   }
+  // };
 
   const [isLoading, setIsLoading] = useState(false);
   const [modalAdd, setModalAdd] = useState(false);
   const [modalEditPriority, setModalEditPriority] = useState(false);
   const [queueId, setQueueId] = useState("");
 
-  const [rowSelected, setRowSelected] = useState(null);
+  const [queueData, setQueueData] = useState([
+    // {
+    //   id: 1,
+    //   no_antrian: 1,
+    //   prioritas: 1,
+    //   nama_lengkap: "Pramudia S",
+    //   jenis_kelamin: "L",
+    //   tanggal_lahir: "2000-07-10",
+    //   nomor_kitas: "3526671",
+    // },
+    // {
+    //   id: 2,
+    //   no_antrian: 2,
+    //   prioritas: 2,
+    //   nama_lengkap: "Helmi S",
+    //   jenis_kelamin: "L",
+    //   tanggal_lahir: "1999-07-10",
+    //   nomor_kitas: "3526671",
+    // },
+  ]);
 
   const selectPriority = [
     {
@@ -107,7 +340,7 @@ const Data = ({ match }) => {
   const [queue, setQueue] = useState({
     id_jaga: "",
     id_pasien: "",
-    prioritas: "3",
+    prioritas: "",
   });
 
   console.log("total page jaga", scheduleTotalPage);
@@ -115,7 +348,7 @@ const Data = ({ match }) => {
   const getSchedule = async (params) => {
     try {
       setIsLoading(true);
-      const res = await scheduleAPI.getDistinct("", params);
+      const res = await scheduleAPI.get("", params);
       dispatch({ type: "GET_SCHEDULE", payload: res.data.data });
       dispatch({
         type: "GET_TOTAL_PAGE_SCHEDULE",
@@ -146,49 +379,6 @@ const Data = ({ match }) => {
     }
   };
 
-  const [currentPage, setCurrentPage] = useState(1);
-  const [searchName, setSearchName] = useState("");
-  const [searchDivisi, setSearchDivisi] = useState("");
-  const [searchDivisiF, setSearchDivisiF] = useState("");
-  const [searchDivisiName, setSearchDivisiName] = useState("");
-  const [searchEmployee, setSearchEmployee] = useState("");
-
-  useEffect(() => {
-    let params = "";
-    // if (limit !== "10") {
-    //   params = `${params}?limit=${limit}`;
-    // } else {
-    //   params = `${params}?limit=10`;
-    // }
-    // if (currentPage !== "1") {
-    //   params = `${params}&page=${currentPage}`;
-    // }
-    // if (searchDivisiF !== "") {
-    //   params = `${params}&searchDivisi=${searchDivisiF}`;
-    // }
-    // if (searchDivisiName !== "") {
-    //   params = `${params}&searchDivisiName=${searchDivisiName}`;
-    // }
-    getSchedule(params);
-    getScheduleById(searchEmployee);
-    // onLoadDivisi();
-    // onLoadQueueByDivisi();
-  }, [
-    limit,
-    searchName,
-    searchDivisiF,
-    searchDivisiName,
-    searchEmployee,
-    sortBy,
-    sortOrder,
-    currentPage,
-    dataStatus,
-    // vitalSigns.id_pasien,
-  ]);
-
-  const defaultDate = new Date().toISOString().substr(0, 10);
-  const [date, setDate] = useState(defaultDate);
-
   const getQueue = async (params) => {
     try {
       setIsLoading(true);
@@ -205,30 +395,64 @@ const Data = ({ match }) => {
     }
   };
 
-  const onLoadSchedule = async (id, searchDay) => {
+  const [currentPage, setCurrentPage] = useState(1);
+  const [searchName, setSearchName] = useState("");
+  const [searchDivisi, setSearchDivisi] = useState("");
+  const [searchDivisiF, setSearchDivisiF] = useState("");
+  const [searchDivisiName, setSearchDivisiName] = useState("");
+
+  useEffect(() => {
+    let params = "";
+    if (limit !== "10") {
+      params = `${params}?limit=${limit}`;
+    } else {
+      params = `${params}?limit=10`;
+    }
+    if (searchDivisiF !== "") {
+      params = `${params}&searchDivisi=${searchDivisiF}`;
+    }
+    if (searchDivisiName !== "") {
+      params = `${params}&searchDivisiName=${searchDivisiName}`;
+    }
+    if (currentPage !== "1") {
+      params = `${params}&page=${currentPage}`;
+    }
+    getSchedule(params);
+    getScheduleById(searchDivisi);
+    // onLoadDivisi();
+    // onLoadQueueByDivisi();
+  }, [
+    limit,
+    searchName,
+    searchDivisiF,
+    searchDivisiName,
+    searchDivisi,
+    sortBy,
+    sortOrder,
+    currentPage,
+    dataStatus,
+    // vitalSigns.id_pasien,
+  ]);
+
+  const defaultDate = new Date().toISOString().substr(0, 10);
+  const [date, setDate] = useState(defaultDate);
+
+  const onLoadSchedule = async () => {
     try {
-      const response = await scheduleAPI.getDistinctByDivision(
-        "",
-        `/${id}?searchDay=${searchDay}`
-      );
+      const response = await scheduleAPI.get("", "?limit=1000");
       // console.log("rak", response);
 
       setSelectedSchedule([]);
 
       if (response.status === 200) {
         let data = response.data.data;
-        console.log(data);
+        // console.log(data);
 
         for (var i = 0; i < data.length; i++) {
           setSelectedSchedule((current) => [
             ...current,
             {
-              label:
-                data[i].nama_karyawan +
-                " " +
-                moment(data[i].waktu_mulai).format("HH:mm") +
-                " - " +
-                moment(data[i].waktu_selesai).format("HH:mm"),
+              label: data[i].nama_karyawan,
               value: data[i].id,
               key: data[i].id,
               name: "id_jaga",
@@ -273,90 +497,6 @@ const Data = ({ match }) => {
     }
   };
 
-  // const [datePick, setDatePick] = useState("");
-  const [dayNow, setDayNow] = useState("");
-  // console.log(datePick);
-
-  const getDayNow = (datePick, locale) => {
-    const date = new Date(datePick);
-    return date.toLocaleDateString(locale, { weekday: "long" });
-  };
-
-  const day = getDayNow(new Date().toISOString().slice(0, 10), "id-ID");
-  console.log("day now", day);
-
-  const onChangeId = (idDivisi, idKaryawan) => {
-    setRowSelected(idKaryawan);
-    setSearchDivisi(idDivisi);
-    setSearchEmployee(idKaryawan);
-    // setDatePick(new Date().toISOString().slice(0, 10));
-    setDayNow(day);
-  };
-
-  const [queueID, setQueueID] = useState("");
-  const [queuePatientName, setQueuePatientName] = useState("");
-  const [modalDelete, setModalDelete] = useState(false);
-
-  const deleteById = async (e, id) => {
-    e.preventDefault();
-
-    setModalDelete(true);
-    try {
-      const res = await queueAPI.getById("", `/${id}`);
-      let data = res.data.data[0];
-      console.log("data delete", data);
-
-      setQueueID(data.id);
-      setQueuePatientName(data.nama_lengkap);
-    } catch (e) {
-      console.log(e);
-    }
-  };
-
-  const onDeleteSubmit = async (e) => {
-    e.preventDefault();
-
-    try {
-      const response = await queueAPI.delete("", queueID);
-
-      if (response.status == 200) {
-        let data = await response.data.data;
-        // console.log(data);
-
-        Swal.fire({
-          title: "Sukses!",
-          html: `Hapus antrian sukses`,
-          icon: "success",
-          confirmButtonColor: "#008ecc",
-        });
-
-        setModalDelete(false);
-      } else {
-        Swal.fire({
-          title: "Gagal!",
-          html: `Hapus antrian gagal: ${response.message}`,
-          icon: "error",
-          confirmButtonColor: "#008ecc",
-          confirmButtonText: "Coba lagi",
-        });
-
-        throw Error(`Error status: ${response.status}`);
-      }
-
-      // console.log(response);
-    } catch (e) {
-      Swal.fire({
-        title: "Gagal!",
-        html: e,
-        icon: "error",
-        confirmButtonColor: "#008ecc",
-        confirmButtonText: "Coba lagi",
-      });
-
-      console.log(e);
-    }
-  };
-
   useEffect(() => {
     let params = "";
     if (limit !== "10") {
@@ -371,7 +511,7 @@ const Data = ({ match }) => {
       params = `${params}&date=${date}`;
     }
     getQueue(params);
-    onLoadSchedule(searchDivisi, dayNow);
+    onLoadSchedule();
     onLoadPatient();
     // onLoadDivisi();
     // onLoadQueueByDivisi();
@@ -401,6 +541,29 @@ const Data = ({ match }) => {
   const [limit, setLimit] = useState(10);
   const [sortBy, setSortBy] = useState("");
   const [sortOrder, setSortOrder] = useState("");
+
+  const [listBasic, setListBasic] = useState([
+    {
+      id: 1,
+      title: "Angel Cake",
+    },
+    {
+      id: 2,
+      title: "Bibingka",
+    },
+    {
+      id: 3,
+      title: "Cremeschnitte",
+    },
+    {
+      id: 4,
+      title: "Faworki",
+    },
+  ]);
+
+  // useEffect(() => {
+  //   onLoadSchedule();
+  // });
 
   const onQueueSubmit = async (e) => {
     e.preventDefault();
@@ -492,7 +655,6 @@ const Data = ({ match }) => {
   };
 
   const onChange = (e) => {
-    console.log(e);
     if (e.name === "id_jaga") {
       setQueue((current) => {
         return { ...current, id_jaga: e ? e.value : "" };
@@ -510,11 +672,11 @@ const Data = ({ match }) => {
     }
   };
 
-  // console.log("pororo", selectedSchedule);
-  // console.log("poro", selectedPatient);
-  // console.log(schedule);
-  // console.log(queue);
-  // console.log(queueId);
+  console.log("pororo", selectedSchedule);
+  console.log("poro", selectedPatient);
+  console.log(schedule);
+  console.log(queue);
+  console.log(queueId);
 
   return (
     <>
@@ -568,11 +730,8 @@ const Data = ({ match }) => {
                     scheduleAll.map((data) => (
                       <tr
                         key={data.id}
-                        onClick={() => onChangeId(data.id_divisi, data.id)}
+                        onClick={() => setSearchDivisi(data.id_divisi)}
                         style={{ cursor: "pointer" }}
-                        className={`${
-                          rowSelected == data.id && "row-selected"
-                        }`}
                       >
                         <th
                           scope="row"
@@ -583,13 +742,10 @@ const Data = ({ match }) => {
                         >
                           {startNumber++}
                         </th>
-                        <td
-                          style={{
-                            fontWeight: "bold",
-                            verticalAlign: "middle",
-                          }}
-                        >
-                          {data.nama_divisi}
+                        <td>
+                          <h6 style={{ fontWeight: "bold" }}>{data.divisi}</h6>
+                          {data.nama_karyawan}
+                          <br />
                         </td>
                         <td
                           style={{
@@ -601,7 +757,7 @@ const Data = ({ match }) => {
                             color="secondary"
                             size="xs"
                             className="button-xs"
-                            onClick={() => onChangeId(data.id_divisi, data.id)}
+                            onClick={() => setSearchDivisi(data.id_divisi)}
                           >
                             <i className="simple-icon-arrow-right-circle"></i>
                           </Button>{" "}
@@ -635,10 +791,13 @@ const Data = ({ match }) => {
               <CardTitle>
                 <Row>
                   <Colxx sm="6" md="6" xl="6">
+                    Daftar Antrian Poli / Divisi{" "}
                     {schedule ? (
                       <>
-                        Daftar Antrian {schedule.tipe} <br />
                         <br />
+                        <br />
+                        <p>{schedule.nama_karyawan}</p>
+                        <p style={{ fontWeight: "normal" }}>{schedule.tipe}</p>
                       </>
                     ) : (
                       ""
@@ -674,8 +833,184 @@ const Data = ({ match }) => {
                 </Row>
               </CardTitle>
               <Row>
-                <Colxx sm={12}>
-                  <Table striped>
+                <Colxx xxs="12">
+                  {/* <h5 className="mb-4">
+                    <IntlMessages id="sortable.basic" />
+                  </h5> */}
+                  {/* <ReactSortable
+                      list={queueData}
+                      setList={(list) => setQueueData(list)}
+                      tag="ul"
+                      className="list-unstyled"
+                      >
+                        {queueData.map((item) => (
+                          <li key={`basic_${item.id}`}>
+                            <p>
+                              {item.id}. {item.no_antrian}
+                            </p>
+                            <p>
+                              {item.nama_lengkap}. {item.prioritas}
+                            </p>
+                          </li>
+                        ))}
+                        <Table>
+                          <thead>
+                            <tr>
+                              <th
+                                style={{
+                                  textAlign: "center",
+                                  verticalAlign: "middle",
+                                }}
+                              >
+                                No. Antrian
+                              </th>
+                              <th
+                                style={{
+                                  textAlign: "center",
+                                  verticalAlign: "middle",
+                                }}
+                              >
+                                Prioritas
+                              </th>
+                              <th
+                                style={{
+                                  textAlign: "left",
+                                  verticalAlign: "middle",
+                                }}
+                              >
+                                Nama
+                              </th>
+                              <th
+                                style={{
+                                  textAlign: "center",
+                                  verticalAlign: "middle",
+                                }}
+                              >
+                                Jenis Kelamin
+                              </th>
+                              <th
+                                style={{
+                                  textAlign: "center",
+                                  verticalAlign: "middle",
+                                }}
+                              >
+                                Usia
+                              </th>
+                              <th
+                                style={{
+                                  textAlign: "center",
+                                  verticalAlign: "middle",
+                                }}
+                              >
+                                No. Kitas
+                              </th>
+                              <th>&nbsp;</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {isLoading ? (
+                              <tr>
+                                <td>&nbsp;</td>
+                                <td align="center" colSpan={2}>
+                                  <img
+                                    src={loader}
+                                    alt="loading..."
+                                    width="100"
+                                  />
+                                </td>
+                                <td>&nbsp;</td>
+                              </tr>
+                            ) : queueData.length > 0 ? (
+                              queueData.map((data) => (
+                                <tr
+                                  key={`basic_${data.id}`}
+                                  style={{ cursor: "pointer" }}
+                                >
+                                  <td
+                                    scope="row"
+                                    style={{
+                                      textAlign: "center",
+                                      verticalAlign: "middle",
+                                    }}
+                                  >
+                                    {data.no_antrian}
+                                  </td>
+                                  <td
+                                    style={{
+                                      textAlign: "center",
+                                      verticalAlign: "middle",
+                                    }}
+                                  >
+                                    <h7 className="mt-2">
+                                      {data.prioritas === 1 ? (
+                                        <h7>High</h7>
+                                      ) : data.prioritas === 2 ? (
+                                        <h7>Medium</h7>
+                                      ) : data.prioritas === 3 ? (
+                                        <h7>Low</h7>
+                                      ) : (
+                                        "0"
+                                      )}
+                                    </h7>
+                                  </td>
+                                  <td
+                                    style={{
+                                      textAlign: "left",
+                                      verticalAlign: "middle",
+                                    }}
+                                  >
+                                    <h7 className="mt-2">
+                                      {data.nama_lengkap}
+                                    </h7>
+                                  </td>
+                                  <td
+                                    style={{
+                                      textAlign: "center",
+                                      verticalAlign: "middle",
+                                    }}
+                                  >
+                                    <h7 className="mt-2">
+                                      {data.jenis_kelamin.substring(0, 1)}
+                                    </h7>
+                                  </td>
+                                  <td
+                                    style={{
+                                      textAlign: "center",
+                                      verticalAlign: "middle",
+                                    }}
+                                  >
+                                    <h7 className="mt-2">
+                                      {new Date().getFullYear() -
+                                        data.tanggal_lahir.substring(0, 4)}{" "}
+                                      tahun
+                                      <br />
+                                    </h7>
+                                  </td>
+                                  <td
+                                    style={{
+                                      textAlign: "center",
+                                      verticalAlign: "middle",
+                                    }}
+                                  >
+                                    <h7 className="mt-2">{data.nomor_kitas}</h7>
+                                  </td>
+                                </tr>
+                              ))
+                            ) : (
+                              <tr>
+                                <td>&nbsp;</td>
+                                <td align="center" colSpan={2}>
+                                  <h5 style={{ marginTop: "1.5rem" }}>
+                                    <b>Data tidak ditemukan</b>
+                                  </h5>
+                                </td>
+                                <td>&nbsp;</td>
+                              </tr>
+                            )}
+                          </tbody>
+                        </Table>
+                      </ReactSortable> */}
+                  <Table>
                     <thead>
                       <tr>
                         <th
@@ -684,23 +1019,7 @@ const Data = ({ match }) => {
                             verticalAlign: "middle",
                           }}
                         >
-                          #
-                        </th>
-                        <th
-                          style={{
-                            textAlign: "left",
-                            verticalAlign: "middle",
-                          }}
-                        >
-                          Pasien
-                        </th>
-                        <th
-                          style={{
-                            textAlign: "left",
-                            verticalAlign: "middle",
-                          }}
-                        >
-                          Jaga
+                          No. Antrian
                         </th>
                         <th
                           style={{
@@ -710,6 +1029,39 @@ const Data = ({ match }) => {
                         >
                           Prioritas
                         </th>
+                        <th
+                          style={{
+                            textAlign: "left",
+                            verticalAlign: "middle",
+                          }}
+                        >
+                          Nama
+                        </th>
+                        <th
+                          style={{
+                            textAlign: "center",
+                            verticalAlign: "middle",
+                          }}
+                        >
+                          Jenis Kelamin
+                        </th>
+                        <th
+                          style={{
+                            textAlign: "center",
+                            verticalAlign: "middle",
+                          }}
+                        >
+                          Usia
+                        </th>
+                        <th
+                          style={{
+                            textAlign: "center",
+                            verticalAlign: "middle",
+                          }}
+                        >
+                          No. Kitas
+                        </th>
+                        <th>&nbsp;</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -738,38 +1090,11 @@ const Data = ({ match }) => {
                             </td>
                             <td
                               style={{
-                                textAlign: "left",
-                                verticalAlign: "middle",
-                              }}
-                            >
-                              <h6
-                                style={{ fontWeight: "bold" }}
-                                className="max-text"
-                              >
-                                {data.nama_lengkap}
-                              </h6>
-                              {data.jenis_kelamin.substring(0, 1)},{" "}
-                              {new Date().getFullYear() -
-                                data.tanggal_lahir.substring(0, 4)}{" "}
-                              tahun
-                              <br />
-                              {data.tipe_kitas} {data.nomor_kitas}
-                            </td>
-                            <td
-                              style={{
-                                textAlign: "left",
-                                verticalAlign: "middle",
-                              }}
-                            >
-                              {data.nama_karyawan}
-                            </td>
-                            <td
-                              style={{
                                 textAlign: "center",
                                 verticalAlign: "middle",
                               }}
                             >
-                              <h6 className="mt-2">
+                              <h7 className="mt-2">
                                 {data.prioritas === 1 ? (
                                   <Button
                                     color="danger"
@@ -783,7 +1108,7 @@ const Data = ({ match }) => {
                                   </Button>
                                 ) : data.prioritas === 2 ? (
                                   <Button
-                                    color="warning"
+                                    color="primary"
                                     className=""
                                     size="xs"
                                     onClick={(e) =>
@@ -806,24 +1131,53 @@ const Data = ({ match }) => {
                                 ) : (
                                   "0"
                                 )}
-                              </h6>
-                              <h6>
-                                <Button
-                                  color="danger"
-                                  className=""
-                                  size="xs"
-                                  onClick={(e) => deleteById(e, data.id)}
-                                >
-                                  Delete
-                                </Button>
-                              </h6>
+                              </h7>
+                            </td>
+                            <td
+                              style={{
+                                textAlign: "left",
+                                verticalAlign: "middle",
+                              }}
+                            >
+                              <h7 className="mt-2">{data.nama_lengkap}</h7>
+                            </td>
+                            <td
+                              style={{
+                                textAlign: "center",
+                                verticalAlign: "middle",
+                              }}
+                            >
+                              <h7 className="mt-2">
+                                {data.jenis_kelamin.substring(0, 1)}
+                              </h7>
+                            </td>
+                            <td
+                              style={{
+                                textAlign: "center",
+                                verticalAlign: "middle",
+                              }}
+                            >
+                              <h7 className="mt-2">
+                                {new Date().getFullYear() -
+                                  data.tanggal_lahir.substring(0, 4)}{" "}
+                                tahun
+                                <br />
+                              </h7>
+                            </td>
+                            <td
+                              style={{
+                                textAlign: "center",
+                                verticalAlign: "middle",
+                              }}
+                            >
+                              <h7 className="mt-2">{data.nomor_kitas}</h7>
                             </td>
                           </tr>
                         ))
                       ) : searchDivisi === "" ? (
                         <tr>
                           <td>&nbsp;</td>
-                          <td align="center" colSpan={3}>
+                          <td align="center" colSpan={2}>
                             <h5
                               style={{
                                 marginTop: "1.5rem",
@@ -874,7 +1228,7 @@ const Data = ({ match }) => {
                   marginBottom: "12px",
                 }}
               >
-                <Label for="jaga">Dokter & Jadwal Jaga</Label>
+                <Label for="jaga">Divisi / Poli</Label>
                 <Select
                   components={{ Input: CustomSelectInput }}
                   className="react-select"
@@ -883,7 +1237,7 @@ const Data = ({ match }) => {
                   id="id_jaga"
                   options={selectedSchedule}
                   value={selectedSchedule.find(
-                    (item) => item.value === queue.id_jaga || ""
+                    (item) => item.value === queue.id_jaga
                   )}
                   onChange={onChange}
                 />
@@ -906,7 +1260,7 @@ const Data = ({ match }) => {
                   id="id_pasien"
                   options={selectedPatient}
                   value={selectedPatient.find(
-                    (item) => item.value === queue.id_pasien || ""
+                    (item) => item.value === queue.id_pasien
                   )}
                   onChange={onChange}
                 />
@@ -924,9 +1278,8 @@ const Data = ({ match }) => {
                   name="prioritas"
                   id="prioritas"
                   options={selectPriority}
-                  defaultValue={selectPriority[2]}
                   value={selectPriority.find(
-                    (item) => item.value === queue.prioritas || ""
+                    (item) => item.value === queue.prioritas
                   )}
                   onChange={onChange}
                 />
@@ -987,29 +1340,6 @@ const Data = ({ match }) => {
             </Button>
             <Button color="primary" onClick={(e) => onPriorityEdit(e, queueId)}>
               Simpan
-            </Button>{" "}
-          </ModalFooter>
-        </Modal>
-
-        <Modal isOpen={modalDelete} toggle={() => setModalDelete(!modalDelete)}>
-          <ModalHeader>Hapus Antrian</ModalHeader>
-          <ModalBody>
-            <h5>
-              Apakah Anda ingin menghapus antrian atas nama{" "}
-              <b>{queuePatientName}</b>?
-            </h5>
-          </ModalBody>
-          <ModalFooter>
-            <Button
-              type="button"
-              outline
-              color="danger"
-              onClick={() => setModalDelete(false)}
-            >
-              Batal
-            </Button>
-            <Button color="primary" onClick={(e) => onDeleteSubmit(e)}>
-              Ya
             </Button>{" "}
           </ModalFooter>
         </Modal>

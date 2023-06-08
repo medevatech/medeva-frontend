@@ -7,6 +7,10 @@ const treatment = {
     const url = api.treatment.all + options
     return baseApi.get(url, payloads, { headers: getOriginHeader() })
   },
+  getByRecord: (payloads, options) => {
+    const url = api.treatment.record + options
+    return baseApi.get(url, payloads, { headers: getOriginHeader() })
+  },
   add: (payloads) => {
     const url = api.treatment.all
     return baseApi.post(url, payloads, { headers: getOriginHeader() })
