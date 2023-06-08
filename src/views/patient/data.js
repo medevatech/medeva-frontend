@@ -1653,7 +1653,7 @@ const Data = ({ match }) => {
                           required
                         />
                         <Input
-                          type="text"
+                          type="number"
                           name="nomor_kitas"
                           id="nomor_kitas"
                           placeholder="No. KITAS"
@@ -1661,6 +1661,7 @@ const Data = ({ match }) => {
                           value={patient.nomor_kitas}
                           onChange={onChange}
                           required={true}
+                          pattern="[0-9]*"
                         />
                       </InputGroup>
                     </FormGroup>
@@ -1791,7 +1792,7 @@ const Data = ({ match }) => {
                     <FormGroup>
                       <Label for="kode_pos">Kode Pos</Label>
                       <Input
-                        type="text"
+                        type="number"
                         name="kode_pos"
                         id="kode_pos"
                         placeholder="Kode Pos"

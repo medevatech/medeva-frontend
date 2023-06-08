@@ -2,7 +2,8 @@
   "name": "medeva-frontend",
   "version": "0.1.0",
   "private": true,
-  "homepage": "http://sandbox.medeva.tech/",
+  "homepage": "https://sandbox.medeva.tech/",
+  "proxy": "https://sandbox.medeva.tech/",
   "dependencies": {
     "@glidejs/glide": "^3.4.1",
     "@testing-library/jest-dom": "^5.13.0",

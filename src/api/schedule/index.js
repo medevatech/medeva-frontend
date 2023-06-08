@@ -24,8 +24,13 @@ const schedule = {
     const url = api.schedule.ondvs + options;
     return baseApi.get(url, payloads, { headers: getOriginHeader() });
   },
+<<<<<<< HEAD
   getDistinctByDivision: (payloads, options) => {
     const url = api.schedule.bydivision + options;
+=======
+  getByEmployee: (payloads, options) => {
+    const url = api.schedule.onemployee + options;
+>>>>>>> 1228a895151a587a63b85171fe2252bb6c50eff7
     return baseApi.get(url, payloads, { headers: getOriginHeader() });
   },
   update: (payloads, id) => {
