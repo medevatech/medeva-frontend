@@ -161,7 +161,7 @@ const Home = ({ history, loading, error, loginUserAction }) => {
 
               <Formik initialValues={initialValues} onSubmit={onUserLogin}>
                 {({ errors, touched }) => (
-                  <Form className="av-tooltip tooltip-label-center">
+                  <Form className="av-tooltip tooltip-right-top">
                     <FormGroup className="form-group has-float-label">
                       <Label>
                         Username atau Email<span className="required text-danger" aria-required="true"> *</span>

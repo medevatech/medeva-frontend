@@ -26,6 +26,8 @@ import "rc-switch/assets/index.css";
 import "rc-slider/assets/index.css";
 import "react-rater/lib/react-rater.css";
 
+import useForm from 'utils/useForm';
+
 import moment from "moment";
 import Select from "react-select";
 import { Colxx, Separator } from "components/common/CustomBootstrap";
@@ -52,11 +54,13 @@ const Data = ({ match, history, loading, error }) => {
   const dispatch = useDispatch();
   const serviceData = useSelector(state => state.serviceList);
   const serviceTotalPage = useSelector(state => state.serviceListTotalPage);
+  const { errors, validate } = useForm();
+
   const [dataStatus, setDataStatus] = useState("add");
   const [rowSelected, setRowSelected] = useState(null);
 
   const [selectedKlinik, setSelectedKlinik] = useState([]);
-
+  
   const [modalArchive, setModalArchive] = useState(false);
   const [modalDelete, setModalDelete] = useState(false);
   const [serviceID, setServiceID] = useState('');
@@ -68,6 +72,7 @@ const Data = ({ match, history, loading, error }) => {
 
   const onChange = (e) => {
     // console.log('e', e);
+    validate(e, e.name ? e.name : e.target.name, e.value ? e.value : e.target.value);
 
     setService(current => {
         return { ...current, [e.target.name]: e.target.value }
@@ -76,8 +81,17 @@ const Data = ({ match, history, loading, error }) => {
     // console.log('service', service);
   }
 
+  let isNull = false;
+
   const onServiceSubmit = async (e) => {
     e.preventDefault();
+
+    for(let [key, value] of Object.entries(service)) {
+      if((key === 'nama' && value === '')){
+        validate(e, key, value);
+        return;
+      }
+    }
 
     if(dataStatus === 'add') {
       try {
@@ -200,6 +214,16 @@ const Data = ({ match, history, loading, error }) => {
       console.log(e);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const getServiceReducers = async (params) => {
+    try {
+      const res = await serviceAPI.get("", params);
+      dispatch({type: "GET_SERVICE_LIST", payload: res.data.data});
+      dispatch({type: "GET_TOTAL_PAGE_SERVICE_LIST", payload: res.data.pagination.totalPage});
+    } catch (e) {
+      console.log(e);
     }
   };
 
@@ -428,29 +452,31 @@ const Data = ({ match, history, loading, error }) => {
     setCurrentPage(1);
   }, [ limit, searchDaftarLayanan, searchStatus, sortBy, sortOrder ]);
 
-  useEffect(() => {
-    let params = "";
+  let params = "";
     
-    if (limit !== 10) {
-      params = `${params}?limit=${limit}`;
-    } else {
-      params = `${params}?limit=10`;
-    }
-    if (searchDaftarLayanan !== "") {
-      params = `${params}&searchDaftarLayanan=${searchDaftarLayanan}`;
-    }
-    if (searchStatus !== "") {
-      params = `${params}&searchStatus=${searchStatus}`;
-    }
-    if (currentPage !== 1) {
-      params = `${params}&page=${currentPage}`;
-    }
+  if (limit !== 10) {
+    params = `${params}?limit=${limit}`;
+  } else {
+    params = `${params}?limit=10`;
+  }
+  if (searchDaftarLayanan !== "") {
+    params = `${params}&searchDaftarLayanan=${searchDaftarLayanan}`;
+  }
+  if (searchStatus !== "") {
+    params = `${params}&searchStatus=${searchStatus}`;
+  }
+  if (currentPage !== 1) {
+    params = `${params}&page=${currentPage}`;
+  }
 
+  useEffect(() => {
     setRowSelected(false);
-
     getService(params);
-
   }, [limit, searchDaftarLayanan, searchStatus, sortBy, sortOrder, currentPage ]);
+
+  useEffect(() => {
+    getServiceReducers(params);
+  }, [ serviceData ]);
 
   let startNumber = 1;
 
@@ -514,7 +540,7 @@ const Data = ({ match, history, loading, error }) => {
                   </tr>
                 </thead>
                 <tbody>
-                {isLoading && rowSelected == false ? (
+                {isLoading && rowSelected === false ? (
                   <tr>
                     <td>&nbsp;</td>
                     <td align="center">
@@ -588,7 +614,7 @@ const Data = ({ match, history, loading, error }) => {
                   </Colxx>
                 </Row>
               </CardTitle>
-              <Form>
+              <Form className="av-tooltip tooltip-right-top" onSubmit={onServiceSubmit}>
                 <FormGroup row>
                   <Colxx sm={12}>
                     <FormGroup>
@@ -609,8 +635,13 @@ const Data = ({ match, history, loading, error }) => {
                         placeholder="Nama"
                         value={service.nama}
                         onChange={onChange}
-                        required={true}
+                        // required
                       />
+                      {errors.nama && (
+                        <div className="rounded invalid-feedback d-block">
+                          {errors.nama}
+                        </div>
+                      )}
                     </FormGroup>
                   </Colxx>
                 </FormGroup>
@@ -631,8 +662,8 @@ const Data = ({ match, history, loading, error }) => {
                     &nbsp;&nbsp;
                     <Button
                       color="primary"
-                      type="submit"
-                      onClick={(e) => onServiceSubmit(e)}
+                      // type="submit"
+                      // onClick={(e) => onServiceSubmit(e)}
                     >
                       Simpan
                     </Button>
