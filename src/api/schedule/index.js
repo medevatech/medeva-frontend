@@ -12,20 +12,12 @@ const schedule = {
     const url = api.schedule.all + options;
     return baseApi.get(url, payloads, { headers: getOriginHeader() });
   },
-  getDistinct: (payloads, options) => {
-    const url = api.schedule.distinct + options;
-    return baseApi.get(url, payloads, { headers: getOriginHeader() });
-  },
   add: (payloads) => {
     const url = api.schedule.all;
     return baseApi.post(url, payloads, { headers: getOriginHeader() });
   },
   getByDivision: (payloads, options) => {
     const url = api.schedule.ondvs + options;
-    return baseApi.get(url, payloads, { headers: getOriginHeader() });
-  },
-  getDistinctByDivision: (payloads, options) => {
-    const url = api.schedule.bydivision + options;
     return baseApi.get(url, payloads, { headers: getOriginHeader() });
   },
   getByEmployee: (payloads, options) => {

@@ -107,7 +107,7 @@ const Data = ({ match }) => {
   const [queue, setQueue] = useState({
     id_jaga: "",
     id_pasien: "",
-    prioritas: "3",
+    prioritas: "",
   });
 
   console.log("total page jaga", scheduleTotalPage);
@@ -115,7 +115,7 @@ const Data = ({ match }) => {
   const getSchedule = async (params) => {
     try {
       setIsLoading(true);
-      const res = await scheduleAPI.getDistinct("", params);
+      const res = await scheduleAPI.get("", params);
       dispatch({ type: "GET_SCHEDULE", payload: res.data.data });
       dispatch({
         type: "GET_TOTAL_PAGE_SCHEDULE",
@@ -155,20 +155,20 @@ const Data = ({ match }) => {
 
   useEffect(() => {
     let params = "";
-    // if (limit !== "10") {
-    //   params = `${params}?limit=${limit}`;
-    // } else {
-    //   params = `${params}?limit=10`;
-    // }
-    // if (currentPage !== "1") {
-    //   params = `${params}&page=${currentPage}`;
-    // }
-    // if (searchDivisiF !== "") {
-    //   params = `${params}&searchDivisi=${searchDivisiF}`;
-    // }
-    // if (searchDivisiName !== "") {
-    //   params = `${params}&searchDivisiName=${searchDivisiName}`;
-    // }
+    if (limit !== "10") {
+      params = `${params}?limit=${limit}`;
+    } else {
+      params = `${params}?limit=10`;
+    }
+    if (currentPage !== "1") {
+      params = `${params}&page=${currentPage}`;
+    }
+    if (searchDivisiF !== "") {
+      params = `${params}&searchDivisi=${searchDivisiF}`;
+    }
+    if (searchDivisiName !== "") {
+      params = `${params}&searchDivisiName=${searchDivisiName}`;
+    }
     getSchedule(params);
     getScheduleById(searchEmployee);
     // onLoadDivisi();
@@ -205,30 +205,22 @@ const Data = ({ match }) => {
     }
   };
 
-  const onLoadSchedule = async (id, searchDay) => {
+  const onLoadSchedule = async () => {
     try {
-      const response = await scheduleAPI.getDistinctByDivision(
-        "",
-        `/${id}?searchDay=${searchDay}`
-      );
+      const response = await scheduleAPI.get("", "?limit=1000");
       // console.log("rak", response);
 
       setSelectedSchedule([]);
 
       if (response.status === 200) {
         let data = response.data.data;
-        console.log(data);
+        // console.log(data);
 
         for (var i = 0; i < data.length; i++) {
           setSelectedSchedule((current) => [
             ...current,
             {
-              label:
-                data[i].nama_karyawan +
-                " " +
-                moment(data[i].waktu_mulai).format("HH:mm") +
-                " - " +
-                moment(data[i].waktu_selesai).format("HH:mm"),
+              label: data[i].nama_karyawan,
               value: data[i].id,
               key: data[i].id,
               name: "id_jaga",
@@ -273,88 +265,10 @@ const Data = ({ match }) => {
     }
   };
 
-  // const [datePick, setDatePick] = useState("");
-  const [dayNow, setDayNow] = useState("");
-  // console.log(datePick);
-
-  const getDayNow = (datePick, locale) => {
-    const date = new Date(datePick);
-    return date.toLocaleDateString(locale, { weekday: "long" });
-  };
-
-  const day = getDayNow(new Date().toISOString().slice(0, 10), "id-ID");
-  console.log("day now", day);
-
   const onChangeId = (idDivisi, idKaryawan) => {
     setRowSelected(idKaryawan);
     setSearchDivisi(idDivisi);
     setSearchEmployee(idKaryawan);
-    // setDatePick(new Date().toISOString().slice(0, 10));
-    setDayNow(day);
-  };
-
-  const [queueID, setQueueID] = useState("");
-  const [queuePatientName, setQueuePatientName] = useState("");
-  const [modalDelete, setModalDelete] = useState(false);
-
-  const deleteById = async (e, id) => {
-    e.preventDefault();
-
-    setModalDelete(true);
-    try {
-      const res = await queueAPI.getById("", `/${id}`);
-      let data = res.data.data[0];
-      console.log("data delete", data);
-
-      setQueueID(data.id);
-      setQueuePatientName(data.nama_lengkap);
-    } catch (e) {
-      console.log(e);
-    }
-  };
-
-  const onDeleteSubmit = async (e) => {
-    e.preventDefault();
-
-    try {
-      const response = await queueAPI.delete("", queueID);
-
-      if (response.status == 200) {
-        let data = await response.data.data;
-        // console.log(data);
-
-        Swal.fire({
-          title: "Sukses!",
-          html: `Hapus antrian sukses`,
-          icon: "success",
-          confirmButtonColor: "#008ecc",
-        });
-
-        setModalDelete(false);
-      } else {
-        Swal.fire({
-          title: "Gagal!",
-          html: `Hapus antrian gagal: ${response.message}`,
-          icon: "error",
-          confirmButtonColor: "#008ecc",
-          confirmButtonText: "Coba lagi",
-        });
-
-        throw Error(`Error status: ${response.status}`);
-      }
-
-      // console.log(response);
-    } catch (e) {
-      Swal.fire({
-        title: "Gagal!",
-        html: e,
-        icon: "error",
-        confirmButtonColor: "#008ecc",
-        confirmButtonText: "Coba lagi",
-      });
-
-      console.log(e);
-    }
   };
 
   useEffect(() => {
@@ -371,7 +285,7 @@ const Data = ({ match }) => {
       params = `${params}&date=${date}`;
     }
     getQueue(params);
-    onLoadSchedule(searchDivisi, dayNow);
+    onLoadSchedule();
     onLoadPatient();
     // onLoadDivisi();
     // onLoadQueueByDivisi();
@@ -401,6 +315,29 @@ const Data = ({ match }) => {
   const [limit, setLimit] = useState(10);
   const [sortBy, setSortBy] = useState("");
   const [sortOrder, setSortOrder] = useState("");
+
+  const [listBasic, setListBasic] = useState([
+    {
+      id: 1,
+      title: "Angel Cake",
+    },
+    {
+      id: 2,
+      title: "Bibingka",
+    },
+    {
+      id: 3,
+      title: "Cremeschnitte",
+    },
+    {
+      id: 4,
+      title: "Faworki",
+    },
+  ]);
+
+  // useEffect(() => {
+  //   onLoadSchedule();
+  // });
 
   const onQueueSubmit = async (e) => {
     e.preventDefault();
@@ -492,7 +429,6 @@ const Data = ({ match }) => {
   };
 
   const onChange = (e) => {
-    console.log(e);
     if (e.name === "id_jaga") {
       setQueue((current) => {
         return { ...current, id_jaga: e ? e.value : "" };
@@ -510,11 +446,11 @@ const Data = ({ match }) => {
     }
   };
 
-  // console.log("pororo", selectedSchedule);
-  // console.log("poro", selectedPatient);
-  // console.log(schedule);
-  // console.log(queue);
-  // console.log(queueId);
+  console.log("pororo", selectedSchedule);
+  console.log("poro", selectedPatient);
+  console.log(schedule);
+  console.log(queue);
+  console.log(queueId);
 
   return (
     <>
@@ -583,13 +519,12 @@ const Data = ({ match }) => {
                         >
                           {startNumber++}
                         </th>
-                        <td
-                          style={{
-                            fontWeight: "bold",
-                            verticalAlign: "middle",
-                          }}
-                        >
-                          {data.nama_divisi}
+                        <td>
+                          <h6 style={{ fontWeight: "bold" }}>
+                            {data.nama_divisi}
+                          </h6>
+                          {data.nama_karyawan}
+                          <br />
                         </td>
                         <td
                           style={{
@@ -807,16 +742,6 @@ const Data = ({ match }) => {
                                   "0"
                                 )}
                               </h6>
-                              <h6>
-                                <Button
-                                  color="danger"
-                                  className=""
-                                  size="xs"
-                                  onClick={(e) => deleteById(e, data.id)}
-                                >
-                                  Delete
-                                </Button>
-                              </h6>
                             </td>
                           </tr>
                         ))
@@ -874,7 +799,7 @@ const Data = ({ match }) => {
                   marginBottom: "12px",
                 }}
               >
-                <Label for="jaga">Dokter & Jadwal Jaga</Label>
+                <Label for="jaga">Nama Karyawan</Label>
                 <Select
                   components={{ Input: CustomSelectInput }}
                   className="react-select"
@@ -883,7 +808,7 @@ const Data = ({ match }) => {
                   id="id_jaga"
                   options={selectedSchedule}
                   value={selectedSchedule.find(
-                    (item) => item.value === queue.id_jaga || ""
+                    (item) => item.value === queue.id_jaga
                   )}
                   onChange={onChange}
                 />
@@ -906,7 +831,7 @@ const Data = ({ match }) => {
                   id="id_pasien"
                   options={selectedPatient}
                   value={selectedPatient.find(
-                    (item) => item.value === queue.id_pasien || ""
+                    (item) => item.value === queue.id_pasien
                   )}
                   onChange={onChange}
                 />
@@ -924,10 +849,10 @@ const Data = ({ match }) => {
                   name="prioritas"
                   id="prioritas"
                   options={selectPriority}
-                  defaultValue={selectPriority[2]}
                   value={selectPriority.find(
-                    (item) => item.value === queue.prioritas || ""
+                    (item) => item.value === queue.prioritas
                   )}
+                  defaultValue={{ label: "Low", value: '3', name: 'prioritas' }}
                   onChange={onChange}
                 />
               </Colxx>
@@ -987,29 +912,6 @@ const Data = ({ match }) => {
             </Button>
             <Button color="primary" onClick={(e) => onPriorityEdit(e, queueId)}>
               Simpan
-            </Button>{" "}
-          </ModalFooter>
-        </Modal>
-
-        <Modal isOpen={modalDelete} toggle={() => setModalDelete(!modalDelete)}>
-          <ModalHeader>Hapus Antrian</ModalHeader>
-          <ModalBody>
-            <h5>
-              Apakah Anda ingin menghapus antrian atas nama{" "}
-              <b>{queuePatientName}</b>?
-            </h5>
-          </ModalBody>
-          <ModalFooter>
-            <Button
-              type="button"
-              outline
-              color="danger"
-              onClick={() => setModalDelete(false)}
-            >
-              Batal
-            </Button>
-            <Button color="primary" onClick={(e) => onDeleteSubmit(e)}>
-              Ya
             </Button>{" "}
           </ModalFooter>
         </Modal>
