@@ -4,6 +4,7 @@ import { NavLink } from 'react-router-dom';
 import { connect } from 'react-redux';
 
 import { Formik, Form, Field } from 'formik';
+import { NotificationManager } from 'components/common/react-notifications';
 
 import { Colxx } from 'components/common/CustomBootstrap';
 
@@ -15,47 +16,41 @@ import Swal from 'sweetalert2';
 const validatePassword = (value) => {
   let error;
   if (!value) {
-    error = 'Please enter your password';
-  } else if (value.length < 4) {
-    error = 'Value must be longer than 3 characters';
+    error = 'Silahkan mengisi password Anda';
   }
+  // else if (value.length < 4) {
+  //   error = 'Value must be longer than 3 characters';
+  // }
   return error;
 };
 
 const validateEmail = (value) => {
   let error;
   if (!value) {
-    error = 'Please enter your email address';
-  } else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(value)) {
-    error = 'Invalid email address';
+    error = 'Silahkan mengisi username atau email Anda';
   }
+  // else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(value)) {
+  //   error = 'Invalid email address';
+  // }
   return error;
 };
 
 const Home = ({ history, loading, error, loginUserAction }) => {
-  const [input_login, setInputLogin] = useState('dev@medeva.tech');
+  const [email, setEmail] = useState('dev@medeva.tech');
   const [password, setPassword] = useState('dev123');
 
-  // useEffect(() => {
-  //   if (error) {
-  //     NotificationManager.warning(error, 'Login Error', 3000, null, null, '');
-  //   }
-  // }, [error]);
-
-  const [ userLogin, setUserLogin ] = useState({ input_login: 'dev@medeva.tech', password: 'dev123'});
+  useEffect(() => {
+    if (error) {
+      NotificationManager.warning(error, 'Login Error', 3000, null, null, '');
+    }
+  }, [error]);
 
   const onUserLogin = async (values) => {
     if (!loading) {
-      if (values.input_login !== '' && values.password !== '') {
-        // loginUserAction(values, history);
-        // history.push("../dashboard");
-
-        // const loginDB = async (e) => {
-          // values.preventDefault();
-  
+      if (values.email !== '' && values.password !== '') {
           try {
-              // userLoginData = JSON.stringify({ input_login: userLogin.email, password: userLogin.password })
-              // userLoginData = { input_login: email, password: password };
+              let input_login = email;
+
               let data = { input_login, password };
 
               const response = await auth.login(data);
@@ -66,23 +61,6 @@ const Home = ({ history, loading, error, loginUserAction }) => {
                   // console.log(data);
 
                   let user = { id : "", username: "", roles: {}}
-                  // let roles = { isDev: 0, isManager: 0, isAdmin: 0, isResepsionis: 0, isPerawat: 0, isDokter: 0, isManajemen: 0};
-
-                  // if (data.is_dev === 1) {
-                  //   roles.isDev = 1;
-                  // } else if (data.is_manager === 1) {
-                  //   roles.isManager = 1;
-                  // } else if (data.is_admin === 1) {
-                  //   roles.isAdmin = 1;
-                  // } else if (data.is_resepsionis === 1) {
-                  //   roles.isResepsionis = 1;
-                  // } else if (data.is_perawat === 1) {
-                  //   roles.isPerawat = 1;
-                  // } else if (data.is_dokter === 1) {
-                  //   roles.isDokter = 1;
-                  // } else if (data.is_manajemen === 1) {
-                  //   roles.isManajemen = 1;
-                  // }
 
                   let roles = [];
 
@@ -125,18 +103,14 @@ const Home = ({ history, loading, error, loginUserAction }) => {
                       html: `Login sukses`,
                       icon: 'success',
                       confirmButtonColor: '#008ecc',
-                  //     confirmButtonText: 'Menuju dashboard',
                   })
-                  // }).then((result) => {
-                  //   if (result.isConfirmed) {
-                      history.push("../dashboard");
-                  //   }
-                  // })
+                  
+                  history.push("../dashboard");
                   
               } else {
                 Swal.fire({
                     title: 'Gagal!',
-                    html: `Login gagal`,
+                    html: `Login gagal: ${response.message}`,
                     icon: 'error',
                     confirmButtonColor: '#008ecc',
                     confirmButtonText: 'Coba lagi',
@@ -147,7 +121,7 @@ const Home = ({ history, loading, error, loginUserAction }) => {
           } catch (e) {
               Swal.fire({
                 title: 'Error!',
-                html: `Login gagal`,
+                html: `Login gagal: ${e}`,
                 icon: 'error',
                 confirmButtonColor: '#008ecc',
                 confirmButtonText: 'Coba lagi',
@@ -155,18 +129,11 @@ const Home = ({ history, loading, error, loginUserAction }) => {
             
             console.log(e);
           }
-        // }
       }
     }
   }
 
-  const initialValues = { input_login, password };
-
-  // const onChange = (e) => {
-  //   setUserLogin(currState => {
-  //       return { ...currState, [e.target.id]: e.target.value }
-  //   })
-  // }
+  const initialValues = { email, password };
 
   return (
     <UserLayout>
@@ -194,51 +161,48 @@ const Home = ({ history, loading, error, loginUserAction }) => {
 
               <Formik initialValues={initialValues} onSubmit={onUserLogin}>
                 {({ errors, touched }) => (
-                  <Form className="av-tooltip tooltip-label-bottom">
+                  <Form className="av-tooltip tooltip-label-center">
                     <FormGroup className="form-group has-float-label">
                       <Label>
                         Username atau Email<span className="required text-danger" aria-required="true"> *</span>
                       </Label>
-                      <input
+                      <Field
                         className="form-control"
                         name="email"
-                        // validate={validateEmail}
-                        value={input_login}
+                        validate={validateEmail}
+                        // value={input_login}
                         // onChange={onChange}
-                        onChange={(e) => setInputLogin(e.target.value)}
+                        // onChange={(e) => setInputLogin(e.target.value)}
                       />
-                      {/* {errors.email && touched.email && (
-                        <div className="invalid-feedback d-block">
+                      {errors.email && touched.email && (
+                        <div className="rounded invalid-feedback invalid-feedback-login d-block">
                           {errors.email}
                         </div>
-                      )} */}
+                      )}
                     </FormGroup>
                     <FormGroup className="form-group has-float-label">
                       <Label>
                         Password<span className="required text-danger" aria-required="true"> *</span>
                       </Label>
-                      <input
+                      <Field
                         className="form-control"
                         type="password"
                         name="password"
-                        // validate={validatePassword}
-                        value={password}
+                        validate={validatePassword}
+                        // value={password}
                         // onChange={onChange}
-                        onChange={(e) => setPassword(e.target.value)}
+                        // onChange={(e) => setPassword(e.target.value)}
                       />
-                      {/* {errors.password && touched.password && (
-                        <div className="invalid-feedback d-block">
+                      {errors.password && touched.password && (
+                        <div className="rounded invalid-feedback d-block">
                           {errors.password}
                         </div>
-                      )} */}
+                      )}
                     </FormGroup>
                     {/* <div className="d-flex justify-content-between align-items-center"> */}
                     <div className="d-flex justify-content-end align-items-center">
-                      {/* <NavLink to="/register">
-                        Registrasi Pengguna
-                      </NavLink> */}
                       {/* <NavLink to="/authorization/forgot-password">
-                        Forgot Password?
+                        Lupa Password?
                       </NavLink> */}
                       <Button
                         color="primary"

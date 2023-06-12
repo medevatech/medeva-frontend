@@ -631,6 +631,7 @@ const Data = ({ match, history, loading, error }) => {
                     &nbsp;&nbsp;
                     <Button
                       color="primary"
+                      type="submit"
                       onClick={(e) => onServiceSubmit(e)}
                     >
                       Simpan

@@ -1,3 +1,7 @@
+.invalid-feedback-login {
+    padding: 0.5rem;
+}
+
 .navbar {
     height: auto !important;
     padding: 0.75rem 0;
@@ -384,6 +388,15 @@ label {
     .select-allergy:not(:first-of-type) {
         width: 84%;
     }
+
+    .responsive-mobile-vertical-xs-5 .input-group {
+        width: 125% !important;
+    }
+
+    .responsive-mobile-vertical-xs-2 {
+        padding-right: 0px !important;
+        padding-left: 10px !important;
+    }
 }
 
 @media (max-width: 991px) {
@@ -458,6 +471,10 @@ label {
 
     .select-allergy:not(:first-of-type) {
         width: 81%;
+    }
+    
+    .responsive-mobile-vertical-xs-5 .input-group {
+        width: 100% !important;
     }
 }
 
