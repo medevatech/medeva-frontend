@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import {
   Row,
   Card,
@@ -13,108 +13,110 @@ import {
   CustomInput,
   Button,
   Form,
-  Table
-} from 'reactstrap';
-import { useDispatch, useSelector } from 'react-redux';
-import DatePicker from 'react-datepicker';
-import 'react-tagsinput/react-tagsinput.css';
-import 'react-datepicker/dist/react-datepicker.css';
-import 'rc-switch/assets/index.css';
-import 'rc-slider/assets/index.css';
-import 'react-rater/lib/react-rater.css';
+  Table,
+} from "reactstrap";
+import { useDispatch, useSelector } from "react-redux";
+import DatePicker from "react-datepicker";
+import "react-tagsinput/react-tagsinput.css";
+import "react-datepicker/dist/react-datepicker.css";
+import "rc-switch/assets/index.css";
+import "rc-slider/assets/index.css";
+import "react-rater/lib/react-rater.css";
 
 import moment from "moment";
-import Select from 'react-select';
-import { Colxx, Separator } from 'components/common/CustomBootstrap';
-import Pagination from 'components/common/Pagination';
+import Select from "react-select";
+import { Colxx, Separator } from "components/common/CustomBootstrap";
+import Pagination from "components/common/Pagination";
 
-import CustomSelectInput from 'components/common/CustomSelectInput';
+import CustomSelectInput from "components/common/CustomSelectInput";
 
 import queueAPI from "api/queue";
 import vitalSignsAPI from "api/vital-signs";
 import divisionAPI from "api/division";
 import Swal from "sweetalert2";
 
-import loader from '../../assets/img/loading.gif';
+import loader from "../../assets/img/loading.gif";
 
-const userData = JSON.parse(localStorage.getItem('user_data'));
+const userData = JSON.parse(localStorage.getItem("user_data"));
 
 const selectDivision = [
-  { label: 'Poli Umum', value: 'umum', key: 0 },
-  { label: 'Poli Gigi', value: 'gigi', key: 1 }
+  { label: "Poli Umum", value: "umum", key: 0 },
+  { label: "Poli Gigi", value: "gigi", key: 1 },
 ];
 
 const selectPatient = [
-  { label: 'John Doe', value: 'john', key: 0 },
-  { label: 'Jane Doe', value: 'jane', key: 1 },
-  { label: 'Josh Doe', value: 'josh', key: 2 },
-  { label: 'Jack Doe', value: 'jack', key: 3 },
-  { label: 'Janet Doe', value: 'janet', key: 4 },
+  { label: "John Doe", value: "john", key: 0 },
+  { label: "Jane Doe", value: "jane", key: 1 },
+  { label: "Josh Doe", value: "josh", key: 2 },
+  { label: "Jack Doe", value: "jack", key: 3 },
+  { label: "Janet Doe", value: "janet", key: 4 },
 ];
 
 const selectAwareness = [
-  { label: 'Compos Mentis', value: 'Compos Mentis', key: 0, name: 'kesadaran' },
-  { label: 'Somnolence', value: 'Somnolence', name: 'kesadaran' },
-  { label: 'Sopot', value: 'Sopot', name: 'kesadaran' },
-  { label: 'Coma', value: 'Coma', name: 'kesadaran' },
+  { label: "Compos Mentis", value: "Compos Mentis", key: 0, name: "kesadaran" },
+  { label: "Somnolence", value: "Somnolence", name: "kesadaran" },
+  { label: "Sopot", value: "Sopot", name: "kesadaran" },
+  { label: "Coma", value: "Coma", name: "kesadaran" },
 ];
 
-
-let berat_badan = 0; let tinggi_badan = 0;
+let berat_badan = 0;
+let tinggi_badan = 0;
 
 const VitalSigns = ({ match }) => {
   const dispatch = useDispatch();
-  const queueAll = useSelector(state => state.queue);
-  const queueTotalPage = useSelector(state => state.queueTotalPage);
-  const allVitalSigns = useSelector(state => state.allVitalSignsByPatient);
+  const queueAll = useSelector((state) => state.queue);
+  const queueTotalPage = useSelector((state) => state.queueTotalPage);
+  const allVitalSigns = useSelector((state) => state.allVitalSignsByPatient);
   const [dataStatus, setDataStatus] = useState("add");
   const [rowSelected, setRowSelected] = useState(null);
 
   // const [selectDivision, setSelectDivision] = useState([]);
-  const [selectedDivisionF, setSelectedDivisionF] = useState([{ label: "Semua", value: "", key: 0, name: 'id_klinik' }]);
-  const [selectedDivision, setSelectedDivision] = useState('');
-  const [selectedAwareness, setSelectedAwareness] = useState('');
+  const [selectedDivisionF, setSelectedDivisionF] = useState([
+    { label: "Semua", value: "", key: 0, name: "id_klinik" },
+  ]);
+  const [selectedDivision, setSelectedDivision] = useState("");
+  const [selectedAwareness, setSelectedAwareness] = useState("");
 
   const [startDateTime, setStartDateTime] = useState(new Date());
 
-  const [patientID, setPatientID] = useState('');
-  const [patientData, setPatientData] = useState('');
-  const [vitalSignsID, setVitalSignsID] = useState('');
+  const [patientID, setPatientID] = useState("");
+  const [patientData, setPatientData] = useState("");
+  const [vitalSignsID, setVitalSignsID] = useState("");
 
-  const [ vitalSigns, setVitalSigns ] = useState({
+  const [vitalSigns, setVitalSigns] = useState({
     id_pasien: patientID,
-    keluhan: '',
-    kesadaran: '',
-    temperatur: '',
-    tinggi_badan: '',
-    berat_badan: '',
-    lingkar_perut: '',
-    imt: '',
-    sistole: '',
-    diastole: '',
-    respiratory_rate: '',
-    heart_rate: '',
-    catatan_tambahan: '',
-    created_at: ''
+    keluhan: "",
+    kesadaran: "",
+    temperatur: "",
+    tinggi_badan: "",
+    berat_badan: "",
+    lingkar_perut: "",
+    imt: "",
+    sistole: "",
+    diastole: "",
+    respiratory_rate: "",
+    heart_rate: "",
+    catatan_tambahan: "",
+    created_at: "",
   });
 
   const onChange = (e) => {
     // console.log('e', e);
 
-    if (e.name === 'kesadaran') {
-      setVitalSigns(current => {
-          return { ...current, kesadaran: e.value }
-      })
+    if (e.name === "kesadaran") {
+      setVitalSigns((current) => {
+        return { ...current, kesadaran: e.value };
+      });
 
       setSelectedAwareness(e);
     } else {
-      setVitalSigns(current => {
-          return { ...current, [e.target.name]: e.target.value }
-      })
+      setVitalSigns((current) => {
+        return { ...current, [e.target.name]: e.target.value };
+      });
     }
 
     // console.log('vitalSigns', vitalSigns);
-  }
+  };
 
   const calculateIMT = (e) => {
     // console.log('e', e);
@@ -126,22 +128,22 @@ const VitalSigns = ({ match }) => {
     }
 
     if (berat_badan > 0 && tinggi_badan > 0) {
-      let imtValue = berat_badan / ((tinggi_badan / 100) ** 2);
+      let imtValue = berat_badan / (tinggi_badan / 100) ** 2;
       // console.log('imtValue', imtValue);
 
-      setVitalSigns(current => {
-          return { ...current, imt: imtValue.toFixed(2) }
-      })
+      setVitalSigns((current) => {
+        return { ...current, imt: imtValue.toFixed(2) };
+      });
     }
 
     // console.log('vitalSigns', vitalSigns);
-  }
+  };
 
   const onVitalSignsSubmit = async (e) => {
     e.preventDefault();
 
     // console.log(vitalSigns);
-    if(dataStatus === 'add') {
+    if (dataStatus === "add") {
       try {
         const response = await vitalSignsAPI.add(vitalSigns);
         // console.log(response);
@@ -180,7 +182,7 @@ const VitalSigns = ({ match }) => {
 
         console.log(e);
       }
-    } else if(dataStatus === 'update') {
+    } else if (dataStatus === "update") {
       try {
         const response = await vitalSignsAPI.update(vitalSigns, vitalSignsID);
         // console.log(response);
@@ -220,25 +222,26 @@ const VitalSigns = ({ match }) => {
         console.log(e);
       }
     } else {
-      console.log('dataStatus undefined')
+      console.log("dataStatus undefined");
     }
   };
 
   const resetForm = (e) => {
     e.preventDefault();
 
-    tinggi_badan = 0; berat_badan = 0;
+    tinggi_badan = 0;
+    berat_badan = 0;
 
-    dispatch({type: "GET_ALL_VITALSIGNS_BY_PATIENT", payload: []});
+    dispatch({ type: "GET_ALL_VITALSIGNS_BY_PATIENT", payload: [] });
 
-    setPatientID('');
-    setVitalSignsID('');
-    setPatientData('');
+    setPatientID("");
+    setVitalSignsID("");
+    setPatientData("");
 
     setVitalSigns({
       id_pasien: patientID,
-      keluhan: '',
-      kesadaran: '',
+      keluhan: "",
+      kesadaran: "",
       temperatur: 0,
       tinggi_badan: 0,
       berat_badan: 0,
@@ -248,10 +251,10 @@ const VitalSigns = ({ match }) => {
       diastole: 0,
       respiratory_rate: 0,
       heart_rate: 0,
-      catatan_tambahan: ''
+      catatan_tambahan: "",
     });
-    
-    setSelectedAwareness('');
+
+    setSelectedAwareness("");
 
     setDataStatus("add");
   };
@@ -261,16 +264,23 @@ const VitalSigns = ({ match }) => {
       const response = await divisionAPI.get("", "?limit=1000");
       // console.log(response);
 
-      setSelectedDivisionF([{ label: "Semua", value: "", key: 0, name: 'id_divisi' }]);
+      setSelectedDivisionF([
+        { label: "Semua", value: "", key: 0, name: "id_divisi" },
+      ]);
 
       if (response.status === 200) {
         let data = response.data.data;
         // console.log(data);
-      
+
         for (var i = 0; i < data.length; i++) {
           setSelectedDivisionF((current) => [
             ...current,
-            { label: data[i].nama_divisi, value: data[i].id, key: data[i].id, name: 'id_divisi' },
+            {
+              label: data[i].nama_divisi,
+              value: data[i].id,
+              key: data[i].id,
+              name: "id_divisi",
+            },
           ]);
         }
       } else {
@@ -287,8 +297,11 @@ const VitalSigns = ({ match }) => {
     try {
       setIsLoading(true);
       const res = await queueAPI.get("", params);
-      dispatch({type: "GET_QUEUE", payload: res.data.data});
-      dispatch({type: "GET_TOTAL_PAGE_QUEUE", payload: res.data.pagination.totalPage});
+      dispatch({ type: "GET_QUEUE", payload: res.data.data });
+      dispatch({
+        type: "GET_TOTAL_PAGE_QUEUE",
+        payload: res.data.pagination.totalPage,
+      });
     } catch (e) {
       console.log(e);
     } finally {
@@ -307,7 +320,10 @@ const VitalSigns = ({ match }) => {
     setPatientData(data);
 
     try {
-      const res = await vitalSignsAPI.getByPatient("", `/${id}?tanggal=${moment(new Date()).format("YYYY-MM-DD")}`);
+      const res = await vitalSignsAPI.getByPatient(
+        "",
+        `/${id}?tanggal=${moment(new Date()).format("YYYY-MM-DD")}`
+      );
       // const res = await vitalSignsAPI.getByPatient("", `/${id}`);
       let data = res.data.data[0];
 
@@ -327,29 +343,30 @@ const VitalSigns = ({ match }) => {
         respiratory_rate: data.respiratory_rate,
         heart_rate: data.heart_rate,
         catatan_tambahan: data.catatan_tambahan,
-        created_at: data.created_at
+        created_at: data.created_at,
       });
 
-      tinggi_badan = data.tinggi_badan; berat_badan = data.berat_badan;
+      tinggi_badan = data.tinggi_badan;
+      berat_badan = data.berat_badan;
 
       setVitalSignsID(data.id);
-  
-      setSelectedAwareness({kesadaran: data.kesadaran ? e.value : ''});
+
+      setSelectedAwareness({ kesadaran: data.kesadaran ? e.value : "" });
       setDataStatus("update");
-      
+
       // console.log(vitalSigns);
     } catch (e) {
       console.log(e);
 
-      setVitalSigns(current => {
-        return { ...current, id_pasien: patientID }
-      })
+      setVitalSigns((current) => {
+        return { ...current, id_pasien: patientID };
+      });
 
       setDataStatus("add");
     } finally {
       getAllVitalSignsByPatientId(e, id);
     }
-    
+
     // console.log(dataStatus);
   };
 
@@ -359,12 +376,12 @@ const VitalSigns = ({ match }) => {
 
     // console.log(data);
 
-    const element = document.getElementById('manage-form-tab-mobile');
+    const element = document.getElementById("manage-form-tab-mobile");
     if (element) {
       window.scroll({
         top: element,
-        behavior: "smooth"
-      })
+        behavior: "smooth",
+      });
     }
 
     try {
@@ -387,39 +404,43 @@ const VitalSigns = ({ match }) => {
         respiratory_rate: data.respiratory_rate,
         heart_rate: data.heart_rate,
         catatan_tambahan: data.catatan_tambahan,
-        created_at: data.created_at
+        created_at: data.created_at,
       });
 
       setVitalSignsID(data.id);
 
-      tinggi_badan = data.tinggi_badan; berat_badan = data.berat_badan;
-  
-      setSelectedAwareness({kesadaran: data.kesadaran ? e.value : ''});
+      tinggi_badan = data.tinggi_badan;
+      berat_badan = data.berat_badan;
+
+      setSelectedAwareness({ kesadaran: data.kesadaran ? e.value : "" });
       setDataStatus("update");
-      
+
       // console.log(vitalSigns);
     } catch (e) {
       console.log(e);
 
-      setVitalSigns(current => {
-        return { ...current, id_pasien: patientID }
-      })
+      setVitalSigns((current) => {
+        return { ...current, id_pasien: patientID };
+      });
 
       setDataStatus("add");
     }
-    
+
     // console.log(dataStatus);
   };
 
   const getAllVitalSignsByPatientId = async (e, id) => {
-    dispatch({type: "GET_ALL_VITALSIGNS_BY_PATIENT", payload: []});
+    dispatch({ type: "GET_ALL_VITALSIGNS_BY_PATIENT", payload: [] });
 
     try {
-      const res = await vitalSignsAPI.getByPatient("", `/${id}?tanggal=${moment(new Date()).format("YYYY-MM-DD")}`);
+      const res = await vitalSignsAPI.getByPatient(
+        "",
+        `/${id}?tanggal=${moment(new Date()).format("YYYY-MM-DD")}`
+      );
       // const res = await vitalSignsAPI.getByPatient("", `/${id}`);
       let data = res.data.data;
       // dispatch({type: "GET_ALL_VITALSIGNS_BY_PATIENT", payload: data.slice(1)});
-      dispatch({type: "GET_ALL_VITALSIGNS_BY_PATIENT", payload: data});
+      dispatch({ type: "GET_ALL_VITALSIGNS_BY_PATIENT", payload: data });
     } catch (e) {
       console.log(e);
     }
@@ -442,7 +463,7 @@ const VitalSigns = ({ match }) => {
     if (searchDivisi !== "") {
       params = `${params}&searchDivisi=${searchDivisi}`;
     }
-    if (!userData.roles.includes('isDev')) {
+    if (!userData.roles.includes("isDev")) {
       params = `${params}&searchJaga=${userData.id}`;
     }
 
@@ -455,14 +476,23 @@ const VitalSigns = ({ match }) => {
     getQueue(params);
     onLoadDivisi();
 
-    if(dataStatus === "add") {
-      setVitalSigns(current => {
-        return { ...current, id_pasien: patientID }
-      })
+    if (dataStatus === "add") {
+      setVitalSigns((current) => {
+        return { ...current, id_pasien: patientID };
+      });
     }
-    
-  // }, [limit, searchName, sortBy, sortOrder, currentPage, queueAll, queueTotalPage, dataStatus, vitalSigns.id_pasien]);
-  }, [limit, searchName, searchDivisi, sortBy, sortOrder, currentPage, dataStatus, vitalSigns.id_pasien]);
+
+    // }, [limit, searchName, sortBy, sortOrder, currentPage, queueAll, queueTotalPage, dataStatus, vitalSigns.id_pasien]);
+  }, [
+    limit,
+    searchName,
+    searchDivisi,
+    sortBy,
+    sortOrder,
+    currentPage,
+    dataStatus,
+    vitalSigns.id_pasien,
+  ]);
 
   let startNumber = 1;
 
@@ -478,121 +508,149 @@ const VitalSigns = ({ match }) => {
   return (
     <>
       <Row>
-          <Colxx sm="12" md="12" xl="4" className="mb-4">
+        <Colxx sm="12" md="12" xl="4" className="mb-4">
           <Card className="mb-4">
-              <CardBody>
-                <CardTitle style={{ marginBottom: 0 }}>
-                  <Row>
-                    <Colxx sm="12" md="8" xl="8">
+            <CardBody>
+              <CardTitle style={{ marginBottom: 0 }}>
+                <Row>
+                  <Colxx sm="12" md="8" xl="8">
                     Data Antrian
-                    </Colxx>
-                    <Colxx sm="12" md="4" xl="4">
-                      <Button
-                        color="primary"
-                        style={{ float: "right" }}
-                        className="mb-4"
-                        onClick={() => getQueue("?limit=10&page=1")}
-                      >
-                        Perbarui
-                      </Button>
-                    </Colxx>
-                  </Row>
-                </CardTitle>
-                <FormGroup row style={{ margin: '0px', width: '100%' }}>
-                  <Colxx sm="12" md="6" style={{ paddingLeft: '0px' }}>
-                    <Label for="tanggalRekamCari">
-                          Tanggal
-                        </Label>
-                        <Input
-                          type="date"
-                          name="tanggalRekamCari"
-                          id="tanggalRekamCari"
-                          placeholder="Tanggal"
-                          defaultValue={new Date().toISOString().substr(0, 10)}
-                        />
                   </Colxx>
-                  <Colxx sm="12" md="6" style={{ paddingRight: '0px' }}>
-                    <Label for="divisi">
-                      Poli / Divisi
-                    </Label>
-                    <Select
-                      components={{ Input: CustomSelectInput }}
-                      className="react-select"
-                      classNamePrefix="react-select"
-                      name="divisi"
-                      onChange={(e) => setSearchDivisi(e.value)}
-                      // onChange={setSelectedDivision}
-                      options={selectedDivisionF}
-                    />
-                  </Colxx>
-                </FormGroup>
-                <InputGroup className="my-4">
-                  <Input
-                    type="text"
-                    name="search"
-                    id="search"
-                    placeholder="Pencarian"
-                    onChange={(e) => setSearchName(e.target.value)}
-                  />
-                  <InputGroupAddon addonType="append">
-                    <Button outline color="theme-3" className="button-search">
-                      <i className="simple-icon-magnifier"></i>
+                  <Colxx sm="12" md="4" xl="4">
+                    <Button
+                      color="primary"
+                      style={{ float: "right" }}
+                      className="mb-4"
+                      onClick={() => getQueue("?limit=10&page=1")}
+                    >
+                      Perbarui
                     </Button>
-                  </InputGroupAddon>
-                </InputGroup>
-                <Table hover>
-                  <thead>
-                    <tr>
-                      <th className="center-xy" style={{ width: '40px' }}>#</th>
-                      <th colSpan={2}>Antrian</th>
-                      <th className="center-xy" style={{ width: '55px' }}>&nbsp;</th>
-                    </tr>
-                  </thead>
-                  <tbody>
+                  </Colxx>
+                </Row>
+              </CardTitle>
+              <FormGroup row style={{ margin: "0px", width: "100%" }}>
+                <Colxx sm="12" md="6" style={{ paddingLeft: "0px" }}>
+                  <Label for="tanggalRekamCari">Tanggal</Label>
+                  <Input
+                    type="date"
+                    name="tanggalRekamCari"
+                    id="tanggalRekamCari"
+                    placeholder="Tanggal"
+                    defaultValue={new Date().toISOString().substr(0, 10)}
+                  />
+                </Colxx>
+                <Colxx sm="12" md="6" style={{ paddingRight: "0px" }}>
+                  <Label for="divisi">Poli / Divisi</Label>
+                  <Select
+                    components={{ Input: CustomSelectInput }}
+                    className="react-select"
+                    classNamePrefix="react-select"
+                    name="divisi"
+                    onChange={(e) => setSearchDivisi(e.value)}
+                    // onChange={setSelectedDivision}
+                    options={selectedDivisionF}
+                  />
+                </Colxx>
+              </FormGroup>
+              <InputGroup className="my-4">
+                <Input
+                  type="text"
+                  name="search"
+                  id="search"
+                  placeholder="Pencarian"
+                  onChange={(e) => setSearchName(e.target.value)}
+                />
+                <InputGroupAddon addonType="append">
+                  <Button outline color="theme-3" className="button-search">
+                    <i className="simple-icon-magnifier"></i>
+                  </Button>
+                </InputGroupAddon>
+              </InputGroup>
+              <Table hover>
+                <thead>
+                  <tr>
+                    <th className="center-xy" style={{ width: "40px" }}>
+                      #
+                    </th>
+                    <th colSpan={2}>Antrian</th>
+                    <th className="center-xy" style={{ width: "55px" }}>
+                      &nbsp;
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
                   {isLoading && rowSelected == false ? (
                     <tr>
                       <td>&nbsp;</td>
                       <td align="center" colSpan={2}>
-                        <img src={loader} alt="loading..." width="100"/>
+                        <img src={loader} alt="loading..." width="100" />
                       </td>
                       <td>&nbsp;</td>
                     </tr>
-                    ) : queueAll.length > 0 ? (
-                        queueAll.map((data) => (
-                          <tr key={data.id} onClick={(e) => getVitalSignsByPatientId(e, data.id_pasien, data)} style={{ cursor: 'pointer'}} className={`${rowSelected == data.id && 'row-selected'}`}>
-                              <th scope="row" className="center-xy">{startNumber++}</th>
-                              <td className="icon-column">
-                                <i className="simple-icon-magnifier queue-icon"></i><br/>
-                                <span className="queue-text">0001</span>
-                              </td>
-                              <td>
-                                <h6 style={{ fontWeight: 'bold' }}>{data.nama_lengkap}</h6>
-                                {data.jenis_kelamin.substring(0,1)}, {new Date().getFullYear() - data.tanggal_lahir.substring(0,4)} tahun<br/>
-                              </td>
-                              <td style={{ textAlign: "center", verticalAlign: 'middle' }}>
-                                <Button color="secondary" size="xs" className="button-xs"
-                                  onClick={(e) => getVitalSignsByPatientId(e, data.id_pasien, data)}
-                                >
-                                  <i className="simple-icon-arrow-right-circle"></i>
-                                </Button>
-                                {' '}
-                                {/* <Button color="warning" size="xs" className="button-xs">
+                  ) : queueAll.length > 0 ? (
+                    queueAll.map((data) => (
+                      <tr
+                        key={data.id}
+                        onClick={(e) =>
+                          getVitalSignsByPatientId(e, data.id_pasien, data)
+                        }
+                        style={{ cursor: "pointer" }}
+                        className={`${
+                          rowSelected == data.id && "row-selected"
+                        }`}
+                      >
+                        <th scope="row" className="center-xy">
+                          {startNumber++}
+                        </th>
+                        <td className="icon-column">
+                          <i className="simple-icon-magnifier queue-icon"></i>
+                          <br />
+                          <span className="queue-text">0001</span>
+                        </td>
+                        <td>
+                          <h6 style={{ fontWeight: "bold" }}>
+                            {data.nama_lengkap}
+                          </h6>
+                          {data.jenis_kelamin.substring(0, 1)},{" "}
+                          {new Date().getFullYear() -
+                            data.tanggal_lahir.substring(0, 4)}{" "}
+                          tahun
+                          <br />
+                        </td>
+                        <td
+                          style={{
+                            textAlign: "center",
+                            verticalAlign: "middle",
+                          }}
+                        >
+                          <Button
+                            color="secondary"
+                            size="xs"
+                            className="button-xs"
+                            onClick={(e) =>
+                              getVitalSignsByPatientId(e, data.id_pasien, data)
+                            }
+                          >
+                            <i className="simple-icon-arrow-right-circle"></i>
+                          </Button>{" "}
+                          {/* <Button color="warning" size="xs" className="button-xs">
                                   <i className="simple-icon-drawer"></i>
                                 </Button> */}
-                              </td>
-                            </tr>
-                        ))
-                      ) : (
-                        <tr>
-                          <td>&nbsp;</td>
-                          <td align="center" colSpan={2}>
-                            <h5 style={{ marginTop: '1.5rem' }}><b>Data tidak ditemukan</b></h5>
-                          </td>
-                          <td>&nbsp;</td>
-                        </tr>
-                      )
-                    }
-                      {/* <tr>
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td>&nbsp;</td>
+                      <td align="center" colSpan={2}>
+                        <h5 style={{ marginTop: "1.5rem" }}>
+                          <b>Data tidak ditemukan</b>
+                        </h5>
+                      </td>
+                      <td>&nbsp;</td>
+                    </tr>
+                  )}
+                  {/* <tr>
                         <th scope="row" className="center-xy">1</th>
                         <td className="icon-column">
                           <i className="simple-icon-magnifier queue-icon"></i><br/>
@@ -652,40 +710,68 @@ const VitalSigns = ({ match }) => {
                           </Button>
                         </td>
                       </tr> */}
-                  </tbody>
-                </Table>
-                <Pagination
-                  currentPage={currentPage}
-                  totalPage={queueTotalPage}
-                  onChangePage={(i) => setCurrentPage(i)}
-                  numberLimit={queueTotalPage}
-                />
-              </CardBody>
-            </Card>
-          </Colxx>
-          <Colxx sm="12" md="12" xl="8" className="mb-4 manage-form" id="manage-form-tab-mobile">
-            <Card className="mb-4">
-              <CardBody>
-                <CardTitle>
-                  <Row>
-                    <Colxx sm="6" md="6" xl="6">
-                    Form Registrasi Pra-Konsultasi {patientData ?
-                    <>
-                      <br/><br/>{patientData.nama_lengkap}<br/><p style={{ fontWeight: 'normal' }}>{patientData.jenis_kelamin.substring(0,1)}, {new Date().getFullYear() - patientData.tanggal_lahir.substring(0,4)}</p>
-                    </> :
-                    ''}
-                    </Colxx>
-                    <Colxx sm="6" md="6" xl="6">
-                      <Label style={{ float: 'right', lineHeight: 2 }}>
-                        { vitalSigns.id_pasien ? <><br/><br/>{moment(vitalSigns.created_at).format("DD MMM YYYY - HH:mm")}</> : 'Tanggal / Waktu' }
-                        {/* {startDateTime} */}
-                      </Label><br/>
-                    </Colxx>
-                  </Row>
-                </CardTitle>
-                <Form>
-                  <FormGroup row>
-                    {/* <Colxx sm={12}>
+                </tbody>
+              </Table>
+              <Pagination
+                currentPage={currentPage}
+                totalPage={queueTotalPage}
+                onChangePage={(i) => setCurrentPage(i)}
+                numberLimit={queueTotalPage}
+              />
+            </CardBody>
+          </Card>
+        </Colxx>
+        <Colxx
+          sm="12"
+          md="12"
+          xl="8"
+          className="mb-4 manage-form"
+          id="manage-form-tab-mobile"
+        >
+          <Card className="mb-4">
+            <CardBody>
+              <CardTitle>
+                <Row>
+                  <Colxx sm="6" md="6" xl="6">
+                    Form Registrasi Pra-Konsultasi{" "}
+                    {patientData ? (
+                      <>
+                        <br />
+                        <br />
+                        {patientData.nama_lengkap}
+                        <br />
+                        <p style={{ fontWeight: "normal" }}>
+                          {patientData.jenis_kelamin.substring(0, 1)},{" "}
+                          {new Date().getFullYear() -
+                            patientData.tanggal_lahir.substring(0, 4)}
+                        </p>
+                      </>
+                    ) : (
+                      ""
+                    )}
+                  </Colxx>
+                  <Colxx sm="6" md="6" xl="6">
+                    <Label style={{ float: "right", lineHeight: 2 }}>
+                      {vitalSigns.id_pasien ? (
+                        <>
+                          <br />
+                          <br />
+                          {moment(vitalSigns.created_at).format(
+                            "DD MMM YYYY - HH:mm"
+                          )}
+                        </>
+                      ) : (
+                        "Tanggal / Waktu"
+                      )}
+                      {/* {startDateTime} */}
+                    </Label>
+                    <br />
+                  </Colxx>
+                </Row>
+              </CardTitle>
+              <Form>
+                <FormGroup row>
+                  {/* <Colxx sm={12}>
                       <FormGroup>
                         <Label for="tanggalRekam">
                           Tanggal / Waktu
@@ -706,7 +792,7 @@ const VitalSigns = ({ match }) => {
                       </FormGroup>
                     </Colxx> */}
 
-                    {/* <Colxx sm={6}>
+                  {/* <Colxx sm={6}>
                       <FormGroup>
                         <Label for="noAntrian">
                           No. Antrian
@@ -721,369 +807,451 @@ const VitalSigns = ({ match }) => {
                       </FormGroup>
                     </Colxx> */}
 
-                    <Colxx sm={12}>
-                      <FormGroup>
-                        <Label for="keluhan">
-                          Keluhan
-                        </Label>
-                        <Input
-                          type="textarea"
-                          name="keluhan"
-                          id="keluhan"
-                          placeholder="Keluhan"
-                          style={{minHeight: '100px'}}
-                          value={vitalSigns.keluhan}
-                          onChange={onChange}
-                        />
-                      </FormGroup>
-                    </Colxx>
+                  <Colxx sm={12}>
+                    <FormGroup>
+                      <Label for="keluhan">Keluhan</Label>
+                      <Input
+                        type="textarea"
+                        name="keluhan"
+                        id="keluhan"
+                        placeholder="Keluhan"
+                        style={{ minHeight: "100px" }}
+                        value={vitalSigns.keluhan}
+                        onChange={onChange}
+                      />
+                    </FormGroup>
+                  </Colxx>
 
-                    <Colxx sm={12}>
-                      <FormGroup>
-                        <Label for="kesadaran">
-                          Kesadaran<span className="required text-danger" aria-required="true"> *</span>
-                        </Label>
-                        <Select
-                          components={{ Input: CustomSelectInput }}
-                          className="react-select"
-                          classNamePrefix="react-select"
-                          name="kesadaran"
-                          options={selectAwareness}
-                          required
-                          value={selectAwareness.find(item => item.value === vitalSigns.kesadaran) || ''}
-                          // value={selectedAwareness}
-                          onChange={onChange}
-                          isSearchable={false}
-                        />
-                      </FormGroup>
-                    </Colxx>
-
-                    <Colxx sm={3}>
-                      <FormGroup>
-                        <Label for="temperatur">
-                          Temperatur<span className="required text-danger" aria-required="true"> *</span>
-                        </Label>
-                        <InputGroup>
-                          <Input
-                            type="number"
-                            name="temperatur"
-                            id="temperatur"
-                            placeholder="Temperatur"
-                            required={true}
-                            pattern="[0-9]*"
-                            value={vitalSigns.temperatur}
-                            onChange={onChange}
-                          />
-                          <InputGroupAddon addonType="append"><span className="input-group-text"><sup>0</sup>C</span></InputGroupAddon>
-                        </InputGroup>
-                      </FormGroup>
-                    </Colxx>
-
-                    <Colxx sm={3}>
-                      <FormGroup>
-                        <Label for="tinggi_badan">
-                          Tinggi Badan<span className="required text-danger" aria-required="true"> *</span>
-                        </Label>
-                        <InputGroup>
-                          <Input
-                            type="number"
-                            name="tinggi_badan"
-                            id="tinggi_badan"
-                            placeholder="Tinggi Badan"
-                            required={true}
-                            pattern="[0-9]*"
-                            value={vitalSigns.tinggi_badan}
-                            onChange={onChange}
-                            onKeyUp={calculateIMT}
-                          />
-                          <InputGroupAddon addonType="append">cm</InputGroupAddon>
-                        </InputGroup>
-                      </FormGroup>
-                    </Colxx>
-
-                    <Colxx sm={3}>
-                      <FormGroup>
-                        <Label for="berat_badan">
-                          Berat Badan<span className="required text-danger" aria-required="true"> *</span>
-                        </Label>
-                        <InputGroup>
-                          <Input
-                            type="number"
-                            name="berat_badan"
-                            id="berat_badan"
-                            placeholder="Berat Badan"
-                            required={true}
-                            pattern="[0-9]*"
-                            value={vitalSigns.berat_badan}
-                            onChange={onChange}
-                            onKeyUp={calculateIMT}
-                          />
-                          <InputGroupAddon addonType="append">kg</InputGroupAddon>
-                        </InputGroup>
-                      </FormGroup>
-                    </Colxx>
-
-                    <Colxx sm={3}>
-                      <FormGroup>
-                        <Label for="lingkar_perut">
-                          Lingkar Perut
-                        </Label>
-                        <InputGroup>
-                          <Input
-                            type="number"
-                            name="lingkar_perut"
-                            id="lingkar_perut"
-                            placeholder="Lingkar Perut"
-                            required={true}
-                            pattern="[0-9]*"
-                            value={vitalSigns.lingkar_perut}
-                            onChange={onChange}
-                          />
-                          <InputGroupAddon addonType="append">cm</InputGroupAddon>
-                        </InputGroup>
-                      </FormGroup>
-                    </Colxx>
-
-                    <Colxx sm={6}>
-                      <FormGroup>
-                        <Label for="sistole">
-                          Tekanan Darah
-                          {/* <span className="required text-danger" aria-required="true"> *</span> */}
-                        </Label>
-                        <Row>
-                          <Colxx xs={5} sm={5} className="responsive-mobile-vertical-xs-5">
-                            <InputGroup>
-                              <Input
-                                type="number"
-                                name="sistole"
-                                id="sistole"
-                                placeholder="Sistole"
-                                // style={{ maxWidth: '75px' }}
-                                // required={true}
-                                pattern="[0-9]*"
-                                value={vitalSigns.sistole}
-                                onChange={onChange}
-                              />
-                              <InputGroupAddon addonType="append">mmHg</InputGroupAddon>
-                            </InputGroup>
-                          </Colxx>
-                          <Colxx xs={2} sm={1} className="responsive-mobile-vertical-xs-2" style={{ lineHeight: '2rem', textAlign: 'center' }}>/</Colxx>
-                          <Colxx xs={5} sm={5} className="responsive-mobile-vertical-xs-5">
-                            <InputGroup>
-                              <Input
-                                type="number"
-                                name="diastole"
-                                id="diastole"
-                                placeholder="Diastole"
-                                // style={{ maxWidth: '75px' }}
-                                // required={true}
-                                pattern="[0-9]*"
-                                value={vitalSigns.diastole}
-                                onChange={onChange}
-                              />
-                              <InputGroupAddon addonType="append">mmHg</InputGroupAddon>
-                            </InputGroup>
-                          </Colxx>
-                        </Row>
-                      </FormGroup>
-                    </Colxx>
-
-                    <Colxx sm={6}>
-                      <FormGroup>
-                        <Label for="imt">
-                          IMT
-                          {/* <span className="required text-danger" aria-required="true"> *</span> */}
-                        </Label>
-                        <InputGroup>
-                          <Input
-                            // type="number"
-                            name="imt"
-                            id="imt"
-                            placeholder="IMT"
-                            // required={true}
-                            // pattern="[0-9]*"
-                            value={vitalSigns.imt}
-                            onChange={onChange}
-                            disabled
-                          />
-                          <InputGroupAddon addonType="append"><span className="input-group-text">kg/m<sup>2</sup></span></InputGroupAddon>
-                        </InputGroup>
-                      </FormGroup>
-                    </Colxx>
-
-                    <Colxx sm={6}>
-                      <FormGroup>
-                        <Label for="respiratory_rate">
-                          Tingkat Pernapasan
-                          {/* <span className="required text-danger" aria-required="true"> *</span> */}
-                        </Label>
-                        <InputGroup>
-                          <Input
-                            type="number"
-                            name="respiratory_rate"
-                            id="respiratory_rate"
-                            placeholder="Tingkat Pernapasan"
-                            // required={true}
-                            pattern="[0-9]*"
-                            value={vitalSigns.respiratory_rate}
-                            onChange={onChange}
-                          />
-                          <InputGroupAddon addonType="append">/ menit</InputGroupAddon>
-                        </InputGroup>
-                      </FormGroup>
-                    </Colxx>
-
-                    <Colxx sm={6}>
-                      <FormGroup>
-                        <Label for="heart_rate">
-                          Detak Jantung
-                          {/* <span className="required text-danger" aria-required="true"> *</span> */}
-                        </Label>
-                        <InputGroup>
-                          <Input
-                            type="number"
-                            name="heart_rate"
-                            id="heart_rate"
-                            placeholder="Detak Jantung"
-                            // required={true}
-                            pattern="[0-9]*"
-                            value={vitalSigns.heart_rate}
-                            onChange={onChange}
-                          />
-                          <InputGroupAddon addonType="append">bpm</InputGroupAddon>
-                        </InputGroup>
-                      </FormGroup>
-                    </Colxx>
-
-                    <Colxx sm={12}>
-                      <FormGroup>
-                        <Label for="catatan_tambahan">
-                          Catatan Tambahan
-                        </Label>
-                        <Input
-                          type="textarea"
-                          name="catatan_tambahan"
-                          id="catatan_tambahan"
-                          placeholder="Catatan Tambahan"
-                          style={{minHeight: '100px'}}
-                          value={vitalSigns.catatan_tambahan}
-                          onChange={onChange}
-                        />
-                      </FormGroup>
-                    </Colxx>
-                  </FormGroup>
-
-                  <Row>
-                    <Colxx sm={6}>
-                      <Label>
-                        * ) Wajib diisi
+                  <Colxx sm={12}>
+                    <FormGroup>
+                      <Label for="kesadaran">
+                        Kesadaran
+                        <span
+                          className="required text-danger"
+                          aria-required="true"
+                        >
+                          {" "}
+                          *
+                        </span>
                       </Label>
-                    </Colxx>
-                    <Colxx sm={6} className="text-right">
-                      <Button
-                        type="button"
-                        onClick={resetForm}
-                        outline
-                        color="danger"
-                      >
-                        Batal
-                      </Button>
-                      &nbsp;&nbsp;
-                      <Button
-                        color="primary"
-                        onClick={(e) => onVitalSignsSubmit(e)}
-                      >
-                        Simpan
-                      </Button>
-                    </Colxx>
-                  </Row>
-                </Form>
-              </CardBody>
-            </Card>
-            <Card className="mb-4">
-              <CardBody>
-                <CardTitle>
-                  Riwayat Pra-Konsultasi
-                  { allVitalSigns.length > 0 ?
-                    <>
-                      <br/>
-                      <Label style={{ fontWeight: 'bold' }}>{patientData.nama_lengkap}, </Label>&nbsp;
-                      <Label>
-                        {patientData.jenis_kelamin}, {new Date().getFullYear() - patientData.tanggal_lahir.substring(0,4)} tahun
+                      <Select
+                        components={{ Input: CustomSelectInput }}
+                        className="react-select"
+                        classNamePrefix="react-select"
+                        name="kesadaran"
+                        options={selectAwareness}
+                        required
+                        value={
+                          selectAwareness.find(
+                            (item) => item.value === vitalSigns.kesadaran
+                          ) || ""
+                        }
+                        // value={selectedAwareness}
+                        onChange={onChange}
+                        isSearchable={false}
+                      />
+                    </FormGroup>
+                  </Colxx>
+
+                  <Colxx sm={3}>
+                    <FormGroup>
+                      <Label for="temperatur">
+                        Temperatur
+                        <span
+                          className="required text-danger"
+                          aria-required="true"
+                        >
+                          {" "}
+                          *
+                        </span>
                       </Label>
-                    </> :
-                    ' Tidak Ditemukan' }
-                </CardTitle>
-                { allVitalSigns.length > 0 && ( 
-                  allVitalSigns.map((data) => ( 
+                      <InputGroup>
+                        <Input
+                          type="number"
+                          name="temperatur"
+                          id="temperatur"
+                          placeholder="Temperatur"
+                          required={true}
+                          pattern="[0-9]*"
+                          value={vitalSigns.temperatur}
+                          onChange={onChange}
+                        />
+                        <InputGroupAddon addonType="append">
+                          <span className="input-group-text">
+                            <sup>0</sup>C
+                          </span>
+                        </InputGroupAddon>
+                      </InputGroup>
+                    </FormGroup>
+                  </Colxx>
+
+                  <Colxx sm={3}>
+                    <FormGroup>
+                      <Label for="tinggi_badan">
+                        Tinggi Badan
+                        <span
+                          className="required text-danger"
+                          aria-required="true"
+                        >
+                          {" "}
+                          *
+                        </span>
+                      </Label>
+                      <InputGroup>
+                        <Input
+                          type="number"
+                          name="tinggi_badan"
+                          id="tinggi_badan"
+                          placeholder="Tinggi Badan"
+                          required={true}
+                          pattern="[0-9]*"
+                          value={vitalSigns.tinggi_badan}
+                          onChange={onChange}
+                          onKeyUp={calculateIMT}
+                        />
+                        <InputGroupAddon addonType="append">cm</InputGroupAddon>
+                      </InputGroup>
+                    </FormGroup>
+                  </Colxx>
+
+                  <Colxx sm={3}>
+                    <FormGroup>
+                      <Label for="berat_badan">
+                        Berat Badan
+                        <span
+                          className="required text-danger"
+                          aria-required="true"
+                        >
+                          {" "}
+                          *
+                        </span>
+                      </Label>
+                      <InputGroup>
+                        <Input
+                          type="number"
+                          name="berat_badan"
+                          id="berat_badan"
+                          placeholder="Berat Badan"
+                          required={true}
+                          pattern="[0-9]*"
+                          value={vitalSigns.berat_badan}
+                          onChange={onChange}
+                          onKeyUp={calculateIMT}
+                        />
+                        <InputGroupAddon addonType="append">kg</InputGroupAddon>
+                      </InputGroup>
+                    </FormGroup>
+                  </Colxx>
+
+                  <Colxx sm={3}>
+                    <FormGroup>
+                      <Label for="lingkar_perut">Lingkar Perut</Label>
+                      <InputGroup>
+                        <Input
+                          type="number"
+                          name="lingkar_perut"
+                          id="lingkar_perut"
+                          placeholder="Lingkar Perut"
+                          required={true}
+                          pattern="[0-9]*"
+                          value={vitalSigns.lingkar_perut}
+                          onChange={onChange}
+                        />
+                        <InputGroupAddon addonType="append">cm</InputGroupAddon>
+                      </InputGroup>
+                    </FormGroup>
+                  </Colxx>
+
+                  <Colxx sm={6}>
+                    <FormGroup>
+                      <Label for="sistole">
+                        Tekanan Darah
+                        {/* <span className="required text-danger" aria-required="true"> *</span> */}
+                      </Label>
+                      <Row>
+                        <Colxx
+                          xs={5}
+                          sm={5}
+                          className="responsive-mobile-vertical-xs-5"
+                        >
+                          <InputGroup>
+                            <Input
+                              type="number"
+                              name="sistole"
+                              id="sistole"
+                              placeholder="Sistole"
+                              // style={{ maxWidth: '75px' }}
+                              // required={true}
+                              pattern="[0-9]*"
+                              value={vitalSigns.sistole}
+                              onChange={onChange}
+                            />
+                            <InputGroupAddon addonType="append">
+                              mmHg
+                            </InputGroupAddon>
+                          </InputGroup>
+                        </Colxx>
+                        <Colxx
+                          xs={2}
+                          sm={1}
+                          className="responsive-mobile-vertical-xs-2"
+                          style={{ lineHeight: "2rem", textAlign: "center" }}
+                        >
+                          /
+                        </Colxx>
+                        <Colxx
+                          xs={5}
+                          sm={5}
+                          className="responsive-mobile-vertical-xs-5"
+                        >
+                          <InputGroup>
+                            <Input
+                              type="number"
+                              name="diastole"
+                              id="diastole"
+                              placeholder="Diastole"
+                              // style={{ maxWidth: '75px' }}
+                              // required={true}
+                              pattern="[0-9]*"
+                              value={vitalSigns.diastole}
+                              onChange={onChange}
+                            />
+                            <InputGroupAddon addonType="append">
+                              mmHg
+                            </InputGroupAddon>
+                          </InputGroup>
+                        </Colxx>
+                      </Row>
+                    </FormGroup>
+                  </Colxx>
+
+                  <Colxx sm={6}>
+                    <FormGroup>
+                      <Label for="imt">
+                        IMT
+                        {/* <span className="required text-danger" aria-required="true"> *</span> */}
+                      </Label>
+                      <InputGroup>
+                        <Input
+                          // type="number"
+                          name="imt"
+                          id="imt"
+                          placeholder="IMT"
+                          // required={true}
+                          // pattern="[0-9]*"
+                          value={vitalSigns.imt}
+                          onChange={onChange}
+                          disabled
+                        />
+                        <InputGroupAddon addonType="append">
+                          <span className="input-group-text">
+                            kg/m<sup>2</sup>
+                          </span>
+                        </InputGroupAddon>
+                      </InputGroup>
+                    </FormGroup>
+                  </Colxx>
+
+                  <Colxx sm={6}>
+                    <FormGroup>
+                      <Label for="respiratory_rate">
+                        Tingkat Pernapasan
+                        {/* <span className="required text-danger" aria-required="true"> *</span> */}
+                      </Label>
+                      <InputGroup>
+                        <Input
+                          type="number"
+                          name="respiratory_rate"
+                          id="respiratory_rate"
+                          placeholder="Tingkat Pernapasan"
+                          // required={true}
+                          pattern="[0-9]*"
+                          value={vitalSigns.respiratory_rate}
+                          onChange={onChange}
+                        />
+                        <InputGroupAddon addonType="append">
+                          / menit
+                        </InputGroupAddon>
+                      </InputGroup>
+                    </FormGroup>
+                  </Colxx>
+
+                  <Colxx sm={6}>
+                    <FormGroup>
+                      <Label for="heart_rate">
+                        Detak Jantung
+                        {/* <span className="required text-danger" aria-required="true"> *</span> */}
+                      </Label>
+                      <InputGroup>
+                        <Input
+                          type="number"
+                          name="heart_rate"
+                          id="heart_rate"
+                          placeholder="Detak Jantung"
+                          // required={true}
+                          pattern="[0-9]*"
+                          value={vitalSigns.heart_rate}
+                          onChange={onChange}
+                        />
+                        <InputGroupAddon addonType="append">
+                          bpm
+                        </InputGroupAddon>
+                      </InputGroup>
+                    </FormGroup>
+                  </Colxx>
+
+                  <Colxx sm={12}>
+                    <FormGroup>
+                      <Label for="catatan_tambahan">Catatan Tambahan</Label>
+                      <Input
+                        type="textarea"
+                        name="catatan_tambahan"
+                        id="catatan_tambahan"
+                        placeholder="Catatan Tambahan"
+                        style={{ minHeight: "100px" }}
+                        value={vitalSigns.catatan_tambahan}
+                        onChange={onChange}
+                      />
+                    </FormGroup>
+                  </Colxx>
+                </FormGroup>
+
+                <Row>
+                  <Colxx sm={6}>
+                    <Label>* ) Wajib diisi</Label>
+                  </Colxx>
+                  <Colxx sm={6} className="text-right">
+                    <Button
+                      type="button"
+                      onClick={resetForm}
+                      outline
+                      color="danger"
+                    >
+                      Batal
+                    </Button>
+                    &nbsp;&nbsp;
+                    <Button
+                      color="primary"
+                      onClick={(e) => onVitalSignsSubmit(e)}
+                    >
+                      Simpan
+                    </Button>
+                  </Colxx>
+                </Row>
+              </Form>
+            </CardBody>
+          </Card>
+          <Card className="mb-4">
+            <CardBody>
+              <CardTitle>
+                Riwayat Pra-Konsultasi
+                {allVitalSigns.length > 0 ? (
+                  <>
+                    <br />
+                    <Label style={{ fontWeight: "bold" }}>
+                      {patientData.nama_lengkap},{" "}
+                    </Label>
+                    &nbsp;
+                    <Label>
+                      {patientData.jenis_kelamin},{" "}
+                      {new Date().getFullYear() -
+                        patientData.tanggal_lahir.substring(0, 4)}{" "}
+                      tahun
+                    </Label>
+                  </>
+                ) : (
+                  " Tidak Ditemukan"
+                )}
+              </CardTitle>
+              {allVitalSigns.length > 0 &&
+                allVitalSigns.map((data) => (
                   <Table className="med-record-table" key={data.id}>
                     <tbody>
                       <tr>
                         <th>Tanggal</th>
-                        <td style={{ width: '70%' }}>{data.id_pasien ? moment(data.created_at).format("DD MMM YYYY - HH:mm") : '00/00/0000 - 00:00'}</td>
+                        <td style={{ width: "70%" }}>
+                          {data.id_pasien
+                            ? moment(data.created_at).format(
+                                "DD MMM YYYY - HH:mm"
+                              )
+                            : "00/00/0000 - 00:00"}
+                        </td>
                       </tr>
                       <tr>
                         <th>Keluhan</th>
-                        <td>{data.id_pasien ? data.keluhan : '-'}</td>
+                        <td>{data.id_pasien ? data.keluhan : "-"}</td>
                       </tr>
                       <tr>
-                      <th>Kesadaran</th>
-                        <td>{ data.id_pasien ? data.kesadaran : '-' }</td>
+                        <th>Kesadaran</th>
+                        <td>{data.id_pasien ? data.kesadaran : "-"}</td>
                       </tr>
                       <tr>
                         <th>Temperatur</th>
-                        <td>{ data.id_pasien ? data.temperatur : '0' } <sup>0</sup>C</td>
+                        <td>
+                          {data.id_pasien ? data.temperatur : "0"} <sup>0</sup>C
+                        </td>
                       </tr>
                       <tr>
                         <th>Tinggi Badan</th>
-                        <td>{ data.id_pasien ? data.tinggi_badan : '0' } cm</td>
+                        <td>{data.id_pasien ? data.tinggi_badan : "0"} cm</td>
                       </tr>
                       <tr>
                         <th>Berat Badan</th>
-                        <td>{ data.id_pasien ? data.berat_badan : '0' } kg</td>
+                        <td>{data.id_pasien ? data.berat_badan : "0"} kg</td>
                       </tr>
                       <tr>
                         <th>Lingkar Perut</th>
-                        <td>{ data.id_pasien ? data.lingkar_perut : '0' } cm</td>
+                        <td>{data.id_pasien ? data.lingkar_perut : "0"} cm</td>
                       </tr>
                       <tr>
                         <th>Tekanan Darah</th>
-                        <td>{ data.id_pasien ? data.sistole : '0' } mmHg / { data ? data.diastole : '0' } mmHg</td>
+                        <td>
+                          {data.id_pasien ? data.sistole : "0"} mmHg /{" "}
+                          {data ? data.diastole : "0"} mmHg
+                        </td>
                       </tr>
                       <tr>
                         <th>IMT</th>
-                        <td>{ data.id_pasien ? data.imt : '0' } kg/m<sup>2</sup></td>
+                        <td>
+                          {data.id_pasien ? data.imt : "0"} kg/m<sup>2</sup>
+                        </td>
                       </tr>
                       <tr>
                         <th>Tingkat Pernapasan</th>
-                        <td>{ data.id_pasien ? data.respiratory_rate : '0' } / menit</td>
+                        <td>
+                          {data.id_pasien ? data.respiratory_rate : "0"} / menit
+                        </td>
                       </tr>
                       <tr>
                         <th>Detak Jantung</th>
-                        <td>{ data.id_pasien ? data.heart_rate : '0' } bpm</td>
+                        <td>{data.id_pasien ? data.heart_rate : "0"} bpm</td>
                       </tr>
                       <tr>
                         <th>Catatan Tambahan</th>
-                        <td style={{ width: '70%' }}>{ data.id_pasien ? data.catatan_tambahan : '-' }</td>
+                        <td style={{ width: "70%" }}>
+                          {data.id_pasien ? data.catatan_tambahan : "-"}
+                        </td>
                       </tr>
                       <tr>
                         <th></th>
                         <td>
-                            <Button color="secondary" size="xs" style={{ float: "right" }}
+                          <Button
+                            color="secondary"
+                            size="xs"
+                            style={{ float: "right" }}
                             onClick={(e) => getVitalSignsById(e, data.id)}
-                            >
-                              Ubah Data
-                            </Button>
+                          >
+                            Ubah Data
+                          </Button>
                         </td>
                       </tr>
                     </tbody>
                   </Table>
-                  ) ) 
-                )}
-              </CardBody>
-            </Card>
-          </Colxx>
-        </Row>
+                ))}
+            </CardBody>
+          </Card>
+        </Colxx>
+      </Row>
     </>
   );
 };
