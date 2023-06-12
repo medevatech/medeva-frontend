@@ -5,7 +5,7 @@ import baseApi from 'service/api-general'
 const employee = {
   get: (payloads, options) => {
     const url = api.employee.all + options
-    return baseApi.get(url, payloads, { headers: getOriginHeader() })
+    return baseApi.get(url, { headers: getAuthHeader() })
   },
   add: (payloads) => {
     const url = api.employee.all

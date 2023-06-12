@@ -60,7 +60,7 @@ const Home = ({ history, loading, error, loginUserAction }) => {
                   let data = await response.data.data;
                   // console.log(data);
 
-                  let user = { id : "", username: "", roles: {}}
+                  let user = { id : "", username: "", roles: {}, token: ""};
 
                   let roles = [];
 
@@ -80,7 +80,7 @@ const Home = ({ history, loading, error, loginUserAction }) => {
                     roles.push("isManajemen");
                   }
 
-                  user.id = data.id; user.username = data.username; user.roles = roles;
+                  user.id = data.id; user.username = data.username; user.roles = roles; user.token = data.token;
 
                   localStorage.setItem('user_data', JSON.stringify(user));
                   // console.log(localStorage.getItem('user_data'));

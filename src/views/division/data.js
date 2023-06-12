@@ -76,7 +76,7 @@ const Data = ({ match, history, loading, error }) => {
       const response = await clinicAPI.get("", "?limit=1000");
       // console.log(response);
 
-      setSelectedKlinik([]);
+      setSelectedKlinik([{ label: "Pilih Klinik", value: "", key: 0, name: "id_klinik" }]);
       setSelectedKlinikF([{ label: "Semua", value: "", key: 0, name: 'id_klinik' }]);
 
       if (response.status === 200) {
@@ -175,6 +175,8 @@ const Data = ({ match, history, loading, error }) => {
         });
   
         console.log(e);
+      } finally {
+        getDivision("");
       }
     } else if (dataStatus === 'update') {
       try {
@@ -214,6 +216,8 @@ const Data = ({ match, history, loading, error }) => {
         });
   
         console.log(e);
+      } finally {
+        getDivision("");
       }
     } else {
       console.log('dataStatus undefined')
@@ -263,16 +267,6 @@ const Data = ({ match, history, loading, error }) => {
       console.log(e);
     } finally {
       setIsLoading(false);
-    }
-  };
-
-  const getDivisionReducers = async (params) => {
-    try {
-      const res = await divisionAPI.get("", params);
-      dispatch({type: "GET_DIVISION", payload: res.data.data});
-      dispatch({type: "GET_TOTAL_PAGE_DIVISION", payload: res.data.pagination.totalPage});
-    } catch (e) {
-      console.log(e);
     }
   };
 
@@ -503,37 +497,32 @@ const Data = ({ match, history, loading, error }) => {
     setCurrentPage(1);
   }, [ limit, searchName, searchKlinik, searchStatus, sortBy, sortOrder ]);
 
-  let params = "";
-  
-  if (limit !== 10) {
-    params = `${params}?limit=${limit}`;
-  } else {
-    params = `${params}?limit=10`;
-  }
-  if (searchName !== "") {
-    params = `${params}&searchName=${searchName}`;
-  }
-  if (searchKlinik !== "") {
-    params = `${params}&searchKlinik=${searchKlinik}`;
-  }
-  if (searchStatus !== "") {
-    params = `${params}&searchStatus=${searchStatus}`;
-  }
-  if (currentPage !== 1) {
-    params = `${params}&page=${currentPage}`;
-  }
-
-
   useEffect(() => {
-    setRowSelected(false);
+    let params = "";
+    
+    if (limit !== 10) {
+      params = `${params}?limit=${limit}`;
+    } else {
+      params = `${params}?limit=10`;
+    }
+    if (searchName !== "") {
+      params = `${params}&searchName=${searchName}`;
+    }
+    if (searchKlinik !== "") {
+      params = `${params}&searchKlinik=${searchKlinik}`;
+    }
+    if (searchStatus !== "") {
+      params = `${params}&searchStatus=${searchStatus}`;
+    }
+    if (currentPage !== 1) {
+      params = `${params}&page=${currentPage}`;
+    }
 
+    setRowSelected(false);
     getDivision(params);
+    
     onLoadKlinik();
   }, [limit, searchName, searchKlinik, searchStatus, sortBy, sortOrder, currentPage ]);
-
-  useEffect(() => {
-    getDivisionReducers(params);
-  }, [ divisionData ]);
 
   let startNumber = 1;
 
@@ -636,7 +625,7 @@ const Data = ({ match, history, loading, error }) => {
                           {startNumber++}
                         </th>
                         <td>
-                          <h6 style={{ fontWeight: 'bold' }} className="max-text">{data.nama_divisi}</h6>
+                          <h6 style={{ fontWeight: 'bold' }} className="max-text">{data.tipe}</h6>
                           {data.nama_klinik ? data.nama_klinik : "-"}<br/>
                           {data.is_active == 1 ? (
                             <Badge color="success" className="mt-2">Aktif</Badge>
@@ -715,7 +704,8 @@ const Data = ({ match, history, loading, error }) => {
                         name="id_klinik"
                         id="id_klinik"
                         options={selectedKlinik}
-                        value={selectedKlinik.find(item => item.value === division.id_klinik) || ''}
+                        value={selectedKlinik.find(item => item.value === division.id_klinik) || 
+                          { label: "Pilih Klinik", value: "", key: 0, name: "id_klinik" }}
                         // value={division.id_klinik}
                         onChange={onChange}
                         // required

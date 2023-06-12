@@ -26,6 +26,8 @@ import "rc-switch/assets/index.css";
 import "rc-slider/assets/index.css";
 import "react-rater/lib/react-rater.css";
 
+import useForm from 'utils/useForm';
+
 import Select from "react-select";
 import { Colxx, Separator } from "components/common/CustomBootstrap";
 import Pagination from "components/common/Pagination";
@@ -47,7 +49,7 @@ const userData = JSON.parse(localStorage.getItem('user_data'));
 const selectKITAS = [
   { label: "KTP", value: "KTP", key: 0, name: 'tipe_kitas' },
   { label: "SIM", value: "SIM", key: 1, name: 'tipe_kitas' },
-  { label: "Paspor", value: "PASPOR", key: 2, name: 'tipe_kitas' },
+  { label: "Paspor", value: "Paspor", key: 2, name: 'tipe_kitas' },
 ];
 
 const selectInsurance = [
@@ -78,21 +80,24 @@ const selectStatusF = [
 ];
 
 const selectMaritalStatus = [
-  { label: "Belum Kawin", value: "Belum Kawin", key: 0, name: 'status_menikah' },
-  { label: "Kawin", value: "Kawin", key: 1, name: 'status_menikah' },
-  { label: "Cerai Hidup", value: "Cerai Hidup", key: 2, name: 'status_menikah' },
-  { label: "Cerai Mati", value: "Cerai Mati", key: 3, name: 'status_menikah' },
+  { label: "Pilih Status", value: "", key: 0, name: "status_menikah" },
+  { label: "Belum Kawin", value: "Belum Kawin", key: 1, name: 'status_menikah' },
+  { label: "Kawin", value: "Kawin", key: 2, name: 'status_menikah' },
+  { label: "Cerai Hidup", value: "Cerai Hidup", key: 3, name: 'status_menikah' },
+  { label: "Cerai Mati", value: "Cerai Mati", key: 4, name: 'status_menikah' },
 ];
 
 const selectReligion = [
-  { label: "Islam", value: "Islam", key: 0, name: 'agama' },
-  { label: "Protestan", value: "Protestan", key: 1, name: 'agama' },
-  { label: "Katolik", value: "Katolik", key: 2, name: 'agama' },
-  { label: "Hindu", value: "Hindu", key: 3, name: 'agama' },
-  { label: "Budha", value: "Budha", key: 4, name: 'agama' },
+  { label: "Pilih Agama", value: "", key: 0, name: 'agama' }, 
+  { label: "Islam", value: "Islam", key: 1, name: 'agama' },
+  { label: "Protestan", value: "Protestan", key: 2, name: 'agama' },
+  { label: "Katolik", value: "Katolik", key: 3, name: 'agama' },
+  { label: "Hindu", value: "Hindu", key: 4, name: 'agama' },
+  { label: "Budha", value: "Budha", key: 5, name: 'agama' },
 ];
 
 const selectEmployment = [
+  { label: "Pilih Pekerjaan", value: "", key: 999, name: 'pekerjaan' },
   { label: "Belum/Tidak Bekerja", value: "Belum/Tidak Bekerja", key: 0, name: 'pekerjaan' },
   { label: "Pegawai Negeri Sipil", value: "Pegawai Negeri Sipil", key: 1, name: 'pekerjaan' },
   { label: "Tentara Nasional Indonesia", value: "Tentara Nasional Indonesia", key: 2, name: 'pekerjaan' },
@@ -185,14 +190,15 @@ const selectEmployment = [
 ];
 
 const selectBlood = [
-  { label: "A-", value: "A-", key: 0, name: 'golongan_darah'  },
-  { label: "A+", value: "A+", key: 1, name: 'golongan_darah'  },
-  { label: "B-", value: "B-", key: 2, name: 'golongan_darah'  },
-  { label: "B+", value: "B+", key: 3, name: 'golongan_darah'  },
-  { label: "AB-", value: "AB-", key: 4, name: 'golongan_darah'  },
-  { label: "AB+", value: "AB+", key: 5, name: 'golongan_darah'  },
-  { label: "O-", value: "O-", key: 6, name: 'golongan_darah'  },
-  { label: "O+", value: "O+", key: 7, name: 'golongan_darah'  },
+  { label: "Pilih Golongan Darah", value: "", key: 0, name: 'golongan_darah' },
+  { label: "A-", value: "A-", key: 1, name: 'golongan_darah'  },
+  { label: "A+", value: "A+", key: 2, name: 'golongan_darah'  },
+  { label: "B-", value: "B-", key: 3, name: 'golongan_darah'  },
+  { label: "B+", value: "B+", key: 4, name: 'golongan_darah'  },
+  { label: "AB-", value: "AB-", key: 5, name: 'golongan_darah'  },
+  { label: "AB+", value: "AB+", key: 6, name: 'golongan_darah'  },
+  { label: "O-", value: "O-", key: 7, name: 'golongan_darah'  },
+  { label: "O+", value: "O+", key: 8, name: 'golongan_darah'  },
 ];
 
 var urlProvinsi = "https://ibnux.github.io/data-indonesia/provinsi.json";
@@ -204,6 +210,8 @@ const Data = ({ match }) => {
   const dispatch = useDispatch();
   const patientAll = useSelector(state => state.patient);
   const patientTotalPage = useSelector(state => state.patientTotalPage);
+  const { errors, validate } = useForm();
+
   const [dataStatusPatient, setDataStatusPatient] = useState("add");
   const [dataStatusAllergy, setDataStatusAllergy] = useState("add");
   const [dataStatusInsurance, setDataStatusInsurance] = useState("add");
@@ -217,10 +225,10 @@ const Data = ({ match }) => {
   const [selectedGender, setSelectedGender] = useState("");
   const [selectedMaritalStatus, setSelectedMaritalStatus] = useState("");
 
-  const [selectedProvince, setSelectedProvince] = useState([]);
-  const [selectedCity, setSelectedCity] = useState([]);
-  const [selectedSubdistrict, setSelectedSubdistrict] = useState([]);
-  const [selectedWard, setSelectedWard] = useState([]);
+  const [selectedProvince, setSelectedProvince] = useState([{ label: "Pilih Provinsi", value: "", key: 0, name: 'provinsi' }]);
+  const [selectedCity, setSelectedCity] = useState([{ label: "Pilih Kota / Kabupaten", value: "", key: 0, name: 'kota' }]);
+  const [selectedSubdistrict, setSelectedSubdistrict] = useState([{ label: "Pilih Kecamatan", value: "", key: 0, name: 'kecamatan' }]);
+  const [selectedWard, setSelectedWard] = useState([{ label: "Pilih Kelurahan", value: "", key: 0, name: 'kelurahan' }]);
 
   const [selectProvince, setSelectProvince] = useState([]);
   const [selectCity, setSelectCity] = useState([]);
@@ -257,6 +265,9 @@ const Data = ({ match }) => {
   const addInsuranceFields = () => {
     let newfieldInsurance = { id: '', id_pasien: patientID, id_asuransi: "", id_asuransi_kelas: "", nomor_asuransi: "" };
     setInsurance([...insurance, newfieldInsurance]);
+
+    // console.log(insurance.length + 1);
+    disabledInsuranceClass[insurance.length] = true;
   };
 
   const removeInsuranceFields = (id, index) => {
@@ -279,11 +290,11 @@ const Data = ({ match }) => {
       dataInsurance[index][event.name] = event.value;
       changeKelasAsuransi(index, event.value);
 
-      if (event.value !== "") {
-        disabledInsuranceClass[index] = false;
-      } else {
-        disabledInsuranceClass[index] = true;
-      }
+      // if (event.value !== "") {
+      //   disabledInsuranceClass[index] = false;
+      // } else {
+      //   disabledInsuranceClass[index] = true;
+      // }
     } else if (event.name === "id_asuransi_kelas"){
       dataInsurance[index][event.name] = event.value;
     } else {
@@ -472,7 +483,7 @@ const Data = ({ match }) => {
       const response = await allergyAPI.get("", "?limit=1000");
       // console.log(response);
 
-      setSelectAllergy([{ label: "Pilih Alergi", value: "", key: 0, name: 'id_alergi' }]);
+      setSelectAllergy([{ label: "Pilih Alergi", value: "", key: 0, name: 'id_alergi' }, { label: "Tidak Ada Alergi", value: "Tidak Ada Alergi", key: 999, name: 'id_alergi' }]);
 
       if (response.status === 200) {
         let data = response.data.data;
@@ -545,7 +556,7 @@ const Data = ({ match }) => {
   const [selectInsuranceClassByInsurance, setSelectInsuranceClassByInsurance] = useState([]);
 
   const changeKelasAsuransi = async (index, id_asuransi, id_asuransi_kelas = null) => {
-    selectInsuranceClassByInsurance[index] = [];
+    selectInsuranceClassByInsurance[index] = [{ label: "Pilih Kelas", value: "", key: 0, name: 'asuransi_kelas' }];
 
     try {
       const response = await insuranceClassAPI.getByInsurance("", `/${id_asuransi}`);
@@ -565,7 +576,11 @@ const Data = ({ match }) => {
             });
           })
         }
+
+        disabledInsuranceClass[index] = false;
       } else {
+        disabledInsuranceClass[index] = true;
+
         throw Error(`Error status: ${response.status}`);
       }
     } catch (e) {
@@ -612,10 +627,14 @@ const Data = ({ match }) => {
       setPatient(current => {
           return { ...current, tipe_kitas: e ? e.value : ''}
       })
+    } else if (e.name === 'nomor_kitas') {
+      validate(e, e.name ? e.name : e.target.name, e.value ? e.value : e.target.value);
     } else if (e.name === 'kewarganegaraan') {
       setPatient(current => {
           return { ...current, kewarganegaraan: e ? e.value : ''}
       })
+    } else if (e.name === 'nama_lengkap') {
+      validate(e, e.name ? e.name : e.target.name, e.value ? e.value : e.target.value);
     } else if (e.name === 'agama') {
       setPatient(current => {
           return { ...current, agama: e ? e.value : ''}
@@ -656,8 +675,22 @@ const Data = ({ match }) => {
   }
 
   const onPatientSubmit = async (e) => {
-    // e.preventDefault();
+    e.preventDefault();
     setPatientSubmit("process");
+
+    let isError = false;
+
+    for(let [key, value] of Object.entries(patient)) {
+      if((key === 'nama_lengkap' && value === '') || (key === 'nomor_kitas' && value === '')){
+        validate(e, key, value);
+        isError = true;
+      //   return;
+      }
+    }
+
+    if(isError === true){
+      return;
+    }
 
     if(dataStatusPatient === 'add') {
       try {
@@ -697,6 +730,8 @@ const Data = ({ match }) => {
         });
 
         console.log(e);
+      } finally {
+        getPatient("");
       }
     } else if (dataStatusPatient === 'update') {
       try {
@@ -736,6 +771,8 @@ const Data = ({ match }) => {
         });
   
         console.log(e);
+      } finally {
+        getPatient("");
       }
     } else {
       console.log('dataStatusPatient undefined')
@@ -987,7 +1024,7 @@ const Data = ({ match }) => {
     setAllergy([{ id: "", id_pasien: patientID, id_alergi: "" }]);
     setInsurance([{ id: '', id_pasien: patientID, id_asuransi: "", id_asuransi_kelas: "", nomor_asuransi: "" }]);
 
-    setDisabledInsuranceClass([]);
+    setDisabledInsuranceClass([{0: false}]);
     setDataStatusPatient("add");
     setDataStatusAllergy("add");
     setDataStatusInsurance("add");
@@ -1448,8 +1485,8 @@ const Data = ({ match }) => {
     }
 
     setRowSelected(false);
-
     getPatient(params);
+    
     onLoadProvinsi();
     onLoadAlergi();
     onLoadAsuransi();
@@ -1463,7 +1500,9 @@ const Data = ({ match }) => {
       let id_kecamatan = selectedSubdistrict.find(item => item.value === editAddress.nama_kecamatan).key;
       changeKelurahan(id_kecamatan, editAddress);
     }
+  }, [limit, searchName, searchStatus, sortBy, sortOrder, currentPage, editAddress]);
 
+  useEffect(() => {
     if (patientSubmit === "done") {
       setTimeout(() => {
 
@@ -1479,8 +1518,10 @@ const Data = ({ match }) => {
           resetForm();
         }, 2000)
       }, 1000);
-    }
+    };
+  }, [ patientSubmit ]);
 
+  // useEffect(() => {
     // if(dataStatusInsurance === "update" && insurance[0].id !== ''){
       // let dataInsurance = [...insurance];
       // console.log(dataInsurance);
@@ -1491,9 +1532,7 @@ const Data = ({ match }) => {
 
       // }, 5000);
     // }
-
-  // }, [limit, searchName, searchStatus, sortBy, sortOrder, currentPage, editAddress, patientAll, patientTotalPage]);
-  }, [limit, searchName, searchStatus, sortBy, sortOrder, currentPage, editAddress, patientSubmit, dataStatusInsurance]);
+  // }, [ dataStatusInsurance ]);
 
   let startNumber = 1;
 
@@ -1573,7 +1612,7 @@ const Data = ({ match }) => {
                         </th>
                         <td>
                           <h6 style={{ fontWeight: 'bold' }} className="max-text">{data.nama_lengkap}</h6>
-                          {data.jenis_kelamin.substring(0,1)}, {new Date().getFullYear() - data.tanggal_lahir.substring(0,4)} tahun<br/>
+                          {data.jenis_kelamin ? data.jenis_kelamin.substring(0,1) : '-'}, {new Date().getFullYear() - data.tanggal_lahir.substring(0,4)} tahun<br/>
                           {data.tipe_kitas} {data.nomor_kitas}<br/>
                           {data.is_active == 1 ? (
                             <Badge color="success" className="mt-2">Aktif</Badge>
@@ -1625,7 +1664,7 @@ const Data = ({ match }) => {
                   </Colxx>
                 </Row>
               </CardTitle>
-              <Form>
+              <Form className="av-tooltip tooltip-right-top" onSubmit={onPatientSubmit}>
                 <FormGroup row>
                   <Colxx sm={6}>
                     <FormGroup>
@@ -1646,11 +1685,11 @@ const Data = ({ match }) => {
                           className="react-select select-KITAS"
                           classNamePrefix="react-select"
                           name="tipe_kitas"
-                          value={selectKITAS.find(item => item.value === patient.tipe_kitas) || ''}
+                          value={selectKITAS.find(item => item.value === patient.tipe_kitas) || { label: "KTP", value: "KTP", key: 0, name: 'tipe_kitas' }}
                           options={selectKITAS}
                           onChange={onChange}
                           isSearchable={false}
-                          required
+                          // required
                         />
                         <Input
                           type="number"
@@ -1660,9 +1699,14 @@ const Data = ({ match }) => {
                           className="input-KITAS"
                           value={patient.nomor_kitas}
                           onChange={onChange}
-                          required={true}
                           pattern="[0-9]*"
+                          // required={true}
                         />
+                        {errors.nomor_kitas && (
+                          <div className="rounded invalid-feedback d-block" style={{ bottom: '140%' }}>
+                            {errors.nomor_kitas}
+                          </div>
+                        )}
                       </InputGroup>
                     </FormGroup>
                   </Colxx>
@@ -1686,8 +1730,13 @@ const Data = ({ match }) => {
                         placeholder="Nama Lengkap"
                         value={patient.nama_lengkap}
                         onChange={onChange}
-                        required={true}
+                        // required={true}
                       />
+                      {errors.nama_lengkap && (
+                        <div className="rounded invalid-feedback d-block">
+                          {errors.nama_lengkap}
+                        </div>
+                      )}
                     </FormGroup>
                   </Colxx>
 
@@ -1695,13 +1744,13 @@ const Data = ({ match }) => {
                     <FormGroup>
                       <Label for="jenisKelamin">
                         Jenis Kelamin
-                        <span
+                        {/* <span
                           className="required text-danger"
                           aria-required="true"
                         >
                           {" "}
                           *
-                        </span>
+                        </span> */}
                       </Label>
                       <Row>
                         <Colxx sm={6} md={4} xl={4}>
@@ -1813,7 +1862,7 @@ const Data = ({ match }) => {
                         name="provinsi"
                         id="provinsi"
                         options={selectedProvince}
-                        value={selectedProvince.find(item => item.value === patient.provinsi) || ''}
+                        value={selectedProvince.find(item => item.value === patient.provinsi) || { label: "Pilih Provinsi", value: "", key: 0, name: 'provinsi' }}
                         onChange={onChange}
                       />
                     </FormGroup>
@@ -1829,7 +1878,7 @@ const Data = ({ match }) => {
                         name="kota"
                         id="kota"
                         options={selectedCity}
-                        value={selectedCity.find(item => item.value === patient.kota) || ''}
+                        value={selectedCity.find(item => item.value === patient.kota) || { label: "Pilih Kota / Kabupaten", value: "", key: 0, name: 'kota' }}
                         onChange={onChange}
                       />
                     </FormGroup>
@@ -1845,7 +1894,7 @@ const Data = ({ match }) => {
                         name="kecamatan"
                         id="kecamatan"
                         options={selectedSubdistrict}
-                        value={selectedSubdistrict.find(item => item.value === patient.kecamatan) || ''}
+                        value={selectedSubdistrict.find(item => item.value === patient.kecamatan) || { label: "Pilih Kecamatan", value: "", key: 0, name: 'kecamatan' }}
                         onChange={onChange}
                       />
                     </FormGroup>
@@ -1861,7 +1910,7 @@ const Data = ({ match }) => {
                         name="kelurahan"
                         id="kelurahan"
                         options={selectedWard}
-                        value={selectedWard.find(item => item.value === patient.kelurahan) || ''}
+                        value={selectedWard.find(item => item.value === patient.kelurahan) || { label: "Pilih Kelurahan", value: "", key: 0, name: 'kelurahan' }}
                         onChange={onChange}
                       />
                     </FormGroup>
@@ -1876,7 +1925,7 @@ const Data = ({ match }) => {
                         classNamePrefix="react-select"
                         name="kewarganegaraan"
                         options={selectNationality}
-                        value={selectNationality.find(item => item.value === patient.kewarganegaraan) || ''}
+                        value={selectNationality.find(item => item.value === patient.kewarganegaraan) || { label: "WNI", value: "WNI", key: 0, name: 'kewarganegaraan' }}
                         onChange={onChange}
                       />
                     </FormGroup>
@@ -1891,7 +1940,7 @@ const Data = ({ match }) => {
                         classNamePrefix="react-select"
                         name="agama"
                         options={selectReligion}
-                        value={selectReligion.find(item => item.value === patient.agama) || ''}
+                        value={selectReligion.find(item => item.value === patient.agama) || { label: "Pilih Agama", value: "", key: 0, name: 'agama' }}
                         onChange={onChange}
                       />
                     </FormGroup>
@@ -1906,7 +1955,7 @@ const Data = ({ match }) => {
                         classNamePrefix="react-select"
                         name="pekerjaan"
                         options={selectEmployment}
-                        value={selectEmployment.find(item => item.value === patient.pekerjaan) || ''}
+                        value={selectEmployment.find(item => item.value === patient.pekerjaan) || { label: "Pilih Pekerjaan", value: "", key: 999, name: 'pekerjaan' }}
                         onChange={onChange}
                       />
                     </FormGroup>
@@ -1921,7 +1970,7 @@ const Data = ({ match }) => {
                         classNamePrefix="react-select"
                         name="status_menikah"
                         options={selectMaritalStatus}
-                        value={selectMaritalStatus.find(item => item.value === patient.status_menikah) || ''}
+                        value={selectMaritalStatus.find(item => item.value === patient.status_menikah) || { label: "Pilih Status", value: "", key: 0, name: "status_menikah" }}
                         onChange={onChange}
                       />
                     </FormGroup>
@@ -1945,7 +1994,7 @@ const Data = ({ match }) => {
                         classNamePrefix="react-select"
                         name="golongan_darah"
                         options={selectBlood}
-                        value={selectBlood.find(item => item.value === patient.golongan_darah) || ''}
+                        value={selectBlood.find(item => item.value === patient.golongan_darah) || { label: "Pilih Golongan Darah", value: "", key: 0, name: 'golongan_darah' }}
                         onChange={onChange}
                       />
                     </FormGroup>
@@ -2017,7 +2066,7 @@ const Data = ({ match }) => {
                                   className="react-select"
                                   classNamePrefix="react-select"
                                   name="id_asuransi"
-                                  value={selectInsurance.find(item => item.value === insurance[index].id_asuransi) || ''}
+                                  value={selectInsurance.find(item => item.value === insurance[index].id_asuransi) || { label: "Pilih Asuransi", value: "", key: 0, name: 'id_asuransi' }}
                                   options={selectInsurance}
                                   onChange={(event) =>
                                     handleInsuranceChange(index, event)
@@ -2035,7 +2084,7 @@ const Data = ({ match }) => {
                                   name="id_asuransi_kelas"
                                   value={
                                     insurance[index].id_asuransi_kelas !== undefined && selectInsuranceClassByInsurance[index] !== undefined &&
-                                      selectInsuranceClassByInsurance[index].find(item => item.value === insurance[index].id_asuransi_kelas) || ''
+                                      selectInsuranceClassByInsurance[index].find(item => item.value === insurance[index].id_asuransi_kelas) || { label: "Pilih Kelas", value: "", key: 0, name: 'asuransi_kelas' }
                                   }
                                   // value={
                                   //   (insurance[index].id_asuransi_kelas !== undefined || selectInsuranceClassByInsurance[index] !== undefined) &&
@@ -2107,7 +2156,7 @@ const Data = ({ match }) => {
                     &nbsp;&nbsp;
                     <Button
                       color="primary"
-                      onClick={(e) => onPatientSubmit(e)}
+                      // onClick={(e) => onPatientSubmit(e)}
                     >
                       Simpan
                     </Button>

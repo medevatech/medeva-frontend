@@ -7,26 +7,42 @@ const useForm = (callback) => {
     const validate = (event, name, value) => {
         if(name) {
             if((name === 'nama' && value === '') ||
-                (name === 'tipe' && value === '')) {
+                (name === 'tipe' && value === '') ||
+                (name === 'nama_lengkap' && value === '') ||
+                (name === 'nomor_kitas' && value === '') ||
+                (name === 'username' && value === '') ||
+                (name === 'password' && value === '') ||
+                (name === 'nomor_izin' && value === '') ||
+                (name === 'kadaluarsa_izin' && value === '')) {
                 
                 setErrors(errors => ({
                     ...errors,
                     [name]: 'Kolom ini wajib diisi'
                 }))
             } else if((name === 'nama' && value !== '') ||
-                (name === 'tipe' && value !== '')) {
+                (name === 'tipe' && value !== '') ||
+                (name === 'nama_lengkap' && value !== '') ||
+                (name === 'nomor_kitas' && value !== '') ||
+                (name === 'username' && value !== '') ||
+                (name === 'password' && value !== '') ||
+                (name === 'nomor_izin' && value !== '') ||
+                (name === 'kadaluarsa_izin' && value !== '')) {
                 
                 let newObj = omit(errors, name);
                 setErrors(newObj);
             }
 
-            if(name === 'id_klinik' && value === '') {
+            if((name === 'id_klinik' && value === '') ||
+                (name === 'spesialisasi' && value === '') ||
+                (name === 'tipe_izin' && value === '')) {
 
                 setErrors(errors => ({
                     ...errors,
                     [name]: 'Kolom ini wajib dipilih'
                 }))
-            } else if(name === 'id_klinik' && value !== '') {
+            } else if((name === 'id_klinik' && value !== '') ||
+                (name === 'spesialisasi' && value !== '') ||
+                (name === 'tipe_izin' && value !== '')) {
 
                 let newObj = omit(errors, name);
                 setErrors(newObj);

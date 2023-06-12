@@ -131,6 +131,8 @@ const Data = ({ match, history, loading, error }) => {
         });
   
         console.log(e);
+      } finally {
+        getService("");
       }
     } else if (dataStatus === 'update') {
       try {
@@ -170,6 +172,8 @@ const Data = ({ match, history, loading, error }) => {
         });
   
         console.log(e);
+      } finally {
+        getService("");
       }
     } else {
       console.log('dataStatus undefined')
@@ -214,16 +218,6 @@ const Data = ({ match, history, loading, error }) => {
       console.log(e);
     } finally {
       setIsLoading(false);
-    }
-  };
-
-  const getServiceReducers = async (params) => {
-    try {
-      const res = await serviceAPI.get("", params);
-      dispatch({type: "GET_SERVICE_LIST", payload: res.data.data});
-      dispatch({type: "GET_TOTAL_PAGE_SERVICE_LIST", payload: res.data.pagination.totalPage});
-    } catch (e) {
-      console.log(e);
     }
   };
 
@@ -452,31 +446,27 @@ const Data = ({ match, history, loading, error }) => {
     setCurrentPage(1);
   }, [ limit, searchDaftarLayanan, searchStatus, sortBy, sortOrder ]);
 
-  let params = "";
-    
-  if (limit !== 10) {
-    params = `${params}?limit=${limit}`;
-  } else {
-    params = `${params}?limit=10`;
-  }
-  if (searchDaftarLayanan !== "") {
-    params = `${params}&searchDaftarLayanan=${searchDaftarLayanan}`;
-  }
-  if (searchStatus !== "") {
-    params = `${params}&searchStatus=${searchStatus}`;
-  }
-  if (currentPage !== 1) {
-    params = `${params}&page=${currentPage}`;
-  }
-
   useEffect(() => {
+    let params = "";
+      
+    if (limit !== 10) {
+      params = `${params}?limit=${limit}`;
+    } else {
+      params = `${params}?limit=10`;
+    }
+    if (searchDaftarLayanan !== "") {
+      params = `${params}&searchDaftarLayanan=${searchDaftarLayanan}`;
+    }
+    if (searchStatus !== "") {
+      params = `${params}&searchStatus=${searchStatus}`;
+    }
+    if (currentPage !== 1) {
+      params = `${params}&page=${currentPage}`;
+    }
+    
     setRowSelected(false);
     getService(params);
   }, [limit, searchDaftarLayanan, searchStatus, sortBy, sortOrder, currentPage ]);
-
-  useEffect(() => {
-    getServiceReducers(params);
-  }, [ serviceData ]);
 
   let startNumber = 1;
 

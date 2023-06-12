@@ -26,6 +26,8 @@ import "rc-switch/assets/index.css";
 import "rc-slider/assets/index.css";
 import "react-rater/lib/react-rater.css";
 
+import useForm from 'utils/useForm';
+
 import moment from "moment";
 import Select from "react-select";
 import { Colxx, Separator } from "components/common/CustomBootstrap";
@@ -51,12 +53,13 @@ const selectRole = [
 ];
 
 const selectType = [
-  { label: "Manager", value: "Manager", key: 0, name: "tipe" },
-  { label: "Admin", value: "Admin", key: 1, name: "tipe" },
-  { label: "Resepsionis", value: "Resepsionis", key: 2, name: "tipe" },
-  { label: "Perawat", value: "Perawat", key: 3, name: "tipe" },
-  { label: "Dokter", value: "Dokter", key: 4, name: "tipe" },
-  { label: "Manajemen", value: "Manajemen", key: 5, name: "tipe" }
+  { label: "Pilih Tipe", value: "", key: 0, name: "tipe" },
+  { label: "Manager", value: "Manager", key: 1, name: "tipe" },
+  { label: "Admin", value: "Admin", key: 2, name: "tipe" },
+  { label: "Resepsionis", value: "Resepsionis", key: 3, name: "tipe" },
+  { label: "Perawat", value: "Perawat", key: 4, name: "tipe" },
+  { label: "Dokter", value: "Dokter", key: 5, name: "tipe" },
+  { label: "Manajemen", value: "Manajemen", key: 6, name: "tipe" }
 ];
 
 const selectTypeF = [
@@ -76,60 +79,63 @@ const selectStatusF = [
 ];
 
 const selectWP = [
-  { label: "SIP", value: "SIP", key: 0, name: 'tipe_izin' },
-  { label: "STR", value: "STR", key: 1, name: 'tipe_izin' },
+  { label: "Pilih Tipe Izin", value: "", key: 0, name: "tipe_izin" },
+  { label: "SIP", value: "SIP", key: 1, name: 'tipe_izin' },
+  { label: "STR", value: "STR", key: 2, name: 'tipe_izin' },
 ];
 
 const selectMaritalStatus = [
-  { label: "Belum Kawin", value: "Belum Kawin", key: 0, name: 'status_menikah' },
-  { label: "Kawin", value: "Kawin", key: 1, name: 'status_menikah' },
-  { label: "Cerai Hidup", value: "Cerai Hidup", key: 2, name: 'status_menikah' },
-  { label: "Cerai Mati", value: "Cerai Mati", key: 3, name: 'status_menikah' },
+  { label: "Pilih Status", value: "", key: 0, name: "status_menikah" },
+  { label: "Belum Kawin", value: "Belum Kawin", key: 1, name: 'status_menikah' },
+  { label: "Kawin", value: "Kawin", key: 2, name: 'status_menikah' },
+  { label: "Cerai Hidup", value: "Cerai Hidup", key: 3, name: 'status_menikah' },
+  { label: "Cerai Mati", value: "Cerai Mati", key: 4, name: 'status_menikah' },
 ];
 
 const selectSpecialist = [
-  { label: "Anak", value: "Anak", key: 0, name: 'spesialis' },
-  { label: "Andrologi", value: "Andrologi", key: 1, name: 'spesialis' },
-  { label: "Anestesiologi dan Terapi Intensif", value: "Anestesiologi dan Terapi Intensif", key: 2, name: 'spesialis' },
-  { label: "Akupunktur Medik", value: "Akupunktur Medik", key: 3, name: 'spesialis' },
-  { label: "Bedah", value: "Bedah", key: 4, name: 'spesialis' },
-  { label: "Bedah Anak", value: "Bedah Anak", key: 5, name: 'spesialis' },
-  { label: "Bedah Plastik, Rekonstruksi, dan Estetik", value: "Bedah Plastik, Rekonstruksi, dan Estetik", key: 6, name: 'spesialis' },
-  { label: "Bedah Saraf", value: "Bedah Saraf", key: 7, name: 'spesialis' },
-  { label: "Bedah Toraks, Kardiak, dan Vaskular", value: "Bedah Toraks, Kardiak, dan Vaskular", key: 8, name: 'spesialis' },
-  { label: "Dermatologi dan Venereologi", value: "Dermatologi dan Venereologi", key: 9, name: 'spesialis' },
-  { label: "Kegawatdaruratan Medik", value: "Kegawatdaruratan Medik", key: 10, name: 'spesialis' },
-  { label: "Farmakologi Klinik", value: "Farmakologi Klinik", key: 11, name: 'spesialis' },
-  { label: "Forensik dan Medikolegal", value: "Forensik dan Medikolegal", key: 12, name: 'spesialis' },
-  { label: "Gizi Klinik", value: "Gizi Klinik", key: 13, name: 'spesialis' },
-  { label: "Jantung dan Pembuluh Darah", value: "Jantung dan Pembuluh Darah", key: 14, name: 'spesialis' },
-  { label: "Kedokteran Fisik dan Rehabilitasi", value: "Kedokteran Fisik dan Rehabilitasi", key: 15, name: 'spesialis' },
-  { label: "Kedokteran Jiwa", value: "Kedokteran Jiwa", key: 16, name: 'spesialis' },
-  { label: "Kedokteran Kelautan", value: "Kedokteran Kelautan", key: 17, name: 'spesialis' },
-  { label: "Kedokteran Keluarga Layanan Primer", value: "Kedokteran Keluarga Layanan Primer", key: 18, name: 'spesialis' },
-  { label: "Kedokteran Nuklir dan Teranostik Molekuler", value: "Kedokteran Nuklir dan Teranostik Molekuler", key: 19, name: 'spesialis' },
-  { label: "Kedokteran Okupasi", value: "Kedokteran Okupasi", key: 20, name: 'spesialis' },
-  { label: "Kedokteran Olahraga", value: "Kedokteran Olahraga", key: 21, name: 'spesialis' },
-  { label: "Kedokteran Penerbangan", value: "Kedokteran Penerbangan", key: 22, name: 'spesialis' },
-  { label: "Mikrobiologi Klinik", value: "Mikrobiologi Klinik", key: 23, name: 'spesialis' },
-  { label: "Neurologi", value: "Neurologi", key: 24, name: 'spesialis' },
-  { label: "Obstetri dan Ginekologi", value: "Obstetri dan Ginekologi", key: 25, name: 'spesialis' },
-  { label: "Oftalmologi", value: "Oftalmologi", key: 26, name: 'spesialis' },
-  { label: "Onkologi Radiasi", value: "Onkologi Radiasi", key: 27, name: 'spesialis' },
-  { label: "Orthopaedi dan Traumatologi", value: "Orthopaedi dan Traumatologi", key: 28, name: 'spesialis' },
-  { label: "Parasitologi Klinik", value: "Parasitologi Klinik", key: 29, name: 'spesialis' },
-  { label: "Patologi Anatomi", value: "Patologi Anatomi", key: 30, name: 'spesialis' },
-  { label: "Patologi Klinik", value: "Patologi Klinik", key: 31, name: 'spesialis' },
-  { label: "Penyakit Dalam", value: "Penyakit Dalam", key: 32, name: 'spesialis' },
-  { label: "Pulmonologi dan Kedokteran Respirasi", value: "Pulmonologi dan Kedokteran Respirasi", key: 33, name: 'spesialis' },
-  { label: "Radiologi", value: "Radiologi", key: 34, name: 'spesialis' },
-  { label: "Telinga Hidung Tenggorok Bedah Kepala Leher", value: "Telinga Hidung Tenggorok Bedah Kepala Leher", key: 35, name: 'spesialis' },
-  { label: "Urologi", value: "Urologi", key: 36, name: 'spesialis' },
-  { label: "Bedah Mulut dan Maksilofasial (Dokter Gigi)", value: "Bedah Mulut dan Maksilofasial (Dokter Gigi)", key: 37, name: 'spesialis' },
-  { label: "Kedokteran Gigi Anak (Dokter Gigi)", value: "Kedokteran Gigi Anak (Dokter Gigi)", key: 38, name: 'spesialis' },
-  { label: "Konservasi Gigi (Dokter Gigi)", value: "Konservasi Gigi (Dokter Gigi)", key: 39, name: 'spesialis' },
-  { label: "Ortodonsia (Dokter Gigi)", value: "Ortodonsia (Dokter Gigi)", key: 40, name: 'spesialis' },
-  { label: "Odontologi Forensik (Dokter Gigi)", value: "Odontologi Forensik (Dokter Gigi)", key: 41, name: 'spesialis' },
+  { label: "Pilih Spesialisasi", value: "", key: 0, name: "spesialis" },
+  { label: "Anak", value: "Anak", key: 1, name: 'spesialis' },
+  { label: "Andrologi", value: "Andrologi", key: 2, name: 'spesialis' },
+  { label: "Anestesiologi dan Terapi Intensif", value: "Anestesiologi dan Terapi Intensif", key: 3, name: 'spesialis' },
+  { label: "Akupunktur Medik", value: "Akupunktur Medik", key: 4, name: 'spesialis' },
+  { label: "Bedah", value: "Bedah", key: 5, name: 'spesialis' },
+  { label: "Bedah Anak", value: "Bedah Anak", key: 6, name: 'spesialis' },
+  { label: "Bedah Plastik, Rekonstruksi, dan Estetik", value: "Bedah Plastik, Rekonstruksi, dan Estetik", key: 7, name: 'spesialis' },
+  { label: "Bedah Saraf", value: "Bedah Saraf", key: 8, name: 'spesialis' },
+  { label: "Bedah Toraks, Kardiak, dan Vaskular", value: "Bedah Toraks, Kardiak, dan Vaskular", key: 9, name: 'spesialis' },
+  { label: "Dermatologi dan Venereologi", value: "Dermatologi dan Venereologi", key: 10, name: 'spesialis' },
+  { label: "Kegawatdaruratan Medik", value: "Kegawatdaruratan Medik", key: 11, name: 'spesialis' },
+  { label: "Farmakologi Klinik", value: "Farmakologi Klinik", key: 12, name: 'spesialis' },
+  { label: "Forensik dan Medikolegal", value: "Forensik dan Medikolegal", key: 13, name: 'spesialis' },
+  { label: "Gizi Klinik", value: "Gizi Klinik", key: 14, name: 'spesialis' },
+  { label: "Jantung dan Pembuluh Darah", value: "Jantung dan Pembuluh Darah", key: 15, name: 'spesialis' },
+  { label: "Kedokteran Fisik dan Rehabilitasi", value: "Kedokteran Fisik dan Rehabilitasi", key: 16, name: 'spesialis' },
+  { label: "Kedokteran Jiwa", value: "Kedokteran Jiwa", key: 17, name: 'spesialis' },
+  { label: "Kedokteran Kelautan", value: "Kedokteran Kelautan", key: 18, name: 'spesialis' },
+  { label: "Kedokteran Keluarga Layanan Primer", value: "Kedokteran Keluarga Layanan Primer", key: 19, name: 'spesialis' },
+  { label: "Kedokteran Nuklir dan Teranostik Molekuler", value: "Kedokteran Nuklir dan Teranostik Molekuler", key: 20, name: 'spesialis' },
+  { label: "Kedokteran Okupasi", value: "Kedokteran Okupasi", key: 21, name: 'spesialis' },
+  { label: "Kedokteran Olahraga", value: "Kedokteran Olahraga", key: 22, name: 'spesialis' },
+  { label: "Kedokteran Penerbangan", value: "Kedokteran Penerbangan", key: 23, name: 'spesialis' },
+  { label: "Mikrobiologi Klinik", value: "Mikrobiologi Klinik", key: 24, name: 'spesialis' },
+  { label: "Neurologi", value: "Neurologi", key: 25, name: 'spesialis' },
+  { label: "Obstetri dan Ginekologi", value: "Obstetri dan Ginekologi", key: 26, name: 'spesialis' },
+  { label: "Oftalmologi", value: "Oftalmologi", key: 27, name: 'spesialis' },
+  { label: "Onkologi Radiasi", value: "Onkologi Radiasi", key: 28, name: 'spesialis' },
+  { label: "Orthopaedi dan Traumatologi", value: "Orthopaedi dan Traumatologi", key: 29, name: 'spesialis' },
+  { label: "Parasitologi Klinik", value: "Parasitologi Klinik", key: 30, name: 'spesialis' },
+  { label: "Patologi Anatomi", value: "Patologi Anatomi", key: 31, name: 'spesialis' },
+  { label: "Patologi Klinik", value: "Patologi Klinik", key: 32, name: 'spesialis' },
+  { label: "Penyakit Dalam", value: "Penyakit Dalam", key: 33, name: 'spesialis' },
+  { label: "Pulmonologi dan Kedokteran Respirasi", value: "Pulmonologi dan Kedokteran Respirasi", key: 34, name: 'spesialis' },
+  { label: "Radiologi", value: "Radiologi", key: 35, name: 'spesialis' },
+  { label: "Telinga Hidung Tenggorok Bedah Kepala Leher", value: "Telinga Hidung Tenggorok Bedah Kepala Leher", key: 36, name: 'spesialis' },
+  { label: "Urologi", value: "Urologi", key: 37, name: 'spesialis' },
+  { label: "Bedah Mulut dan Maksilofasial (Dokter Gigi)", value: "Bedah Mulut dan Maksilofasial (Dokter Gigi)", key: 38, name: 'spesialis' },
+  { label: "Kedokteran Gigi Anak (Dokter Gigi)", value: "Kedokteran Gigi Anak (Dokter Gigi)", key: 39, name: 'spesialis' },
+  { label: "Konservasi Gigi (Dokter Gigi)", value: "Konservasi Gigi (Dokter Gigi)", key: 40, name: 'spesialis' },
+  { label: "Ortodonsia (Dokter Gigi)", value: "Ortodonsia (Dokter Gigi)", key: 41, name: 'spesialis' },
+  { label: "Odontologi Forensik (Dokter Gigi)", value: "Odontologi Forensik (Dokter Gigi)", key: 42, name: 'spesialis' },
   { label: "Penyakit Mulut (Dokter Gigi)", value: "Penyakit Mulut (Dokter Gigi)", key: 43, name: 'spesialis' },
   { label: "Periodonsia (Dokter Gigi)", value: "Periodonsia (Dokter Gigi)", key: 44, name: 'spesialis' },
   { label: "Prostodonsia (Dokter Gigi)", value: "Prostodonsia (Dokter Gigi)", key: 45, name: 'spesialis' },
@@ -195,6 +201,8 @@ const Data = ({ match, history, loading, error }) => {
   const dispatch = useDispatch();
   const employeeData = useSelector(state => state.employee);
   const employeeTotalPage = useSelector(state => state.employeeTotalPage);
+  const { errors, validate } = useForm();
+
   const [dataStatus, setDataStatus] = useState("add");
   const [rowSelected, setRowSelected] = useState(null);
 
@@ -208,10 +216,10 @@ const Data = ({ match, history, loading, error }) => {
   const [selectedGender, setSelectedGender] = useState("");
   const [selectedMaritalStatus, setSelectedMaritalStatus] = useState("");
 
-  const [selectedProvince, setSelectedProvince] = useState([]);
-  const [selectedCity, setSelectedCity] = useState([]);
-  const [selectedSubdistrict, setSelectedSubdistrict] = useState([]);
-  const [selectedWard, setSelectedWard] = useState([]);
+  const [selectedProvince, setSelectedProvince] = useState([{ label: "Pilih Provinsi", value: "", key: 0, name: 'provinsi' }]);
+  const [selectedCity, setSelectedCity] = useState([{ label: "Pilih Kota / Kabupaten", value: "", key: 0, name: 'kota' }]);
+  const [selectedSubdistrict, setSelectedSubdistrict] = useState([{ label: "Pilih Kecamatan", value: "", key: 0, name: 'kecamatan' }]);
+  const [selectedWard, setSelectedWard] = useState([{ label: "Pilih Kelurahan", value: "", key: 0, name: 'kelurahan' }]);
 
   const [selectProvince, setSelectProvince] = useState([]);
   const [selectCity, setSelectCity] = useState([]);
@@ -422,12 +430,15 @@ const Data = ({ match, history, loading, error }) => {
           })
         } 
       }
+
+      validate(e, e.name ? e.name : e.target.name, e.value ? e.value : e.target.value);
     } else if (e.length <= 0) {
       setEmployee(current => {
           return { ...current, is_dev: 0, is_manager: 0, is_admin: 0, is_resepsionis: 0, is_perawat: 0, is_dokter: 0, is_manajemen: 0 }
       })
 
       setSelectedRole(Array.isArray(e) ? e.map(x => x.value) : []);
+      validate(e, e.name ? e.name : e.target.name, e.value ? e.value : e.target.value);
     } else if (e.name === 'provinsi') {
         setEmployee(current => {
             // return { ...current, provinsi: e.value }
@@ -458,12 +469,14 @@ const Data = ({ match, history, loading, error }) => {
           return { ...current, tipe_izin: e ? e.value : ''}
       })
       setSelectedWP(e);
+      validate(e, e.name ? e.name : e.target.name, e.value ? e.value : e.target.value);
     } else if (e.name === 'tipe') {
       setEmployee(current => {
           // return { ...current, tipe: e.value }
           return { ...current, tipe: e ? e.value : ''}
       })
       setSelectedType(e);
+      validate(e, e.name ? e.name : e.target.name, e.value ? e.value : e.target.value);
 
       if (e.value === 'Dokter') {
         setDisabledSpecialist(false);
@@ -479,6 +492,7 @@ const Data = ({ match, history, loading, error }) => {
           return { ...current, spesialis: e ? e.value : ''}
       })
       setSelectedSpecialist(e);
+      validate(e, e.name ? e.name : e.target.name, e.value ? e.value : e.target.value);
     } else if (e.name === 'status_menikah') {
       setEmployee(current => {
           // return { ...current, status_menikah: e.value }
@@ -510,7 +524,36 @@ const Data = ({ match, history, loading, error }) => {
         setEmployeePassword(current => {
             return { ...current, password: e.target.value }
         })
+        validate(e, e.name ? e.name : e.target.name, e.value ? e.value : e.target.value);
       } else if (e.target.name && e.target.name !== 'jenis_kelamin') {
+
+        if (e.target.name && e.target.name === 'username') {
+          setEmployee(current => {
+              return { ...current, username: e.target.value }
+          })
+          validate(e, e.name ? e.name : e.target.name, e.value ? e.value : e.target.value);
+        } else if (e.target.name && e.target.name === 'password') {
+          setEmployee(current => {
+              return { ...current, password: e.target.value }
+          })
+          validate(e, e.name ? e.name : e.target.name, e.value ? e.value : e.target.value);
+        } else if (e.target.name && e.target.name === 'nomor_kitas') {
+          setEmployee(current => {
+              return { ...current, nomor_kitas: e.target.value }
+          })
+          validate(e, e.name ? e.name : e.target.name, e.value ? e.value : e.target.value);
+        } else if (e.target.name && e.target.name === 'nomor_izin') {
+          setEmployee(current => {
+              return { ...current, nomor_izin: e.target.value }
+          })
+          validate(e, e.name ? e.name : e.target.name, e.value ? e.value : e.target.value);
+        } else if (e.target.name && e.target.name === 'kadaluarsa_izin') {
+          setEmployee(current => {
+              return { ...current, kadaluarsa_izin: e.target.value }
+          })
+          validate(e, e.name ? e.name : e.target.name, e.value ? e.value : e.target.value);
+        }
+
         setEmployee(current => {
             return { ...current, [e.target.name]: e.target.value }
         })
@@ -524,6 +567,26 @@ const Data = ({ match, history, loading, error }) => {
 
   const onEmployeeSubmit = async (e) => {
     e.preventDefault();
+
+    let isError = false;
+
+    for(let [key, value] of Object.entries(employee)) {
+      if((key === 'username' && value === '') || (key === 'password' && value === '') || (key === 'no_kitas' && value === '')  ||
+        (key === 'tipe' && value === '') || (key === 'tipe_izin' && value === '') || (key === 'nomor_izin' && value === '') ||
+        (key === 'kadaluarsa_izin' && value === '') || (key === 'peran' && value === '')){
+        validate(e, key, value);
+        isError = true;
+      }
+
+      if((key === 'tipe' && value !== '') && (key === 'spesialisasi' && value === '')){
+        validate(e, 'spesialisasi', value);
+        isError = true;
+      }
+    }
+
+    if(isError === true){
+      return;
+    }
 
     if(dataStatus === 'add') {
       try {
@@ -563,6 +626,8 @@ const Data = ({ match, history, loading, error }) => {
         });
   
         console.log(e);
+      } finally {
+        getEmployee("");
       }
     } else if (dataStatus === 'update') {
       try {
@@ -602,6 +667,8 @@ const Data = ({ match, history, loading, error }) => {
         });
   
         console.log(e);
+      } finally {
+        getEmployee("");
       }
     } else {
       console.log('dataStatus undefined')
@@ -696,6 +763,9 @@ const Data = ({ match, history, loading, error }) => {
     try {
       setIsLoading(true);
       const res = await employeeAPI.get("", params);
+
+      console.log(res);
+      
       dispatch({type: "GET_EMPLOYEE", payload: res.data.data});
       dispatch({type: "GET_TOTAL_PAGE_EMPLOYEE", payload: res.data.pagination.totalPage});
     } catch (e) {
@@ -1145,10 +1215,135 @@ const Data = ({ match, history, loading, error }) => {
     }
 
     setRowSelected(false);
-
     getEmployee(params);
+
     onLoadProvinsi();
 
+    // if(selectedCity.length > 0 && editAddress.status === 2) {
+    //   // console.log('changeKota', selectedCity);
+    //   // console.log('status', editAddress.status);
+
+    //   let id_kota = selectedCity.find(item => item.value === editAddress.nama_kota).key;
+    //   changeKecamatan(id_kota, editAddress);
+    // }
+
+    // if(selectedSubdistrict.length > 0 && editAddress.status === 3) {
+    //   // console.log('changeKecamatan', selectedSubdistrict);
+    //   // console.log('status', editAddress.status);
+
+    //   let id_kecamatan = selectedSubdistrict.find(item => item.value === editAddress.nama_kecamatan).key;
+    //   changeKelurahan(id_kecamatan, editAddress);
+    // }
+
+    // if(dataStatus === "add") {
+    //   if(selectedRole) {
+    //     if (!selectedRole.includes('Developer')) {
+    //       setEmployee(current => {
+    //         return { ...current, is_dev: 0 }
+    //       })
+    //     }
+        
+    //     if (!selectedRole.includes('Manager')) {
+    //       setEmployee(current => {
+    //         return { ...current, is_manager: 0 }
+    //       })
+    //     } 
+
+    //     if (!selectedRole.includes('Admin')) {
+    //       setEmployee(current => {
+    //         return { ...current, is_admin: 0 }
+    //       })
+    //     } 
+
+    //     if (!selectedRole.includes('Resepsionis')) {
+    //       setEmployee(current => {
+    //         return { ...current, is_resepsionis: 0 }
+    //       })
+    //     } 
+
+    //     if (!selectedRole.includes('Perawat')) {
+    //       setEmployee(current => {
+    //         return { ...current, is_perawat: 0 }
+    //       })
+    //     }
+        
+    //     if (!selectedRole.includes('Dokter')) {
+    //       setEmployee(current => {
+    //         return { ...current, is_dokter: 0 }
+    //       })
+    //     } 
+
+    //     if (!selectedRole.includes('Manajemen')) {
+    //       setEmployee(current => {
+    //         return { ...current, is_manajemen: 0 }
+    //       })
+    //     } 
+    //   }
+    // } else if(dataStatus === "update") {
+    //   if(selectedRole) {
+    //     selectedRole.includes('Developer') ?
+    //       setEmployee(current => {
+    //           return { ...current, is_dev: 1 }
+    //       }) : 
+    //       setEmployee(current => {
+    //           return { ...current, is_dev: 0 }
+    //       })
+
+    //     selectedRole.includes('Manager') ?
+    //       setEmployee(current => {
+    //           return { ...current, is_manager: 1 }
+    //       }) : 
+    //       setEmployee(current => {
+    //           return { ...current, is_manager: 0 }
+    //       })
+
+    //     selectedRole.includes('Admin') ?
+    //       setEmployee(current => {
+    //           return { ...current, is_admin: 0 }
+    //       }) : 
+    //       setEmployee(current => {
+    //           return { ...current, is_admin: 1 }
+    //       })
+
+    //     selectedRole.includes('Resepsionis') ?
+    //       setEmployee(current => {
+    //           return { ...current, is_resepsionis: 1 }
+    //       }) : 
+    //       setEmployee(current => {
+    //           return { ...current, is_resepsionis: 0 }
+    //       })
+
+    //     selectedRole.includes('Perawat') ?
+    //       setEmployee(current => {
+    //           return { ...current, is_perawat: 1 }
+    //       }) : 
+    //       setEmployee(current => {
+    //           return { ...current, is_perawat: 0 }
+    //       })
+
+    //     selectedRole.includes('Dokter') ?
+    //       setEmployee(current => {
+    //           return { ...current, is_dokter: 1 }
+    //       }) : 
+    //       setEmployee(current => {
+    //           return { ...current, is_dokter: 0 }
+    //       })
+
+    //     selectedRole.includes('Manajemen') ?
+    //       setEmployee(current => {
+    //           return { ...current, is_manajemen: 1 }
+    //       }) : 
+    //       setEmployee(current => {
+    //           return { ...current, is_manajemen: 0 }
+    //       })
+
+    //     // console.log('selectedRole onUpdate', selectedRole);
+    //   }
+    // }
+  // }, [limit, searchName, searchTipe, searchSpesialis, searchStatus, sortBy, sortOrder, currentPage, editAddress, selectedRole ]);
+  }, [limit, searchName, searchTipe, searchSpesialis, searchStatus, sortBy, sortOrder, currentPage ]);
+
+  useEffect(() => {
     if(selectedCity.length > 0 && editAddress.status === 2) {
       // console.log('changeKota', selectedCity);
       // console.log('status', editAddress.status);
@@ -1164,7 +1359,9 @@ const Data = ({ match, history, loading, error }) => {
       let id_kecamatan = selectedSubdistrict.find(item => item.value === editAddress.nama_kecamatan).key;
       changeKelurahan(id_kecamatan, editAddress);
     }
+  }, [ editAddress ]);
 
+  useEffect(() => {
     if(dataStatus === "add") {
       if(selectedRole) {
         if (!selectedRole.includes('Developer')) {
@@ -1270,8 +1467,7 @@ const Data = ({ match, history, loading, error }) => {
         // console.log('selectedRole onUpdate', selectedRole);
       }
     }
-  // }, [limit, searchName, searchTipe, searchSpesialis, searchStatus, sortBy, sortOrder, currentPage, editAddress, selectedRole, employee, employeeTotalPage ]);
-  }, [limit, searchName, searchTipe, searchSpesialis, searchStatus, sortBy, sortOrder, currentPage, editAddress, selectedRole ]);
+  }, [ selectedRole ]);
 
   let startNumber = 1;
 
@@ -1476,7 +1672,7 @@ const Data = ({ match, history, loading, error }) => {
                   </Colxx>
                 </Row>
               </CardTitle>
-              <Form>
+              <Form className="av-tooltip tooltip-right-top" onSubmit={onEmployeeSubmit}>
                 <FormGroup row>
                   <Colxx sm={fieldColumn.username}>
                     <FormGroup>
@@ -1499,6 +1695,11 @@ const Data = ({ match, history, loading, error }) => {
                         onChange={onChange}
                         // defaultValue={employee.username}
                       />
+                      {errors.username && (
+                        <div className="rounded invalid-feedback d-block">
+                          {errors.username}
+                        </div>
+                      )}
                     </FormGroup>
                   </Colxx>
 
@@ -1535,6 +1736,11 @@ const Data = ({ match, history, loading, error }) => {
                         value={employee.password}
                         onChange={onChange}
                       />
+                      {errors.password && (
+                        <div className="rounded invalid-feedback d-block">
+                          {errors.password}
+                        </div>
+                      )}
                     </FormGroup>
                   </Colxx>
 
@@ -1559,6 +1765,11 @@ const Data = ({ match, history, loading, error }) => {
                         onChange={onChange}
                         pattern="[0-9]*"
                       />
+                      {errors.nomor_kitas && (
+                        <div className="rounded invalid-feedback d-block">
+                          {errors.nomor_kitas}
+                        </div>
+                      )}
                     </FormGroup>
                   </Colxx>
 
@@ -1606,7 +1817,7 @@ const Data = ({ match, history, loading, error }) => {
                           // value={selectedTypeF}
                           // onChange={setSelectedTypeF}
                           onChange={(e) => setSearchTipe(e.value)}
-                          options={selectType.filter(roleChoices => roleChoices.label != 'Manajemen').map(roleChoices => roleChoices)}
+                          options={selectType.filter(roleChoices => roleChoices.label != 'Manajemen').map(roleChoices => roleChoices) || { label: "Pilih Tipe", value: "", key: 0, name: "tipe" }}
                           isSearchable={false}
                         /> }
                         { userData.roles.includes('isDev') &&
@@ -1616,29 +1827,49 @@ const Data = ({ match, history, loading, error }) => {
                           classNamePrefix="react-select"
                           name="tipe"
                           id="tipe"
-                          value={selectType.find(item => item.value === employee.tipe) || ''}
+                          value={selectType.find(item => item.value === employee.tipe) || { label: "Pilih Tipe", value: "", key: 0, name: "tipe" }}
                           // value={selectedType}
                           options={selectType}
                           onChange={onChange}
                         /> }
+                        {errors.tipe && (
+                          <div className="rounded invalid-feedback d-block">
+                            {errors.tipe}
+                          </div>
+                        )}
                     </FormGroup>
                   </Colxx>
 
                   <Colxx sm={6}>
                     <FormGroup>
-                      <Label for="spesialis">Spesialisasi</Label>
+                      <Label for="spesialis">Spesialisasi
+                          { disabledSpecialist === false &&
+                            <span
+                              className="required text-danger"
+                              aria-required="true"
+                            >
+                              {" "}
+                              *
+                            </span>
+                          }
+                        </Label>
                         <Select
                           components={{ Input: CustomSelectInput }}
                           className="react-select"
                           classNamePrefix="react-select"
                           name="spesialis"
                           id="spesialis"
-                          value={selectSpecialist.find(item => item.value === employee.spesialis) || ''}
+                          value={selectSpecialist.find(item => item.value === employee.spesialis) || { label: "Pilih Spesialisasi", value: "", key: 0, name: "spesialis" }}
                           // value={selectedSpecialist}
                           options={selectSpecialist}
                           onChange={onChange}
                           isDisabled={disabledSpecialist}
                         />
+                        {errors.spesialisasi && (
+                          <div className="rounded invalid-feedback d-block">
+                            {errors.spesialisasi}
+                          </div>
+                        )}
                     </FormGroup>
                   </Colxx>
 
@@ -1685,7 +1916,7 @@ const Data = ({ match, history, loading, error }) => {
                         // options={selectProvince}
                         options={selectedProvince}
                         // value={selectProvince}
-                        value={selectedProvince.find(item => item.value === employee.provinsi) || ''}
+                        value={selectedProvince.find(item => item.value === employee.provinsi) || { label: "Pilih Provinsi", value: "", key: 0, name: 'provinsi' }}
                         onChange={onChange}
                       />
                     </FormGroup>
@@ -1705,7 +1936,7 @@ const Data = ({ match, history, loading, error }) => {
                         // options={selectCity}
                         options={selectedCity}
                         // value={selectCity}
-                        value={selectedCity.find(item => item.value === employee.kota) || ''}
+                        value={selectedCity.find(item => item.value === employee.kota) || { label: "Pilih Kota / Kabupaten", value: "", key: 0, name: 'kota' }}
                         onChange={onChange}
                       />
                     </FormGroup>
@@ -1725,7 +1956,7 @@ const Data = ({ match, history, loading, error }) => {
                         // options={selectSubdistrict}
                         options={selectedSubdistrict}
                         // value={selectSubdistrict}
-                        value={selectedSubdistrict.find(item => item.value === employee.kecamatan) || ''}
+                        value={selectedSubdistrict.find(item => item.value === employee.kecamatan) || { label: "Pilih Kecamatan", value: "", key: 0, name: 'kecamatan' }}
                         onChange={onChange}
                       />
                     </FormGroup>
@@ -1745,7 +1976,7 @@ const Data = ({ match, history, loading, error }) => {
                         // options={selectWard}
                         options={selectedWard}
                         // value={selectWard}
-                        value={selectedWard.find(item => item.value === employee.kelurahan) || ''}
+                        value={selectedWard.find(item => item.value === employee.kelurahan) || { label: "Pilih Kelurahan", value: "", key: 0, name: 'kelurahan' }}
                         onChange={onChange}
                       />
                     </FormGroup>
@@ -1770,13 +2001,13 @@ const Data = ({ match, history, loading, error }) => {
                     <FormGroup>
                       <Label for="jenis_kelamin">
                         Jenis Kelamin
-                        <span
+                        {/* <span
                           className="required text-danger"
                           aria-required="true"
                         >
                           {" "}
                           *
-                        </span>
+                        </span> */}
                       </Label>
                       <Row>
                         <Colxx sm={12} md={5} xl={5}>
@@ -1815,7 +2046,7 @@ const Data = ({ match, history, loading, error }) => {
                         name="status_menikah"
                         id="status_menikah"
                         options={selectMaritalStatus}
-                        value={selectMaritalStatus.find(item => item.value === employee.status_menikah) || ''}
+                        value={selectMaritalStatus.find(item => item.value === employee.status_menikah) || { label: "Pilih Status", value: "", key: 0, name: "status_menikah" }}
                         // value={selectedWP}
                         onChange={onChange}
                       />
@@ -1869,10 +2100,15 @@ const Data = ({ match, history, loading, error }) => {
                         name="tipe_izin"
                         id="tipe_izin"
                         options={selectWP}
-                        value={selectWP.find(item => item.value === employee.tipe_izin) || ''}
+                        value={selectWP.find(item => item.value === employee.tipe_izin) || { label: "Pilih Tipe Izin", value: "", key: 0, name: "tipe_izin" }}
                         // value={selectedWP}
                         onChange={onChange}
                       />
+                      {errors.tipe_izin && (
+                          <div className="rounded invalid-feedback d-block">
+                            {errors.tipe_izin}
+                          </div>
+                        )}
                     </FormGroup>
                   </Colxx>
 
@@ -1896,6 +2132,11 @@ const Data = ({ match, history, loading, error }) => {
                         value={employee.nomor_izin}
                         onChange={onChange}
                       />
+                      {errors.nomor_izin && (
+                        <div className="rounded invalid-feedback d-block">
+                          {errors.nomor_izin}
+                        </div>
+                      )}
                     </FormGroup>
                   </Colxx>
 
@@ -1919,6 +2160,11 @@ const Data = ({ match, history, loading, error }) => {
                         value={employee.kadaluarsa_izin}
                         onChange={onChange}
                       />
+                      {errors.kadaluarsa_izin && (
+                        <div className="rounded invalid-feedback d-block">
+                          {errors.kadaluarsa_izin}
+                        </div>
+                      )}
                     </FormGroup>
                   </Colxx>
 
@@ -1943,7 +2189,7 @@ const Data = ({ match, history, loading, error }) => {
                         name="peran"
                         id="peran"
                         // value={selectedRole}
-                        value={selectRole.filter(item => selectedRole.includes(item.value)) || ''}
+                        value={selectRole.filter(item => selectedRole.includes(item.value)) || 'Pilih Peran'}
                         options={selectRole.filter(roleChoices => roleChoices.label != 'Developer' && roleChoices.label != 'Manager' && roleChoices.label != 'Admin' && roleChoices.label != 'Manajemen').map(roleChoices => roleChoices)}
                         onChange={onChange}
                       /> }
@@ -1956,7 +2202,7 @@ const Data = ({ match, history, loading, error }) => {
                         name="peran"
                         id="peran"
                         // value={selectedRole}
-                        value={selectRole.filter(item => selectedRole.includes(item.value)) || ''}
+                        value={selectRole.filter(item => selectedRole.includes(item.value)) || 'Pilih Peran'}
                         options={selectRole.filter(roleChoices => roleChoices.label != 'Developer' && roleChoices.label != 'Manager' && roleChoices.label != 'Manajemen').map(roleChoices => roleChoices)}
                         onChange={onChange}
                       /> }
@@ -1969,11 +2215,16 @@ const Data = ({ match, history, loading, error }) => {
                         name="peran"
                         id="peran"
                         // value={selectedRole}
-                        value={selectRole.filter(item => selectedRole.includes(item.value)) || ''}
+                        value={selectRole.filter(item => selectedRole.includes(item.value)) || 'Pilih Peran'}
                         // options={selectRole}
                         options={selectRole.filter(roleChoices => roleChoices.label != 'Developer').map(roleChoices => roleChoices)}
                         onChange={onChange}
                       /> }
+                      {errors.peran && (
+                        <div className="rounded invalid-feedback d-block">
+                          {errors.peran}
+                        </div>
+                      )}
                     </FormGroup>
                   </Colxx>
                 </FormGroup>
@@ -1994,7 +2245,7 @@ const Data = ({ match, history, loading, error }) => {
                     &nbsp;&nbsp;
                     <Button
                       color="primary"
-                      onClick={(e) => onEmployeeSubmit(e)}
+                      // onClick={(e) => onEmployeeSubmit(e)}
                     >
                       Simpan
                     </Button>
@@ -2012,7 +2263,7 @@ const Data = ({ match, history, loading, error }) => {
           <ModalHeader>
             Ubah Password {employeeUsername}
           </ModalHeader>
-          <ModalBody>
+          <ModalBody className="av-tooltip tooltip-right-top">
             <Label for="password">
               Password
               <span
@@ -2030,6 +2281,11 @@ const Data = ({ match, history, loading, error }) => {
               value={employeePassword.password}
               onChange={onChange}
             />
+            {errors.password_update && (
+              <div className="rounded invalid-feedback d-block">
+                {errors.password_update}
+              </div>
+            )}
           </ModalBody>
           <ModalFooter>
             <Button
