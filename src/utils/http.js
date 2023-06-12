@@ -1,6 +1,6 @@
 const getAuthHeader = () => {
   return {
-    Authorization: `Bearer ${JSON.parse(localStorage.getItem('user_data')).token}`,
+    'Authorization': `Bearer ${JSON.parse(localStorage.getItem('user_data')).token}`,
     'Access-Control-Allow-Origin': '*',
   }
 }

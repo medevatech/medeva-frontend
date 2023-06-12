@@ -34,7 +34,8 @@ const useForm = (callback) => {
 
             if((name === 'id_klinik' && value === '') ||
                 (name === 'spesialisasi' && value === '') ||
-                (name === 'tipe_izin' && value === '')) {
+                (name === 'tipe_izin' && value === '') ||
+                (name === 'peran' && value === '')) {
 
                 setErrors(errors => ({
                     ...errors,
@@ -42,7 +43,8 @@ const useForm = (callback) => {
                 }))
             } else if((name === 'id_klinik' && value !== '') ||
                 (name === 'spesialisasi' && value !== '') ||
-                (name === 'tipe_izin' && value !== '')) {
+                (name === 'tipe_izin' && value !== '') ||
+                (name === 'peran' && value !== '')) {
 
                 let newObj = omit(errors, name);
                 setErrors(newObj);

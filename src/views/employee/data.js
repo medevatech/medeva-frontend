@@ -392,53 +392,65 @@ const Data = ({ match, history, loading, error }) => {
           setEmployee(current => {
               return { ...current, is_dev: 1 }
           })
+
+          validate(e, 'peran', 1);
         }
         
         if (e[i].value === "Manager") {
           setEmployee(current => {
               return { ...current, is_manager: 1 }
           })
+
+          validate(e, 'peran', 1);
         }
         
         if (e[i].value === "Admin") {
           setEmployee(current => {
               return { ...current, is_admin: 1 }
           })
+
+          validate(e, 'peran', 1);
         } 
         
         if (e[i].value === "Resepsionis") {
           setEmployee(current => {
               return { ...current, is_resepsionis: 1 }
           })
+
+          validate(e, 'peran', 1);
         } 
         
         if (e[i].value === "Perawat") {
           setEmployee(current => {
               return { ...current, is_perawat: 1 }
           })
+
+          validate(e, 'peran', 1);
         }
         
         if (e[i].value === "Dokter") {
           setEmployee(current => {
               return { ...current, is_dokter: 1 }
           })
+
+          validate(e, 'peran', 1);
         } 
         
         if (e[i].value === "Manajemen") {
           setEmployee(current => {
               return { ...current, is_manajemen: 1 }
           })
+
+          validate(e, 'peran', 1);
         } 
       }
-
-      validate(e, e.name ? e.name : e.target.name, e.value ? e.value : e.target.value);
     } else if (e.length <= 0) {
       setEmployee(current => {
           return { ...current, is_dev: 0, is_manager: 0, is_admin: 0, is_resepsionis: 0, is_perawat: 0, is_dokter: 0, is_manajemen: 0 }
       })
 
       setSelectedRole(Array.isArray(e) ? e.map(x => x.value) : []);
-      validate(e, e.name ? e.name : e.target.name, e.value ? e.value : e.target.value);
+      validate(e, 'peran', '');
     } else if (e.name === 'provinsi') {
         setEmployee(current => {
             // return { ...current, provinsi: e.value }
@@ -570,6 +582,8 @@ const Data = ({ match, history, loading, error }) => {
 
     let isError = false;
 
+    let isDev, isManager, isAdmin, isResepsionis, isPerawat, isDokter, isManajemen = false;
+
     for(let [key, value] of Object.entries(employee)) {
       if((key === 'username' && value === '') || (key === 'password' && value === '') || (key === 'no_kitas' && value === '')  ||
         (key === 'tipe' && value === '') || (key === 'tipe_izin' && value === '') || (key === 'nomor_izin' && value === '') ||
@@ -578,11 +592,68 @@ const Data = ({ match, history, loading, error }) => {
         isError = true;
       }
 
+      key === 'is_dev' && value === 0 ? isDev = false : isDev = true
+      key === 'is_manager' && value === 0 ? isManager = false : isManager = true
+      key === 'is_admin' && value === 0 ? isAdmin = false : isAdmin = true
+      key === 'is_resepsionis' && value === 0 ? isResepsionis = false : isResepsionis = true
+      key === 'is_perawat' && value === 0 ? isPerawat = false : isPerawat = true
+      key === 'is_dokter' && value === 0 ? isDokter = false : isDokter = true
+      key === 'is_manajemen' && value === 0 ? isManajemen = false : isManajemen = true
+
+      // key === 'is_dev' && value === 0 ?
+      //   key === 'is_manager' && value === 0 ?
+      //     key === 'is_admin' && value === 0 ?
+      //       key === 'is_resepsionis' && value === 0 ?
+      //         key === 'is_perawat' && value === 0 ?
+      //           key === 'is_dokter' && value === 0 ?
+      //             key === 'is_manajemen' && value === 0 ?
+      //               noPeran()
+      //             : console.log(key)
+      //           : console.log(key)
+      //         : console.log(key)
+      //       : console.log(key)
+      //     : console.log(key)
+      //   : console.log(key)
+      // : console.log(key)
+
+      // if((key === 'is_dev' && value === 0) && (key === 'is_manager' && value === 0) && (key === 'is_admin' && value === 0) &&
+      //   (key === 'is_resepsionis' && value === 0) && (key === 'is_perawat' && value === 0) && (key === 'is_dokter' && value === 0) &&
+      //   (key === 'is_manajemen' && value === 0)){
+      //     console.log('no peran');
+      //   validate(e, 'peran', '');
+      //   isError = true;
+      // }
+
+      // if((key === 'is_dev' && value === 0)){
+      //   if((key === 'is_manager' && value === 0)){
+      //     if((key === 'is_admin' && value === 0)){
+      //       if((key === 'is_resepsionis' && value === 0)){
+      //         if((key === 'is_perawat' && value === 0)){
+      //           if((key === 'is_dokter' && value === 0)){
+      //             if((key === 'is_manajemen' && value === 0)){
+      //               console.log('no peran');
+      //               validate(e, 'peran', '');
+      //               isError = true;
+      //             }
+      //           }
+      //         }
+      //       }
+      //     }
+      //   }
+      // }
+
       if((key === 'tipe' && value !== '') && (key === 'spesialisasi' && value === '')){
         validate(e, 'spesialisasi', value);
         isError = true;
       }
     }
+
+    function noPeran () {
+      validate(e, 'peran', '');
+      isError = true;
+    }
+
+    isDev && isManager && isAdmin && isResepsionis && isPerawat && isDokter && isManajemen && noPeran()
 
     if(isError === true){
       return;
@@ -765,7 +836,7 @@ const Data = ({ match, history, loading, error }) => {
       const res = await employeeAPI.get("", params);
 
       console.log(res);
-      
+
       dispatch({type: "GET_EMPLOYEE", payload: res.data.data});
       dispatch({type: "GET_TOTAL_PAGE_EMPLOYEE", payload: res.data.pagination.totalPage});
     } catch (e) {
