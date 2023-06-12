@@ -26,6 +26,8 @@ import "rc-switch/assets/index.css";
 import "rc-slider/assets/index.css";
 import "react-rater/lib/react-rater.css";
 
+import useForm from 'utils/useForm';
+
 import moment from "moment";
 import Select from "react-select";
 import { Colxx, Separator } from "components/common/CustomBootstrap";
@@ -51,6 +53,8 @@ const Data = ({ match, history, loading, error }) => {
   const dispatch = useDispatch();
   const divisionData = useSelector(state => state.division);
   const divisionTotalPage = useSelector(state => state.divisionTotalPage);
+  const { errors, validate } = useForm();
+
   const [dataStatus, setDataStatus] = useState("add");
   const [rowSelected, setRowSelected] = useState(null);
 
@@ -100,6 +104,8 @@ const Data = ({ match, history, loading, error }) => {
 
   const onChange = (e) => {
     // console.log('e', e);
+    
+    validate(e, e.name ? e.name : e.target.name, e.value ? e.value : e.target.value);
 
     if (e.name === 'id_klinik') {
       setDivision(current => {
@@ -116,6 +122,20 @@ const Data = ({ match, history, loading, error }) => {
 
   const onDivisionSubmit = async (e) => {
     e.preventDefault();
+
+    let isError = false;
+
+    for(let [key, value] of Object.entries(division)) {
+      if((key === 'tipe' && value === '') || (key === 'id_klinik' && value === '')){
+        validate(e, key, value);
+        isError = true;
+      //   return;
+      }
+    }
+
+    if(isError === true){
+      return;
+    }
 
     if(dataStatus === 'add') {
       try {
@@ -243,6 +263,16 @@ const Data = ({ match, history, loading, error }) => {
       console.log(e);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const getDivisionReducers = async (params) => {
+    try {
+      const res = await divisionAPI.get("", params);
+      dispatch({type: "GET_DIVISION", payload: res.data.data});
+      dispatch({type: "GET_TOTAL_PAGE_DIVISION", payload: res.data.pagination.totalPage});
+    } catch (e) {
+      console.log(e);
     }
   };
 
@@ -473,33 +503,37 @@ const Data = ({ match, history, loading, error }) => {
     setCurrentPage(1);
   }, [ limit, searchName, searchKlinik, searchStatus, sortBy, sortOrder ]);
 
-  useEffect(() => {
-    let params = "";
-    
-    if (limit !== 10) {
-      params = `${params}?limit=${limit}`;
-    } else {
-      params = `${params}?limit=10`;
-    }
-    if (searchName !== "") {
-      params = `${params}&searchName=${searchName}`;
-    }
-    if (searchKlinik !== "") {
-      params = `${params}&searchKlinik=${searchKlinik}`;
-    }
-    if (searchStatus !== "") {
-      params = `${params}&searchStatus=${searchStatus}`;
-    }
-    if (currentPage !== 1) {
-      params = `${params}&page=${currentPage}`;
-    }
+  let params = "";
+  
+  if (limit !== 10) {
+    params = `${params}?limit=${limit}`;
+  } else {
+    params = `${params}?limit=10`;
+  }
+  if (searchName !== "") {
+    params = `${params}&searchName=${searchName}`;
+  }
+  if (searchKlinik !== "") {
+    params = `${params}&searchKlinik=${searchKlinik}`;
+  }
+  if (searchStatus !== "") {
+    params = `${params}&searchStatus=${searchStatus}`;
+  }
+  if (currentPage !== 1) {
+    params = `${params}&page=${currentPage}`;
+  }
 
+
+  useEffect(() => {
     setRowSelected(false);
 
     getDivision(params);
     onLoadKlinik();
-
   }, [limit, searchName, searchKlinik, searchStatus, sortBy, sortOrder, currentPage ]);
+
+  useEffect(() => {
+    getDivisionReducers(params);
+  }, [ divisionData ]);
 
   let startNumber = 1;
 
@@ -661,7 +695,7 @@ const Data = ({ match, history, loading, error }) => {
                   </Colxx>
                 </Row>
               </CardTitle>
-              <Form>
+              <Form className="av-tooltip tooltip-right-top" onSubmit={onDivisionSubmit}>
                 <FormGroup row>
                   <Colxx sm={6}>
                     <FormGroup>
@@ -684,8 +718,13 @@ const Data = ({ match, history, loading, error }) => {
                         value={selectedKlinik.find(item => item.value === division.id_klinik) || ''}
                         // value={division.id_klinik}
                         onChange={onChange}
-                        required
+                        // required
                       />
+                      {errors.id_klinik && (
+                        <div className="rounded invalid-feedback d-block">
+                          {errors.id_klinik}
+                        </div>
+                      )}
                     </FormGroup>
                   </Colxx>
 
@@ -708,8 +747,13 @@ const Data = ({ match, history, loading, error }) => {
                         placeholder="Nama"
                         value={division.tipe}
                         onChange={onChange}
-                        required={true}
+                        // required={true}
                       />
+                      {errors.tipe && (
+                        <div className="rounded invalid-feedback d-block">
+                          {errors.tipe}
+                        </div>
+                      )}
                     </FormGroup>
                   </Colxx>
                 </FormGroup>
@@ -730,7 +774,7 @@ const Data = ({ match, history, loading, error }) => {
                     &nbsp;&nbsp;
                     <Button
                       color="primary"
-                      onClick={(e) => onDivisionSubmit(e)}
+                      // onClick={(e) => onDivisionSubmit(e)}
                     >
                       Simpan
                     </Button>
