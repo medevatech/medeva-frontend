@@ -73,7 +73,7 @@ const Data = ({ match, history, loading, error }) => {
 
   const onLoadKlinik = async () => {
     try {
-      const response = await clinicAPI.get("", "?limit=1000");
+      const response = await clinicAPI.get("?limit=1000");
       // console.log(response);
 
       setSelectedKlinik([{ label: "Pilih Klinik", value: "", key: 0, name: "id_klinik" }]);
@@ -105,7 +105,7 @@ const Data = ({ match, history, loading, error }) => {
   const onChange = (e) => {
     // console.log('e', e);
     
-    validate(e, e.name ? e.name : e.target.name, e.value ? e.value : e.target.value);
+    validate(e, e.name !== undefined ? e.name : e.target.name ? e.target.name : '', e.value !== undefined ? e.value : e.target.value ? e.target.value : '');
 
     if (e.name === 'id_klinik') {
       setDivision(current => {
@@ -260,7 +260,7 @@ const Data = ({ match, history, loading, error }) => {
   const getDivision = async (params) => {
     try {
       setIsLoading(true);
-      const res = await divisionAPI.get("", params);
+      const res = await divisionAPI.get(params);
       dispatch({type: "GET_DIVISION", payload: res.data.data});
       dispatch({type: "GET_TOTAL_PAGE_DIVISION", payload: res.data.pagination.totalPage});
     } catch (e) {
@@ -287,7 +287,7 @@ const Data = ({ match, history, loading, error }) => {
     }
 
     try {
-      const res = await divisionAPI.get("", `/${id}`);
+      const res = await divisionAPI.get(`/${id}`);
       let data = res.data.data[0];
 
       // console.log(data);
@@ -347,7 +347,7 @@ const Data = ({ match, history, loading, error }) => {
 
     setModalArchive(true);
     try {
-      const res = await divisionAPI.get("", `/${id}`);
+      const res = await divisionAPI.get(`/${id}`);
       let data = res.data.data[0];
 
       setDivisionID(data.id);
@@ -434,7 +434,7 @@ const Data = ({ match, history, loading, error }) => {
 
     setModalDelete(true);
     try {
-      const res = await divisionAPI.get("", `/${id}`);
+      const res = await divisionAPI.get(`/${id}`);
       let data = res.data.data[0];
 
       setDivisionID(data.id);

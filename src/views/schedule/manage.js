@@ -356,7 +356,7 @@ const Data = ({ match }) => {
   const getDivision = async (params) => {
     try {
       setIsLoading(true);
-      const res = await divisionAPI.get("", params);
+      const res = await divisionAPI.get(params);
       dispatch({ type: "GET_SCHEDULE", payload: res.data.data });
       dispatch({
         type: "GET_TOTAL_PAGE_SCHEDULE",
@@ -373,7 +373,7 @@ const Data = ({ match }) => {
   const getDivisionId = async (id) => {
     try {
       setIsLoading(true);
-      const res = await divisionAPI.get("", `/${id}`);
+      const res = await divisionAPI.get(`/${id}`);
       console.log("data divisi id", res.data.data[0]);
       let data = res.data.data[0];
       setDivisionId(data.id);
@@ -390,7 +390,7 @@ const Data = ({ match }) => {
 
   const onLoadClinic = async () => {
     try {
-      const response = await clinicAPI.get("", "?limit=1000");
+      const response = await clinicAPI.get("?limit=1000");
       setSelectedClinic([
         { label: "Semua", value: "", key: 0, name: "id_klinik" },
       ]);
@@ -418,7 +418,7 @@ const Data = ({ match }) => {
 
   const onLoadDivision = async () => {
     try {
-      const response = await divisionAPI.get("", "?limit=1000");
+      const response = await divisionAPI.get("?limit=1000");
       console.log("shift divisi", response);
       setSelectedDivision([
         { label: "Semua", value: "", key: 0, name: "id_divisi" },
@@ -447,7 +447,7 @@ const Data = ({ match }) => {
 
   const onLoadEmployee = async () => {
     try {
-      const response = await employeeAPI.get("", "?limit=1000");
+      const response = await employeeAPI.get("?limit=1000");
       console.log("shift employee", response);
       setSelectedEmployee([]);
       if (response.status === 200) {

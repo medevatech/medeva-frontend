@@ -3,25 +3,25 @@ import { getAuthHeader, getOriginHeader, serializeQueryParams, getJSONHeader } f
 import baseApi from 'service/api-general'
 
 const kelas = {
-  get: (payloads, options) => {
+  get: (options) => {
     const url = api.insurance.class + options
-    return baseApi.get(url, payloads, { headers: getOriginHeader() })
+    return baseApi.get(url, { headers: getAuthHeader() })
   },
-  getByInsurance: (payloads, options) => {
+  getByInsurance: (options) => {
     const url = api.insurance.classByInsurance + options
-    return baseApi.get(url, payloads, { headers: getOriginHeader() })
+    return baseApi.get(url, { headers: getAuthHeader() })
   },
   add: (payloads) => {
     const url = api.insurance.class
-    return baseApi.post(url, payloads, { headers: getOriginHeader() })
+    return baseApi.post(url, payloads, { headers: getAuthHeader() })
   },
   update: (payloads, id) => {
     const url = api.insurance.class + `${id}`
-    return baseApi.put(url, payloads, { headers: getOriginHeader() })
+    return baseApi.put(url, payloads, { headers: getAuthHeader() })
   },
   edit: (payloads, id) => {
     const url = api.insurance.class + `${id}`
-    return baseApi.put(url, payloads, { headers: getOriginHeader() })
+    return baseApi.put(url, payloads, { headers: getAuthHeader() })
   },
 }
 export default kelas

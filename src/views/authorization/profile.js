@@ -546,7 +546,7 @@ const Data = ({ match, history, loading, error }) => {
     resetForm();
 
     try {
-      const res = await employeeAPI.get("", `/${id}`);
+      const res = await employeeAPI.get(`/${id}`);
       let data = res.data.data[0];
 
       // console.log(data);

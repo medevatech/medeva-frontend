@@ -26,6 +26,8 @@ import "rc-switch/assets/index.css";
 import "rc-slider/assets/index.css";
 import "react-rater/lib/react-rater.css";
 
+import useForm from 'utils/useForm';
+
 import moment from "moment";
 import Select from "react-select";
 import { Colxx, Separator } from "components/common/CustomBootstrap";
@@ -43,7 +45,7 @@ import loader from '../../assets/img/loading.gif';
 const userData = JSON.parse(localStorage.getItem('user_data'));
 
 const selectStatusF = [
-  { label: "Semua", value: "", key: 0, name: "status" },
+  { label: "Semua Status", value: "", key: 0, name: "status" },
   { label: "Aktif", value: "1", key: 1, name: "status" },
   { label: "Non-Aktif", value: "0", key: 2, name: "status" }
 ];
@@ -52,6 +54,8 @@ const Data = ({ match, history, loading, error }) => {
   const dispatch = useDispatch();
   const treatmentData = useSelector(state => state.treatmentList);
   const treatmentTotalPage = useSelector(state => state.treatmentListTotalPage);
+  const { errors, validate } = useForm();
+
   const [dataStatus, setDataStatus] = useState("add");
   const [rowSelected, setRowSelected] = useState(null);
 
@@ -73,11 +77,19 @@ const Data = ({ match, history, loading, error }) => {
         return { ...current, [e.target.name]: e.target.value }
     })
 
+    validate(e, e.name !== undefined ? e.name : e.target.name ? e.target.name : '', e.value !== undefined ? e.value : e.target.value ? e.target.value : '');
     // console.log('treatment', treatment);
   }
 
   const onTreatmentSubmit = async (e) => {
     e.preventDefault();
+
+    for(let [key, value] of Object.entries(service)) {
+      if((key === 'nama' && value === '')){
+        validate(e, key, value);
+        return;
+      }
+    }
 
     if(dataStatus === 'add') {
       try {
@@ -117,6 +129,8 @@ const Data = ({ match, history, loading, error }) => {
         });
   
         console.log(e);
+      } finally {
+        getTreatment("");
       }
     } else if (dataStatus === 'update') {
       try {
@@ -156,6 +170,8 @@ const Data = ({ match, history, loading, error }) => {
         });
   
         console.log(e);
+      } finally {
+        getTreatment("");
       }
     } else {
       console.log('dataStatus undefined')
@@ -193,7 +209,7 @@ const Data = ({ match, history, loading, error }) => {
   const getTreatment = async (params) => {
     try {
       setIsLoading(true);
-      const res = await treatmentAPI.get("", params);
+      const res = await treatmentAPI.get(params);
       dispatch({type: "GET_TREATMENT_LIST", payload: res.data.data});
       dispatch({type: "GET_TOTAL_PAGE_TREATMENT_LIST", payload: res.data.pagination.totalPage});
     } catch (e) {
@@ -220,7 +236,7 @@ const Data = ({ match, history, loading, error }) => {
     }
 
     try {
-      const res = await treatmentAPI.get("", `/${id}`);
+      const res = await treatmentAPI.get(`/${id}`);
       let data = res.data.data[0];
 
       // console.log(data);
@@ -279,7 +295,7 @@ const Data = ({ match, history, loading, error }) => {
 
     setModalArchive(true);
     try {
-      const res = await treatmentAPI.get("", `/${id}`);
+      const res = await treatmentAPI.get(`/${id}`);
       let data = res.data.data[0];
 
       setTreatmentID(data.id);
@@ -358,6 +374,8 @@ const Data = ({ match, history, loading, error }) => {
       });
 
       console.log(e);
+    } finally {
+      getTreatment("");
     }
   };
 
@@ -366,7 +384,7 @@ const Data = ({ match, history, loading, error }) => {
 
     setModalDelete(true);
     try {
-      const res = await treatmentAPI.get("", `/${id}`);
+      const res = await treatmentAPI.get(`/${id}`);
       let data = res.data.data[0];
 
       setTreatmentID(data.id);
@@ -417,6 +435,8 @@ const Data = ({ match, history, loading, error }) => {
       });
 
       console.log(e);
+    } finally {
+      getTreatment("");
     }
   };
 
@@ -447,9 +467,7 @@ const Data = ({ match, history, loading, error }) => {
     }
 
     setRowSelected(false);
-
     getTreatment(params);
-
   }, [limit, searchDaftarTindakan, searchStatus, sortBy, sortOrder, currentPage ]);
 
   let startNumber = 1;
@@ -488,6 +506,7 @@ const Data = ({ match, history, loading, error }) => {
                       onChange={(e) => setSearchStatus(e.value)}
                       options={selectStatusF}
                       isSearchable={false}
+                      value={{ label: "Semua Status", value: "", key: 0, name: "status" }}
                     />
                 </Colxx>
               </FormGroup>
@@ -588,7 +607,7 @@ const Data = ({ match, history, loading, error }) => {
                   </Colxx>
                 </Row>
               </CardTitle>
-              <Form>
+              <Form className="av-tooltip tooltip-right-top" onSubmit={onTreatmentSubmit}>
                 <FormGroup row>
                   <Colxx sm={12}>
                     <FormGroup>
@@ -611,6 +630,11 @@ const Data = ({ match, history, loading, error }) => {
                         onChange={onChange}
                         required={true}
                       />
+                      {errors.nama && (
+                        <div className="rounded invalid-feedback d-block">
+                          {errors.nama}
+                        </div>
+                      )}
                     </FormGroup>
                   </Colxx>
                 </FormGroup>
@@ -631,7 +655,7 @@ const Data = ({ match, history, loading, error }) => {
                     &nbsp;&nbsp;
                     <Button
                       color="primary"
-                      onClick={(e) => onTreatmentSubmit(e)}
+                      // onClick={(e) => onTreatmentSubmit(e)}
                     >
                       Simpan
                     </Button>

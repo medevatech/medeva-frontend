@@ -114,7 +114,7 @@ const Data = ({ match }) => {
 
   const [allRecord, setAllRecord] = useState([]);
   const [selectedDivision, setSelectedDivision] = useState('');
-  const [selectedDivisionF, setSelectedDivisionF] = useState([{ label: "Semua", value: "", key: 0, name: 'id_klinik' }]);
+  const [selectedDivisionF, setSelectedDivisionF] = useState([{ label: "Semua Poli / Divisi", value: "", key: 0, name: 'id_klinik' }]);
   const [selectedDisease, setSelectedDisease] = useState([]);
   const [selectedDiagnosis, setSelectedDiagnosis] = useState([{ label: ""}]);
   const [selectedMedicine, setSelectedMedicine] = useState([{ label: ""}]);
@@ -191,10 +191,10 @@ const Data = ({ match }) => {
 
   const onLoadDivisi = async () => {
     try {
-      const response = await divisionAPI.get("", "?limit=1000");
+      const response = await divisionAPI.get("?limit=1000");
       // console.log(response);
 
-      setSelectedDivisionF([{ label: "Semua", value: "", key: 0, name: 'id_divisi' }]);
+      setSelectedDivisionF([{ label: "Semua Poli / Divisi", value: "", key: 0, name: 'id_divisi' }]);
 
       if (response.status === 200) {
         let data = response.data.data;
@@ -203,7 +203,7 @@ const Data = ({ match }) => {
         for (var i = 0; i < data.length; i++) {
           setSelectedDivisionF((current) => [
             ...current,
-            { label: data[i].nama_divisi, value: data[i].id, key: data[i].id, name: 'id_divisi' },
+            { label: data[i].tipe, value: data[i].id, key: data[i].id, name: 'id_divisi' },
           ]);
         }
       } else {
@@ -219,7 +219,7 @@ const Data = ({ match }) => {
   const getQueue = async (params) => {
     try {
       setIsLoading(true);
-      const res = await queueAPI.get("", params);
+      const res = await queueAPI.get(params);
       dispatch({type: "GET_QUEUE", payload: res.data.data});
       dispatch({type: "GET_TOTAL_PAGE_QUEUE", payload: res.data.pagination.totalPage});
     } catch (e) {
@@ -259,8 +259,8 @@ const Data = ({ match }) => {
     // console.log('patientData', data);
 
     try {
-      const res = await vitalSignsAPI.getByPatient("", `/${id}?tanggal=${moment(new Date()).format("YYYY-MM-DD")}`);
-      // const res = await vitalSignsAPI.getByPatient("", `/${id}`);
+      const res = await vitalSignsAPI.getByPatient(`/${id}?tanggal=${moment(new Date()).format("YYYY-MM-DD")}`);
+      // const res = await vitalSignsAPI.getByPatient(`/${id}`);
       let data = res.data.data[0];
       // console.log('vitalSigns', data);
 
@@ -296,7 +296,7 @@ const Data = ({ match }) => {
     setAllRecord([]);
 
     try {
-      const res = await recordAPI.getByPatient("", `/${id}`);
+      const res = await recordAPI.getByPatient(`/${id}`);
       let data = res.data.data;
       // dispatch({type: "GET_ALL_RECORD_BY_PATIENT", payload: data});
       setAllRecord(data);
@@ -334,11 +334,9 @@ const Data = ({ match }) => {
     }
 
     setRowSelected(false);
-
     getQueue(params);
+
     onLoadDivisi();
-    
-  // }, [limit, search, searchDivisi, sortBy, sortOrder, currentPage, queueAll, queueTotalPage, allRecord]);
   }, [limit, searchName, searchDivisi, sortBy, sortOrder, currentPage]);
 
   let startNumber = 1;
@@ -399,6 +397,7 @@ const Data = ({ match }) => {
                       name="divisi"
                       onChange={(e) => setSearchDivisi(e.value)}
                       options={selectedDivisionF}
+                      value={{ label: "Semua Poli / Divisi", value: "", key: 0, name: 'id_klinik' }}
                     />
                   </Colxx>
                 </FormGroup>

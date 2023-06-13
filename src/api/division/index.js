@@ -3,29 +3,29 @@ import { getAuthHeader, getOriginHeader, serializeQueryParams, getJSONHeader } f
 import baseApi from 'service/api-general'
 
 const division = {
-  get: (payloads, options) => {
+  get: (options) => {
     const url = api.division.all + options
-    return baseApi.get(url, payloads, { headers: getOriginHeader() })
+    return baseApi.get(url, { headers: getAuthHeader() })
   },
   add: (payloads) => {
     const url = api.division.all
-    return baseApi.post(url, payloads, { headers: getOriginHeader() })
+    return baseApi.post(url, payloads, { headers: getAuthHeader() })
   },
   update: (payloads, id) => {
     const url = api.division.all + `/${id}`
-    return baseApi.put(url, payloads, { headers: getOriginHeader() })
+    return baseApi.put(url, payloads, { headers: getAuthHeader() })
   },
   archive: (payloads, id) => {
     const url = api.division.archive + `/${id}`
-    return baseApi.put(url, payloads, { headers: getOriginHeader() })
+    return baseApi.put(url, payloads, { headers: getAuthHeader() })
   },
   activate: (payloads, id) => {
     const url = api.division.activate + `/${id}`
-    return baseApi.put(url, payloads, { headers: getOriginHeader() })
+    return baseApi.put(url, payloads, { headers: getAuthHeader() })
   },
   delete: (payloads, id) => {
     const url = api.division.all + `/${id}`
-    return baseApi.delete(url, payloads, { headers: getOriginHeader() })
+    return baseApi.delete(url, payloads, { headers: getAuthHeader() })
   },
 }
 export default division

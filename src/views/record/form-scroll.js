@@ -1402,7 +1402,7 @@ const FormRecord = ({ match, history }) => {
 
   const onLoadObat = async () => {
     try {
-      const response = await medicineAPI.get("", "?limit=1000");
+      const response = await medicineAPI.get("?limit=1000");
       // console.log(response);
 
       setSelectMedicine([{ label: "Pilih Obat" , value: "", key: 0, name: 'id_obat' }]);
@@ -1430,7 +1430,7 @@ const FormRecord = ({ match, history }) => {
 
   const onLoadLab = async () => {
     try {
-      const response = await labAPI.get("", "?limit=1000");
+      const response = await labAPI.get("?limit=1000");
       // console.log(response);
 
       setSelectLab([{ label: "Pilih Laboratorium" , value: "", key: 0, name: 'id_lab' }]);
@@ -1455,7 +1455,7 @@ const FormRecord = ({ match, history }) => {
 
   const onLoadPemeriksaanByLayananLab = async (index, id_lab, kategori) => {
     try {
-      const response = await labTreatmentAPI.get("", `?limit=1000&searchLaboratorium=${id_lab}&searchKategori=${kategori}`);
+      const response = await labTreatmentAPI.get(`?limit=1000&searchLaboratorium=${id_lab}&searchKategori=${kategori}`);
       // console.log(response);
 
       if (response.status === 200) {
@@ -1517,7 +1517,7 @@ const FormRecord = ({ match, history }) => {
 
   const onLoadTindakan = async () => {
     try {
-      const response = await treatmentListAPI.get("", "?limit=1000");
+      const response = await treatmentListAPI.get("?limit=1000");
       // console.log(response);
 
       setSelectTreatment([{ label: "Pilih Tindakan" , value: "", key: 0, name: 'id_daftar_tindakan' }]);
@@ -1544,7 +1544,7 @@ const FormRecord = ({ match, history }) => {
 
   const onLoadLayanan = async () => {
     try {
-      const response = await serviceListAPI.get("", "?limit=1000");
+      const response = await serviceListAPI.get("?limit=1000");
       // console.log(response);
 
       setSelectService([{ label: "Pilih Layanan" , value: "", key: 0, name: 'id_daftar_layanan' }]);
@@ -1571,7 +1571,7 @@ const FormRecord = ({ match, history }) => {
 
   const onLoadPoliRujukan = async () => {
     try {
-      const response = await divisionReferenceAPI.get("", "?limit=1000");
+      const response = await divisionReferenceAPI.get("?limit=1000");
       // console.log(response);
 
       setSelectDivisionReference([{ label: "Pilih Poli / Divisi" , value: "", key: 0, name: 'id_poli' }]);
@@ -1598,7 +1598,7 @@ const FormRecord = ({ match, history }) => {
 
   const onLoadRSRujukan = async () => {
     try {
-      const response = await hospitalReferenceAPI.get("", "?limit=1000");
+      const response = await hospitalReferenceAPI.get("?limit=1000");
       // console.log(response);
 
       setSelectHospitalReference([{ label: "Pilih Rumah Sakit" , value: "", key: 0, name: 'id_rs' }]);
@@ -1733,7 +1733,7 @@ const FormRecord = ({ match, history }) => {
     let data = null;
 
     try {
-      const res = await recordAPI.get("", `/${id}`);
+      const res = await recordAPI.get(`/${id}`);
       data = res.data.data[0];
 
       // console.log(data);

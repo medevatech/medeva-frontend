@@ -3,37 +3,37 @@ import { getAuthHeader, getOriginHeader, serializeQueryParams, getJSONHeader } f
 import baseApi from 'service/api-general'
 
 const employee = {
-  get: (payloads, options) => {
+  get: (options) => {
     const url = api.employee.all + options
     return baseApi.get(url, { headers: getAuthHeader() })
   },
   add: (payloads) => {
     const url = api.employee.all
-    return baseApi.post(url, payloads, { headers: getOriginHeader() })
+    return baseApi.post(url, payloads, { headers: getAuthHeader() })
   },
   update: (payloads, id) => {
     const url = api.employee.all + `/${id}`
-    return baseApi.put(url, payloads, { headers: getOriginHeader() })
+    return baseApi.put(url, payloads, { headers: getAuthHeader() })
   },
   uploadPhoto: (payloads) => {
     const url = api.employee.uploadPhoto
-    return baseApi.put(url, payloads, { headers: getOriginHeader() })
+    return baseApi.put(url, payloads, { headers: getAuthHeader() })
   },
   updatePassword: (payloads, id) => {
     const url = api.employee.updatePassword + `/${id}`
-    return baseApi.put(url, payloads, { headers: getOriginHeader() })
+    return baseApi.put(url, payloads, { headers: getAuthHeader() })
   },
   archive: (payloads, id) => {
     const url = api.employee.archive + `/${id}`
-    return baseApi.put(url, payloads, { headers: getOriginHeader() })
+    return baseApi.put(url, payloads, { headers: getAuthHeader() })
   },
   activate: (payloads, id) => {
     const url = api.employee.activate + `/${id}`
-    return baseApi.put(url, payloads, { headers: getOriginHeader() })
+    return baseApi.put(url, payloads, { headers: getAuthHeader() })
   },
   delete: (payloads, id) => {
     const url = api.employee.all + `/${id}`
-    return baseApi.delete(url, payloads, { headers: getOriginHeader() })
+    return baseApi.delete(url, payloads, { headers: getAuthHeader() })
   },
 }
 export default employee

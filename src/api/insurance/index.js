@@ -3,21 +3,21 @@ import { getAuthHeader, getOriginHeader, serializeQueryParams, getJSONHeader } f
 import baseApi from 'service/api-general'
 
 const insurance = {
-  get: (payloads, options) => {
+  get: (options) => {
     const url = api.insurance.all + options
-    return baseApi.get(url, payloads, { headers: getOriginHeader() })
+    return baseApi.get(url, { headers: getAuthHeader() })
   },
   add: (payloads) => {
     const url = api.insurance.all
-    return baseApi.post(url, payloads, { headers: getOriginHeader() })
+    return baseApi.post(url, payloads, { headers: getAuthHeader() })
   },
   update: (payloads, id) => {
     const url = api.insurance.all + id
-    return baseApi.put(url, payloads, { headers: getOriginHeader() })
+    return baseApi.put(url, payloads, { headers: getAuthHeader() })
   },
   edit: (payloads, id) => {
     const url = api.insurance.all + `${id}`
-    return baseApi.put(url, payloads, { headers: getOriginHeader() })
+    return baseApi.put(url, payloads, { headers: getAuthHeader() })
   },
 }
 export default insurance

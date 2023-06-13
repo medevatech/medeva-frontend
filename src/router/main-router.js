@@ -18,9 +18,9 @@ const Unauthorized = React.lazy(() =>
 const Login = React.lazy(() =>
   import(/* webpackChunkName: "user-login" */ '../views/authorization/login')
 );
-// const Login2 = React.lazy(() =>
-//   import(/* webpackChunkName: "user-login2" */ '../views/authorization/login2')
-// );
+const LoginSingle = React.lazy(() =>
+  import(/* webpackChunkName: "user-login-singlestate" */ '../views/authorization/login-singlestate')
+);
 const Profile = React.lazy(() =>
   import(/* webpackChunkName: "user-profile" */ '../views/authorization/profile')
 );
@@ -139,7 +139,7 @@ const MainRouter = () => {
                 />
                 <Route
                     path="/"
-                    render={(props) => <Login {...props} />}
+                    render={(props) => <LoginSingle {...props} />}
                 />
                 <Redirect to="/error" />
             </Switch>

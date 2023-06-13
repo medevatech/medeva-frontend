@@ -74,7 +74,7 @@ const selectNationality = [
 ];
 
 const selectStatusF = [
-  { label: "Semua", value: "", key: 0, name: "status" },
+  { label: "Semua Status", value: "", key: 0, name: "status" },
   { label: "Aktif", value: "1", key: 1, name: "status" },
   { label: "Non-Aktif", value: "0", key: 2, name: "status" }
 ];
@@ -480,7 +480,7 @@ const Data = ({ match }) => {
 
   const onLoadAlergi = async () => {
     try {
-      const response = await allergyAPI.get("", "?limit=1000");
+      const response = await allergyAPI.get("?limit=1000");
       // console.log(response);
 
       setSelectAllergy([{ label: "Pilih Alergi", value: "", key: 0, name: 'id_alergi' }, { label: "Tidak Ada Alergi", value: "Tidak Ada Alergi", key: 999, name: 'id_alergi' }]);
@@ -505,7 +505,7 @@ const Data = ({ match }) => {
 
   const onLoadAsuransi = async () => {
     try {
-      const response = await insuranceAPI.get("", "?limit=1000");
+      const response = await insuranceAPI.get("?limit=1000");
       // console.log(response);
 
       setSelectInsurance([{ label: "Pilih Asuransi", value: "", key: 0, name: 'id_asuransi' }]);
@@ -530,7 +530,7 @@ const Data = ({ match }) => {
 
   const onLoadKelasAsuransi = async () => {
     try {
-      const response = await insuranceClassAPI.get("", "?limit=1000");
+      const response = await insuranceClassAPI.get("?limit=1000");
       // console.log(response);
 
       setSelectInsuranceClass([{ label: "Pilih Kelas Asuransi", value: "", key: 0, name: 'id_asuransi_kelas' }]);
@@ -628,13 +628,13 @@ const Data = ({ match }) => {
           return { ...current, tipe_kitas: e ? e.value : ''}
       })
     } else if (e.name === 'nomor_kitas') {
-      validate(e, e.name ? e.name : e.target.name, e.value ? e.value : e.target.value);
+      validate(e, e.name !== undefined ? e.name : e.target.name ? e.target.name : '', e.value !== undefined ? e.value : e.target.value ? e.target.value : '');
     } else if (e.name === 'kewarganegaraan') {
       setPatient(current => {
           return { ...current, kewarganegaraan: e ? e.value : ''}
       })
     } else if (e.name === 'nama_lengkap') {
-      validate(e, e.name ? e.name : e.target.name, e.value ? e.value : e.target.value);
+      validate(e, e.name !== undefined ? e.name : e.target.name ? e.target.name : '', e.value !== undefined ? e.value : e.target.value ? e.target.value : '');
     } else if (e.name === 'agama') {
       setPatient(current => {
           return { ...current, agama: e ? e.value : ''}
@@ -1038,7 +1038,7 @@ const Data = ({ match }) => {
   const getPatient = async (params) => {
     try {
       setIsLoading(true);
-      const res = await patientAPI.get("", params);
+      const res = await patientAPI.get(params);
       // console.log(res.data.data);
       dispatch({type: "GET_PATIENT", payload: res.data.data});
       dispatch({type: "GET_TOTAL_PAGE_PATIENT", payload: res.data.pagination.totalPage});
@@ -1068,7 +1068,7 @@ const Data = ({ match }) => {
     let data = null;
 
     try {
-      const res = await patientAPI.get("", `/${id}`);
+      const res = await patientAPI.get(`/${id}`);
       data = res.data.data[0];
       // console.log(data);
 
@@ -1138,7 +1138,7 @@ const Data = ({ match }) => {
     setTempAllergy([]);
 
     try {
-      const res = await patientAllergyAPI.getByPatient("", `/${id}`);
+      const res = await patientAllergyAPI.getByPatient(`/${id}`);
       let data = res.data.data;
       // console.log('data', data);
 
@@ -1235,7 +1235,7 @@ const Data = ({ match }) => {
 
     setModalArchive(true);
     try {
-      const res = await patientAPI.get("", `/${id}`);
+      const res = await patientAPI.get(`/${id}`);
       let data = res.data.data[0];
       // console.log(data);
 
@@ -1315,6 +1315,8 @@ const Data = ({ match }) => {
       });
 
       console.log(e);
+    } finally {
+      getPatient("");
     }
   };
 
@@ -1324,7 +1326,7 @@ const Data = ({ match }) => {
 
     setModalDelete(true);
     try {
-      const res = await patientAPI.get("", `/${id}`);
+      const res = await patientAPI.get(`/${id}`);
       let data = res.data.data[0];
 
       setPatientID(data.id);
@@ -1375,6 +1377,8 @@ const Data = ({ match }) => {
       });
 
       console.log(e);
+    } finally {
+      getPatient("");
     }
   };
 
@@ -1486,11 +1490,15 @@ const Data = ({ match }) => {
 
     setRowSelected(false);
     getPatient(params);
-    
+  }, [limit, searchName, searchStatus, sortBy, sortOrder, currentPage]);
+
+  useEffect(() => {
     onLoadProvinsi();
     onLoadAlergi();
     onLoadAsuransi();
+  }, [ ]);
 
+  useEffect(() => {
     if(selectedCity.length > 0 && editAddress.status === 2) {
       let id_kota = selectedCity.find(item => item.value === editAddress.nama_kota).key;
       changeKecamatan(id_kota, editAddress);
@@ -1500,7 +1508,7 @@ const Data = ({ match }) => {
       let id_kecamatan = selectedSubdistrict.find(item => item.value === editAddress.nama_kecamatan).key;
       changeKelurahan(id_kecamatan, editAddress);
     }
-  }, [limit, searchName, searchStatus, sortBy, sortOrder, currentPage, editAddress]);
+  }, [editAddress]);
 
   useEffect(() => {
     if (patientSubmit === "done") {
@@ -1569,6 +1577,7 @@ const Data = ({ match }) => {
                     name="status"
                     onChange={(e) => setSearchStatus(e.value)}
                     options={selectStatusF}
+                    value={{ label: "Semua Status", value: "", key: 0, name: "status" }}
                     isSearchable={false}
                   />
                 </Colxx>

@@ -662,7 +662,7 @@ const FormRecord = ({ match, history }) => {
       setDataStatus("update");
 
       try {
-        const res = await recordAPI.get("", `/${id}`);
+        const res = await recordAPI.get(`/${id}`);
         let data = res.data.data[0];
 
         // console.log(data);
@@ -1357,7 +1357,7 @@ const FormRecord = ({ match, history }) => {
 
   const onLoadPenyakit = async () => {
     try {
-      const response = await diseaseAPI.get("", "?limit=1000");
+      const response = await diseaseAPI.get("?limit=1000");
       // console.log(response);
 
       setSelectedDisease([]);
@@ -1382,7 +1382,7 @@ const FormRecord = ({ match, history }) => {
 
   const onLoadObat = async () => {
     try {
-      const response = await medicineAPI.get("", "?limit=1000");
+      const response = await medicineAPI.get("?limit=1000");
       // console.log(response);
 
       setSelectedMedicine([]);
@@ -1407,7 +1407,7 @@ const FormRecord = ({ match, history }) => {
 
   const onLoadLab = async () => {
     try {
-      const response = await labAPI.get("", "?limit=1000");
+      const response = await labAPI.get("?limit=1000");
       // console.log(response);
 
       setSelectLab([]);
@@ -1434,7 +1434,7 @@ const FormRecord = ({ match, history }) => {
     // selectInspectByLabTreatmentArray = [];
 
     try {
-      const response = await labTreatmentAPI.get("", `?limit=1000&searchLaboratorium=${id_lab}&searchKategori=${kategori}`);
+      const response = await labTreatmentAPI.get(`?limit=1000&searchLaboratorium=${id_lab}&searchKategori=${kategori}`);
       // console.log(response);
 
       if (response.status === 200) {
@@ -1541,7 +1541,7 @@ const FormRecord = ({ match, history }) => {
 
   const onLoadTindakan = async () => {
     try {
-      const response = await treatmentListAPI.get("", "?limit=1000");
+      const response = await treatmentListAPI.get("?limit=1000");
       // console.log(response);
 
       setSelectAction([]);
@@ -1566,7 +1566,7 @@ const FormRecord = ({ match, history }) => {
 
   const onLoadPoliRujukan = async () => {
     try {
-      const response = await divisionReferenceAPI.get("", "?limit=1000");
+      const response = await divisionReferenceAPI.get("?limit=1000");
       // console.log(response);
 
       setSelectedDivision([]);
@@ -1591,7 +1591,7 @@ const FormRecord = ({ match, history }) => {
 
   const onLoadRSRujukan = async () => {
     try {
-      const response = await hospitalReferenceAPI.get("", "?limit=1000");
+      const response = await hospitalReferenceAPI.get("?limit=1000");
       // console.log(response);
 
       setSelectedHospital([]);

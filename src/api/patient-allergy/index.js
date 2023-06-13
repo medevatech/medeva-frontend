@@ -3,25 +3,25 @@ import { getAuthHeader, getOriginHeader, serializeQueryParams, getJSONHeader } f
 import baseApi from 'service/api-general'
 
 const patientAllergy = {
-  get: (payloads, options) => {
+  get: (options) => {
     const url = api.patientAllergy.all + options
-    return baseApi.get(url, payloads, { headers: getOriginHeader() })
+    return baseApi.get(url, { headers: getAuthHeader() })
   },
-  getByPatient: (payloads, options) => {
+  getByPatient: (options) => {
     const url = api.patientAllergy.patient + options
-    return baseApi.get(url, payloads, { headers: getOriginHeader() })
+    return baseApi.get(url, { headers: getAuthHeader() })
   },
   add: (payloads) => {
     const url = api.patientAllergy.all
-    return baseApi.post(url, payloads, { headers: getOriginHeader() })
+    return baseApi.post(url, payloads, { headers: getAuthHeader() })
   },
   update: (payloads, id) => {
     const url = api.patientAllergy.all + `/${id}`
-    return baseApi.put(url, payloads, { headers: getOriginHeader() })
+    return baseApi.put(url, payloads, { headers: getAuthHeader() })
   },
   delete: (payloads, id) => {
     const url = api.patientAllergy.all + `/${id}`
-    return baseApi.delete(url, payloads, { headers: getOriginHeader() })
+    return baseApi.delete(url, payloads, { headers: getAuthHeader() })
   },
 }
 export default patientAllergy

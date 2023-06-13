@@ -5,7 +5,7 @@ import baseApi from 'service/api-general'
 const schedule = {
   all: (payloads) => {
     const url = api.schedule
-    return baseApi.post(url, payloads, { headers: getOriginHeader() })
+    return baseApi.post(url, payloads, { headers: getAuthHeader() })
   }
 }
 export default schedule

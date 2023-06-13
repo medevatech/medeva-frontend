@@ -23,6 +23,8 @@ import 'rc-switch/assets/index.css';
 import 'rc-slider/assets/index.css';
 import 'react-rater/lib/react-rater.css';
 
+import useForm from 'utils/useForm';
+
 import moment from "moment";
 import Select from 'react-select';
 import { Colxx, Separator } from 'components/common/CustomBootstrap';
@@ -53,10 +55,11 @@ const selectPatient = [
 ];
 
 const selectAwareness = [
-  { label: 'Compos Mentis', value: 'Compos Mentis', key: 0, name: 'kesadaran' },
-  { label: 'Somnolence', value: 'Somnolence', name: 'kesadaran' },
-  { label: 'Sopot', value: 'Sopot', name: 'kesadaran' },
-  { label: 'Coma', value: 'Coma', name: 'kesadaran' },
+  { label: 'Pilih Kesadaran', value: '', key: 0, name: 'kesadaran' },
+  { label: 'Compos Mentis', value: 'Compos Mentis', key: 1, name: 'kesadaran' },
+  { label: 'Somnolence', value: 'Somnolence', key: 2, name: 'kesadaran' },
+  { label: 'Sopot', value: 'Sopot', key: 3, name: 'kesadaran' },
+  { label: 'Coma', value: 'Coma', key: 4, name: 'kesadaran' },
 ];
 
 
@@ -67,11 +70,13 @@ const VitalSigns = ({ match }) => {
   const queueAll = useSelector(state => state.queue);
   const queueTotalPage = useSelector(state => state.queueTotalPage);
   const allVitalSigns = useSelector(state => state.allVitalSignsByPatient);
+  const { errors, validate } = useForm();
+
   const [dataStatus, setDataStatus] = useState("add");
   const [rowSelected, setRowSelected] = useState(null);
 
   // const [selectDivision, setSelectDivision] = useState([]);
-  const [selectedDivisionF, setSelectedDivisionF] = useState([{ label: "Semua", value: "", key: 0, name: 'id_klinik' }]);
+  const [selectedDivisionF, setSelectedDivisionF] = useState([{ label: "Semua Poli / Divisi", value: "", key: 0, name: 'id_klinik' }]);
   const [selectedDivision, setSelectedDivision] = useState('');
   const [selectedAwareness, setSelectedAwareness] = useState('');
 
@@ -107,6 +112,55 @@ const VitalSigns = ({ match }) => {
       })
 
       setSelectedAwareness(e);
+      validate(e, e.name !== undefined ? e.name : e.target.name ? e.target.name : '', e.value !== undefined ? e.value : e.target.value ? e.target.value : '');
+    } else if (e.target.name === 'temperatur') {
+      setVitalSigns(current => {
+          return { ...current, temperatur: e.target.value }
+      })
+
+      validate(e, e.name !== undefined ? e.name : e.target.name ? e.target.name : '', e.value !== undefined ? e.value : e.target.value ? e.target.value : '');
+    } else if (e.target.name === 'tinggi_badan') {
+      setVitalSigns(current => {
+          return { ...current, tinggi_badan: e.target.value }
+      })
+
+      validate(e, e.name !== undefined ? e.name : e.target.name ? e.target.name : '', e.value !== undefined ? e.value : e.target.value ? e.target.value : '');
+    } else if (e.target.name === 'berat_badan') {
+      setVitalSigns(current => {
+          return { ...current, berat_badan: e.target.value }
+      })
+
+      validate(e, e.name !== undefined ? e.name : e.target.name ? e.target.name : '', e.value !== undefined ? e.value : e.target.value ? e.target.value : '');
+    } else if (e.target.name === 'lingkar_perut') {
+      setVitalSigns(current => {
+          return { ...current, lingkar_perut: e.target.value }
+      })
+
+      validate(e, e.name !== undefined ? e.name : e.target.name ? e.target.name : '', e.value !== undefined ? e.value : e.target.value ? e.target.value : '');
+    } else if (e.target.name === 'sistole') {
+      setVitalSigns(current => {
+          return { ...current, sistole: e.target.value }
+      })
+
+      validate(e, e.name !== undefined ? e.name : e.target.name ? e.target.name : '', e.value !== undefined ? e.value : e.target.value ? e.target.value : '');
+    }  else if (e.target.name === 'diastole') {
+      setVitalSigns(current => {
+          return { ...current, diastole: e.target.value }
+      })
+
+      validate(e, e.name !== undefined ? e.name : e.target.name ? e.target.name : '', e.value !== undefined ? e.value : e.target.value ? e.target.value : '');
+    } else if (e.target.name === 'respiratory_rate') {
+      setVitalSigns(current => {
+          return { ...current, respiratory_rate: e.target.value }
+      })
+
+      validate(e, e.name !== undefined ? e.name : e.target.name ? e.target.name : '', e.value !== undefined ? e.value : e.target.value ? e.target.value : '');
+    } else if (e.target.name === 'heart_rate') {
+      setVitalSigns(current => {
+          return { ...current, heart_rate: e.target.value }
+      })
+
+      validate(e, e.name !== undefined ? e.name : e.target.name ? e.target.name : '', e.value !== undefined ? e.value : e.target.value ? e.target.value : '');
     } else {
       setVitalSigns(current => {
           return { ...current, [e.target.name]: e.target.value }
@@ -139,6 +193,22 @@ const VitalSigns = ({ match }) => {
 
   const onVitalSignsSubmit = async (e) => {
     e.preventDefault();
+
+    let isError = false;
+
+    for(let [key, value] of Object.entries(vitalSigns)) {
+      if((key === 'kesadaran' && value === '') || (key === 'temperatur' && value === '') || (key === 'tinggi_badan' && value === '') ||
+        (key === 'berat_badan' && value === '') || (key === 'lingkar_perut' && value === '') || (key === 'sistole' && value === '') ||
+        (key === 'diastole' && value === '') || (key === 'respiratory_rate' && value === '') || (key === 'heart_rate' && value === '')){
+        validate(e, key, value);
+	      isError = true;
+        // return;
+      }
+    }
+
+    if(isError === true){
+      return;
+    }
 
     // console.log(vitalSigns);
     if(dataStatus === 'add') {
@@ -179,6 +249,8 @@ const VitalSigns = ({ match }) => {
         });
 
         console.log(e);
+      } finally {
+        getAllVitalSignsByPatientId(e, patientID);
       }
     } else if(dataStatus === 'update') {
       try {
@@ -218,6 +290,8 @@ const VitalSigns = ({ match }) => {
         });
 
         console.log(e);
+      } finally {
+        getAllVitalSignsByPatientId(e, patientID);
       }
     } else {
       console.log('dataStatus undefined')
@@ -258,10 +332,10 @@ const VitalSigns = ({ match }) => {
 
   const onLoadDivisi = async () => {
     try {
-      const response = await divisionAPI.get("", "?limit=1000");
+      const response = await divisionAPI.get("?limit=1000");
       // console.log(response);
 
-      setSelectedDivisionF([{ label: "Semua", value: "", key: 0, name: 'id_divisi' }]);
+      setSelectedDivisionF([{ label: "Semua Poli / Divisi", value: "", key: 0, name: 'id_divisi' }]);
 
       if (response.status === 200) {
         let data = response.data.data;
@@ -270,7 +344,7 @@ const VitalSigns = ({ match }) => {
         for (var i = 0; i < data.length; i++) {
           setSelectedDivisionF((current) => [
             ...current,
-            { label: data[i].nama_divisi, value: data[i].id, key: data[i].id, name: 'id_divisi' },
+            { label: data[i].tipe, value: data[i].id, key: data[i].id, name: 'id_divisi' },
           ]);
         }
       } else {
@@ -286,7 +360,7 @@ const VitalSigns = ({ match }) => {
   const getQueue = async (params) => {
     try {
       setIsLoading(true);
-      const res = await queueAPI.get("", params);
+      const res = await queueAPI.get(params);
       dispatch({type: "GET_QUEUE", payload: res.data.data});
       dispatch({type: "GET_TOTAL_PAGE_QUEUE", payload: res.data.pagination.totalPage});
     } catch (e) {
@@ -368,7 +442,7 @@ const VitalSigns = ({ match }) => {
     }
 
     try {
-      const res = await vitalSignsAPI.get("", `/${id}`);
+      const res = await vitalSignsAPI.get(`/${id}`);
       let data = res.data.data[0];
 
       // console.log(data);
@@ -430,6 +504,10 @@ const VitalSigns = ({ match }) => {
   const [searchDivisi, setSearchDivisi] = useState("");
 
   useEffect(() => {
+    setCurrentPage(1);
+  }, [ limit, searchName, searchDivisi, sortBy, sortOrder ]);
+
+  useEffect(() => {
     let params = "";
     if (limit !== "10") {
       params = `${params}?limit=${limit}`;
@@ -451,18 +529,18 @@ const VitalSigns = ({ match }) => {
     }
 
     setRowSelected(false);
-
     getQueue(params);
-    onLoadDivisi();
 
+    onLoadDivisi();
+  }, [limit, searchName, searchDivisi, sortBy, sortOrder, currentPage]);
+
+  useEffect(() => {
     if(dataStatus === "add") {
       setVitalSigns(current => {
         return { ...current, id_pasien: patientID }
       })
     }
-    
-  // }, [limit, searchName, sortBy, sortOrder, currentPage, queueAll, queueTotalPage, dataStatus, vitalSigns.id_pasien]);
-  }, [limit, searchName, searchDivisi, sortBy, sortOrder, currentPage, dataStatus, vitalSigns.id_pasien]);
+  }, [dataStatus, vitalSigns.id_pasien]);
 
   let startNumber = 1;
 
@@ -522,6 +600,7 @@ const VitalSigns = ({ match }) => {
                       name="divisi"
                       onChange={(e) => setSearchDivisi(e.value)}
                       // onChange={setSelectedDivision}
+                      value={{ label: "Semua Poli / Divisi", value: "", key: 0, name: 'id_klinik' }}
                       options={selectedDivisionF}
                     />
                   </Colxx>
@@ -683,7 +762,7 @@ const VitalSigns = ({ match }) => {
                     </Colxx>
                   </Row>
                 </CardTitle>
-                <Form>
+                <Form className="av-tooltip tooltip-right-top" onSubmit={onVitalSignsSubmit}>
                   <FormGroup row>
                     {/* <Colxx sm={12}>
                       <FormGroup>
@@ -749,12 +828,17 @@ const VitalSigns = ({ match }) => {
                           classNamePrefix="react-select"
                           name="kesadaran"
                           options={selectAwareness}
-                          required
-                          value={selectAwareness.find(item => item.value === vitalSigns.kesadaran) || ''}
+                          // required
+                          value={selectAwareness.find(item => item.value === vitalSigns.kesadaran) || { label: 'Pilih Kesadaran', value: '', key: 0, name: 'kesadaran' }}
                           // value={selectedAwareness}
                           onChange={onChange}
                           isSearchable={false}
                         />
+                        {errors.kesadaran && (
+                          <div className="rounded invalid-feedback d-block">
+                            {errors.kesadaran}
+                          </div>
+                        )}
                       </FormGroup>
                     </Colxx>
 
@@ -769,13 +853,18 @@ const VitalSigns = ({ match }) => {
                             name="temperatur"
                             id="temperatur"
                             placeholder="Temperatur"
-                            required={true}
+                            // required={true}
                             pattern="[0-9]*"
                             value={vitalSigns.temperatur}
                             onChange={onChange}
                           />
                           <InputGroupAddon addonType="append"><span className="input-group-text"><sup>0</sup>C</span></InputGroupAddon>
                         </InputGroup>
+                        {errors.temperatur && (
+                          <div className="rounded invalid-feedback d-block">
+                            {errors.temperatur}
+                          </div>
+                        )}
                       </FormGroup>
                     </Colxx>
 
@@ -790,7 +879,7 @@ const VitalSigns = ({ match }) => {
                             name="tinggi_badan"
                             id="tinggi_badan"
                             placeholder="Tinggi Badan"
-                            required={true}
+                            // required={true}
                             pattern="[0-9]*"
                             value={vitalSigns.tinggi_badan}
                             onChange={onChange}
@@ -798,6 +887,11 @@ const VitalSigns = ({ match }) => {
                           />
                           <InputGroupAddon addonType="append">cm</InputGroupAddon>
                         </InputGroup>
+                        {errors.tinggi_badan && (
+                          <div className="rounded invalid-feedback d-block">
+                            {errors.tinggi_badan}
+                          </div>
+                        )}
                       </FormGroup>
                     </Colxx>
 
@@ -812,7 +906,7 @@ const VitalSigns = ({ match }) => {
                             name="berat_badan"
                             id="berat_badan"
                             placeholder="Berat Badan"
-                            required={true}
+                            // required={true}
                             pattern="[0-9]*"
                             value={vitalSigns.berat_badan}
                             onChange={onChange}
@@ -820,13 +914,18 @@ const VitalSigns = ({ match }) => {
                           />
                           <InputGroupAddon addonType="append">kg</InputGroupAddon>
                         </InputGroup>
+                        {errors.berat_badan && (
+                          <div className="rounded invalid-feedback d-block">
+                            {errors.berat_badan}
+                          </div>
+                        )}
                       </FormGroup>
                     </Colxx>
 
                     <Colxx sm={3}>
                       <FormGroup>
                         <Label for="lingkar_perut">
-                          Lingkar Perut
+                          Lingkar Perut<span className="required text-danger" aria-required="true"> *</span>
                         </Label>
                         <InputGroup>
                           <Input
@@ -834,21 +933,25 @@ const VitalSigns = ({ match }) => {
                             name="lingkar_perut"
                             id="lingkar_perut"
                             placeholder="Lingkar Perut"
-                            required={true}
+                            // required={true}
                             pattern="[0-9]*"
                             value={vitalSigns.lingkar_perut}
                             onChange={onChange}
                           />
                           <InputGroupAddon addonType="append">cm</InputGroupAddon>
                         </InputGroup>
+                        {errors.lingkar_perut && (
+                          <div className="rounded invalid-feedback d-block">
+                            {errors.lingkar_perut}
+                          </div>
+                        )}
                       </FormGroup>
                     </Colxx>
 
                     <Colxx sm={6}>
                       <FormGroup>
                         <Label for="sistole">
-                          Tekanan Darah
-                          {/* <span className="required text-danger" aria-required="true"> *</span> */}
+                          Tekanan Darah<span className="required text-danger" aria-required="true"> *</span>
                         </Label>
                         <Row>
                           <Colxx xs={5} sm={5} className="responsive-mobile-vertical-xs-5">
@@ -865,6 +968,11 @@ const VitalSigns = ({ match }) => {
                                 onChange={onChange}
                               />
                               <InputGroupAddon addonType="append">mmHg</InputGroupAddon>
+                              {errors.sistole && (
+                                <div className="rounded invalid-feedback d-block" style={{ bottom: '135%' }}>
+                                  {errors.sistole}
+                                </div>
+                              )}
                             </InputGroup>
                           </Colxx>
                           <Colxx xs={2} sm={1} className="responsive-mobile-vertical-xs-2" style={{ lineHeight: '2rem', textAlign: 'center' }}>/</Colxx>
@@ -882,6 +990,11 @@ const VitalSigns = ({ match }) => {
                                 onChange={onChange}
                               />
                               <InputGroupAddon addonType="append">mmHg</InputGroupAddon>
+                              {errors.diastole && (
+                                <div className="rounded invalid-feedback d-block" style={{ bottom: '135%' }}>
+                                  {errors.diastole}
+                                </div>
+                              )}
                             </InputGroup>
                           </Colxx>
                         </Row>
@@ -892,14 +1005,13 @@ const VitalSigns = ({ match }) => {
                       <FormGroup>
                         <Label for="imt">
                           IMT
-                          {/* <span className="required text-danger" aria-required="true"> *</span> */}
                         </Label>
                         <InputGroup>
                           <Input
                             // type="number"
                             name="imt"
                             id="imt"
-                            placeholder="IMT"
+                            placeholder="Silahkan mengisi tinggi badan dan berat badan"
                             // required={true}
                             // pattern="[0-9]*"
                             value={vitalSigns.imt}
@@ -914,8 +1026,7 @@ const VitalSigns = ({ match }) => {
                     <Colxx sm={6}>
                       <FormGroup>
                         <Label for="respiratory_rate">
-                          Tingkat Pernapasan
-                          {/* <span className="required text-danger" aria-required="true"> *</span> */}
+                          Tingkat Pernapasan<span className="required text-danger" aria-required="true"> *</span>
                         </Label>
                         <InputGroup>
                           <Input
@@ -930,14 +1041,18 @@ const VitalSigns = ({ match }) => {
                           />
                           <InputGroupAddon addonType="append">/ menit</InputGroupAddon>
                         </InputGroup>
+                        {errors.respiratory_rate && (
+                          <div className="rounded invalid-feedback d-block">
+                            {errors.respiratory_rate}
+                          </div>
+                        )}
                       </FormGroup>
                     </Colxx>
 
                     <Colxx sm={6}>
                       <FormGroup>
                         <Label for="heart_rate">
-                          Detak Jantung
-                          {/* <span className="required text-danger" aria-required="true"> *</span> */}
+                          Detak Jantung<span className="required text-danger" aria-required="true"> *</span>
                         </Label>
                         <InputGroup>
                           <Input
@@ -952,6 +1067,11 @@ const VitalSigns = ({ match }) => {
                           />
                           <InputGroupAddon addonType="append">bpm</InputGroupAddon>
                         </InputGroup>
+                        {errors.heart_rate && (
+                          <div className="rounded invalid-feedback d-block">
+                            {errors.heart_rate}
+                          </div>
+                        )}
                       </FormGroup>
                     </Colxx>
 
@@ -991,7 +1111,7 @@ const VitalSigns = ({ match }) => {
                       &nbsp;&nbsp;
                       <Button
                         color="primary"
-                        onClick={(e) => onVitalSignsSubmit(e)}
+                        // onClick={(e) => onVitalSignsSubmit(e)}
                       >
                         Simpan
                       </Button>

@@ -63,7 +63,7 @@ const selectType = [
 ];
 
 const selectTypeF = [
-  { label: "Semua", value: "", key: 0, name: "tipe" },
+  { label: "Semua Tipe", value: "", key: 0, name: "tipe" },
   { label: "Manager", value: "Manager", key: 1, name: "tipe" },
   { label: "Admin", value: "Admin", key: 2, name: "tipe" },
   { label: "Resepsionis", value: "Resepsionis", key: 3, name: "tipe" },
@@ -73,7 +73,7 @@ const selectTypeF = [
 ];
 
 const selectStatusF = [
-  { label: "Semua", value: "", key: 0, name: "status" },
+  { label: "Semua Status", value: "", key: 0, name: "status" },
   { label: "Aktif", value: "1", key: 1, name: "status" },
   { label: "Non-Aktif", value: "0", key: 2, name: "status" }
 ];
@@ -143,49 +143,49 @@ const selectSpecialist = [
 ];
 
 const selectSpecialistF = [
-  { label: "Semua", value: "", key: 99, name: 'spesialis' },
-  { label: "Anak", value: "Anak", key: 0, name: 'spesialis' },
-  { label: "Andrologi", value: "Andrologi", key: 1, name: 'spesialis' },
-  { label: "Anestesiologi dan Terapi Intensif", value: "Anestesiologi dan Terapi Intensif", key: 2, name: 'spesialis' },
-  { label: "Akupunktur Medik", value: "Akupunktur Medik", key: 3, name: 'spesialis' },
-  { label: "Bedah", value: "Bedah", key: 4, name: 'spesialis' },
-  { label: "Bedah Anak", value: "Bedah Anak", key: 5, name: 'spesialis' },
-  { label: "Bedah Plastik, Rekonstruksi, dan Estetik", value: "Bedah Plastik, Rekonstruksi, dan Estetik", key: 6, name: 'spesialis' },
-  { label: "Bedah Saraf", value: "Bedah Saraf", key: 7, name: 'spesialis' },
-  { label: "Bedah Toraks, Kardiak, dan Vaskular", value: "Bedah Toraks, Kardiak, dan Vaskular", key: 8, name: 'spesialis' },
-  { label: "Dermatologi dan Venereologi", value: "Dermatologi dan Venereologi", key: 9, name: 'spesialis' },
-  { label: "Kegawatdaruratan Medik", value: "Kegawatdaruratan Medik", key: 10, name: 'spesialis' },
-  { label: "Farmakologi Klinik", value: "Farmakologi Klinik", key: 11, name: 'spesialis' },
-  { label: "Forensik dan Medikolegal", value: "Forensik dan Medikolegal", key: 12, name: 'spesialis' },
-  { label: "Gizi Klinik", value: "Gizi Klinik", key: 13, name: 'spesialis' },
-  { label: "Jantung dan Pembuluh Darah", value: "Jantung dan Pembuluh Darah", key: 14, name: 'spesialis' },
-  { label: "Kedokteran Fisik dan Rehabilitasi", value: "Kedokteran Fisik dan Rehabilitasi", key: 15, name: 'spesialis' },
-  { label: "Kedokteran Jiwa", value: "Kedokteran Jiwa", key: 16, name: 'spesialis' },
-  { label: "Kedokteran Kelautan", value: "Kedokteran Kelautan", key: 17, name: 'spesialis' },
-  { label: "Kedokteran Keluarga Layanan Primer", value: "Kedokteran Keluarga Layanan Primer", key: 18, name: 'spesialis' },
-  { label: "Kedokteran Nuklir dan Teranostik Molekuler", value: "Kedokteran Nuklir dan Teranostik Molekuler", key: 19, name: 'spesialis' },
-  { label: "Kedokteran Okupasi", value: "Kedokteran Okupasi", key: 20, name: 'spesialis' },
-  { label: "Kedokteran Olahraga", value: "Kedokteran Olahraga", key: 21, name: 'spesialis' },
-  { label: "Kedokteran Penerbangan", value: "Kedokteran Penerbangan", key: 22, name: 'spesialis' },
-  { label: "Mikrobiologi Klinik", value: "Mikrobiologi Klinik", key: 23, name: 'spesialis' },
-  { label: "Neurologi", value: "Neurologi", key: 24, name: 'spesialis' },
-  { label: "Obstetri dan Ginekologi", value: "Obstetri dan Ginekologi", key: 25, name: 'spesialis' },
-  { label: "Oftalmologi", value: "Oftalmologi", key: 26, name: 'spesialis' },
-  { label: "Onkologi Radiasi", value: "Onkologi Radiasi", key: 27, name: 'spesialis' },
-  { label: "Orthopaedi dan Traumatologi", value: "Orthopaedi dan Traumatologi", key: 28, name: 'spesialis' },
-  { label: "Parasitologi Klinik", value: "Parasitologi Klinik", key: 29, name: 'spesialis' },
-  { label: "Patologi Anatomi", value: "Patologi Anatomi", key: 30, name: 'spesialis' },
-  { label: "Patologi Klinik", value: "Patologi Klinik", key: 31, name: 'spesialis' },
-  { label: "Penyakit Dalam", value: "Penyakit Dalam", key: 32, name: 'spesialis' },
-  { label: "Pulmonologi dan Kedokteran Respirasi", value: "Pulmonologi dan Kedokteran Respirasi", key: 33, name: 'spesialis' },
-  { label: "Radiologi", value: "Radiologi", key: 34, name: 'spesialis' },
-  { label: "Telinga Hidung Tenggorok Bedah Kepala Leher", value: "Telinga Hidung Tenggorok Bedah Kepala Leher", key: 35, name: 'spesialis' },
-  { label: "Urologi", value: "Urologi", key: 36, name: 'spesialis' },
-  { label: "Bedah Mulut dan Maksilofasial (Dokter Gigi)", value: "Bedah Mulut dan Maksilofasial (Dokter Gigi)", key: 37, name: 'spesialis' },
-  { label: "Kedokteran Gigi Anak (Dokter Gigi)", value: "Kedokteran Gigi Anak (Dokter Gigi)", key: 38, name: 'spesialis' },
-  { label: "Konservasi Gigi (Dokter Gigi)", value: "Konservasi Gigi (Dokter Gigi)", key: 39, name: 'spesialis' },
-  { label: "Ortodonsia (Dokter Gigi)", value: "Ortodonsia (Dokter Gigi)", key: 40, name: 'spesialis' },
-  { label: "Odontologi Forensik (Dokter Gigi)", value: "Odontologi Forensik (Dokter Gigi)", key: 41, name: 'spesialis' },
+  { label: "Semua Spesialisasi", value: "", key: 0, name: 'spesialis' },
+  { label: "Anak", value: "Anak", key: 1, name: 'spesialis' },
+  { label: "Andrologi", value: "Andrologi", key: 2, name: 'spesialis' },
+  { label: "Anestesiologi dan Terapi Intensif", value: "Anestesiologi dan Terapi Intensif", key: 3, name: 'spesialis' },
+  { label: "Akupunktur Medik", value: "Akupunktur Medik", key: 4, name: 'spesialis' },
+  { label: "Bedah", value: "Bedah", key: 5, name: 'spesialis' },
+  { label: "Bedah Anak", value: "Bedah Anak", key: 6, name: 'spesialis' },
+  { label: "Bedah Plastik, Rekonstruksi, dan Estetik", value: "Bedah Plastik, Rekonstruksi, dan Estetik", key: 7, name: 'spesialis' },
+  { label: "Bedah Saraf", value: "Bedah Saraf", key: 8, name: 'spesialis' },
+  { label: "Bedah Toraks, Kardiak, dan Vaskular", value: "Bedah Toraks, Kardiak, dan Vaskular", key: 9, name: 'spesialis' },
+  { label: "Dermatologi dan Venereologi", value: "Dermatologi dan Venereologi", key: 10, name: 'spesialis' },
+  { label: "Kegawatdaruratan Medik", value: "Kegawatdaruratan Medik", key: 11, name: 'spesialis' },
+  { label: "Farmakologi Klinik", value: "Farmakologi Klinik", key: 12, name: 'spesialis' },
+  { label: "Forensik dan Medikolegal", value: "Forensik dan Medikolegal", key: 13, name: 'spesialis' },
+  { label: "Gizi Klinik", value: "Gizi Klinik", key: 14, name: 'spesialis' },
+  { label: "Jantung dan Pembuluh Darah", value: "Jantung dan Pembuluh Darah", key: 15, name: 'spesialis' },
+  { label: "Kedokteran Fisik dan Rehabilitasi", value: "Kedokteran Fisik dan Rehabilitasi", key: 16, name: 'spesialis' },
+  { label: "Kedokteran Jiwa", value: "Kedokteran Jiwa", key: 17, name: 'spesialis' },
+  { label: "Kedokteran Kelautan", value: "Kedokteran Kelautan", key: 18, name: 'spesialis' },
+  { label: "Kedokteran Keluarga Layanan Primer", value: "Kedokteran Keluarga Layanan Primer", key: 19, name: 'spesialis' },
+  { label: "Kedokteran Nuklir dan Teranostik Molekuler", value: "Kedokteran Nuklir dan Teranostik Molekuler", key: 20, name: 'spesialis' },
+  { label: "Kedokteran Okupasi", value: "Kedokteran Okupasi", key: 21, name: 'spesialis' },
+  { label: "Kedokteran Olahraga", value: "Kedokteran Olahraga", key: 22, name: 'spesialis' },
+  { label: "Kedokteran Penerbangan", value: "Kedokteran Penerbangan", key: 23, name: 'spesialis' },
+  { label: "Mikrobiologi Klinik", value: "Mikrobiologi Klinik", key: 24, name: 'spesialis' },
+  { label: "Neurologi", value: "Neurologi", key: 25, name: 'spesialis' },
+  { label: "Obstetri dan Ginekologi", value: "Obstetri dan Ginekologi", key: 26, name: 'spesialis' },
+  { label: "Oftalmologi", value: "Oftalmologi", key: 27, name: 'spesialis' },
+  { label: "Onkologi Radiasi", value: "Onkologi Radiasi", key: 28, name: 'spesialis' },
+  { label: "Orthopaedi dan Traumatologi", value: "Orthopaedi dan Traumatologi", key: 29, name: 'spesialis' },
+  { label: "Parasitologi Klinik", value: "Parasitologi Klinik", key: 30, name: 'spesialis' },
+  { label: "Patologi Anatomi", value: "Patologi Anatomi", key: 31, name: 'spesialis' },
+  { label: "Patologi Klinik", value: "Patologi Klinik", key: 32, name: 'spesialis' },
+  { label: "Penyakit Dalam", value: "Penyakit Dalam", key: 33, name: 'spesialis' },
+  { label: "Pulmonologi dan Kedokteran Respirasi", value: "Pulmonologi dan Kedokteran Respirasi", key: 34, name: 'spesialis' },
+  { label: "Radiologi", value: "Radiologi", key: 35, name: 'spesialis' },
+  { label: "Telinga Hidung Tenggorok Bedah Kepala Leher", value: "Telinga Hidung Tenggorok Bedah Kepala Leher", key: 36, name: 'spesialis' },
+  { label: "Urologi", value: "Urologi", key: 37, name: 'spesialis' },
+  { label: "Bedah Mulut dan Maksilofasial (Dokter Gigi)", value: "Bedah Mulut dan Maksilofasial (Dokter Gigi)", key: 38, name: 'spesialis' },
+  { label: "Kedokteran Gigi Anak (Dokter Gigi)", value: "Kedokteran Gigi Anak (Dokter Gigi)", key: 39, name: 'spesialis' },
+  { label: "Konservasi Gigi (Dokter Gigi)", value: "Konservasi Gigi (Dokter Gigi)", key: 40, name: 'spesialis' },
+  { label: "Ortodonsia (Dokter Gigi)", value: "Ortodonsia (Dokter Gigi)", key: 41, name: 'spesialis' },
+  { label: "Odontologi Forensik (Dokter Gigi)", value: "Odontologi Forensik (Dokter Gigi)", key: 42, name: 'spesialis' },
   { label: "Penyakit Mulut (Dokter Gigi)", value: "Penyakit Mulut (Dokter Gigi)", key: 43, name: 'spesialis' },
   { label: "Periodonsia (Dokter Gigi)", value: "Periodonsia (Dokter Gigi)", key: 44, name: 'spesialis' },
   { label: "Prostodonsia (Dokter Gigi)", value: "Prostodonsia (Dokter Gigi)", key: 45, name: 'spesialis' },
@@ -206,8 +206,8 @@ const Data = ({ match, history, loading, error }) => {
   const [dataStatus, setDataStatus] = useState("add");
   const [rowSelected, setRowSelected] = useState(null);
 
-  const [selectedTypeF, setSelectedTypeF] = useState("");
-  const [selectedSpecialistF, setSelectedSpecialistF] = useState("");
+  const [selectedTypeF, setSelectedTypeF] = useState({ label: "Semua Tipe", value: "", key: 0, name: "tipe" },);
+  const [selectedSpecialistF, setSelectedSpecialistF] = useState({ label: "Semua Spesialisasi", value: "", key: 0, name: "spesialis" },);
 
   const [selectedRole, setSelectedRole] = useState([]);
   const [selectedWP, setSelectedWP] = useState("");
@@ -481,22 +481,24 @@ const Data = ({ match, history, loading, error }) => {
           return { ...current, tipe_izin: e ? e.value : ''}
       })
       setSelectedWP(e);
-      validate(e, e.name ? e.name : e.target.name, e.value ? e.value : e.target.value);
+      validate(e, e.name !== undefined ? e.name : e.target.name ? e.target.name : '', e.value !== undefined ? e.value : e.target.value ? e.target.value : '');
     } else if (e.name === 'tipe') {
       setEmployee(current => {
           // return { ...current, tipe: e.value }
           return { ...current, tipe: e ? e.value : ''}
       })
       setSelectedType(e);
-      validate(e, e.name ? e.name : e.target.name, e.value ? e.value : e.target.value);
+      validate(e, 'tipe_karyawan', e.value ? e.value : '');
 
       if (e.value === 'Dokter') {
         setDisabledSpecialist(false);
+        validate(e, 'spesialis', '');
       } else {
         setDisabledSpecialist(true);
         setEmployee(current => {
             return { ...current, spesialis: ''}
         })
+        validate(e, 'spesialis', 1);
       }
     } else if (e.name === 'spesialis') {
       setEmployee(current => {
@@ -504,7 +506,7 @@ const Data = ({ match, history, loading, error }) => {
           return { ...current, spesialis: e ? e.value : ''}
       })
       setSelectedSpecialist(e);
-      validate(e, e.name ? e.name : e.target.name, e.value ? e.value : e.target.value);
+      validate(e, e.name !== undefined ? e.name : e.target.name ? e.target.name : '', e.value !== undefined ? e.value : e.target.value ? e.target.value : '');
     } else if (e.name === 'status_menikah') {
       setEmployee(current => {
           // return { ...current, status_menikah: e.value }
@@ -536,34 +538,34 @@ const Data = ({ match, history, loading, error }) => {
         setEmployeePassword(current => {
             return { ...current, password: e.target.value }
         })
-        validate(e, e.name ? e.name : e.target.name, e.value ? e.value : e.target.value);
+        validate(e, e.name !== undefined ? e.name : e.target.name ? e.target.name : '', e.value !== undefined ? e.value : e.target.value ? e.target.value : '');
       } else if (e.target.name && e.target.name !== 'jenis_kelamin') {
 
         if (e.target.name && e.target.name === 'username') {
           setEmployee(current => {
               return { ...current, username: e.target.value }
           })
-          validate(e, e.name ? e.name : e.target.name, e.value ? e.value : e.target.value);
+          validate(e, e.name !== undefined ? e.name : e.target.name ? e.target.name : '', e.value !== undefined ? e.value : e.target.value ? e.target.value : '');
         } else if (e.target.name && e.target.name === 'password') {
           setEmployee(current => {
               return { ...current, password: e.target.value }
           })
-          validate(e, e.name ? e.name : e.target.name, e.value ? e.value : e.target.value);
+          validate(e, e.name !== undefined ? e.name : e.target.name ? e.target.name : '', e.value !== undefined ? e.value : e.target.value ? e.target.value : '');
         } else if (e.target.name && e.target.name === 'nomor_kitas') {
           setEmployee(current => {
               return { ...current, nomor_kitas: e.target.value }
           })
-          validate(e, e.name ? e.name : e.target.name, e.value ? e.value : e.target.value);
+          validate(e, e.name !== undefined ? e.name : e.target.name ? e.target.name : '', e.value !== undefined ? e.value : e.target.value ? e.target.value : '');
         } else if (e.target.name && e.target.name === 'nomor_izin') {
           setEmployee(current => {
               return { ...current, nomor_izin: e.target.value }
           })
-          validate(e, e.name ? e.name : e.target.name, e.value ? e.value : e.target.value);
+          validate(e, e.name !== undefined ? e.name : e.target.name ? e.target.name : '', e.value !== undefined ? e.value : e.target.value ? e.target.value : '');
         } else if (e.target.name && e.target.name === 'kadaluarsa_izin') {
           setEmployee(current => {
               return { ...current, kadaluarsa_izin: e.target.value }
           })
-          validate(e, e.name ? e.name : e.target.name, e.value ? e.value : e.target.value);
+          validate(e, e.name !== undefined ? e.name : e.target.name ? e.target.name : '', e.value !== undefined ? e.value : e.target.value ? e.target.value : '');
         }
 
         setEmployee(current => {
@@ -642,8 +644,8 @@ const Data = ({ match, history, loading, error }) => {
       //   }
       // }
 
-      if((key === 'tipe' && value !== '') && (key === 'spesialisasi' && value === '')){
-        validate(e, 'spesialisasi', value);
+      if((key === 'tipe' && value !== '') && (key === 'spesialis' && value === '')){
+        validate(e, 'spesialis', value);
         isError = true;
       }
     }
@@ -833,7 +835,7 @@ const Data = ({ match, history, loading, error }) => {
   const getEmployee = async (params) => {
     try {
       setIsLoading(true);
-      const res = await employeeAPI.get("", params);
+      const res = await employeeAPI.get(params);
 
       console.log(res);
 
@@ -865,7 +867,7 @@ const Data = ({ match, history, loading, error }) => {
     }
 
     try {
-      const res = await employeeAPI.get("", `/${id}`);
+      const res = await employeeAPI.get(`/${id}`);
       let data = res.data.data[0];
 
       // console.log(data);
@@ -1041,7 +1043,7 @@ const Data = ({ match, history, loading, error }) => {
     setModalPassword(true);
 
     try {
-      const res = await employeeAPI.get("", `/${id}`);
+      const res = await employeeAPI.get(`/${id}`);
       let data = res.data.data[0];
 
       // console.log(data);
@@ -1110,7 +1112,7 @@ const Data = ({ match, history, loading, error }) => {
 
     setModalArchive(true);
     try {
-      const res = await employeeAPI.get("", `/${id}`);
+      const res = await employeeAPI.get(`/${id}`);
       let data = res.data.data[0];
 
       setEmployeeID(data.id);
@@ -1189,6 +1191,8 @@ const Data = ({ match, history, loading, error }) => {
       });
 
       console.log(e);
+    } finally {
+      getEmployee("");
     }
   };
 
@@ -1197,7 +1201,7 @@ const Data = ({ match, history, loading, error }) => {
 
     setModalDelete(true);
     try {
-      const res = await employeeAPI.get("", `/${id}`);
+      const res = await employeeAPI.get(`/${id}`);
       let data = res.data.data[0];
 
       setEmployeeID(data.id);
@@ -1248,6 +1252,8 @@ const Data = ({ match, history, loading, error }) => {
       });
 
       console.log(e);
+    } finally {
+      getEmployee("");
     }
   };
 
@@ -1588,6 +1594,7 @@ const Data = ({ match, history, loading, error }) => {
                     // onChange={setSelectedTypeF}
                     onChange={(e) => setSearchTipe(e.value)}
                     options={selectTypeF.filter(roleChoices => roleChoices.label != 'Manajemen').map(roleChoices => roleChoices)}
+                    value={{ label: "Semua Tipe", value: "", key: 0, name: "tipe" }}
                     isSearchable={false}
                   /> }
                   { userData.roles.includes('isDev') &&
@@ -1600,6 +1607,7 @@ const Data = ({ match, history, loading, error }) => {
                     // onChange={setSelectedTypeF}
                     onChange={(e) => setSearchTipe(e.value)}
                     options={selectTypeF}
+                    value={{ label: "Semua Tipe", value: "", key: 0, name: "tipe" }}
                     isSearchable={false}
                   /> }
                 </Colxx>
@@ -1616,6 +1624,7 @@ const Data = ({ match, history, loading, error }) => {
                     // onChange={setSelectedSpecialistF}
                     onChange={(e) => setSearchSpesialis(e.value)}
                     options={selectSpecialistF}
+                    value={{ label: "Semua Spesialisasi", value: "", key: 0, name: "spesialis" }}
                   />
                 </Colxx>
                 <Colxx sm="12" md="12" style={{ paddingLeft: '0px', paddingRight: '0px' }} className="mt-3">
@@ -1629,6 +1638,7 @@ const Data = ({ match, history, loading, error }) => {
                     name="status"
                     onChange={(e) => setSearchStatus(e.value)}
                     options={selectStatusF}
+                    value={{ label: "Semua Status", value: "", key: 0, name: "status" }}
                     isSearchable={false}
                   />
                 </Colxx>
@@ -1936,9 +1946,9 @@ const Data = ({ match, history, loading, error }) => {
                           onChange={onChange}
                           isDisabled={disabledSpecialist}
                         />
-                        {errors.spesialisasi && (
+                        {errors.spesialis && (
                           <div className="rounded invalid-feedback d-block">
-                            {errors.spesialisasi}
+                            {errors.spesialis}
                           </div>
                         )}
                     </FormGroup>

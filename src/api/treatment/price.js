@@ -3,37 +3,37 @@ import { getAuthHeader, getOriginHeader, serializeQueryParams, getJSONHeader } f
 import baseApi from 'service/api-general'
 
 const price = {
-  get: (payloads, options) => {
+  get: (options) => {
     const url = api.treatment.price + options
-    return baseApi.get(url, payloads, { headers: getOriginHeader() })
+    return baseApi.get(url, { headers: getAuthHeader() })
+  },
+  getByClinic: (id) => {
+    const url = api.treatment.clinicPrice + `/${id}`
+    return baseApi.get(url, { headers: getAuthHeader() })
   },
   add: (payloads) => {
     const url = api.treatment.price
-    return baseApi.post(url, payloads, { headers: getOriginHeader() })
+    return baseApi.post(url, payloads, { headers: getAuthHeader() })
   },
   update: (payloads, id) => {
     const url = api.treatment.price + `/${id}`
-    return baseApi.put(url, payloads, { headers: getOriginHeader() })
-  },
-  getByClinic: (payloads, id) => {
-    const url = api.treatment.clinicPrice + `/${id}`
-    return baseApi.get(url, payloads, { headers: getOriginHeader() })
+    return baseApi.put(url, payloads, { headers: getAuthHeader() })
   },
   update: (payloads, id) => {
     const url = api.treatment.price + `/${id}`
-    return baseApi.put(url, payloads, { headers: getOriginHeader() })
+    return baseApi.put(url, payloads, { headers: getAuthHeader() })
   },
   archive: (payloads, id) => {
     const url = api.treatment.archivePrice + `/${id}`
-    return baseApi.put(url, payloads, { headers: getOriginHeader() })
+    return baseApi.put(url, payloads, { headers: getAuthHeader() })
   },
   activate: (payloads, id) => {
     const url = api.treatment.activatePrice + `/${id}`
-    return baseApi.put(url, payloads, { headers: getOriginHeader() })
+    return baseApi.put(url, payloads, { headers: getAuthHeader() })
   },
   delete: (payloads, id) => {
     const url = api.treatment.price + `/${id}`
-    return baseApi.delete(url, payloads, { headers: getOriginHeader() })
+    return baseApi.delete(url, payloads, { headers: getAuthHeader() })
   },
 }
 export default price

@@ -23,6 +23,8 @@ import 'rc-switch/assets/index.css';
 import 'rc-slider/assets/index.css';
 import 'react-rater/lib/react-rater.css';
 
+import useForm from 'utils/useForm';
+
 import moment from "moment";
 import Select from 'react-select';
 import { AsyncPaginate } from 'react-select-async-paginate';
@@ -120,6 +122,8 @@ let watchID = "";
 const FormRecord = ({ match, history }) => {
   const dispatch = useDispatch();
   const location = useLocation();
+  const { errors, validate } = useForm();
+
   const [dataStatusRecord, setDataStatusRecord] = useState("add");
   const [dataStatusDiagnose, setDataStatusDiagnose] = useState("add");
   const [dataStatusReciept, setDataStatusReciept] = useState("add");
@@ -189,6 +193,7 @@ const FormRecord = ({ match, history }) => {
       setRecord(current => {
           return { ...current, status_pulang: e.value }
       })
+      validate(e, e.name !== undefined ? e.name : e.target.name ? e.target.name : '', e.value !== undefined ? e.value : e.target.value ? e.target.value : '');
     } else if (e.name === 'prognosa') {
       setRecord(current => {
           return { ...current, prognosa: e.value }
@@ -275,26 +280,40 @@ const FormRecord = ({ match, history }) => {
     if (event.name === "id_penyakit"){
       dataDiagnosis[index][event.name] = event.value;
       dataDiagnoseReference[index][event.name] = event.value;
+
+      validate(event, event.name !== undefined ? event.name : event.target.name ? event.target.name : '', event.value !== undefined ? event.value : event.target.value ? event.target.value : '');
     } else if(event.target.name === "tipe_diagnosis") {
       if(event.target.id === 'tipe_wd' && event.target.checked === true) {
         wd = true;
         wd_rujukan = true;
+        
+        validate(event, 'wd', true);
       } else if(event.target.id === 'tipe_wd' && event.target.checked === false) {
         wd = false;
         wd_rujukan = false;
+
+        validate(event, 'wd', false);
       }
       
       if(event.target.id === 'tipe_dd' && event.target.checked === true) {
         dd = true;
         dd_rujukan = true;
+
+        validate(event, 'dd', true);
       } else if(event.target.id === 'tipe_wd' && event.target.checked === false) {
         dd = false;
         dd_rujukan = false;
+
+        validate(event, 'dd', false);
       }
 
       if(dataDiagnosis[index]['id_penyakit'] === '') {
         wd = false; dd = false;
         wd_rujukan = false; dd_rujukan = false;
+
+        validate(event, 'id_penyakit', '');
+        validate(event, 'wd', '');
+        validate(event, 'dd', '');
       }
 
       dataDiagnosis[index]['tipe_wd'] = wd;
@@ -560,6 +579,13 @@ const FormRecord = ({ match, history }) => {
     record.id_vs = vitalSignsID;
     record.id_pasien = patientID;
     record.id_jaga = watchID;
+
+    for(let [key, value] of Object.entries(record)) {
+      if((key === 'status_pulang' && value === '')){
+        validate(e, key, value);
+        return;
+      }
+    }
 
     // console.log(record);
     if(dataStatusRecord === 'add') {
@@ -1404,7 +1430,7 @@ const FormRecord = ({ match, history }) => {
 
   const onLoadObat = async () => {
     try {
-      const response = await medicineAPI.get("", "?limit=1000");
+      const response = await medicineAPI.get("?limit=1000");
       // console.log(response);
 
       setSelectMedicine([{ label: "Pilih Obat" , value: "", key: 0, name: 'id_obat' }]);
@@ -1432,7 +1458,7 @@ const FormRecord = ({ match, history }) => {
 
   const onLoadLab = async () => {
     try {
-      const response = await labAPI.get("", "?limit=1000");
+      const response = await labAPI.get("?limit=1000");
       // console.log(response);
 
       setSelectLab([{ label: "Pilih Laboratorium" , value: "", key: 0, name: 'id_lab' }]);
@@ -1457,7 +1483,7 @@ const FormRecord = ({ match, history }) => {
 
   const onLoadPemeriksaanByLayananLab = async (index, id_lab, kategori) => {
     try {
-      const response = await labTreatmentAPI.get("", `?limit=1000&searchLaboratorium=${id_lab}&searchKategori=${kategori}`);
+      const response = await labTreatmentAPI.get(`?limit=1000&searchLaboratorium=${id_lab}&searchKategori=${kategori}`);
       // console.log(response);
 
       if (response.status === 200) {
@@ -1519,7 +1545,7 @@ const FormRecord = ({ match, history }) => {
 
   const onLoadTindakan = async () => {
     try {
-      const response = await treatmentListAPI.get("", "?limit=1000");
+      const response = await treatmentListAPI.get("?limit=1000");
       // console.log(response);
 
       setSelectTreatment([{ label: "Pilih Tindakan" , value: "", key: 0, name: 'id_daftar_tindakan' }]);
@@ -1546,7 +1572,7 @@ const FormRecord = ({ match, history }) => {
 
   const onLoadLayanan = async () => {
     try {
-      const response = await serviceListAPI.get("", "?limit=1000");
+      const response = await serviceListAPI.get("?limit=1000");
       // console.log(response);
 
       setSelectService([{ label: "Pilih Layanan" , value: "", key: 0, name: 'id_daftar_layanan' }]);
@@ -1573,7 +1599,7 @@ const FormRecord = ({ match, history }) => {
 
   const onLoadPoliRujukan = async () => {
     try {
-      const response = await divisionReferenceAPI.get("", "?limit=1000");
+      const response = await divisionReferenceAPI.get("?limit=1000");
       // console.log(response);
 
       setSelectDivisionReference([{ label: "Pilih Poli / Divisi" , value: "", key: 0, name: 'id_poli' }]);
@@ -1600,7 +1626,7 @@ const FormRecord = ({ match, history }) => {
 
   const onLoadRSRujukan = async () => {
     try {
-      const response = await hospitalReferenceAPI.get("", "?limit=1000");
+      const response = await hospitalReferenceAPI.get("?limit=1000");
       // console.log(response);
 
       setSelectHospitalReference([{ label: "Pilih Rumah Sakit" , value: "", key: 0, name: 'id_rs' }]);
@@ -1736,7 +1762,7 @@ const FormRecord = ({ match, history }) => {
     let data = null;
 
     try {
-      const res = await recordAPI.get("", `/${id}`);
+      const res = await recordAPI.get(`/${id}`);
       data = res.data.data[0];
 
       // console.log(data);
@@ -2054,6 +2080,9 @@ const FormRecord = ({ match, history }) => {
     if (recordID) {
       getRecordById(recordID);
     }
+  }, [ ]);
+
+  useEffect(() => {
 
     if (recordSubmit === "done" && recordID) {
       setTimeout(() => {
@@ -2091,7 +2120,11 @@ const FormRecord = ({ match, history }) => {
         }, 5000);
       }, 3000);
     }
+  }, [ recordSubmit ]);
 
+  
+
+  useEffect(() => {
     if(dataStatusCheckup === "update" && checkup[0].id !== ''){
       let dataCheckup = [...checkup];
 
@@ -2103,7 +2136,7 @@ const FormRecord = ({ match, history }) => {
         setCheckup(dataCheckup);
       }, 5000);
     }
-  }, [ recordSubmit, dataStatusCheckup ]);
+  }, [ dataStatusCheckup ]);
 
   const onDeleteRecordDiagnose = async (id) => {
     try {
@@ -2469,7 +2502,7 @@ const FormRecord = ({ match, history }) => {
                     Form Registrasi Rekam Medis
                     {/* <span style={{ fontWeight: 'bold' }}>{patientData.nama_lengkap}</span> */}
                 </CardTitle>
-                <Form>
+                <Form className="av-tooltip tooltip-right-top" onSubmit={onRecordSubmit}>
                   <FormGroup row>
                     <Colxx sm={6}>
                         <FormGroup>
@@ -2585,9 +2618,14 @@ const FormRecord = ({ match, history }) => {
                               name="status_pulang"
                               value={selectVisitation.find(item => item.value === record.status_pulang) || ''}
                               options={selectVisitation}
-                              required
+                              // required
                               onChange={onChange}
                             />
+                            {errors.status_pulang && (
+                              <div className="rounded invalid-feedback d-block">
+                                {errors.status_pulang}
+                              </div>
+                            )}
                         </FormGroup>
                     </Colxx>
                   </FormGroup>
@@ -2604,13 +2642,13 @@ const FormRecord = ({ match, history }) => {
                                   <FormGroup>
                                       <Label for="id_penyakit">
                                           Penyakit
-                                          {/* <span
-                                          className="required text-danger"
-                                          aria-required="true"
-                                          >
-                                          {" "}
-                                          *
-                                          </span> */}
+                                          <span
+                                            className="required text-danger"
+                                            aria-required="true"
+                                            >
+                                            {" "}
+                                            *
+                                          </span>
                                       </Label>
                                       {/* <Select
                                           components={{ Input: CustomSelectInput }}
@@ -2633,6 +2671,11 @@ const FormRecord = ({ match, history }) => {
                                         value={selectDisease.find(item => item.value === diagnosis[index].id_penyakit) || ''}
                                         onChange={(event) => handleDiagnosisChange(index, event)}
                                       />
+                                      {errors.id_penyakit && (
+                                        <div className="rounded invalid-feedback d-block">
+                                          {errors.id_penyakit}
+                                        </div>
+                                      )}
                                   </FormGroup>
                               </Colxx>
                               <Colxx sm={5}>
@@ -2650,6 +2693,11 @@ const FormRecord = ({ match, history }) => {
                                                 label="Working Diagnosis"
                                                 onChange={(event) => handleDiagnosisChange(index, event)}
                                               />
+                                              {errors.wd && (
+                                                <div className="rounded invalid-feedback d-block">
+                                                  {errors.wd}
+                                                </div>
+                                              )}
                                           </Colxx>
                                           <Colxx sm={5} md={6} xl={6}>
                                               <CustomInput
@@ -2660,6 +2708,11 @@ const FormRecord = ({ match, history }) => {
                                                 label="Differential Diagnosis"
                                                 onChange={(event) => handleDiagnosisChange(index, event)}
                                               />
+                                              {errors.dd && (
+                                                <div className="rounded invalid-feedback d-block">
+                                                  {errors.dd}
+                                                </div>
+                                              )}
                                           </Colxx>
                                       </Row>
                                   </FormGroup>
@@ -3363,7 +3416,8 @@ const FormRecord = ({ match, history }) => {
                         </Button>
                         &nbsp;&nbsp;
                         <Button color="primary" 
-                            onClick={(e) => onRecordSubmit(e)}>
+                            // onClick={(e) => onRecordSubmit(e)}
+                        >
                             Simpan
                         </Button>
                     </Colxx>

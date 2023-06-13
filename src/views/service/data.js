@@ -45,7 +45,7 @@ import loader from '../../assets/img/loading.gif';
 const userData = JSON.parse(localStorage.getItem('user_data'));
 
 const selectStatusF = [
-  { label: "Semua", value: "", key: 0, name: "status" },
+  { label: "Semua Status", value: "", key: 0, name: "status" },
   { label: "Aktif", value: "1", key: 1, name: "status" },
   { label: "Non-Aktif", value: "0", key: 2, name: "status" }
 ];
@@ -72,16 +72,14 @@ const Data = ({ match, history, loading, error }) => {
 
   const onChange = (e) => {
     // console.log('e', e);
-    validate(e, e.name ? e.name : e.target.name, e.value ? e.value : e.target.value);
 
     setService(current => {
         return { ...current, [e.target.name]: e.target.value }
     })
 
+    validate(e, e.name !== undefined ? e.name : e.target.name ? e.target.name : '', e.value !== undefined ? e.value : e.target.value ? e.target.value : '');
     // console.log('service', service);
   }
-
-  let isNull = false;
 
   const onServiceSubmit = async (e) => {
     e.preventDefault();
@@ -211,7 +209,7 @@ const Data = ({ match, history, loading, error }) => {
   const getService = async (params) => {
     try {
       setIsLoading(true);
-      const res = await serviceAPI.get("", params);
+      const res = await serviceAPI.get(params);
       dispatch({type: "GET_SERVICE_LIST", payload: res.data.data});
       dispatch({type: "GET_TOTAL_PAGE_SERVICE_LIST", payload: res.data.pagination.totalPage});
     } catch (e) {
@@ -238,7 +236,7 @@ const Data = ({ match, history, loading, error }) => {
     }
 
     try {
-      const res = await serviceAPI.get("", `/${id}`);
+      const res = await serviceAPI.get(`/${id}`);
       let data = res.data.data[0];
 
       // console.log(data);
@@ -297,7 +295,7 @@ const Data = ({ match, history, loading, error }) => {
 
     setModalArchive(true);
     try {
-      const res = await serviceAPI.get("", `/${id}`);
+      const res = await serviceAPI.get(`/${id}`);
       let data = res.data.data[0];
 
       setServiceID(data.id);
@@ -376,6 +374,8 @@ const Data = ({ match, history, loading, error }) => {
       });
 
       console.log(e);
+    } finally {
+      getService("");
     }
   };
 
@@ -384,7 +384,7 @@ const Data = ({ match, history, loading, error }) => {
 
     setModalDelete(true);
     try {
-      const res = await serviceAPI.get("", `/${id}`);
+      const res = await serviceAPI.get(`/${id}`);
       let data = res.data.data[0];
 
       setServiceID(data.id);
@@ -435,6 +435,8 @@ const Data = ({ match, history, loading, error }) => {
       });
 
       console.log(e);
+    } finally {
+      getService("");
     }
   };
 
@@ -504,6 +506,7 @@ const Data = ({ match, history, loading, error }) => {
                       onChange={(e) => setSearchStatus(e.value)}
                       options={selectStatusF}
                       isSearchable={false}
+                      value={{ label: "Semua Status", value: "", key: 0, name: "status" }}
                     />
                 </Colxx>
               </FormGroup>

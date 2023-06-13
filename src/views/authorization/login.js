@@ -60,53 +60,62 @@ const Home = ({ history, loading, error, loginUserAction }) => {
                   let data = await response.data.data;
                   // console.log(data);
 
-                  let user = { id : "", username: "", roles: {}, token: ""};
+                  if(data.is_active === 1){
+                    let user = { id : "", username: "", roles: {}, token: ""};
 
-                  let roles = [];
+                    let roles = [];
 
-                  if (data.is_dev === 1) {
-                    roles.push("isDev");
-                  } else if (data.is_manager === 1) {
-                    roles.push("isManager");
-                  } else if (data.is_admin === 1) {
-                    roles.push("isAdmin");
-                  } else if (data.is_resepsionis === 1) {
-                    roles.push("isResepsionis");
-                  } else if (data.is_perawat === 1) {
-                    roles.push("isPerawat");
-                  } else if (data.is_dokter === 1) {
-                    roles.push("isDokter");
-                  } else if (data.is_manajemen === 1) {
-                    roles.push("isManajemen");
-                  }
+                    if (data.is_dev === 1) {
+                      roles.push("isDev");
+                    } else if (data.is_manager === 1) {
+                      roles.push("isManager");
+                    } else if (data.is_admin === 1) {
+                      roles.push("isAdmin");
+                    } else if (data.is_resepsionis === 1) {
+                      roles.push("isResepsionis");
+                    } else if (data.is_perawat === 1) {
+                      roles.push("isPerawat");
+                    } else if (data.is_dokter === 1) {
+                      roles.push("isDokter");
+                    } else if (data.is_manajemen === 1) {
+                      roles.push("isManajemen");
+                    }
 
-                  user.id = data.id; user.username = data.username; user.roles = roles; user.token = data.token;
+                    user.id = data.id; user.username = data.username; user.roles = roles; user.token = data.token;
 
-                  localStorage.setItem('user_data', JSON.stringify(user));
-                  // console.log(localStorage.getItem('user_data'));
+                    localStorage.setItem('user_data', JSON.stringify(user));
+                    // console.log(localStorage.getItem('user_data'));
 
-                  // localStorage.setItem('id', data.id);
-                  // localStorage.setItem('username', data.username);
-                  // localStorage.setItem('roles', JSON.stringify(roles));
-                  // localStorage.setItem('token', data.token);
-                  
-                  // localStorage.setItem('isDev', data.is_dev);
-                  // localStorage.setItem('isManager', data.is_manager);
-                  // localStorage.setItem('isAdmin', data.is_admin);
-                  // localStorage.setItem('isResepsionis', data.is_resepsionis);
-                  // localStorage.setItem('isPerawat', data.is_perawat);
-                  // localStorage.setItem('isDokter', data.is_dokter);
-                  // localStorage.setItem('isManajemen', data.is_manajemen);
+                    // localStorage.setItem('id', data.id);
+                    // localStorage.setItem('username', data.username);
+                    // localStorage.setItem('roles', JSON.stringify(roles));
+                    // localStorage.setItem('token', data.token);
+                    
+                    // localStorage.setItem('isDev', data.is_dev);
+                    // localStorage.setItem('isManager', data.is_manager);
+                    // localStorage.setItem('isAdmin', data.is_admin);
+                    // localStorage.setItem('isResepsionis', data.is_resepsionis);
+                    // localStorage.setItem('isPerawat', data.is_perawat);
+                    // localStorage.setItem('isDokter', data.is_dokter);
+                    // localStorage.setItem('isManajemen', data.is_manajemen);
 
-                  Swal.fire({
-                      title: 'Sukses!',
-                      html: `Login sukses`,
-                      icon: 'success',
-                      confirmButtonColor: '#008ecc',
-                  })
-                  
-                  history.push("../dashboard");
-                  
+                    Swal.fire({
+                        title: 'Sukses!',
+                        html: `Login sukses`,
+                        icon: 'success',
+                        confirmButtonColor: '#008ecc',
+                    })
+                    
+                    history.push("../dashboard");
+                  } else {
+                    Swal.fire({
+                        title: 'Gagal!',
+                        html: `Login gagal: akun tidak aktif`,
+                        icon: 'error',
+                        confirmButtonColor: '#008ecc',
+                        confirmButtonText: 'Hubungi admin MEDEVA',
+                    })
+                  }    
               } else {
                 Swal.fire({
                     title: 'Gagal!',
@@ -121,7 +130,7 @@ const Home = ({ history, loading, error, loginUserAction }) => {
           } catch (e) {
               Swal.fire({
                 title: 'Error!',
-                html: `Login gagal: ${e}`,
+                html: e,
                 icon: 'error',
                 confirmButtonColor: '#008ecc',
                 confirmButtonText: 'Coba lagi',
@@ -172,7 +181,7 @@ const Home = ({ history, loading, error, loginUserAction }) => {
                         validate={validateEmail}
                         // value={input_login}
                         // onChange={onChange}
-                        // onChange={(e) => setInputLogin(e.target.value)}
+                        // onChange={(e) => setEmail(e.target.value)}
                       />
                       {errors.email && touched.email && (
                         <div className="rounded invalid-feedback invalid-feedback-login d-block">

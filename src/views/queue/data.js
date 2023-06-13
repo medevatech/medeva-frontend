@@ -115,7 +115,7 @@ const Data = ({ match }) => {
   const getSchedule = async (params) => {
     try {
       setIsLoading(true);
-      const res = await scheduleAPI.get("", params);
+      const res = await scheduleAPI.get(params);
       dispatch({ type: "GET_SCHEDULE", payload: res.data.data });
       dispatch({
         type: "GET_TOTAL_PAGE_SCHEDULE",
@@ -131,7 +131,7 @@ const Data = ({ match }) => {
   const getScheduleById = async (id) => {
     try {
       setIsLoading(true);
-      const res = await scheduleAPI.get("", `/${id}`);
+      const res = await scheduleAPI.get(`/${id}`);
       console.log("data jaga id", res.data.data[0]);
       let data = res.data.data[0];
       setScheduleId(data.id);
@@ -192,7 +192,7 @@ const Data = ({ match }) => {
   const getQueue = async (params) => {
     try {
       setIsLoading(true);
-      const res = await queueAPI.get("", params);
+      const res = await queueAPI.get(params);
       dispatch({ type: "GET_QUEUE", payload: res.data.data });
       dispatch({
         type: "GET_TOTAL_PAGE_QUEUE",
@@ -207,7 +207,7 @@ const Data = ({ match }) => {
 
   const onLoadSchedule = async () => {
     try {
-      const response = await scheduleAPI.get("", "?limit=1000");
+      const response = await scheduleAPI.get("?limit=1000");
       // console.log("rak", response);
 
       setSelectedSchedule([]);
@@ -237,7 +237,7 @@ const Data = ({ match }) => {
 
   const onLoadPatient = async () => {
     try {
-      const response = await patientAPI.get("", "?limit=1000");
+      const response = await patientAPI.get("?limit=1000");
       // console.log("rak", response);
 
       setSelectedPatient([]);
