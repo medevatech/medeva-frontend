@@ -111,13 +111,13 @@ const useForm = (callback) => {
             if((isWD === false && isDD === false)) {
                 setErrors(errors => ({
                     ...errors,
-                    wd: 'Kolom ini wajib dipilih salah satu',
+                    // wd: 'Kolom ini wajib dipilih salah satu',
                     dd: 'Kolom ini wajib dipilih salah satu'
                 }))
             } else if((isWD === true && isDD === true)) {
                 setErrors(errors => ({
                     ...errors,
-                    wd: 'Kolom ini tidak boleh dipilih keduanya',
+                    // wd: 'Kolom ini tidak boleh dipilih keduanya',
                     dd: 'Kolom ini tidak boleh dipilih keduanya'
                 }))
             } else if((isWD === true && isDD === false) ||

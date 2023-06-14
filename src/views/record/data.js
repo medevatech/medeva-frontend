@@ -104,7 +104,7 @@ const selectConsume = [
   { label: 'Lainnya', value: 'Lainnya', key: 4, name: 'metode_konsumsi' }
 ];
 
-const Data = ({ match }) => {
+const Data = ({ match, history }) => {
   const dispatch = useDispatch();
   const queueAll = useSelector(state => state.queue);
   const queueTotalPage = useSelector(state => state.queueTotalPage);
@@ -338,6 +338,10 @@ const Data = ({ match }) => {
 
     onLoadDivisi();
   }, [limit, searchName, searchDivisi, sortBy, sortOrder, currentPage]);
+
+  useEffect(() => {
+    console.log(history);
+  }, [ ]);
 
   let startNumber = 1;
 

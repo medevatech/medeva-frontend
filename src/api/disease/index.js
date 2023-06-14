@@ -7,9 +7,9 @@ const disease = {
     const url = api.disease.all + options
     return baseApi.get(url, { headers: getAuthHeader() })
   },
-  getAll: (payloads, options) => {
-    const url = api.disease.getAll + options
-    return baseApi.get(url, payloads, { headers: getAuthHeader() })
+  getAll: (options) => {
+    const url = api.disease.getAll
+    return baseApi.get(url, { headers: getAuthHeader() })
   },
   add: (payloads) => {
     const url = api.disease.all

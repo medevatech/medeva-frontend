@@ -20,7 +20,8 @@ const api = {
   division: {
     all: '/divisi',
     archive: '/divisi/archive',
-    activate: '/divisi/activate'
+    activate: '/divisi/activate',
+    ondistinct: "/divisi/distinct",
   },
   shift: {
     all: "/shift",

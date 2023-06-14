@@ -842,7 +842,7 @@ const VitalSigns = ({ match }) => {
                       </FormGroup>
                     </Colxx>
 
-                    <Colxx sm={3}>
+                    <Colxx md={6} lg={3} className="vs-col-md-6">
                       <FormGroup>
                         <Label for="temperatur">
                           Temperatur<span className="required text-danger" aria-required="true"> *</span>
@@ -868,7 +868,7 @@ const VitalSigns = ({ match }) => {
                       </FormGroup>
                     </Colxx>
 
-                    <Colxx sm={3}>
+                    <Colxx md={6} lg={3} className="vs-col-md-6">
                       <FormGroup>
                         <Label for="tinggi_badan">
                           Tinggi Badan<span className="required text-danger" aria-required="true"> *</span>
@@ -895,7 +895,7 @@ const VitalSigns = ({ match }) => {
                       </FormGroup>
                     </Colxx>
 
-                    <Colxx sm={3}>
+                    <Colxx md={6} lg={3} className="vs-col-md-6">
                       <FormGroup>
                         <Label for="berat_badan">
                           Berat Badan<span className="required text-danger" aria-required="true"> *</span>
@@ -922,7 +922,7 @@ const VitalSigns = ({ match }) => {
                       </FormGroup>
                     </Colxx>
 
-                    <Colxx sm={3}>
+                    <Colxx md={6} lg={3} className="vs-col-md-6">
                       <FormGroup>
                         <Label for="lingkar_perut">
                           Lingkar Perut<span className="required text-danger" aria-required="true"> *</span>
@@ -948,7 +948,7 @@ const VitalSigns = ({ match }) => {
                       </FormGroup>
                     </Colxx>
 
-                    <Colxx sm={6}>
+                    <Colxx md={12} lg={6}>
                       <FormGroup>
                         <Label for="sistole">
                           Tekanan Darah<span className="required text-danger" aria-required="true"> *</span>
@@ -1001,7 +1001,7 @@ const VitalSigns = ({ match }) => {
                       </FormGroup>
                     </Colxx>
 
-                    <Colxx sm={6}>
+                    <Colxx md={12} lg={6}>
                       <FormGroup>
                         <Label for="imt">
                           IMT
@@ -1023,7 +1023,7 @@ const VitalSigns = ({ match }) => {
                       </FormGroup>
                     </Colxx>
 
-                    <Colxx sm={6}>
+                    <Colxx md={6} lg={6} className="vs-col-md-6">
                       <FormGroup>
                         <Label for="respiratory_rate">
                           Tingkat Pernapasan<span className="required text-danger" aria-required="true"> *</span>
@@ -1049,7 +1049,7 @@ const VitalSigns = ({ match }) => {
                       </FormGroup>
                     </Colxx>
 
-                    <Colxx sm={6}>
+                    <Colxx md={6} lg={6} className="vs-col-md-6">
                       <FormGroup>
                         <Label for="heart_rate">
                           Detak Jantung<span className="required text-danger" aria-required="true"> *</span>

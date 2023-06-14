@@ -977,15 +977,15 @@ const Data = ({ match, history, loading, error }) => {
       })
 
       if(data.provinsi && data.kota && data.kecamatan && data.kelurahan) {
-        let id_provinsi = selectedProvince.find(item => item.value === data.provinsi).key;
+        let id_provinsi = selectedProvince.find(item => item.value === data.provinsi).key || '';
         changeKota(id_provinsi, editAddress);
       }
 
-      // let id_kota = selectedCity.find(item => item.value === data.kota).key;
+      // let id_kota = selectedCity.find(item => item.value === data.kota).key || '';
       // console.log('id_kota: ', id_kota);
       // changeKecamatan(id_kota);
 
-      // let id_kecamatan = selectedSubdistrict.find(item => item.value === data.kecamatan).key;
+      // let id_kecamatan = selectedSubdistrict.find(item => item.value === data.kecamatan).key || '';
       // console.log('id_kecamatan ', id_kecamatan);
       // changeKelurahan(id_kecamatan);
     } catch (e) {
@@ -1300,7 +1300,7 @@ const Data = ({ match, history, loading, error }) => {
     //   // console.log('changeKota', selectedCity);
     //   // console.log('status', editAddress.status);
 
-    //   let id_kota = selectedCity.find(item => item.value === editAddress.nama_kota).key;
+    //   let id_kota = selectedCity.find(item => item.value === editAddress.nama_kota).key || '';
     //   changeKecamatan(id_kota, editAddress);
     // }
 
@@ -1308,7 +1308,7 @@ const Data = ({ match, history, loading, error }) => {
     //   // console.log('changeKecamatan', selectedSubdistrict);
     //   // console.log('status', editAddress.status);
 
-    //   let id_kecamatan = selectedSubdistrict.find(item => item.value === editAddress.nama_kecamatan).key;
+    //   let id_kecamatan = selectedSubdistrict.find(item => item.value === editAddress.nama_kecamatan).key || '';
     //   changeKelurahan(id_kecamatan, editAddress);
     // }
 
@@ -1425,7 +1425,7 @@ const Data = ({ match, history, loading, error }) => {
       // console.log('changeKota', selectedCity);
       // console.log('status', editAddress.status);
 
-      let id_kota = selectedCity.find(item => item.value === editAddress.nama_kota).key;
+      let id_kota = selectedCity.find(item => item.value === editAddress.nama_kota).key || '';
       changeKecamatan(id_kota, editAddress);
     }
 
@@ -1433,7 +1433,7 @@ const Data = ({ match, history, loading, error }) => {
       // console.log('changeKecamatan', selectedSubdistrict);
       // console.log('status', editAddress.status);
 
-      let id_kecamatan = selectedSubdistrict.find(item => item.value === editAddress.nama_kecamatan).key;
+      let id_kecamatan = selectedSubdistrict.find(item => item.value === editAddress.nama_kecamatan).key || '';
       changeKelurahan(id_kecamatan, editAddress);
     }
   }, [ editAddress ]);

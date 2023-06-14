@@ -7,6 +7,10 @@ const division = {
     const url = api.division.all + options
     return baseApi.get(url, { headers: getAuthHeader() })
   },
+  getDistinct: (options) => {
+    const url = api.division.ondistinct + options
+    return baseApi.get(url, { headers: getAuthHeader() })
+  },
   add: (payloads) => {
     const url = api.division.all
     return baseApi.post(url, payloads, { headers: getAuthHeader() })

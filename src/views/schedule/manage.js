@@ -106,16 +106,18 @@ const Data = ({ match }) => {
     },
   ]);
 
-  const [tempShift, setTempShift] = useState({
-    id: "",
-    id_karyawan: "",
-    id_klinik: clinicId,
-    id_divisi: divisionId,
-    hari: "",
-    tanggal: "",
-    waktu_mulai: "",
-    waktu_selesai: "",
-  });
+  const [tempShift, setTempShift] = useState([
+    {
+      id: "",
+      id_karyawan: "",
+      id_klinik: clinicId,
+      id_divisi: divisionId,
+      hari: "",
+      tanggal: "",
+      waktu_mulai: "",
+      waktu_selesai: "",
+    },
+  ]);
 
   const addShiftFields = () => {
     let newFieldShift = {
@@ -144,7 +146,7 @@ const Data = ({ match }) => {
   };
 
   const handleShiftChange = (index, event, waktu = null) => {
-    console.log(event);
+    // console.log(event);
     let dataShift = [...shift];
     if (waktu === "tanggal") {
       dataShift[index]["tanggal"] = event;
@@ -164,21 +166,25 @@ const Data = ({ match }) => {
       dataShift[index][event.target.name] = event.target.value;
     }
 
-    console.log(dataShift);
+    // console.log(dataShift);
     setShift(dataShift);
   };
 
   const handleChangeId = (idClinic, idDivision) => {
     setRowSelected(idDivision);
-
-    getScheduleByDivisionId(idDivision);
     setClinicId(idClinic);
     setDivisionId(idDivision);
+    setShift([]);
+    setTempShift([]);
+    getScheduleByDivisionId(idDivision);
+    // if (dataStatus === "update") {
+    //   getScheduleByDivisionId(idDivision);
+    // }
   };
 
   const onShiftSubmit = async (e) => {
     e.preventDefault();
-    console.log(shift);
+    // console.log(shift);
     for (var i = 0; i < shift.length; i++) {
       shift[i].id_klinik = clinicId;
       shift[i].id_divisi = divisionId;
@@ -210,10 +216,10 @@ const Data = ({ match }) => {
   const onShiftAdd = async (shift, idKaryawan) => {
     try {
       const response = await scheduleAPI.add(shift);
-      console.log("shift add", response);
+      // console.log("shift add", response);
       if (response.status === 200) {
         let data = await response.data.data;
-        console.log("shift add", data);
+        // console.log("shift add", data);
         Swal.fire({
           title: "Sukses!",
           html: `Tambah shift sukses`,
@@ -247,10 +253,10 @@ const Data = ({ match }) => {
   const onShiftEdit = async (shift) => {
     try {
       const response = await scheduleAPI.update(shift, shift.id);
-      console.log("shift edit", response);
+      // console.log("shift edit", response);
       if (response.status === 200) {
         let data = await response.data.data;
-        console.log("shift edit", data);
+        // console.log("shift edit", data);
 
         Swal.fire({
           title: "Sukses!",
@@ -287,10 +293,10 @@ const Data = ({ match }) => {
   const onArchiveShift = async (id) => {
     try {
       const response = await scheduleAPI.archive("", id);
-      console.log("shift delete", response);
+      // console.log("shift delete", response);
       if (response.status === 200) {
         let data = await response.data.data;
-        console.log("shift delete", data);
+        // console.log("shift delete", data);
 
         Swal.fire({
           title: "Sukses!",
@@ -374,7 +380,7 @@ const Data = ({ match }) => {
     try {
       setIsLoading(true);
       const res = await divisionAPI.get("", `/${id}`);
-      console.log("data divisi id", res.data.data[0]);
+      // console.log("data divisi id", res.data.data[0]);
       let data = res.data.data[0];
       setDivisionId(data.id);
       setShift({
@@ -396,7 +402,7 @@ const Data = ({ match }) => {
       ]);
       if (response.status === 200) {
         let data = response.data.data;
-        console.log("shift klinik data", data);
+        // console.log("shift klinik data", data);
         for (var i = 0; i < data.length; i++) {
           setSelectedClinic((current) => [
             ...current,
@@ -419,13 +425,13 @@ const Data = ({ match }) => {
   const onLoadDivision = async () => {
     try {
       const response = await divisionAPI.get("", "?limit=1000");
-      console.log("shift divisi", response);
+      // console.log("shift divisi", response);
       setSelectedDivision([
         { label: "Semua", value: "", key: 0, name: "id_divisi" },
       ]);
       if (response.status === 200) {
         let data = response.data.data;
-        console.log("shift divisi data", data);
+        // console.log("shift divisi data", data);
         for (var i = 0; i < data.length; i++) {
           setSelectedDivision((current) => [
             ...current,
@@ -448,11 +454,11 @@ const Data = ({ match }) => {
   const onLoadEmployee = async () => {
     try {
       const response = await employeeAPI.get("", "?limit=1000");
-      console.log("shift employee", response);
+      // console.log("shift employee", response);
       setSelectedEmployee([]);
       if (response.status === 200) {
         let data = response.data.data;
-        console.log("shift employee data", data);
+        // console.log("shift employee data", data);
         for (var i = 0; i < data.length; i++) {
           setSelectedEmployee((current) => [
             ...current,
@@ -473,14 +479,12 @@ const Data = ({ match }) => {
   };
 
   const getScheduleByDivisionId = async (id) => {
-    setShift([]);
-    setTempShift([]);
     try {
-      const res = await scheduleAPI.getByDivision("", `/${id}?searchStatus=1`);
+      const res = await scheduleAPI.getByDivision(`/${id}?searchStatus=1`);
       let data = res.data.data;
-      console.log("databy", data);
+      // console.log("databy", data);
       if (data) {
-        data.map((data, index) => {
+        data.map((data) => {
           const tmpDate = new Date(data.tanggal);
           const tmpStart = new Date(data.waktu_mulai);
           const tmpEnd = new Date(data.waktu_selesai);
@@ -685,9 +689,9 @@ const Data = ({ match }) => {
                             size="xs"
                             className="button-xs"
                             // onClick={() => setSearchDivisi(data.id)}
-                            onClick={() =>
-                              handleChangeId(data.id_klinik, data.id)
-                            }
+                            // onClick={() =>
+                            //   handleChangeId(data.id_klinik, data.id)
+                            // }
                           >
                             <i className="simple-icon-arrow-right-circle"></i>
                           </Button>{" "}
@@ -715,183 +719,187 @@ const Data = ({ match }) => {
             <CardBody>
               <CardTitle>Form Manajemen Jadwal Jaga</CardTitle>
               <FormGroup>
-                {shift.map((input, index) => {
-                  return (
-                    <Row key={index}>
-                      <Colxx sm={3}>
-                        <FormGroup>
-                          <Label for="id_karyawan">
-                            Karyawan
-                            <span
-                              className="required text-danger"
-                              aria-required="true"
-                            >
-                              {" "}
-                              *
-                            </span>
-                          </Label>
-                          <Select
-                            components={{ Input: CustomSelectInput }}
-                            className="react-select"
-                            classNamePrefix="react-select"
-                            name="id_karyawan"
-                            id="id_karyawan"
-                            placeholderText="Pilih Karyawan"
-                            value={selectedEmployee.find(
-                              (item) =>
-                                item.value === shift[index].id_karyawan || ""
-                            )}
-                            options={selectedEmployee}
-                            // isDisabled={disableDivision}
-                            onChange={(event) =>
-                              handleShiftChange(index, event)
-                            }
-                          />
-                        </FormGroup>
-                      </Colxx>
-
-                      <Colxx sm={2}>
-                        <FormGroup>
-                          <Label for="hari">
-                            Hari
-                            <span
-                              className="required text-danger"
-                              aria-required="true"
-                            >
-                              {" "}
-                              **
-                            </span>
-                          </Label>
-                          <Select
-                            components={{ Input: CustomSelectInput }}
-                            className="react-select"
-                            classNamePrefix="react-select"
-                            name="hari"
-                            id="hari"
-                            // placeholderText="Pilih hari"
-                            value={selectDays.find(
-                              (item) => item.value === shift[index].hari || ""
-                            )}
-                            options={selectDays}
-                            onChange={(event) =>
-                              handleShiftChange(index, event)
-                            }
-                            required
-                          />
-                        </FormGroup>
-                      </Colxx>
-
-                      <Colxx sm={2}>
-                        <FormGroup>
-                          <Label for="tanggal">
-                            Tanggal
-                            <span
-                              className="required text-danger"
-                              aria-required="true"
-                            >
-                              {" "}
-                              **
-                            </span>
-                          </Label>
-                          <DatePicker
-                            name="tanggal"
-                            id="tanggal"
-                            selected={shift[index].tanggal}
-                            onChange={(event) => {
-                              handleShiftChange(index, event, "tanggal");
-                            }}
-                            placeholderText="Pilih Tanggal"
-                            dateFormat="yyyy-MM-dd"
-                            autoComplete="off"
-                            required
-                          />
-                        </FormGroup>
-                      </Colxx>
-
-                      <Colxx sm={2}>
-                        <FormGroup>
-                          <Label for="waktu_mulai">
-                            Mulai
-                            <span
-                              className="required text-danger"
-                              aria-required="true"
-                            >
-                              {" "}
-                              *
-                            </span>
-                          </Label>
-                          <DatePicker
-                            name="waktu_mulai"
-                            id="waktu_mulai"
-                            selected={shift[index].waktu_mulai}
-                            onChange={(event) =>
-                              handleShiftChange(index, event, "waktu_mulai")
-                            }
-                            placeholderText="Pilih Waktu Mulai"
-                            showTimeInput
-                            // showTimeSelect
-                            showTimeSelectOnly
-                            timeFormat="HH:mm"
-                            timeIntervals={5}
-                            dateFormat="HH:mm"
-                            autoComplete="off"
-                            timeCaption="Waktu"
-                            timeInputLabel=""
-                            required
-                          />
-                        </FormGroup>
-                      </Colxx>
-
-                      <Colxx sm={2}>
-                        <FormGroup>
-                          <Label for="waktu_selesai">
-                            Selesai
-                            <span
-                              className="required text-danger"
-                              aria-required="true"
-                            >
-                              {" "}
-                              *
-                            </span>
-                          </Label>
-                          <DatePicker
-                            name="waktu_selesai"
-                            id="waktu_selesai"
-                            placeholderText="Pilih Waktu Selesai"
-                            selected={shift[index].waktu_selesai}
-                            onChange={(event) =>
-                              handleShiftChange(index, event, "waktu_selesai")
-                            }
-                            showTimeInput
-                            // showTimeSelect
-                            showTimeSelectOnly
-                            timeFormat="HH:mm"
-                            timeIntervals={5}
-                            dateFormat="HH:mm"
-                            timeCaption="Waktu"
-                            timeInputLabel=""
-                            autoComplete="off"
-                            required
-                          />
-                        </FormGroup>
-                      </Colxx>
-                      {index > 0 && (
-                        <Colxx sm={1}>
-                          <Label>&nbsp;</Label>
-                          <br />
-                          <Button
-                            color="danger"
-                            style={{ float: "right" }}
-                            onClick={() => removeShiftFields(input.id, index)}
-                            className="remove-schedule"
-                          >
-                            <i className="simple-icon-trash"></i>
-                          </Button>
+                {shift?.length ? (
+                  shift.map((input, index) => {
+                    return (
+                      <Row key={index}>
+                        <Colxx sm={3}>
+                          <FormGroup>
+                            <Label for="id_karyawan">
+                              Karyawan
+                              <span
+                                className="required text-danger"
+                                aria-required="true"
+                              >
+                                {" "}
+                                *
+                              </span>
+                            </Label>
+                            <Select
+                              components={{ Input: CustomSelectInput }}
+                              className="react-select"
+                              classNamePrefix="react-select"
+                              name="id_karyawan"
+                              id="id_karyawan"
+                              placeholderText="Pilih Karyawan"
+                              value={selectedEmployee.find(
+                                (item) =>
+                                  item.value === shift[index].id_karyawan || ""
+                              )}
+                              options={selectedEmployee}
+                              // isDisabled={disableDivision}
+                              onChange={(event) =>
+                                handleShiftChange(index, event)
+                              }
+                            />
+                          </FormGroup>
                         </Colxx>
-                      )}
-                    </Row>
-                  );
-                })}
+
+                        <Colxx sm={2}>
+                          <FormGroup>
+                            <Label for="hari">
+                              Hari
+                              <span
+                                className="required text-danger"
+                                aria-required="true"
+                              >
+                                {" "}
+                                **
+                              </span>
+                            </Label>
+                            <Select
+                              components={{ Input: CustomSelectInput }}
+                              className="react-select"
+                              classNamePrefix="react-select"
+                              name="hari"
+                              id="hari"
+                              // placeholderText="Pilih hari"
+                              value={selectDays.find(
+                                (item) => item.value === shift[index].hari || ""
+                              )}
+                              options={selectDays}
+                              onChange={(event) =>
+                                handleShiftChange(index, event)
+                              }
+                              required
+                            />
+                          </FormGroup>
+                        </Colxx>
+
+                        <Colxx sm={2}>
+                          <FormGroup>
+                            <Label for="tanggal">
+                              Tanggal
+                              <span
+                                className="required text-danger"
+                                aria-required="true"
+                              >
+                                {" "}
+                                **
+                              </span>
+                            </Label>
+                            <DatePicker
+                              name="tanggal"
+                              id="tanggal"
+                              selected={shift[index].tanggal}
+                              onChange={(event) => {
+                                handleShiftChange(index, event, "tanggal");
+                              }}
+                              placeholderText="Pilih Tanggal"
+                              dateFormat="yyyy-MM-dd"
+                              autoComplete="off"
+                              required
+                            />
+                          </FormGroup>
+                        </Colxx>
+
+                        <Colxx sm={2}>
+                          <FormGroup>
+                            <Label for="waktu_mulai">
+                              Mulai
+                              <span
+                                className="required text-danger"
+                                aria-required="true"
+                              >
+                                {" "}
+                                *
+                              </span>
+                            </Label>
+                            <DatePicker
+                              name="waktu_mulai"
+                              id="waktu_mulai"
+                              selected={shift[index].waktu_mulai}
+                              onChange={(event) =>
+                                handleShiftChange(index, event, "waktu_mulai")
+                              }
+                              placeholderText="Pilih Waktu Mulai"
+                              showTimeInput
+                              // showTimeSelect
+                              showTimeSelectOnly
+                              timeFormat="HH:mm"
+                              timeIntervals={5}
+                              dateFormat="HH:mm"
+                              autoComplete="off"
+                              timeCaption="Waktu"
+                              timeInputLabel=""
+                              required
+                            />
+                          </FormGroup>
+                        </Colxx>
+
+                        <Colxx sm={2}>
+                          <FormGroup>
+                            <Label for="waktu_selesai">
+                              Selesai
+                              <span
+                                className="required text-danger"
+                                aria-required="true"
+                              >
+                                {" "}
+                                *
+                              </span>
+                            </Label>
+                            <DatePicker
+                              name="waktu_selesai"
+                              id="waktu_selesai"
+                              placeholderText="Pilih Waktu Selesai"
+                              selected={shift[index].waktu_selesai}
+                              onChange={(event) =>
+                                handleShiftChange(index, event, "waktu_selesai")
+                              }
+                              showTimeInput
+                              // showTimeSelect
+                              showTimeSelectOnly
+                              timeFormat="HH:mm"
+                              timeIntervals={5}
+                              dateFormat="HH:mm"
+                              timeCaption="Waktu"
+                              timeInputLabel=""
+                              autoComplete="off"
+                              required
+                            />
+                          </FormGroup>
+                        </Colxx>
+                        {index > 0 && (
+                          <Colxx sm={1}>
+                            <Label>&nbsp;</Label>
+                            <br />
+                            <Button
+                              color="danger"
+                              style={{ float: "right" }}
+                              onClick={() => removeShiftFields(input.id, index)}
+                              className="remove-schedule"
+                            >
+                              <i className="simple-icon-trash"></i>
+                            </Button>
+                          </Colxx>
+                        )}
+                      </Row>
+                    );
+                  })
+                ) : (
+                  <>Data kosong</>
+                )}
 
                 <FormGroup>
                   <Button

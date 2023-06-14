@@ -1120,7 +1120,7 @@ const Data = ({ match }) => {
       })
 
       if(data.provinsi && data.kota && data.kecamatan && data.kelurahan) {
-        let id_provinsi = selectedProvince.find(item => item.value === data.provinsi).key;
+        let id_provinsi = selectedProvince.find(item => item.value === data.provinsi).key || '';
         changeKota(id_provinsi, editAddress);
       }
     } catch (e) {
@@ -1500,12 +1500,12 @@ const Data = ({ match }) => {
 
   useEffect(() => {
     if(selectedCity.length > 0 && editAddress.status === 2) {
-      let id_kota = selectedCity.find(item => item.value === editAddress.nama_kota).key;
+      let id_kota = selectedCity.find(item => item.value === editAddress.nama_kota).key || '';
       changeKecamatan(id_kota, editAddress);
     }
 
     if(selectedSubdistrict.length > 0 && editAddress.status === 3) {
-      let id_kecamatan = selectedSubdistrict.find(item => item.value === editAddress.nama_kecamatan).key;
+      let id_kecamatan = selectedSubdistrict.find(item => item.value === editAddress.nama_kecamatan).key || '';
       changeKelurahan(id_kecamatan, editAddress);
     }
   }, [editAddress]);
@@ -1631,7 +1631,7 @@ const Data = ({ match }) => {
                         </td>
                         <td style={{ textAlign: "center", verticalAlign: 'middle' }}>
                           <Button color="secondary" size="xs" className="button-xs"
-                            onClick={(e) => getPatientById(e, data.id)}
+                            // onClick={(e) => getPatientById(e, data.id)}
                             >
                             <i className="simple-icon-arrow-right-circle"></i>
                           </Button>

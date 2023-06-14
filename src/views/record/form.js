@@ -569,11 +569,11 @@ const FormRecord = ({ match, history }) => {
       })
     }
 
-    console.log('reference', reference);
+    // console.log('reference', reference);
   };
 
   const onRecordSubmit = async (e) => {
-    // e.preventDefault();
+    e.preventDefault();
 
     setRecordSubmit("process");
     record.id_vs = vitalSignsID;
@@ -689,6 +689,20 @@ const FormRecord = ({ match, history }) => {
 
   const onDiagnosisSubmit = async (e) => {
     // e.preventDefault();
+
+    let isError = false;
+
+    for(let [key, value] of Object.entries(record)) {
+      if((key === 'id_penyakit' && value === '') || (key === 'wd' && value === '') || (key === 'dd' && value === '')){
+        validate(e, key, value);
+        isError = true;
+        // return;
+      }
+    }
+
+    if(isError === true) {
+      return;
+    }
 
     for (var i = 0; i < diagnosis.length; i++) {
       diagnosis[i].id_kunjungan = recordID;
@@ -1401,7 +1415,7 @@ const FormRecord = ({ match, history }) => {
 
   const onLoadPenyakit = async () => {
     try {
-      const response = await diseaseAPI.getAll("", "");
+      const response = await diseaseAPI.getAll();
       // console.log(response);
 
       // currentPage === 1 && setSelectDisease([{ label: "Pilih Penyakit" , value: "", key: 0, name: 'id_penyakit' }]);
@@ -2064,7 +2078,7 @@ const FormRecord = ({ match, history }) => {
           confirmButtonColor: "#008ecc",
       });
   
-      history.push("/record");
+      // history.push("/record");
     }
 
     onLoadPenyakit();
@@ -2083,7 +2097,6 @@ const FormRecord = ({ match, history }) => {
   }, [ ]);
 
   useEffect(() => {
-
     if (recordSubmit === "done" && recordID) {
       setTimeout(() => {
 
@@ -2115,14 +2128,12 @@ const FormRecord = ({ match, history }) => {
         setTimeout(() => {
           // if (recordSubmit === "idle") {
             // resetForm();
-            history.push("/record");
+            history.push("/record", patientID);
           // }
         }, 5000);
       }, 3000);
     }
   }, [ recordSubmit ]);
-
-  
 
   useEffect(() => {
     if(dataStatusCheckup === "update" && checkup[0].id !== ''){
@@ -2683,37 +2694,44 @@ const FormRecord = ({ match, history }) => {
                                       <Label for="tipe_diagnosis">
                                           Tipe
                                       </Label>
+                                      <span
+                                        className="required text-danger"
+                                        aria-required="true"
+                                        >
+                                        {" "}
+                                        *
+                                      </span>
                                       <Row>
-                                          <Colxx sm={6} md={5} xl={5}>
-                                              <CustomInput
-                                                checked={diagnosis[index].tipe_wd}
-                                                type="checkbox"
-                                                name="tipe_diagnosis"
-                                                id="tipe_wd"
-                                                label="Working Diagnosis"
-                                                onChange={(event) => handleDiagnosisChange(index, event)}
-                                              />
-                                              {errors.wd && (
-                                                <div className="rounded invalid-feedback d-block">
-                                                  {errors.wd}
-                                                </div>
-                                              )}
-                                          </Colxx>
-                                          <Colxx sm={5} md={6} xl={6}>
-                                              <CustomInput
-                                                checked={diagnosis[index].tipe_dd}
-                                                type="checkbox"
-                                                name="tipe_diagnosis"
-                                                id="tipe_dd"
-                                                label="Differential Diagnosis"
-                                                onChange={(event) => handleDiagnosisChange(index, event)}
-                                              />
-                                              {errors.dd && (
-                                                <div className="rounded invalid-feedback d-block">
-                                                  {errors.dd}
-                                                </div>
-                                              )}
-                                          </Colxx>
+                                        <Colxx sm={6} md={5} xl={5}>
+                                          <CustomInput
+                                            checked={diagnosis[index].tipe_wd}
+                                            type="checkbox"
+                                            name="tipe_diagnosis"
+                                            id="tipe_wd"
+                                            label="Working Diagnosis"
+                                            onChange={(event) => handleDiagnosisChange(index, event)}
+                                          />
+                                          {errors.wd && (
+                                            <div className="rounded invalid-feedback d-block">
+                                              {errors.wd}
+                                            </div>
+                                          )}
+                                        </Colxx>
+                                        <Colxx sm={5} md={6} xl={6}>
+                                          <CustomInput
+                                            checked={diagnosis[index].tipe_dd}
+                                            type="checkbox"
+                                            name="tipe_diagnosis"
+                                            id="tipe_dd"
+                                            label="Differential Diagnosis"
+                                            onChange={(event) => handleDiagnosisChange(index, event)}
+                                          />
+                                          {errors.dd && (
+                                            <div className="rounded invalid-feedback d-block">
+                                              {errors.dd}
+                                            </div>
+                                          )}
+                                        </Colxx>
                                       </Row>
                                   </FormGroup>
                               </Colxx>
