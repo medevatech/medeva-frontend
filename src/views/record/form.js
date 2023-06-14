@@ -587,6 +587,32 @@ const FormRecord = ({ match, history }) => {
       }
     }
 
+    let isError = false;
+
+    for(let [key, value] of Object.entries(diagnosis)) {
+      if((key === 'id_penyakit' && value === '')){
+        validate(e, key, value);
+        isError = true;
+        // return;
+      }
+      
+      if((key === 'wd' && value === '')){
+        validate(e, key, value);
+        isError = true;
+        // return;
+      }
+      
+      if((key === 'dd' && value === '')){
+        validate(e, key, value);
+        isError = true;
+        // return;
+      }
+    }
+
+    if(isError === true) {
+      return;
+    }
+
     // console.log(record);
     if(dataStatusRecord === 'add') {
       try {
@@ -692,7 +718,7 @@ const FormRecord = ({ match, history }) => {
 
     let isError = false;
 
-    for(let [key, value] of Object.entries(record)) {
+    for(let [key, value] of Object.entries(diagnosis)) {
       if((key === 'id_penyakit' && value === '') || (key === 'wd' && value === '') || (key === 'dd' && value === '')){
         validate(e, key, value);
         isError = true;
@@ -2078,7 +2104,10 @@ const FormRecord = ({ match, history }) => {
           confirmButtonColor: "#008ecc",
       });
   
-      // history.push("/record");
+      history.push({
+        pathname: "/record",
+        state: { patientID: patientID, patientData: patientData }
+      });
     }
 
     onLoadPenyakit();
@@ -2711,11 +2740,11 @@ const FormRecord = ({ match, history }) => {
                                             label="Working Diagnosis"
                                             onChange={(event) => handleDiagnosisChange(index, event)}
                                           />
-                                          {errors.wd && (
+                                          {/* {errors.wd && (
                                             <div className="rounded invalid-feedback d-block">
                                               {errors.wd}
                                             </div>
-                                          )}
+                                          )} */}
                                         </Colxx>
                                         <Colxx sm={5} md={6} xl={6}>
                                           <CustomInput

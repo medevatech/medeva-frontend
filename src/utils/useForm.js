@@ -105,22 +105,34 @@ const useForm = (callback) => {
             }
 
             let isWD, isDD = false;
-            name === 'wd' && value === false ? isWD = false : isWD = true;
-            name === 'dd' && value === false ? isDD = false : isDD = true;
+
+            if(name === 'wd' && value === true) {
+                isWD = true;
+              } else if(name === 'wd' && value === false) {
+                isWD = false;
+              }
+              
+              if(name === 'dd' && value === true) {
+                isDD = true;
+              } else if(name === 'dd' && value === false) {
+                isDD = false;
+              }
 
             console.log('isWD', isWD);
             console.log('isDD', isDD);
 
+            // console.log(name, value);
+
             if((isWD === false && isDD === false)) {
                 setErrors(errors => ({
                     ...errors,
-                    // wd: 'Kolom ini wajib dipilih salah satu',
+                    wd: 'Kolom ini wajib dipilih salah satu',
                     dd: 'Kolom ini wajib dipilih salah satu'
                 }))
             } else if((isWD === true && isDD === true)) {
                 setErrors(errors => ({
                     ...errors,
-                    // wd: 'Kolom ini tidak boleh dipilih keduanya',
+                    wd: 'Kolom ini tidak boleh dipilih keduanya',
                     dd: 'Kolom ini tidak boleh dipilih keduanya'
                 }))
             } else if((isWD === true && isDD === false) ||

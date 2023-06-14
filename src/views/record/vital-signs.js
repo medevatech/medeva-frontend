@@ -15,6 +15,7 @@ import {
   Form,
   Table
 } from 'reactstrap';
+import { useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import DatePicker from 'react-datepicker';
 import 'react-tagsinput/react-tagsinput.css';
@@ -67,6 +68,7 @@ let berat_badan = 0; let tinggi_badan = 0;
 
 const VitalSigns = ({ match }) => {
   const dispatch = useDispatch();
+  const location = useLocation();
   const queueAll = useSelector(state => state.queue);
   const queueTotalPage = useSelector(state => state.queueTotalPage);
   const allVitalSigns = useSelector(state => state.allVitalSignsByPatient);
@@ -371,8 +373,8 @@ const VitalSigns = ({ match }) => {
   };
 
   const getVitalSignsByPatientId = async (e, id, data) => {
-    e.preventDefault();
-    resetForm(e);
+    e && e.preventDefault();
+    e && resetForm(e);
     setRowSelected(data.id);
 
     // console.log(data);
@@ -540,7 +542,17 @@ const VitalSigns = ({ match }) => {
         return { ...current, id_pasien: patientID }
       })
     }
-  }, [dataStatus, vitalSigns.id_pasien]);
+  }, [ dataStatus, vitalSigns.id_pasien ]);
+
+  useEffect(() => {
+    // console.log(location.state);
+
+    if (location.state) {
+      setPatientID(location.state.patientID);
+      setPatientData(location.state.patientData);
+      getVitalSignsByPatientId("", location.state.patientID, location.state.patientData);
+    }
+  }, [ ]);
 
   let startNumber = 1;
 

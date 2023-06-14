@@ -23,6 +23,7 @@ import {
   TabContent,
   TabPane,
 } from 'reactstrap';
+import { useLocation } from 'react-router-dom';
 import { Link, NavLink } from 'react-router-dom';
 import classnames from 'classnames';
 import { useDispatch, useSelector } from 'react-redux';
@@ -106,6 +107,7 @@ const selectConsume = [
 
 const Data = ({ match, history }) => {
   const dispatch = useDispatch();
+  const location = useLocation();
   const queueAll = useSelector(state => state.queue);
   const queueTotalPage = useSelector(state => state.queueTotalPage);
   // const allRecord = useSelector(state => state.allRecordByPatient);
@@ -261,31 +263,69 @@ const Data = ({ match, history }) => {
     try {
       const res = await vitalSignsAPI.getByPatient(`/${id}?tanggal=${moment(new Date()).format("YYYY-MM-DD")}`);
       // const res = await vitalSignsAPI.getByPatient(`/${id}`);
-      let data = res.data.data[0];
-      // console.log('vitalSigns', data);
+      let dataVs = res.data.data[0];
+      // console.log('vitalSigns', dataVs);
 
-      setVitalSignsID(data.id);
-
-      setVitalSigns({
-        id_pasien: data.id_pasien,
-        keluhan: data.keluhan,
-        kesadaran: data.kesadaran,
-        temperatur: data.temperatur,
-        tinggi_badan: data.tinggi_badan,
-        berat_badan: data.berat_badan,
-        lingkar_perut: data.lingkar_perut,
-        imt: data.imt,
-        sistole: data.sistole,
-        diastole: data.diastole,
-        respiratory_rate: data.respiratory_rate,
-        heart_rate: data.heart_rate,
-        catatan_tambahan: data.catatan_tambahan,
-        created_at: data.created_at
-      });
-
-      // console.log(vitalSigns);
+      if(dataVs){
+        setVitalSignsID(dataVs.id);
+  
+        setVitalSigns({
+          id_pasien: dataVs.id_pasien,
+          keluhan: dataVs.keluhan,
+          kesadaran: dataVs.kesadaran,
+          temperatur: dataVs.temperatur,
+          tinggi_badan: dataVs.tinggi_badan,
+          berat_badan: dataVs.berat_badan,
+          lingkar_perut: dataVs.lingkar_perut,
+          imt: dataVs.imt,
+          sistole: dataVs.sistole,
+          diastole: dataVs.diastole,
+          respiratory_rate: dataVs.respiratory_rate,
+          heart_rate: dataVs.heart_rate,
+          catatan_tambahan: dataVs.catatan_tambahan,
+          created_at: dataVs.created_at
+        });
+  
+        // console.log(vitalSigns);
+      } else {
+        Swal.fire({
+          title: "Gagal!",
+          html: `Pra-Konsultasi pasien <b>${data.nama_lengkap}</b> hari ini tidak ditemukan, silahkan klik tombol berikut untuk menambah data Pra-Konsultasi`,
+          icon: "error",
+          confirmButtonColor: "#008ecc",
+          confirmButtonText: "Tambah Data Pra-Konsultasi",
+          showDenyButton: true,
+          denyButtonText: "Kembali",
+          reverseButtons: true
+        }).then((result) => {
+          if (result.isConfirmed) {
+            history.push({
+              pathname: "/record/vital-signs",
+              state: { patientID: id, patientData: data }
+            });
+          }
+        })
+      }
     } catch (e) {
       console.log(e);
+
+      Swal.fire({
+        title: "Gagal!",
+        html: `Pra-Konsultasi pasien <b>${data.nama_lengkap}</b> hari ini tidak ditemukan, silahkan klik tombol berikut untuk menambah data Pra-Konsultasi`,
+        icon: "error",
+        confirmButtonColor: "#008ecc",
+        confirmButtonText: "Tambah Pra-Konsultasi",
+        showDenyButton: true,
+        denyButtonText: "Kembali",
+        reverseButtons: true
+      }).then((result) => {
+        if (result.isConfirmed) {
+          history.push({
+            pathname: "/record/vital-signs",
+            state: { patientID: id, patientData: data }
+          });
+        }
+      })
     } finally {
       getAllRecordByPatientId(e, id);
     }
@@ -339,8 +379,15 @@ const Data = ({ match, history }) => {
     onLoadDivisi();
   }, [limit, searchName, searchDivisi, sortBy, sortOrder, currentPage]);
 
+  
   useEffect(() => {
-    console.log(history);
+    // console.log(location.state);
+
+    if (location.state) {
+      setPatientID(location.state.patientID);
+      setPatientData(location.state.patientData);
+      getVitalSignsByPatientId("", location.state.patientID, location.state.patientData);
+    }
   }, [ ]);
 
   let startNumber = 1;
@@ -559,8 +606,7 @@ const Data = ({ match, history }) => {
             <Card className="mb-4">
               <CardBody>
                 <CardTitle>
-                  Riwayat Rekam Medis
-                  { patientData ?
+                  { patientData && vitalSignsID ?
                     <Link to={{
                         pathname: `/record/form`,
                         state: { patientID: patientID, patientData: patientData, watchID: watchID }
@@ -568,8 +614,18 @@ const Data = ({ match, history }) => {
                       <Button color="primary" style={{ float: "right" }} className="mb-4">
                         Tambah
                       </Button>
-                    </Link> :
-                  '' }
+                    </Link>
+                    :
+                    <Link to={{
+                        pathname: `/record/vital-sings`,
+                        state: { patientID: patientID, patientData: patientData }
+                    }}>
+                      <Button color="primary" style={{ float: "right" }} className="mb-4">
+                        Tambah Data Pra-Konsultasi
+                      </Button>
+                    </Link>
+                  }
+                  Riwayat Rekam Medis
                   { allRecord.length > 0 ?
                     <>
                       <br/>
@@ -577,8 +633,15 @@ const Data = ({ match, history }) => {
                       <Label>
                         {patientData.jenis_kelamin}, {new Date().getFullYear() - patientData.tanggal_lahir.substring(0,4)} tahun
                       </Label>
-                    </> :
-                    ' Tidak Ditemukan' }
+                    </> : vitalSignsID ? ' Tidak Ditemukan' :
+                    <>
+                      {' dan Data Pra-Konsultasi Hari Ini Tidak Ditemukan'}
+                      <br/>
+                      <Label>
+                        Silahkan mengisi data Pra-Konsultasi pasien <b>{patientData.nama_lengkap}</b> pada hari ini untuk administrasi data rekam medis
+                      </Label>
+                    </>
+                  }
                 </CardTitle>
                 { allRecord.length > 0 && ( 
                   allRecord.map((data) => ( 
@@ -604,6 +667,7 @@ const Data = ({ match, history }) => {
                         <th>Pemeriksaan Fisik</th>
                         <td>{data.pemeriksaan_fisik ? data.pemeriksaan_fisik : '-'}</td>
                       </tr>
+                      { patientData && vitalSignsID ?
                       <tr>
                         <th></th>
                         <td>
@@ -617,6 +681,7 @@ const Data = ({ match, history }) => {
                             </Link>
                         </td>
                       </tr>
+                      : <></>}
                     </tbody>
                   </Table>
                   ) ) 
