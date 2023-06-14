@@ -84,7 +84,7 @@ const Data = ({ match, history, loading, error }) => {
   const onTreatmentSubmit = async (e) => {
     e.preventDefault();
 
-    for(let [key, value] of Object.entries(service)) {
+    for(let [key, value] of Object.entries(treatment)) {
       if((key === 'nama' && value === '')){
         validate(e, key, value);
         return;
@@ -628,7 +628,7 @@ const Data = ({ match, history, loading, error }) => {
                         placeholder="Nama"
                         value={treatment.nama}
                         onChange={onChange}
-                        required={true}
+                        // required={true}
                       />
                       {errors.nama && (
                         <div className="rounded invalid-feedback d-block">
