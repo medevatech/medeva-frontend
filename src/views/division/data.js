@@ -44,7 +44,7 @@ import loader from '../../assets/img/loading.gif';
 const userData = JSON.parse(localStorage.getItem('user_data'));
 
 const selectStatusF = [
-  { label: "Semua", value: "", key: 0, name: "status" },
+  { label: "Semua Status", value: "", key: 0, name: "status" },
   { label: "Aktif", value: "1", key: 1, name: "status" },
   { label: "Non-Aktif", value: "0", key: 2, name: "status" }
 ];
@@ -59,7 +59,7 @@ const Data = ({ match, history, loading, error }) => {
   const [rowSelected, setRowSelected] = useState(null);
 
   const [selectedKlinik, setSelectedKlinik] = useState([]);
-  const [selectedKlinikF, setSelectedKlinikF] = useState([{ label: "Semua", value: "", key: 0, name: 'id_klinik' }]);
+  const [selectedKlinikF, setSelectedKlinikF] = useState([{ label: "Semua Klinik", value: "", key: 0, name: 'id_klinik' }]);
 
   const [modalArchive, setModalArchive] = useState(false);
   const [modalDelete, setModalDelete] = useState(false);
@@ -77,7 +77,7 @@ const Data = ({ match, history, loading, error }) => {
       // console.log(response);
 
       setSelectedKlinik([{ label: "Pilih Klinik", value: "", key: 0, name: "id_klinik" }]);
-      setSelectedKlinikF([{ label: "Semua", value: "", key: 0, name: 'id_klinik' }]);
+      setSelectedKlinikF([{ label: "Semua Klinik", value: "", key: 0, name: 'id_klinik' }]);
 
       if (response.status === 200) {
         let data = response.data.data;
@@ -569,6 +569,7 @@ const Data = ({ match, history, loading, error }) => {
                     name="klinik"
                     onChange={(e) => setSearchKlinik(e.value)}
                     options={selectedKlinikF}
+                    value={{ label: "Semua Klinik", value: "", key: 0, name: 'id_klinik' }}
                   />
                 </Colxx>
                 <Colxx sm="12" md="6" style={{ paddingRight: '0px' }}>
@@ -583,6 +584,7 @@ const Data = ({ match, history, loading, error }) => {
                       onChange={(e) => setSearchStatus(e.value)}
                       options={selectStatusF}
                       isSearchable={false}
+                      value={{ label: "Semua Status", value: "", key: 0, name: 'status' }}
                     />
                 </Colxx>
               </FormGroup>

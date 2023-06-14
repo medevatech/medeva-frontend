@@ -356,13 +356,13 @@ const Data = ({ match }) => {
   const getDivision = async (params) => {
     try {
       setIsLoading(true);
-      const res = await divisionAPI.get(params);
-      dispatch({ type: "GET_SCHEDULE", payload: res.data.data });
+      const res = await divisionAPI.getDistinct("", params);
+      dispatch({ type: "GET_DIVISION", payload: res.data.data });
       dispatch({
-        type: "GET_TOTAL_PAGE_SCHEDULE",
+        type: "GET_TOTAL_PAGE_DIVISION",
         payload: res.data.pagination.totalPage,
       });
-      setDivisionData(res.data.data);
+      // setDivisionData(res.data.data);
     } catch (e) {
       console.log(e);
     } finally {
@@ -373,7 +373,7 @@ const Data = ({ match }) => {
   const getDivisionId = async (id) => {
     try {
       setIsLoading(true);
-      const res = await divisionAPI.get(`/${id}`);
+      const res = await divisionAPI.get("", `/${id}`);
       console.log("data divisi id", res.data.data[0]);
       let data = res.data.data[0];
       setDivisionId(data.id);
@@ -390,7 +390,7 @@ const Data = ({ match }) => {
 
   const onLoadClinic = async () => {
     try {
-      const response = await clinicAPI.get("?limit=1000");
+      const response = await clinicAPI.get("", "?limit=1000");
       setSelectedClinic([
         { label: "Semua", value: "", key: 0, name: "id_klinik" },
       ]);
@@ -418,7 +418,7 @@ const Data = ({ match }) => {
 
   const onLoadDivision = async () => {
     try {
-      const response = await divisionAPI.get("?limit=1000");
+      const response = await divisionAPI.get("", "?limit=1000");
       console.log("shift divisi", response);
       setSelectedDivision([
         { label: "Semua", value: "", key: 0, name: "id_divisi" },
@@ -430,7 +430,7 @@ const Data = ({ match }) => {
           setSelectedDivision((current) => [
             ...current,
             {
-              label: data[i].nama_divisi,
+              label: data[i].tipe,
               value: data[i].id,
               key: data[i].id,
               name: "id_divisi",
@@ -447,7 +447,7 @@ const Data = ({ match }) => {
 
   const onLoadEmployee = async () => {
     try {
-      const response = await employeeAPI.get("?limit=1000");
+      const response = await employeeAPI.get("", "?limit=1000");
       console.log("shift employee", response);
       setSelectedEmployee([]);
       if (response.status === 200) {
@@ -587,6 +587,7 @@ const Data = ({ match }) => {
   // console.log(searchDivisionF);
   // console.log(divisionId);
   // console.log(clinicId);
+  // console.log("pago", divisionData);
 
   return (
     <>
@@ -647,8 +648,8 @@ const Data = ({ match }) => {
                       </td>
                       <td>&nbsp;</td>
                     </tr>
-                  ) : divisionData.length > 0 ? (
-                    divisionData.map((data) => (
+                  ) : divisionAll.length > 0 ? (
+                    divisionAll.map((data) => (
                       <tr
                         key={data.id}
                         onClick={() => handleChangeId(data.id_klinik, data.id)}
@@ -668,7 +669,7 @@ const Data = ({ match }) => {
                         </th>
                         <td>
                           <h6 className="mt-2" style={{ fontWeight: "bold" }}>
-                            {data.nama_divisi}
+                            {data.tipe}
                           </h6>
                           {data.nama_klinik}
                           <br />

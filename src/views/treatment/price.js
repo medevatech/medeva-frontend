@@ -143,6 +143,7 @@ const Data = ({ match, history, loading, error }) => {
         setTreatmentPrice(current => {
             return { ...current, id_klinik: e ? e.value : ''}
         })
+        validate(e, e.name !== undefined ? e.name : e.target.name ? e.target.name : '', e.value !== undefined ? e.value : e.target.value ? e.target.value : '');
     } else if (e.name === 'id_daftar_tindakan') {
         setTreatmentPrice(current => {
             return { ...current, id_daftar_tindakan: e ? e.value : ''}
@@ -229,7 +230,7 @@ const Data = ({ match, history, loading, error }) => {
     let isError = false;
 
     for(let [key, value] of Object.entries(treatmentPrice)) {
-      if((key === 'id_daftar_tindakan' && value === '') || (key === 'harga' && value === '')){
+      if((key === 'id_klinik' && value === '') || (key === 'id_daftar_tindakan' && value === '') || (key === 'harga' && value === '')){
         validate(e, key, value);
         isError = true;
       //   return;
@@ -791,13 +792,13 @@ const Data = ({ match, history, loading, error }) => {
                   <Colxx lg={4} className="col-tp-4">
                     <FormGroup>
                       <Label for="id_klinik">Klinik
-                        {/* <span
+                        <span
                           className="required text-danger"
                           aria-required="true"
                         >
                           {" "}
                           *
-                        </span> */}
+                        </span>
                       </Label>
                       <Select
                         components={{ Input: CustomSelectInput }}
@@ -810,6 +811,11 @@ const Data = ({ match, history, loading, error }) => {
                         onChange={onChange}
                         // required
                       />
+                      {errors.id_klinik && (
+                        <div className="rounded invalid-feedback d-block">
+                          {errors.id_klinik}
+                        </div>
+                      )}
                     </FormGroup>
                   </Colxx>
 
