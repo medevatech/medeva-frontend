@@ -19,9 +19,9 @@ const service = {
     const url = api.service.all + `/${id}`
     return baseApi.put(url, payloads, { headers: getAuthHeader() })
   },
-  delete: (payloads, id) => {
+  delete: (id) => {
     const url = api.service.all + `/${id}`
-    return baseApi.delete(url, payloads, { headers: getAuthHeader() })
+    return baseApi.delete(url, { headers: getAuthHeader() })
   },
 }
 export default service

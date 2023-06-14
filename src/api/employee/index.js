@@ -31,9 +31,9 @@ const employee = {
     const url = api.employee.activate + `/${id}`
     return baseApi.put(url, payloads, { headers: getAuthHeader() })
   },
-  delete: (payloads, id) => {
+  delete: (id) => {
     const url = api.employee.all + `/${id}`
-    return baseApi.delete(url, payloads, { headers: getAuthHeader() })
+    return baseApi.delete(url, { headers: getAuthHeader() })
   },
 }
 export default employee

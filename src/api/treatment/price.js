@@ -31,9 +31,9 @@ const price = {
     const url = api.treatment.activatePrice + `/${id}`
     return baseApi.put(url, payloads, { headers: getAuthHeader() })
   },
-  delete: (payloads, id) => {
+  delete: (id) => {
     const url = api.treatment.price + `/${id}`
-    return baseApi.delete(url, payloads, { headers: getAuthHeader() })
+    return baseApi.delete(url, { headers: getAuthHeader() })
   },
 }
 export default price

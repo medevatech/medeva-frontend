@@ -2151,7 +2151,7 @@ const FormRecord = ({ match, history }) => {
 
   const onDeleteRecordDiagnose = async (id) => {
     try {
-      const response = await diagnoseAPI.delete("", id);
+      const response = await diagnoseAPI.delete(id);
 
       if (response.status == 200) {
         let data = await response.data.data;
@@ -2191,7 +2191,7 @@ const FormRecord = ({ match, history }) => {
 
   const onDeleteRecordReciept = async (id) => {
     try {
-      const response = await recieptAPI.delete("", id);
+      const response = await recieptAPI.delete(id);
 
       if (response.status == 200) {
         let data = await response.data.data;
@@ -2231,7 +2231,7 @@ const FormRecord = ({ match, history }) => {
 
   const onDeleteRecordCheckup = async (id) => {
     try {
-      const response = await inspectSupportAPI.delete("", id);
+      const response = await inspectSupportAPI.delete(id);
 
       if (response.status == 200) {
         let data = await response.data.data;
@@ -2271,7 +2271,7 @@ const FormRecord = ({ match, history }) => {
 
   const onDeleteRecordTreatment = async (id) => {
     try {
-      const response = await treatmentAPI.delete("", id);
+      const response = await treatmentAPI.delete(id);
 
       if (response.status == 200) {
         let data = await response.data.data;
@@ -2311,7 +2311,7 @@ const FormRecord = ({ match, history }) => {
 
   const onDeleteRecordService = async (id) => {
     try {
-      const response = await serviceAPI.delete("", id);
+      const response = await serviceAPI.delete(id);
 
       if (response.status == 200) {
         let data = await response.data.data;
@@ -2351,7 +2351,7 @@ const FormRecord = ({ match, history }) => {
 
   const onDeleteDiagnoseReference = async (id) => {
     try {
-      const response = await diagnoseReferenceAPI.delete("", id);
+      const response = await diagnoseReferenceAPI.delete(id);
 
       if (response.status == 200) {
         let data = await response.data.data;
@@ -2727,7 +2727,7 @@ const FormRecord = ({ match, history }) => {
                                             onChange={(event) => handleDiagnosisChange(index, event)}
                                           />
                                           {errors.dd && (
-                                            <div className="rounded invalid-feedback d-block">
+                                            <div className="rounded invalid-feedback d-block" style={{ bottom: '170%', padding: '0.75rem 0.65rem' }}>
                                               {errors.dd}
                                             </div>
                                           )}

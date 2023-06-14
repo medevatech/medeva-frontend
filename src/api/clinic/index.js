@@ -23,9 +23,9 @@ const clinic = {
     const url = api.clinic.activate + `/${id}`
     return baseApi.put(url, payloads, { headers: getAuthHeader() })
   },
-  delete: (payloads, id) => {
+  delete: (id) => {
     const url = api.clinic.all + `/${id}`
-    return baseApi.delete(url, payloads, { headers: getAuthHeader() })
+    return baseApi.delete(url, { headers: getAuthHeader() })
   },
 }
 export default clinic

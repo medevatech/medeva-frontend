@@ -398,7 +398,7 @@ const Data = ({ match, history, loading, error }) => {
     e.preventDefault();
 
     try {
-      const response = await serviceAPI.delete("", serviceID);
+      const response = await serviceAPI.delete(serviceID);
 
       if (response.status == 200) {
         let data = await response.data.data;

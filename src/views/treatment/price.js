@@ -557,7 +557,7 @@ const Data = ({ match, history, loading, error }) => {
     e.preventDefault();
 
     try {
-      const response = await treatmentPriceAPI.delete("", treatmentID);
+      const response = await treatmentPriceAPI.delete(treatmentID);
 
       if (response.status == 200) {
         let data = await response.data.data;

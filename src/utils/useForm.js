@@ -108,6 +108,9 @@ const useForm = (callback) => {
             name === 'wd' && value === false ? isWD = false : isWD = true;
             name === 'dd' && value === false ? isDD = false : isDD = true;
 
+            console.log('isWD', isWD);
+            console.log('isDD', isDD);
+
             if((isWD === false && isDD === false)) {
                 setErrors(errors => ({
                     ...errors,

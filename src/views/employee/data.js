@@ -1215,7 +1215,7 @@ const Data = ({ match, history, loading, error }) => {
     e.preventDefault();
 
     try {
-      const response = await employeeAPI.delete("", employeeID);
+      const response = await employeeAPI.delete(employeeID);
 
       if (response.status == 200) {
         let data = await response.data.data;

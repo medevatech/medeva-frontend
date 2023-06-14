@@ -1340,7 +1340,7 @@ const Data = ({ match }) => {
     e.preventDefault();
 
     try {
-      const response = await patientAPI.delete("", patientID);
+      const response = await patientAPI.delete(patientID);
 
       if (response.status == 200) {
         let data = await response.data.data;
@@ -1384,7 +1384,7 @@ const Data = ({ match }) => {
 
   const onDeletePatientAllergy = async (id) => {
     try {
-      const response = await patientAllergyAPI.delete("", id);
+      const response = await patientAllergyAPI.delete(id);
 
       if (response.status == 200) {
         let data = await response.data.data;
@@ -1424,7 +1424,7 @@ const Data = ({ match }) => {
 
   const onDeletePatientInsurance = async (id) => {
     try {
-      const response = await participantAPI.delete("", id);
+      const response = await participantAPI.delete(id);
 
       if (response.status == 200) {
         let data = await response.data.data;
