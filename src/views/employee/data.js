@@ -836,8 +836,7 @@ const Data = ({ match, history, loading, error }) => {
     try {
       setIsLoading(true);
       const res = await employeeAPI.get(params);
-
-      console.log(res);
+      // console.log(res);
 
       dispatch({type: "GET_EMPLOYEE", payload: res.data.data});
       dispatch({type: "GET_TOTAL_PAGE_EMPLOYEE", payload: res.data.pagination.totalPage});

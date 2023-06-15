@@ -263,58 +263,42 @@ const Data = ({ match, history }) => {
     try {
       const res = await vitalSignsAPI.getByPatient(`/${id}?tanggal=${moment(new Date()).format("YYYY-MM-DD")}`);
       // const res = await vitalSignsAPI.getByPatient(`/${id}`);
+      // console.log('res', res);
+
       let dataVs = res.data.data[0];
       // console.log('vitalSigns', dataVs);
 
-      if(dataVs){
-        setVitalSignsID(dataVs.id);
-  
-        setVitalSigns({
-          id_pasien: dataVs.id_pasien,
-          keluhan: dataVs.keluhan,
-          kesadaran: dataVs.kesadaran,
-          temperatur: dataVs.temperatur,
-          tinggi_badan: dataVs.tinggi_badan,
-          berat_badan: dataVs.berat_badan,
-          lingkar_perut: dataVs.lingkar_perut,
-          imt: dataVs.imt,
-          sistole: dataVs.sistole,
-          diastole: dataVs.diastole,
-          respiratory_rate: dataVs.respiratory_rate,
-          heart_rate: dataVs.heart_rate,
-          catatan_tambahan: dataVs.catatan_tambahan,
-          created_at: dataVs.created_at
-        });
-  
-        // console.log(vitalSigns);
-      } else {
-        Swal.fire({
-          title: "Gagal!",
-          html: `Pra-Konsultasi pasien <b>${data.nama_lengkap}</b> hari ini tidak ditemukan, silahkan klik tombol berikut untuk menambah data Pra-Konsultasi`,
-          icon: "error",
-          confirmButtonColor: "#008ecc",
-          confirmButtonText: "Tambah Data Pra-Konsultasi",
-          showDenyButton: true,
-          denyButtonText: "Kembali",
-          reverseButtons: true
-        }).then((result) => {
-          if (result.isConfirmed) {
-            history.push({
-              pathname: "/record/vital-signs",
-              state: { patientID: id, patientData: data }
-            });
-          }
-        })
-      }
+      setVitalSignsID(dataVs.id);
+
+      setVitalSigns({
+        id_pasien: dataVs.id_pasien,
+        keluhan: dataVs.keluhan,
+        kesadaran: dataVs.kesadaran,
+        temperatur: dataVs.temperatur,
+        tinggi_badan: dataVs.tinggi_badan,
+        berat_badan: dataVs.berat_badan,
+        lingkar_perut: dataVs.lingkar_perut,
+        imt: dataVs.imt,
+        sistole: dataVs.sistole,
+        diastole: dataVs.diastole,
+        respiratory_rate: dataVs.respiratory_rate,
+        heart_rate: dataVs.heart_rate,
+        catatan_tambahan: dataVs.catatan_tambahan,
+        created_at: dataVs.created_at
+      });
+
+      // console.log(vitalSigns);
     } catch (e) {
       console.log(e);
+
+      setVitalSignsID("");
 
       Swal.fire({
         title: "Gagal!",
         html: `Pra-Konsultasi pasien <b>${data.nama_lengkap}</b> hari ini tidak ditemukan, silahkan klik tombol berikut untuk menambah data Pra-Konsultasi`,
         icon: "error",
         confirmButtonColor: "#008ecc",
-        confirmButtonText: "Tambah Pra-Konsultasi",
+        confirmButtonText: "Tambah Data Pra-Konsultasi",
         showDenyButton: true,
         denyButtonText: "Kembali",
         reverseButtons: true

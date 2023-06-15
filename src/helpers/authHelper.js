@@ -15,7 +15,8 @@ const ProtectedRoute = ({
         if (roles) {
           // roles.filter(element => currentUser.roles.includes(element)) ? console.log(true) : console.log(false);
           // if (roles.includes(currentUser.roles)) {
-          if (roles.filter(element => currentUser.roles.includes(element))) {
+          // if (roles.filter(element => currentUser.roles.includes(element))) {
+          if (roles.includes(currentUser.roles.toString())) {
             return <Component {...props} />;
           }
           return (

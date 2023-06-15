@@ -4,7 +4,7 @@ import { Redirect, useLocation } from 'react-router-dom';
 function PrivateRoute({ children }) {
   const location = useLocation();
 
-  if (!localStorage.getItem('token')) {
+  if (!JSON.parse(localStorage.getItem('user_data')).token) {
     return <Redirect to='../' state={{ from: location }} />
   }
 

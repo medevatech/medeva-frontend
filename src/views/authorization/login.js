@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Row, Card, CardTitle, Label, FormGroup, Button, Input, Form } from 'reactstrap';
 import { NavLink } from 'react-router-dom';
 import { connect } from 'react-redux';
@@ -15,6 +15,11 @@ import Swal from 'sweetalert2';
 const Home = ({ history, loading, error }) => {
   const [ login, setLogin ] = useState({ input_login: 'dev@medeva.tech', password: 'dev123'});
   const { errors, validate } = useForm();
+
+  useEffect(() => {
+    localStorage.getItem('user_data') && JSON.parse(localStorage.getItem('user_data')).token ? history.push("/dashboard") : history.push("/login");
+  }, [ ]);
+
 
   const onChange = (e) => {
     // console.log('e', e);
