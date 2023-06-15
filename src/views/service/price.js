@@ -173,6 +173,7 @@ const Data = ({ match, history, loading, error }) => {
   const onServiceListSubmit = async (e) => {
     e.preventDefault();
     setModalAddList(false);
+    onLoadKlinik();
     onLoadDaftarLayanan();
 
     for(let [key, value] of Object.entries(service)) {
@@ -334,6 +335,7 @@ const Data = ({ match, history, loading, error }) => {
     setServiceID('');
     setServiceName('');
     setServiceStatus(0);
+    setService({nama: ''});
 
     if(scroll) {
       if(window.innerWidth < 1280){
@@ -859,7 +861,7 @@ const Data = ({ match, history, loading, error }) => {
                       <Button
                         color="primary"
                         className="btn-sm"
-                        onClick={() => setModalAddList(true)}
+                        onClick={() => { setModalAddList(true), setService({nama: ''}) }}
                         style={{ borderRadius: '0 5px 5px 0', padding: '0.45rem', border: '2px solid #008ecc' }}
                       >
                         Tambah
@@ -975,8 +977,9 @@ const Data = ({ match, history, loading, error }) => {
           isOpen={modalAddList}
           toggle={() => setModalAddList(!modalAddList)}
         >
+          <Form className="av-tooltip tooltip-right-top" onSubmit={onServiceListSubmit}>
           <ModalHeader>Tambah Layanan</ModalHeader>
-          <ModalBody className="av-tooltip tooltip-right-top" onSubmit={onServiceListSubmit}>
+          <ModalBody>
             <FormGroup>
               <Label for="nama">
                 Nama
@@ -1025,6 +1028,7 @@ const Data = ({ match, history, loading, error }) => {
               </Button>
             </Colxx>
           </ModalFooter>
+          </Form>
         </Modal>
           
       </Row>

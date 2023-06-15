@@ -118,8 +118,8 @@ const useForm = (callback) => {
                 isDD = false;
               }
 
-            console.log('isWD', isWD);
-            console.log('isDD', isDD);
+            // console.log('isWD', isWD);
+            // console.log('isDD', isDD);
 
             // console.log(name, value);
 

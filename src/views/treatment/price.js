@@ -334,6 +334,7 @@ const Data = ({ match, history, loading, error }) => {
     setTreatmentID('');
     setTreatmentName('');
     setTreatmentStatus(0);
+    setTreatment({nama: ''});
 
     if(scroll) {
       if(window.innerWidth < 1280){
@@ -859,7 +860,7 @@ const Data = ({ match, history, loading, error }) => {
                       <Button
                         color="primary"
                         className="btn-sm"
-                        onClick={() => setModalAddList(true)}
+                        onClick={() => { setModalAddList(true), setTreatment({nama: ''}) }}
                         style={{ borderRadius: '0 5px 5px 0', padding: '0.45rem', border: '2px solid #008ecc' }}
                       >
                         Tambah
@@ -975,6 +976,7 @@ const Data = ({ match, history, loading, error }) => {
           isOpen={modalAddList}
           toggle={() => setModalAddList(!modalAddList)}
         >
+          <Form className="av-tooltip tooltip-right-top" onSubmit={onTreatmentListSubmit}>
           <ModalHeader>Tambah Tindakan</ModalHeader>
           <ModalBody>
             <FormGroup>
@@ -1018,11 +1020,14 @@ const Data = ({ match, history, loading, error }) => {
                 Batal
               </Button>
               &nbsp;&nbsp;
-              <Button color="primary" onClick={(e) => onTreatmentListSubmit(e)}>
+              <Button color="primary"
+                // onClick={(e) => onTreatmentListSubmit(e)}
+              >
                 Simpan
               </Button>
             </Colxx>
           </ModalFooter>
+          </Form>
         </Modal>
           
       </Row>
