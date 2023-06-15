@@ -124,6 +124,170 @@ var urlKelurahan = "https://ibnux.github.io/data-indonesia/kelurahan/";
 
 const Data = ({ match, history, loading, error }) => {
   const { errors, validate } = useForm();
+
+  const [selectedRole, setSelectedRole] = useState([]);
+  const [selectedWP, setSelectedWP] = useState("");
+  const [selectedType, setSelectedType] = useState("");
+  const [selectedSpecialist, setSelectedSpecialist] = useState("");
+  const [selectedGender, setSelectedGender] = useState("");
+  const [selectedMaritalStatus, setSelectedMaritalStatus] = useState("");
+
+  const [selectedProvince, setSelectedProvince] = useState([]);
+  const [selectedCity, setSelectedCity] = useState([]);
+  const [selectedSubdistrict, setSelectedSubdistrict] = useState([]);
+  const [selectedWard, setSelectedWard] = useState([]);
+
+  const [selectProvince, setSelectProvince] = useState([]);
+  const [selectCity, setSelectCity] = useState([]);
+  const [selectSubdistrict, setSelectSubdistrict] = useState([]);
+  const [selectWard, setSelectWard] = useState([]);
+
+  const [disabledSpecialist, setDisabledSpecialist] = useState(true);
+  const [employeeID, setEmployeeID] = useState('');
+
+  const [employee, setEmployee] = useState({
+    username: '',
+    nama: '',
+    email: '',
+    password: '',
+    is_dev: 0,
+    is_manager: 0,
+    is_admin: 0,
+    is_resepsionis: 0,
+    is_perawat: 0,
+    is_dokter: 0,
+    is_manajemen: 0,
+    jenis_kelamin: '',
+    nomor_kitas: '',
+    tipe_izin: '',
+    nomor_izin: '',
+    kadaluarsa_izin: '',
+    nomor_hp: '',
+    tempat_lahir: '',
+    tanggal_lahir: '',
+    alamat: '',
+    kode_pos: '',
+    provinsi: '',
+    kota: '',
+    kecamatan: '',
+    kelurahan: '',
+    status_menikah: '',
+    tipe: '',
+    spesialis: ''
+  });
+
+  const [ editAddress, setEditAddress ] = useState({
+    status: 0,
+    nama_kota: '',
+    nama_kecamatan: '',
+    nama_kelurahan: ''
+  });
+
+  const onLoadProvinsi = async () => {
+    try {
+      const response = await fetch(urlProvinsi);
+      // console.log(response);
+
+      if (response.ok) {
+        let data = await response.json();
+        for (var i = 0; i < data.length; i++) {
+          setSelectedProvince((current) => [
+            ...current,
+            { label: data[i].nama, value: data[i].nama, key: data[i].id, name: 'provinsi' },
+          ]);
+        }
+      } else {
+        throw Error(`Error status: ${response.status}`);
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  const changeKota = async (id_prov, eA = null) => {
+    try {
+      const response = await fetch(`${urlKabupaten}/${id_prov}.json`);
+      // console.log(response);
+
+      if (response.ok) {
+        let data = await response.json();
+        setSelectedCity([]);
+        for (var i = 0; i < data.length; i++) {
+          setSelectedCity((current) => [
+            ...current,
+            { label: data[i].nama, value: data[i].nama, key: data[i].id, name: 'kota' },
+          ]);
+        }
+
+        if(eA) {
+          setEditAddress(current => {
+              return { ...current, status: 2 }
+          })
+        }
+      } else {
+        throw Error(`Error status: ${response.status}`);
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  const changeKecamatan = async (id_kota, eA = null) => {
+    try {
+      const response = await fetch(`${urlKecamatan}/${id_kota}.json`);
+      // console.log(response);
+
+      if (response.ok) {
+        let data = await response.json();
+        setSelectedSubdistrict([]);
+        for (var i = 0; i < data.length; i++) {
+          setSelectedSubdistrict((current) => [
+            ...current,
+            { label: data[i].nama, value: data[i].nama, key: data[i].id, name: 'kecamatan' },
+          ]);
+        }
+      } else {
+        throw Error(`Error status: ${response.status}`);
+      }
+
+      if(eA) {
+        setEditAddress(current => {
+            return { ...current, status: 3 }
+        })
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  const changeKelurahan = async (id_kecamatan, eA = null) => {
+    try {
+      const response = await fetch(`${urlKelurahan}/${id_kecamatan}.json`);
+      // console.log(response);
+
+      if (response.ok) {
+        let data = await response.json();
+        setSelectedWard([]);
+        for (var i = 0; i < data.length; i++) {
+          setSelectedWard((current) => [
+            ...current,
+            { label: data[i].nama, value: data[i].nama, key: data[i].id, name: 'kelurahan' },
+          ]);
+        }
+
+        if(eA) {
+          setEditAddress(current => {
+              return { ...current, status: 4 }
+          })
+        }
+      } else {
+        throw Error(`Error status: ${response.status}`);
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
   const onChange = (e) => {
     // console.log('e', e);
 
@@ -608,12 +772,14 @@ const Data = ({ match, history, loading, error }) => {
   useEffect(() => {
     getEmployeeById(userData.id);
     onLoadProvinsi();
+  }, [ ]);
 
+  useEffect(() => {
     if(selectedCity.length > 0 && editAddress.status === 2) {
       // console.log('changeKota', selectedCity);
       // console.log('status', editAddress.status);
 
-      let id_kota = selectedCity.find(item => item.value === editAddress.nama_kota).key;
+      let id_kota = selectedCity.find(item => item.value === editAddress.nama_kota).key || '';
       changeKecamatan(id_kota, editAddress);
     }
 
@@ -621,10 +787,12 @@ const Data = ({ match, history, loading, error }) => {
       // console.log('changeKecamatan', selectedSubdistrict);
       // console.log('status', editAddress.status);
 
-      let id_kecamatan = selectedSubdistrict.find(item => item.value === editAddress.nama_kecamatan).key;
+      let id_kecamatan = selectedSubdistrict.find(item => item.value === editAddress.nama_kecamatan).key || '';
       changeKelurahan(id_kecamatan, editAddress);
     }
+  }, [ editAddress ]);
 
+  useEffect(() => {
     if(selectedRole) {
         selectedRole.includes('Developer') ?
           setEmployee(current => {
@@ -684,8 +852,7 @@ const Data = ({ match, history, loading, error }) => {
 
         // console.log('selectedRole onUpdate', selectedRole);
       }
-  // }, [ editAddress, selectedRole ]);
-  }, [ ]);
+  }, [ selectedRole ]);
 
   return (
     <AppLayout>
@@ -1058,31 +1225,6 @@ const Data = ({ match, history, loading, error }) => {
                           id="tanggal_lahir"
                           placeholder="Tanggal Lahir"
                           value={employee.tanggal_lahir}
-                          onChange={onChange}
-                        />
-                      </FormGroup>
-                    </Colxx>
-
-                    <Colxx sm={4}>
-                      <FormGroup>
-                        <Label for="tipe_izin">
-                          Tipe Izin
-                          <span
-                            className="required text-danger"
-                            aria-required="true"
-                          >
-                            {" "}
-                            *
-                          </span>
-                        </Label>
-                        <Select
-                          components={{ Input: CustomSelectInput }}
-                          className="react-select"
-                          classNamePrefix="react-select"
-                          name="tipe_izin"
-                          id="tipe_izin"
-                          options={selectWP}
-                          value={selectWP.find(item => item.value === employee.tipe_izin) || ''}
                           onChange={onChange}
                         />
                       </FormGroup>

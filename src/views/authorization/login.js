@@ -16,6 +16,21 @@ const Home = ({ history, loading, error }) => {
   const [ login, setLogin ] = useState({ input_login: 'dev@medeva.tech', password: 'dev123'});
   const { errors, validate } = useForm();
 
+  // const parseJwt = (token) => {
+  //   var base64Url = token.split('.')[1]
+  //   var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/')
+  //   var jsonPayload = decodeURIComponent(
+  //     atob(base64)
+  //       .split('')
+  //       .map(function (c) {
+  //         return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)
+  //       })
+  //       .join('')
+  //   )
+  
+  //   return JSON.parse(jsonPayload)  
+  // }
+
   useEffect(() => {
     localStorage.getItem('user_data') && JSON.parse(localStorage.getItem('user_data')).token ? history.push("/dashboard") : history.push("/login");
   }, [ ]);
@@ -102,6 +117,25 @@ const Home = ({ history, loading, error }) => {
             // localStorage.setItem('isPerawat', data.is_perawat);
             // localStorage.setItem('isDokter', data.is_dokter);
             // localStorage.setItem('isManajemen', data.is_manajemen);
+            
+            // let isAlreadyExpired = false;
+            // let tenSeconds = new Date().getTime() + 10000;
+            
+            // if(isAlreadyExpired === false){
+            //   setInterval(() => {
+            //     const tokenExpiredAt = parseJwt(data.token).exp;
+            //     // isAlreadyExpired = new Date().getTime() > new Date(tokenExpiredAt * 1000).getTime();
+            //     isAlreadyExpired = new Date().getTime() > tenSeconds;
+            //     if (isAlreadyExpired) {
+            //       localStorage.clear();
+            //       history.push("/login");
+            //     }
+
+            //     console.log('tenSeconds', tenSeconds);
+            //     // console.log('tokenExpiredAt', tokenExpiredAt);
+            //     console.log('isAlreadyExpired', isAlreadyExpired);
+            //   }, 1000);
+            // }
 
             Swal.fire({
                 title: 'Sukses!',

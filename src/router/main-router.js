@@ -1,12 +1,13 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
     BrowserRouter as Router,
     Route,
     Switch,
-    Redirect,
+    Redirect
   } from 'react-router-dom';
 // import PrivateRoute from './components/PrivateRoute';
 import { ProtectedRoute } from '../helpers/authHelper';
+import Swal from "sweetalert2";
 
 const Error = React.lazy(() =>
   import(/* webpackChunkName: "views-error" */ '../views/error')
@@ -54,7 +55,61 @@ const Schedule = React.lazy(() =>
   import(/* webpackChunkName: "views-schedule" */ '../views/schedule')
 );
 
-const MainRouter = () => {
+const userData = JSON.parse(localStorage.getItem('user_data'));
+
+const MainRouter = ( ) => {
+    const parseJwt = (token) => {
+      var base64Url = token.split('.')[1]
+      var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/')
+      var jsonPayload = decodeURIComponent(
+        atob(base64)
+          .split('')
+          .map(function (c) {
+            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)
+          })
+          .join('')
+      )
+    
+      return JSON.parse(jsonPayload);
+    }
+    
+    useEffect(() => {
+      if(userData && userData.token) {
+        let isAlreadyExpired = false;
+        let tenSeconds = new Date().getTime() + 3000;
+
+        let url = window.location.href.split('/');
+        
+        if(isAlreadyExpired === false){
+          setInterval(() => {
+            const tokenExpiredAt = parseJwt(userData.token).exp;
+            isAlreadyExpired = new Date().getTime() > new Date(tokenExpiredAt * 1000).getTime();
+            // isAlreadyExpired = new Date().getTime() > tenSeconds;
+            if (isAlreadyExpired) {
+              // localStorage.removeItem('user_data');
+              localStorage.clear();
+
+              Swal.fire({
+                  title: 'Gagal!',
+                  html: `Sesi akun Anda telah habis, silahkan melakukan Login ulang`,
+                  icon: 'error',
+                  confirmButtonColor: '#008ecc',
+                  // confirmButtonText: 'Hubungi admin MEDEVA',
+              });
+
+              setTimeout(() => {
+                window.location.href = url[0] + '//' + url[2];
+              }, 3000);
+            }
+      
+            // console.log('tenSeconds', tenSeconds);
+            // console.log('tokenExpiredAt', tokenExpiredAt);
+            // console.log('isAlreadyExpired', isAlreadyExpired);
+          }, 1000);
+        }
+      }
+    }, [ ]);
+
     return (
       // <Provider store={store}>
         <Router>

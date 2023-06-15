@@ -35,6 +35,8 @@ const api = {
     ondvs: "/jaga/on-divisi",
     onemployee: "/jaga/on-employee",
     archive: "/jaga/archive",
+    distinct: "/jaga/distinct",
+    bytoday: "/jaga/dvs",
   },
   patient: {
     all: '/pasien',
@@ -55,7 +57,10 @@ const api = {
     all: '/peserta',
     patient: '/peserta/pasien'
   },
-  queue: '/antrian',
+  queue: {
+    all: "/antrian",
+    sdiv: "/antrian/division",
+  },
   vitalSigns: {
     all:  '/vital-signs',
     patient: '/vital-signs/pasien'
