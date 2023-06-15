@@ -1991,11 +1991,7 @@ const Data = ({ match, history, loading, error }) => {
                         classNamePrefix="react-select"
                         name="provinsi"
                         id="provinsi"
-                        // value={selectedProvince}
-                        // onChange={setSelectedProvince}
-                        // options={selectProvince}
                         options={selectedProvince}
-                        // value={selectProvince}
                         value={selectedProvince.find(item => item.value === employee.provinsi) || { label: "Pilih Provinsi", value: "", key: 0, name: 'provinsi' }}
                         onChange={onChange}
                       />
@@ -2011,11 +2007,7 @@ const Data = ({ match, history, loading, error }) => {
                         classNamePrefix="react-select"
                         name="kota"
                         id="kota"
-                        // value={selectedCity}
-                        // onChange={setSelectedCity}
-                        // options={selectCity}
                         options={selectedCity}
-                        // value={selectCity}
                         value={selectedCity.find(item => item.value === employee.kota) || { label: "Pilih Kota / Kabupaten", value: "", key: 0, name: 'kota' }}
                         onChange={onChange}
                       />
@@ -2031,11 +2023,7 @@ const Data = ({ match, history, loading, error }) => {
                         classNamePrefix="react-select"
                         name="kecamatan"
                         id="kecamatan"
-                        // value={selectedSubdistrict}
-                        // onChange={setSelectedSubdistrict}
-                        // options={selectSubdistrict}
                         options={selectedSubdistrict}
-                        // value={selectSubdistrict}
                         value={selectedSubdistrict.find(item => item.value === employee.kecamatan) || { label: "Pilih Kecamatan", value: "", key: 0, name: 'kecamatan' }}
                         onChange={onChange}
                       />
@@ -2051,11 +2039,7 @@ const Data = ({ match, history, loading, error }) => {
                         classNamePrefix="react-select"
                         name="kelurahan"
                         id="kelurahan"
-                        // value={selectedWard}
-                        // onChange={setSelectedWard}
-                        // options={selectWard}
                         options={selectedWard}
-                        // value={selectWard}
                         value={selectedWard.find(item => item.value === employee.kelurahan) || { label: "Pilih Kelurahan", value: "", key: 0, name: 'kelurahan' }}
                         onChange={onChange}
                       />
