@@ -203,6 +203,7 @@ const Data = ({ match, history, loading, error }) => {
   const employeeTotalPage = useSelector(state => state.employeeTotalPage);
   const { errors, validate } = useForm();
 
+  const [tableClass, setTableClass] = useState('');
   const [dataStatus, setDataStatus] = useState("add");
   const [rowSelected, setRowSelected] = useState(null);
 
@@ -840,6 +841,10 @@ const Data = ({ match, history, loading, error }) => {
 
       dispatch({type: "GET_EMPLOYEE", payload: res.data.data});
       dispatch({type: "GET_TOTAL_PAGE_EMPLOYEE", payload: res.data.pagination.totalPage});
+
+      if(res.data.data.length > 0) {
+        setTableClass('table-hover');
+      }
     } catch (e) {
       console.log(e);
     } finally {
@@ -1593,7 +1598,7 @@ const Data = ({ match, history, loading, error }) => {
                     // onChange={setSelectedTypeF}
                     onChange={(e) => setSearchTipe(e.value)}
                     options={selectTypeF.filter(roleChoices => roleChoices.label != 'Manajemen').map(roleChoices => roleChoices)}
-                    value={{ label: "Semua Tipe", value: "", key: 0, name: "tipe" }}
+                    defaultValue={{ label: "Semua Tipe", value: "", key: 0, name: "tipe" }}
                     isSearchable={false}
                   /> }
                   { userData.roles.includes('isDev') &&
@@ -1606,7 +1611,7 @@ const Data = ({ match, history, loading, error }) => {
                     // onChange={setSelectedTypeF}
                     onChange={(e) => setSearchTipe(e.value)}
                     options={selectTypeF}
-                    value={{ label: "Semua Tipe", value: "", key: 0, name: "tipe" }}
+                    defaultValue={{ label: "Semua Tipe", value: "", key: 0, name: "tipe" }}
                     isSearchable={false}
                   /> }
                 </Colxx>
@@ -1623,7 +1628,7 @@ const Data = ({ match, history, loading, error }) => {
                     // onChange={setSelectedSpecialistF}
                     onChange={(e) => setSearchSpesialis(e.value)}
                     options={selectSpecialistF}
-                    value={{ label: "Semua Spesialisasi", value: "", key: 0, name: "spesialis" }}
+                    defaultValue={{ label: "Semua Spesialisasi", value: "", key: 0, name: "spesialis" }}
                   />
                 </Colxx>
                 <Colxx sm="12" md="12" style={{ paddingLeft: '0px', paddingRight: '0px' }} className="mt-3">
@@ -1637,7 +1642,7 @@ const Data = ({ match, history, loading, error }) => {
                     name="status"
                     onChange={(e) => setSearchStatus(e.value)}
                     options={selectStatusF}
-                    value={{ label: "Semua Status", value: "", key: 0, name: "status" }}
+                    defaultValue={{ label: "Semua Status", value: "", key: 0, name: "status" }}
                     isSearchable={false}
                   />
                 </Colxx>
@@ -1656,7 +1661,7 @@ const Data = ({ match, history, loading, error }) => {
                   </Button>
                 </InputGroupAddon>
               </InputGroup>
-              <Table hover>
+              <Table className={tableClass}>
                 <thead>
                   <tr>
                     <th className="center-xy" style={{ width: '40px' }}>#</th>

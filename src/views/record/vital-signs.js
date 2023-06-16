@@ -74,6 +74,7 @@ const VitalSigns = ({ match }) => {
   const allVitalSigns = useSelector(state => state.allVitalSignsByPatient);
   const { errors, validate } = useForm();
 
+  const [tableClass, setTableClass] = useState('');
   const [dataStatus, setDataStatus] = useState("add");
   const [rowSelected, setRowSelected] = useState(null);
 
@@ -365,6 +366,10 @@ const VitalSigns = ({ match }) => {
       const res = await queueAPI.get(params);
       dispatch({type: "GET_QUEUE", payload: res.data.data});
       dispatch({type: "GET_TOTAL_PAGE_QUEUE", payload: res.data.pagination.totalPage});
+
+      if(res.data.data.length > 0) {
+        setTableClass('table-hover');
+      }
     } catch (e) {
       console.log(e);
     } finally {
@@ -612,7 +617,7 @@ const VitalSigns = ({ match }) => {
                       name="divisi"
                       onChange={(e) => setSearchDivisi(e.value)}
                       // onChange={setSelectedDivision}
-                      value={{ label: "Semua Poli / Divisi", value: "", key: 0, name: 'id_klinik' }}
+                      defaultValue={{ label: "Semua Poli / Divisi", value: "", key: 0, name: 'id_klinik' }}
                       options={selectedDivisionF}
                     />
                   </Colxx>
@@ -631,7 +636,7 @@ const VitalSigns = ({ match }) => {
                     </Button>
                   </InputGroupAddon>
                 </InputGroup>
-                <Table hover>
+                <Table className={tableClass}>
                   <thead>
                     <tr>
                       <th className="center-xy" style={{ width: '40px' }}>#</th>

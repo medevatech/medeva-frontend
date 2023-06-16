@@ -212,6 +212,7 @@ const Data = ({ match }) => {
   const patientTotalPage = useSelector(state => state.patientTotalPage);
   const { errors, validate } = useForm();
 
+  const [tableClass, setTableClass] = useState('');
   const [dataStatusPatient, setDataStatusPatient] = useState("add");
   const [dataStatusAllergy, setDataStatusAllergy] = useState("add");
   const [dataStatusInsurance, setDataStatusInsurance] = useState("add");
@@ -1042,6 +1043,10 @@ const Data = ({ match }) => {
       // console.log(res.data.data);
       dispatch({type: "GET_PATIENT", payload: res.data.data});
       dispatch({type: "GET_TOTAL_PAGE_PATIENT", payload: res.data.pagination.totalPage});
+
+      if(res.data.data.length > 0) {
+        setTableClass('table-hover');
+      }
     } catch (e) {
       console.log(e);
     } finally {
@@ -1577,7 +1582,7 @@ const Data = ({ match }) => {
                     name="status"
                     onChange={(e) => setSearchStatus(e.value)}
                     options={selectStatusF}
-                    value={{ label: "Semua Status", value: "", key: 0, name: "status" }}
+                    defaultValue={{ label: "Semua Status", value: "", key: 0, name: "status" }}
                     isSearchable={false}
                   />
                 </Colxx>
@@ -1596,7 +1601,7 @@ const Data = ({ match }) => {
                   </Button>
                 </InputGroupAddon>
               </InputGroup>
-              <Table hover>
+              <Table className={tableClass}>
                 <thead>
                   <tr>
                     <th className="center-xy" style={{ width: '40px' }}>#</th>

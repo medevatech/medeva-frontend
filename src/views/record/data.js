@@ -432,7 +432,7 @@ const Data = ({ match, history }) => {
                       name="divisi"
                       onChange={(e) => setSearchDivisi(e.value)}
                       options={selectedDivisionF}
-                      value={{ label: "Semua Poli / Divisi", value: "", key: 0, name: 'id_klinik' }}
+                      defaultValue={{ label: "Semua Poli / Divisi", value: "", key: 0, name: 'id_klinik' }}
                     />
                   </Colxx>
                 </FormGroup>

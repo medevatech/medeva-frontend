@@ -57,6 +57,7 @@ const Data = ({ match, history, loading, error }) => {
   const treatmentTotalPage = useSelector(state => state.treatmentPriceTotalPage);
   const { errors, validate } = useForm();
 
+  const [tableClass, setTableClass] = useState('');
   const [dataStatus, setDataStatus] = useState("add");
   const [rowSelected, setRowSelected] = useState(null);
 
@@ -371,6 +372,10 @@ const Data = ({ match, history, loading, error }) => {
       const res = await treatmentPriceAPI.get(params);
       dispatch({type: "GET_TREATMENT_PRICE", payload: res.data.data});
       dispatch({type: "GET_TOTAL_PAGE_TREATMENT_PRICE", payload: res.data.pagination.totalPage});
+
+      if(res.data.data.length > 0) {
+        setTableClass('table-hover');
+      }
     } catch (e) {
       console.log(e);
     } finally {
@@ -672,7 +677,7 @@ const Data = ({ match, history, loading, error }) => {
                     name="klinik"
                     onChange={(e) => setSearchKlinik(e.value)}
                     options={selectedKlinikF}
-                    value={{ label: "Semua Klinik", value: "", key: 0, name: 'id_klinik' }}
+                    defaultValue={{ label: "Semua Klinik", value: "", key: 0, name: 'id_klinik' }}
                   />
                 </Colxx>
                 <Colxx sm="12" md="6" style={{ paddingRight: '0px' }}>
@@ -687,7 +692,7 @@ const Data = ({ match, history, loading, error }) => {
                       onChange={(e) => setSearchStatus(e.value)}
                       options={selectStatusF}
                       isSearchable={false}
-                      value={{ label: "Semua Status", value: "", key: 0, name: "status" }}
+                      defaultValue={{ label: "Semua Status", value: "", key: 0, name: "status" }}
                     />
                 </Colxx>
               </FormGroup>
@@ -705,7 +710,7 @@ const Data = ({ match, history, loading, error }) => {
                   </Button>
                 </InputGroupAddon>
               </InputGroup>
-              <Table hover>
+              <Table className={tableClass}>
                 <thead>
                   <tr>
                     <th className="center-xy" style={{ width: '40px' }}>#</th>
