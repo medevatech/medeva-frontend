@@ -460,7 +460,7 @@ const Data = ({ match, history, loading, error }) => {
           setEmployee(current => {
               return { ...current, password: e.target.value }
           })
-          validate(e, e.name !== undefined ? e.name : e.target.name ? e.target.name : '', e.value !== undefined ? e.value : e.target.value ? e.target.value : '');
+          // validate(e, e.name !== undefined ? e.name : e.target.name ? e.target.name : '', e.value !== undefined ? e.value : e.target.value ? e.target.value : '');
         } else if (e.target.name && e.target.name === 'nomor_kitas') {
           setEmployee(current => {
               return { ...current, nomor_kitas: e.target.value }
@@ -497,7 +497,7 @@ const Data = ({ match, history, loading, error }) => {
     let isDev, isManager, isAdmin, isResepsionis, isPerawat, isDokter, isManajemen = false;
 
     for(let [key, value] of Object.entries(employee)) {
-      if((key === 'username' && value === '') || (key === 'password' && value === '') || (key === 'no_kitas' && value === '')  ||
+      if((key === 'username' && value === '') || (key === 'no_kitas' && value === '')  ||
         (key === 'tipe' && value === '') || (key === 'tipe_izin' && value === '') || (key === 'nomor_izin' && value === '') ||
         (key === 'kadaluarsa_izin' && value === '') || (key === 'peran' && value === '')){
         validate(e, key, value);
@@ -523,7 +523,7 @@ const Data = ({ match, history, loading, error }) => {
       isError = true;
     }
 
-    isDev && isManager && isAdmin && isResepsionis && isPerawat && isDokter && isManajemen && noPeran()
+    isDev == false && isManager == false && isAdmin == false && isResepsionis == false && isPerawat == false && isDokter == false && isManajemen == false && noPeran()
 
     if(isError === true){
       return;
@@ -931,11 +931,6 @@ const Data = ({ match, history, loading, error }) => {
                           value={employee.password}
                           onChange={onChange}
                         />
-                        {errors.password && (
-                          <div className="rounded invalid-feedback d-block">
-                            {errors.password}
-                          </div>
-                        )}
                       </FormGroup>
                     </Colxx>
 
@@ -1317,6 +1312,7 @@ const Data = ({ match, history, loading, error }) => {
                       </FormGroup>
                     </Colxx>
 
+                    { userData.roles.includes('isAdmin') &&
                     <Colxx sm={12}>
                       <FormGroup>
                         <Label for="peran">
@@ -1329,7 +1325,6 @@ const Data = ({ match, history, loading, error }) => {
                             *
                           </span>
                         </Label>
-                        { userData.roles.includes('isAdmin') &&
                         <Select
                           components={{ Input: CustomSelectInput }}
                           className="react-select"
@@ -1341,8 +1336,28 @@ const Data = ({ match, history, loading, error }) => {
                           value={selectRole.filter(item => selectedRole.includes(item.value)) || 'Pilih Peran'}
                           options={selectRole.filter(roleChoices => roleChoices.label != 'Developer' && roleChoices.label != 'Manager' && roleChoices.label != 'Admin' && roleChoices.label != 'Manajemen').map(roleChoices => roleChoices)}
                           onChange={onChange}
-                        /> }
-                        { userData.roles.includes('isManager') &&
+                        />
+                        {errors.peran && (
+                          <div className="rounded invalid-feedback d-block">
+                            {errors.peran}
+                          </div>
+                        )}
+                      </FormGroup>
+                    </Colxx> }
+
+                    { userData.roles.includes('isManager') &&
+                    <Colxx sm={12}>
+                      <FormGroup>
+                        <Label for="peran">
+                          Peran
+                          <span
+                            className="required text-danger"
+                            aria-required="true"
+                          >
+                            {" "}
+                            *
+                          </span>
+                        </Label>
                         <Select
                           components={{ Input: CustomSelectInput }}
                           className="react-select"
@@ -1354,8 +1369,29 @@ const Data = ({ match, history, loading, error }) => {
                           value={selectRole.filter(item => selectedRole.includes(item.value)) || 'Pilih Peran'}
                           options={selectRole.filter(roleChoices => roleChoices.label != 'Developer' && roleChoices.label != 'Manager' && roleChoices.label != 'Manajemen').map(roleChoices => roleChoices)}
                           onChange={onChange}
-                        /> }
-                        { userData.roles.includes('isDev') &&
+                        />
+                        {errors.peran && (
+                          <div className="rounded invalid-feedback d-block">
+                            {errors.peran}
+                          </div>
+                        )}
+                      </FormGroup>
+                    </Colxx>
+                    }
+
+                    { userData.roles.includes('isDev') &&
+                    <Colxx sm={12}>
+                      <FormGroup>
+                        <Label for="peran">
+                          Peran
+                          <span
+                            className="required text-danger"
+                            aria-required="true"
+                          >
+                            {" "}
+                            *
+                          </span>
+                        </Label>
                         <Select
                           components={{ Input: CustomSelectInput }}
                           className="react-select"
@@ -1368,9 +1404,15 @@ const Data = ({ match, history, loading, error }) => {
                           // options={selectRole}
                           options={selectRole.filter(roleChoices => roleChoices.label != 'Developer').map(roleChoices => roleChoices)}
                           onChange={onChange}
-                        /> }
+                        />
+                        {errors.peran && (
+                          <div className="rounded invalid-feedback d-block">
+                            {errors.peran}
+                          </div>
+                        )}
                       </FormGroup>
                     </Colxx>
+                    }
                   </FormGroup>
 
                   <Row>

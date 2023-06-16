@@ -603,48 +603,6 @@ const Data = ({ match, history, loading, error }) => {
       key === 'is_dokter' && value === 0 ? isDokter = false : isDokter = true
       key === 'is_manajemen' && value === 0 ? isManajemen = false : isManajemen = true
 
-      // key === 'is_dev' && value === 0 ?
-      //   key === 'is_manager' && value === 0 ?
-      //     key === 'is_admin' && value === 0 ?
-      //       key === 'is_resepsionis' && value === 0 ?
-      //         key === 'is_perawat' && value === 0 ?
-      //           key === 'is_dokter' && value === 0 ?
-      //             key === 'is_manajemen' && value === 0 ?
-      //               noPeran()
-      //             : console.log(key)
-      //           : console.log(key)
-      //         : console.log(key)
-      //       : console.log(key)
-      //     : console.log(key)
-      //   : console.log(key)
-      // : console.log(key)
-
-      // if((key === 'is_dev' && value === 0) && (key === 'is_manager' && value === 0) && (key === 'is_admin' && value === 0) &&
-      //   (key === 'is_resepsionis' && value === 0) && (key === 'is_perawat' && value === 0) && (key === 'is_dokter' && value === 0) &&
-      //   (key === 'is_manajemen' && value === 0)){
-      //     console.log('no peran');
-      //   validate(e, 'peran', '');
-      //   isError = true;
-      // }
-
-      // if((key === 'is_dev' && value === 0)){
-      //   if((key === 'is_manager' && value === 0)){
-      //     if((key === 'is_admin' && value === 0)){
-      //       if((key === 'is_resepsionis' && value === 0)){
-      //         if((key === 'is_perawat' && value === 0)){
-      //           if((key === 'is_dokter' && value === 0)){
-      //             if((key === 'is_manajemen' && value === 0)){
-      //               console.log('no peran');
-      //               validate(e, 'peran', '');
-      //               isError = true;
-      //             }
-      //           }
-      //         }
-      //       }
-      //     }
-      //   }
-      // }
-
       if((key === 'tipe' && value !== '') && (key === 'spesialis' && value === '')){
         validate(e, 'spesialis', value);
         isError = true;
@@ -656,7 +614,7 @@ const Data = ({ match, history, loading, error }) => {
       isError = true;
     }
 
-    isDev && isManager && isAdmin && isResepsionis && isPerawat && isDokter && isManajemen && noPeran()
+    isDev == false && isManager == false && isAdmin == false && isResepsionis == false && isPerawat == false && isDokter == false && isManajemen == false && noPeran()
 
     if(isError === true){
       return;
@@ -2237,65 +2195,107 @@ const Data = ({ match, history, loading, error }) => {
                     </FormGroup>
                   </Colxx>
 
-                  <Colxx sm={12}>
-                    <FormGroup>
-                      <Label for="peran">
-                        Peran
-                        <span
-                          className="required text-danger"
-                          aria-required="true"
-                        >
-                          {" "}
-                          *
-                        </span>
-                      </Label>
-                      { userData.roles.includes('isAdmin') &&
-                      <Select
-                        components={{ Input: CustomSelectInput }}
-                        className="react-select"
-                        classNamePrefix="react-select"
-                        isMulti
-                        name="peran"
-                        id="peran"
-                        // value={selectedRole}
-                        value={selectRole.filter(item => selectedRole.includes(item.value)) || 'Pilih Peran'}
-                        options={selectRole.filter(roleChoices => roleChoices.label != 'Developer' && roleChoices.label != 'Manager' && roleChoices.label != 'Admin' && roleChoices.label != 'Manajemen').map(roleChoices => roleChoices)}
-                        onChange={onChange}
-                      /> }
-                      { userData.roles.includes('isManager') &&
-                      <Select
-                        components={{ Input: CustomSelectInput }}
-                        className="react-select"
-                        classNamePrefix="react-select"
-                        isMulti
-                        name="peran"
-                        id="peran"
-                        // value={selectedRole}
-                        value={selectRole.filter(item => selectedRole.includes(item.value)) || 'Pilih Peran'}
-                        options={selectRole.filter(roleChoices => roleChoices.label != 'Developer' && roleChoices.label != 'Manager' && roleChoices.label != 'Manajemen').map(roleChoices => roleChoices)}
-                        onChange={onChange}
-                      /> }
-                      { userData.roles.includes('isDev') &&
-                      <Select
-                        components={{ Input: CustomSelectInput }}
-                        className="react-select"
-                        classNamePrefix="react-select"
-                        isMulti
-                        name="peran"
-                        id="peran"
-                        // value={selectedRole}
-                        value={selectRole.filter(item => selectedRole.includes(item.value)) || 'Pilih Peran'}
-                        // options={selectRole}
-                        options={selectRole.filter(roleChoices => roleChoices.label != 'Developer').map(roleChoices => roleChoices)}
-                        onChange={onChange}
-                      /> }
-                      {errors.peran && (
-                        <div className="rounded invalid-feedback d-block">
-                          {errors.peran}
-                        </div>
-                      )}
-                    </FormGroup>
-                  </Colxx>
+                  { userData.roles.includes('isAdmin') &&
+                    <Colxx sm={12}>
+                      <FormGroup>
+                        <Label for="peran">
+                          Peran
+                          <span
+                            className="required text-danger"
+                            aria-required="true"
+                          >
+                            {" "}
+                            *
+                          </span>
+                        </Label>
+                        <Select
+                          components={{ Input: CustomSelectInput }}
+                          className="react-select"
+                          classNamePrefix="react-select"
+                          isMulti
+                          name="peran"
+                          id="peran"
+                          // value={selectedRole}
+                          value={selectRole.filter(item => selectedRole.includes(item.value)) || 'Pilih Peran'}
+                          options={selectRole.filter(roleChoices => roleChoices.label != 'Developer' && roleChoices.label != 'Manager' && roleChoices.label != 'Admin' && roleChoices.label != 'Manajemen').map(roleChoices => roleChoices)}
+                          onChange={onChange}
+                        />
+                        {errors.peran && (
+                          <div className="rounded invalid-feedback d-block">
+                            {errors.peran}
+                          </div>
+                        )}
+                      </FormGroup>
+                    </Colxx> }
+
+                    { userData.roles.includes('isManager') &&
+                    <Colxx sm={12}>
+                      <FormGroup>
+                        <Label for="peran">
+                          Peran
+                          <span
+                            className="required text-danger"
+                            aria-required="true"
+                          >
+                            {" "}
+                            *
+                          </span>
+                        </Label>
+                        <Select
+                          components={{ Input: CustomSelectInput }}
+                          className="react-select"
+                          classNamePrefix="react-select"
+                          isMulti
+                          name="peran"
+                          id="peran"
+                          // value={selectedRole}
+                          value={selectRole.filter(item => selectedRole.includes(item.value)) || 'Pilih Peran'}
+                          options={selectRole.filter(roleChoices => roleChoices.label != 'Developer' && roleChoices.label != 'Manager' && roleChoices.label != 'Manajemen').map(roleChoices => roleChoices)}
+                          onChange={onChange}
+                        />
+                        {errors.peran && (
+                          <div className="rounded invalid-feedback d-block">
+                            {errors.peran}
+                          </div>
+                        )}
+                      </FormGroup>
+                    </Colxx>
+                    }
+
+                    { userData.roles.includes('isDev') &&
+                    <Colxx sm={12}>
+                      <FormGroup>
+                        <Label for="peran">
+                          Peran
+                          <span
+                            className="required text-danger"
+                            aria-required="true"
+                          >
+                            {" "}
+                            *
+                          </span>
+                        </Label>
+                        <Select
+                          components={{ Input: CustomSelectInput }}
+                          className="react-select"
+                          classNamePrefix="react-select"
+                          isMulti
+                          name="peran"
+                          id="peran"
+                          // value={selectedRole}
+                          value={selectRole.filter(item => selectedRole.includes(item.value)) || ''}
+                          // options={selectRole}
+                          options={selectRole.filter(roleChoices => roleChoices.label != 'Developer').map(roleChoices => roleChoices)}
+                          onChange={onChange}
+                        />
+                        {errors.peran && (
+                          <div className="rounded invalid-feedback d-block">
+                            {errors.peran}
+                          </div>
+                        )}
+                      </FormGroup>
+                    </Colxx>
+                    }
                 </FormGroup>
 
                 <Row>
