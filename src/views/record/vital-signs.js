@@ -544,7 +544,7 @@ const VitalSigns = ({ match }) => {
     if (searchDivisi !== "") {
       params = `${params}&searchDivisi=${searchDivisi}`;
     }
-    if (!userData.roles.includes('isDev') && userData.roles.includes('isDokter')) {
+    if (!userData.roles.includes('isDev') && userData.roles.includes('isPerawat') && userData.roles.includes('isDokter')) {
       params = `${params}&searchJaga=${userData.id}`;
     }
 

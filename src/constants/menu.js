@@ -30,7 +30,7 @@ const data = [
         icon: 'iconsminds-pulse',
         label: 'Pra-Konsultasi',
         to: `/record/vital-signs`,
-        roles: [ "isDev", "isPerawat" ],
+        roles: [ "isDev", "isPerawat", "isDokter" ],
       },
       {
         icon: 'iconsminds-notepad',
