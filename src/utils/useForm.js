@@ -83,7 +83,8 @@ const useForm = (callback) => {
                 (name === 'id_daftar_layanan' && value === '') ||
                 (name === 'kesadaran' && value === '') ||
                 (name === 'status_pulang' && value === '') ||
-                (name === 'id_penyakit' && value === '')) {
+                (name === 'id_penyakit' && value === '') ||
+                (name === 'id_pasien' && value === '')) {
 
                 setErrors(errors => ({
                     ...errors,
@@ -98,7 +99,8 @@ const useForm = (callback) => {
                 (name === 'id_daftar_layanan' && value !== '') ||
                 (name === 'kesadaran' && value !== '') ||
                 (name === 'status_pulang' && value !== '') ||
-                (name === 'id_penyakit' && value !== '')) {
+                (name === 'id_penyakit' && value !== '') ||
+                (name === 'id_pasien' && value !== '')) {
 
                 let newObj = omit(errors, name);
                 setErrors(newObj);

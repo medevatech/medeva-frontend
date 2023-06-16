@@ -45,6 +45,7 @@ import scheduleAPI from "api/schedule";
 import Swal from "sweetalert2";
 
 import loader from "../../assets/img/loading.gif";
+import useForm from "utils/useForm";
 
 const userData = JSON.parse(localStorage.getItem("user_data"));
 
@@ -52,11 +53,14 @@ const Data = ({ match }) => {
   const dispatch = useDispatch();
   const queueAll = useSelector((state) => state.queue);
   const queueTotalPage = useSelector((state) => state.queueTotalPage);
+
+  const [tableClass, setTableClass] = useState("");
   const [dataStatus, setDataStatus] = useState("add");
 
   const [scheduleId, setScheduleId] = useState([]);
   const scheduleAll = useSelector((state) => state.schedule);
   const scheduleTotalPage = useSelector((state) => state.scheduleTotalPage);
+  const { errors, validate } = useForm();
 
   const [schedule, setSchedule] = useState({
     nama_karyawan: "",
@@ -215,6 +219,9 @@ const Data = ({ match }) => {
         type: "GET_TOTAL_PAGE_QUEUE",
         payload: res.data.pagination.totalPage,
       });
+      if (res.data.data.length > 0) {
+        setTableClass("table-hover");
+      }
     } catch (e) {
       console.log(e);
     } finally {
@@ -272,7 +279,14 @@ const Data = ({ match }) => {
       const response = await patientAPI.get("?limit=1000");
       // console.log("rak", response);
 
-      setSelectedPatient([]);
+      setSelectedPatient([
+        {
+          label: "Pilih Pasien",
+          value: "",
+          key: 0,
+          name: "id_pasien",
+        },
+      ]);
 
       if (response.status === 200) {
         let data = response.data.data;
@@ -354,6 +368,13 @@ const Data = ({ match }) => {
 
   const onQueueSubmit = async (e) => {
     e.preventDefault();
+
+    for (let [key, value] of Object.entries(queue)) {
+      if (key === "id_pasien" && value === "") {
+        validate(e, key, value);
+        return;
+      }
+    }
 
     if (dataStatus === "add") {
       try {
@@ -521,6 +542,11 @@ const Data = ({ match }) => {
       setQueue((current) => {
         return { ...current, id_pasien: e ? e.value : "" };
       });
+      validate(
+        e,
+        e.name !== undefined ? e.name : e.target.name ? e.target.name : "",
+        e.value !== undefined ? e.value : e.target.value ? e.target.value : ""
+      );
     } else if (e.name === "prioritas") {
       setQueue((current) => {
         return { ...current, prioritas: e ? e.value : "" };
@@ -563,7 +589,7 @@ const Data = ({ match }) => {
                   </Button>
                 </InputGroupAddon>
               </InputGroup>
-              <Table>
+              <Table className={tableClass}>
                 <thead>
                   <tr>
                     <th className="center-xy" style={{ width: "40px" }}>
@@ -603,13 +629,16 @@ const Data = ({ match }) => {
                         >
                           {startNumber++}
                         </th>
-                        <td
-                          style={{
-                            verticalAlign: "middle",
-                            fontWeight: "bold",
-                          }}
-                        >
-                          {data.tipe}
+                        <td style={{ verticalAlign: "middle" }}>
+                          <h6
+                            className="max-text"
+                            style={{
+                              fontWeight: "bold",
+                              marginBottom: 0,
+                            }}
+                          >
+                            {data.tipe}
+                          </h6>
                         </td>
                         <td
                           style={{
@@ -669,7 +698,7 @@ const Data = ({ match }) => {
                       <Button
                         color="primary"
                         style={{ float: "right" }}
-                        className="mb-4"
+                        className="mb-2"
                         onClick={() => setModalAdd(true)}
                       >
                         Tambah
@@ -678,46 +707,46 @@ const Data = ({ match }) => {
                       <></>
                     )}
                   </Colxx>
-                  <FormGroup row style={{ margin: "0px", width: "100%" }}>
-                    <Colxx
-                      sm="6"
-                      md="6"
-                      style={{ paddingLeft: "16px", paddingRight: "16px" }}
-                    >
-                      <Label for="date">Hari</Label>
-                      <p>{getDay()}</p>
-                    </Colxx>
-                    <Colxx
-                      sm="6"
-                      md="6"
-                      style={{ paddingLeft: "16px", paddingRight: "16px" }}
-                    >
-                      <Label for="date">Tanggal</Label>
-                      {searchDivisi ? (
-                        <Input
-                          type="date"
-                          name="date"
-                          id="date"
-                          placeholder="Tanggal"
-                          value={date}
-                          onChange={(e) => setDate(e.target.value)}
-                        />
-                      ) : (
-                        <Input
-                          type="date"
-                          name="date"
-                          id="date"
-                          placeholder="Tanggal"
-                          value={date}
-                          // onChange={(e) => setDate(e.target.value)}
-                        />
-                      )}
-                    </Colxx>
-                  </FormGroup>
                 </Row>
               </CardTitle>
               <Row>
                 <FormGroup row style={{ margin: "0px", width: "100%" }}>
+                  <Colxx
+                    sm="6"
+                    md="6"
+                    style={{ paddingLeft: "16px", paddingRight: "16px" }}
+                  >
+                    <Label for="date">Hari</Label>
+                    <p>
+                      <b>{getDay()}</b>
+                    </p>
+                  </Colxx>
+                  <Colxx
+                    sm="6"
+                    md="6"
+                    style={{ paddingLeft: "16px", paddingRight: "16px" }}
+                  >
+                    <Label for="date">Tanggal</Label>
+                    {searchDivisi ? (
+                      <Input
+                        type="date"
+                        name="date"
+                        id="date"
+                        placeholder="Tanggal"
+                        value={date}
+                        onChange={(e) => setDate(e.target.value)}
+                      />
+                    ) : (
+                      <Input
+                        type="date"
+                        name="date"
+                        id="date"
+                        placeholder="Tanggal"
+                        value={date}
+                        // onChange={(e) => setDate(e.target.value)}
+                      />
+                    )}
+                  </Colxx>
                   {searchDivisi ? (
                     <Colxx
                       sm="12"
@@ -735,14 +764,7 @@ const Data = ({ match }) => {
                         id="id_jaga"
                         options={selectedSchedule}
                         value={selectedSchedule.find(
-                          (item) =>
-                            item.value === queue.id_jaga || {
-                              label: "Semua Dokter",
-                              value: "",
-                              id_employee: "",
-                              key: 0,
-                              name: "id_jaga",
-                            }
+                          (item) => item.value === queue.id_jaga
                         )}
                         onChange={onChange}
                       />
@@ -956,43 +978,13 @@ const Data = ({ match }) => {
         </Colxx>
 
         <Modal isOpen={modalAdd} toggle={() => setModalAdd(!modalAdd)}>
-          <ModalHeader>Tambah Antrian</ModalHeader>
-          <ModalBody>
-            <FormGroup>
-              {/* <Colxx
-                sm="6"
-                md="10"
-                style={{
-                  paddingRight: "0px",
-                  marginLeft: "16px",
-                  marginBottom: "12px",
-                }}
-              >
-                <Label for="id_jaga">Dokter</Label>
-                <Select
-                  components={{ Input: CustomSelectInput }}
-                  className="react-select"
-                  classNamePrefix="react-select"
-                  placeholder="Pilih Dokter"
-                  name="id_jaga"
-                  id="id_jaga"
-                  options={selectedSchedule}
-                  value={selectedSchedule.find(
-                    (item) => item.value === queue.id_jaga
-                  )}
-                  onChange={onChange}
-                  isDisabled
-                />
-              </Colxx> */}
-              <Colxx
-                sm="6"
-                md="10"
-                style={{
-                  paddingRight: "0px",
-                  marginLeft: "16px",
-                  marginBottom: "12px",
-                }}
-              >
+          <Form
+            className="av-tooltip tooltip-right-top"
+            onSubmit={onQueueSubmit}
+          >
+            <ModalHeader>Tambah Antrian</ModalHeader>
+            <ModalBody>
+              <FormGroup>
                 <Label for="pasien">Pasien</Label>
                 <Select
                   components={{ Input: CustomSelectInput }}
@@ -1006,12 +998,13 @@ const Data = ({ match }) => {
                   )}
                   onChange={onChange}
                 />
-              </Colxx>
-              <Colxx
-                sm="6"
-                md="10"
-                style={{ paddingRight: "0px", marginLeft: "16px" }}
-              >
+                {errors.id_pasien && (
+                  <div className="rounded invalid-feedback d-block">
+                    {errors.id_pasien}
+                  </div>
+                )}
+              </FormGroup>
+              <FormGroup>
                 <Label for="prioritas">Prioritas</Label>
                 <Select
                   components={{ Input: CustomSelectInput }}
@@ -1030,22 +1023,25 @@ const Data = ({ match }) => {
                   }}
                   onChange={onChange}
                 />
-              </Colxx>
-            </FormGroup>
-          </ModalBody>
-          <ModalFooter>
-            <Button
-              type="button"
-              outline
-              color="danger"
-              onClick={() => setModalAdd(false)}
-            >
-              Batal
-            </Button>
-            <Button color="primary" onClick={(e) => onQueueSubmit(e)}>
-              Simpan
-            </Button>{" "}
-          </ModalFooter>
+              </FormGroup>
+            </ModalBody>
+            <ModalFooter>
+              <Button
+                type="button"
+                outline
+                color="danger"
+                onClick={() => setModalAdd(false)}
+              >
+                Batal
+              </Button>
+              <Button
+                color="primary"
+                // onClick={(e) => onQueueSubmit(e)}
+              >
+                Simpan
+              </Button>{" "}
+            </ModalFooter>
+          </Form>
         </Modal>
 
         <Modal
@@ -1055,25 +1051,19 @@ const Data = ({ match }) => {
           <ModalHeader>Edit Priority</ModalHeader>
           <ModalBody>
             <FormGroup>
-              <Colxx
-                sm="6"
-                md="10"
-                style={{ paddingRight: "0px", marginLeft: "16px" }}
-              >
-                <Label for="prioritas">Prioritas</Label>
-                <Select
-                  components={{ Input: CustomSelectInput }}
-                  className="react-select"
-                  classNamePrefix="react-select"
-                  name="prioritas"
-                  id="prioritas"
-                  options={selectPriority}
-                  value={selectPriority.find(
-                    (item) => item.value === queue.prioritas
-                  )}
-                  onChange={onChange}
-                />
-              </Colxx>
+              <Label for="prioritas">Prioritas</Label>
+              <Select
+                components={{ Input: CustomSelectInput }}
+                className="react-select"
+                classNamePrefix="react-select"
+                name="prioritas"
+                id="prioritas"
+                options={selectPriority}
+                value={selectPriority.find(
+                  (item) => item.value === queue.prioritas
+                )}
+                onChange={onChange}
+              />
             </FormGroup>
           </ModalBody>
           <ModalFooter>
