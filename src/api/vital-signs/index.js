@@ -9,7 +9,6 @@ const vitalSigns = {
   },
   getByPatient: (options) => {
     const url = api.vitalSigns.patient + options
-    console.log('options', options)
     return baseApi.get(url, { headers: getAuthHeader() })
   },
   add: (payloads) => {

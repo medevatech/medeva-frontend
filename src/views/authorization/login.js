@@ -86,17 +86,29 @@ const Home = ({ history, loading, error }) => {
 
             if (data.is_dev === 1) {
               roles.push("isDev");
-            } else if (data.is_manager === 1) {
+            }
+            
+            if (data.is_manager === 1) {
               roles.push("isManager");
-            } else if (data.is_admin === 1) {
+            }
+            
+            if (data.is_admin === 1) {
               roles.push("isAdmin");
-            } else if (data.is_resepsionis === 1) {
+            }
+            
+            if (data.is_resepsionis === 1) {
               roles.push("isResepsionis");
-            } else if (data.is_perawat === 1) {
+            }
+            
+            if (data.is_perawat === 1) {
               roles.push("isPerawat");
-            } else if (data.is_dokter === 1) {
+            }
+            
+            if (data.is_dokter === 1) {
               roles.push("isDokter");
-            } else if (data.is_manajemen === 1) {
+            }
+            
+            if (data.is_manajemen === 1) {
               roles.push("isManajemen");
             }
 
