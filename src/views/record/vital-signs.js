@@ -301,8 +301,20 @@ const VitalSigns = ({ match }) => {
     }
   };
 
-  const resetForm = (e) => {
-    e.preventDefault();
+  const resetForm = (e, scroll = false) => {
+    // e.preventDefault();
+
+    if(scroll) {
+      if(window.innerWidth < 1280){
+        const element = document.getElementById('manage-form-tab-mobile');
+        if (element) {
+          window.scroll({
+            top: element,
+            behavior: "smooth"
+          })
+        }
+      }
+    }
 
     tinggi_badan = 0; berat_badan = 0;
 
@@ -384,6 +396,11 @@ const VitalSigns = ({ match }) => {
 
     // console.log(data);
 
+    setVitalSigns(current => {
+      return { ...current, id_pasien: id }
+    })
+    setDataStatus("add");
+
     setPatientID(id);
     setPatientData(data);
 
@@ -394,39 +411,39 @@ const VitalSigns = ({ match }) => {
 
       // console.log(data);
 
-      setVitalSigns({
-        id_pasien: data.id_pasien,
-        keluhan: data.keluhan,
-        kesadaran: data.kesadaran,
-        temperatur: data.temperatur,
-        tinggi_badan: data.tinggi_badan,
-        berat_badan: data.berat_badan,
-        lingkar_perut: data.lingkar_perut,
-        imt: data.imt,
-        sistole: data.sistole,
-        diastole: data.diastole,
-        respiratory_rate: data.respiratory_rate,
-        heart_rate: data.heart_rate,
-        catatan_tambahan: data.catatan_tambahan,
-        created_at: data.created_at
-      });
+      // setVitalSigns({
+      //   id_pasien: data.id_pasien,
+      //   keluhan: data.keluhan,
+      //   kesadaran: data.kesadaran,
+      //   temperatur: data.temperatur,
+      //   tinggi_badan: data.tinggi_badan,
+      //   berat_badan: data.berat_badan,
+      //   lingkar_perut: data.lingkar_perut,
+      //   imt: data.imt,
+      //   sistole: data.sistole,
+      //   diastole: data.diastole,
+      //   respiratory_rate: data.respiratory_rate,
+      //   heart_rate: data.heart_rate,
+      //   catatan_tambahan: data.catatan_tambahan,
+      //   created_at: data.created_at
+      // });
 
-      tinggi_badan = data.tinggi_badan; berat_badan = data.berat_badan;
+      // tinggi_badan = data.tinggi_badan; berat_badan = data.berat_badan;
 
-      setVitalSignsID(data.id);
+      // setVitalSignsID(data.id);
   
-      setSelectedAwareness({kesadaran: data.kesadaran ? e.value : ''});
-      setDataStatus("update");
+      // setSelectedAwareness({kesadaran: data.kesadaran ? e.value : ''});
+      // setDataStatus("update");
       
       // console.log(vitalSigns);
     } catch (e) {
       console.log(e);
 
-      setVitalSigns(current => {
-        return { ...current, id_pasien: patientID }
-      })
+      // setVitalSigns(current => {
+      //   return { ...current, id_pasien: patientID }
+      // })
 
-      setDataStatus("add");
+      // setDataStatus("add");
     } finally {
       getAllVitalSignsByPatientId(e, id);
     }
@@ -1225,6 +1242,14 @@ const VitalSigns = ({ match }) => {
             </Card>
           </Colxx>
         </Row>
+
+        <Button
+          color="primary"
+          className="float-btn"
+          onClick={(e) => resetForm(e, true)}
+        >
+          <i className="iconsminds-stethoscope"></i> Tambah Pra-Konsultasi
+        </Button>
     </>
   );
 };
