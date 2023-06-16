@@ -15,9 +15,9 @@ const inspect = {
     const url = api.inspect.all + `/${id}`
     return baseApi.put(url, payloads, { headers: getAuthHeader() })
   },
-  getByTreatment: (payloads, id) => {
+  getByTreatment: (id) => {
     const url = api.inspect.treatment + `/${id}`
-    return baseApi.get(url, payloads, { headers: getAuthHeader() })
+    return baseApi.get(url, { headers: getAuthHeader() })
   },
 }
 export default inspect

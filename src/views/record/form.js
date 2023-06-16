@@ -1713,7 +1713,7 @@ const FormRecord = ({ match, history }) => {
     // console.log('patientData', patientData);
 
     try {
-      const res = await vitalSignsAPI.getByPatient("", `/${id}?tanggal=${moment(new Date()).format("YYYY-MM-DD")}`);
+      const res = await vitalSignsAPI.getByPatient(`/${id}?tanggal=${moment(new Date()).format("YYYY-MM-DD")}`);
       // const res = await vitalSignsAPI.getByPatient("", `/${id}`);
       let data = res.data.data[0];
       // console.log('vitalSigns', data);
@@ -1749,7 +1749,7 @@ const FormRecord = ({ match, history }) => {
     let data = null;
 
     try {
-      const res = await recordAPI.getByPatient("", `/${id}`);
+      const res = await recordAPI.getByPatient(`/${id}`);
       data = res.data.data[0];
 
       // console.log(data);
@@ -1851,7 +1851,7 @@ const FormRecord = ({ match, history }) => {
     setTempDiagnosis([]);
 
     try {
-      const res = await diagnoseAPI.getByRecord("", `/${id}`);
+      const res = await diagnoseAPI.getByRecord(`/${id}`);
       let data = res.data.data;
       // console.log('data', data);
 
@@ -1883,7 +1883,7 @@ const FormRecord = ({ match, history }) => {
     setTempReciept([]);
 
     try {
-      const res = await recieptAPI.getByRecord("", `/${id}`);
+      const res = await recieptAPI.getByRecord(`/${id}`);
       let data = res.data.data;
       // console.log('data', data);
 
@@ -1917,7 +1917,7 @@ const FormRecord = ({ match, history }) => {
     setTempCheckup([]);
 
     try {
-      const res = await inspectSupportAPI.getByRecord("", `/${id}`);
+      const res = await inspectSupportAPI.getByRecord(`/${id}`);
       let data = res.data.data;
       // console.log('data', data);
 
@@ -1950,7 +1950,7 @@ const FormRecord = ({ match, history }) => {
     setTempTreatment([]);
 
     try {
-      const res = await treatmentAPI.getByRecord("", `/${id}`);
+      const res = await treatmentAPI.getByRecord(`/${id}`);
       let data = res.data.data;
       // console.log('data', data);
 
@@ -1982,7 +1982,7 @@ const FormRecord = ({ match, history }) => {
     setTempService([]);
 
     try {
-      const res = await serviceAPI.getByRecord("", `/${id}`);
+      const res = await serviceAPI.getByRecord(`/${id}`);
       let data = res.data.data;
       // console.log('data', data);
 
@@ -2015,7 +2015,7 @@ const FormRecord = ({ match, history }) => {
     let data = null;
 
     try {
-      const res = await referenceAPI.getByRecord("", `/${id}`);
+      const res = await referenceAPI.getByRecord(`/${id}`);
       data = res.data.data[0];
 
       // console.log(data);
@@ -2047,7 +2047,7 @@ const FormRecord = ({ match, history }) => {
     setTempDiagnoseReference([]);
 
     try {
-      const res = await diagnoseReferenceAPI.getByReference("", `/${id}`);
+      const res = await diagnoseReferenceAPI.getByReference(`/${id}`);
       let data = res.data.data;
       // console.log('data', data);
 

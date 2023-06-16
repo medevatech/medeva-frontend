@@ -481,7 +481,7 @@ const Data = ({ match, history }) => {
                               </td>
                               <td style={{ textAlign: "center", verticalAlign: 'middle' }}>
                                 <Button color="secondary" size="xs" className="button-xs"
-                                  onClick={(e) => getVitalSignsByPatientId(e, data.id_pasien, data)}
+                                  // onClick={(e) => getVitalSignsByPatientId(e, data.id_pasien, data)}
                                 >
                                   <i className="simple-icon-arrow-right-circle"></i>
                                 </Button>
@@ -590,86 +590,92 @@ const Data = ({ match, history }) => {
             <Card className="mb-4">
               <CardBody>
                 <CardTitle>
-                  { patientData && vitalSignsID ?
-                    <Link to={{
-                        pathname: `/record/form`,
-                        state: { patientID: patientID, patientData: patientData, watchID: watchID }
-                    }}>
-                      <Button color="primary" style={{ float: "right" }} className="mb-4">
-                        Tambah
-                      </Button>
-                    </Link>
-                    :
-                    <Link to={{
-                        pathname: `/record/vital-sings`,
-                        state: { patientID: patientID, patientData: patientData }
-                    }}>
-                      <Button color="primary" style={{ float: "right" }} className="mb-4">
-                        Tambah Data Pra-Konsultasi
-                      </Button>
-                    </Link>
+                  { patientID ? 
+                    vitalSignsID ?
+                      <Link to={{
+                          pathname: `/record/form`,
+                          state: { patientID: patientID, patientData: patientData, watchID: watchID }
+                      }}>
+                        <Button color="primary" style={{ float: "right" }} className="mb-4">
+                          Tambah Rekam Medis
+                        </Button>
+                      </Link>
+                      :
+                      <Link to={{
+                          pathname: `/record/vital-sings`,
+                          state: { patientID: patientID, patientData: patientData }
+                      }}>
+                        <Button color="primary" style={{ float: "right" }} className="mb-4">
+                          Tambah Data Pra-Konsultasi
+                        </Button>
+                      </Link>
+                    : ''
                   }
-                  Riwayat Rekam Medis
-                  { allRecord.length > 0 ?
-                    <>
-                      <br/>
-                      <Label style={{ fontWeight: 'bold' }}>{patientData.nama_lengkap}, </Label>&nbsp;
-                      <Label>
-                        {patientData.jenis_kelamin}, {new Date().getFullYear() - patientData.tanggal_lahir.substring(0,4)} tahun
-                      </Label>
-                    </> : vitalSignsID ? ' Tidak Ditemukan' :
-                    <>
-                      {' dan Data Pra-Konsultasi Hari Ini Tidak Ditemukan'}
-                      <br/>
-                      <Label>
-                        Silahkan mengisi data Pra-Konsultasi pasien <b>{patientData.nama_lengkap}</b> pada hari ini untuk administrasi data rekam medis
-                      </Label>
-                    </>
+                  { patientID ? 
+                    allRecord.length > 0 ?
+                      <>
+                        Riwayat Rekam Medis
+                        <br/>
+                        <Label style={{ fontWeight: 'bold' }}>{patientData.nama_lengkap}, </Label>&nbsp;
+                        <Label>
+                          {patientData.jenis_kelamin}, {new Date().getFullYear() - patientData.tanggal_lahir.substring(0,4)} tahun
+                        </Label>
+                      </>
+                      : vitalSignsID ? 'Riwayat Rekam Medis Tidak Ditemukan' :
+                      <>
+                        {'Riwayat Rekam Medis dan Data Pra-Konsultasi Hari Ini Tidak Ditemukan'}
+                        <br/>
+                        <Label>
+                          Silahkan mengisi data Pra-Konsultasi pasien <b>{patientData.nama_lengkap}</b> pada hari ini untuk administrasi data rekam medis
+                        </Label>
+                      </>
+                      : 'Silahkan memilih pasien pada antrian terlebih dahulu'
                   }
                 </CardTitle>
-                { allRecord.length > 0 && ( 
-                  allRecord.map((data) => ( 
-                  <Table className="med-record-table" key={data.id}>
-                    <tbody>
-                      <tr>
-                        <th><h6 style={{ fontWeight: 'bold' }}>Kunjungan {data.tipe ? data.tipe : '-'}</h6></th>
-                        <td>
-                            <span style={{ float: 'right' }}>
-                              {data.waktu_mulai ? moment(data.waktu_mulai).format("DD MMM YYYY - HH:mm") : '00/00/0000 - 00:00'} s/d {data.waktu_selesai ? moment(data.waktu_selesai).format("DD MMM YYYY - HH:mm") : '00/00/0000 - 00:00'}
-                            </span>
-                        </td>
-                      </tr>
-                      <tr>
-                        <th>Keluhan</th>
-                        <td style={{ width: '70%' }}>{data.keluhan ? data.keluhan : '-'}</td>
-                      </tr>
-                      <tr>
-                        <th>Anamnesis</th>
-                        <td>{data.anamnesis ? data.anamnesis : '-'}</td>
-                      </tr>
-                      <tr>
-                        <th>Pemeriksaan Fisik</th>
-                        <td>{data.pemeriksaan_fisik ? data.pemeriksaan_fisik : '-'}</td>
-                      </tr>
-                      { patientData && vitalSignsID ?
-                      <tr>
-                        <th></th>
-                        <td>
-                            <Link to={{
-                                pathname: `/record/form`,
-                                state: { patientID: patientID, patientData: patientData, recordID: data.id, watchID: watchID }
-                            }}>
-                              <Button color="secondary" size="xs" style={{ float: "right" }}>
-                                Ubah Data
-                              </Button>
-                            </Link>
-                        </td>
-                      </tr>
-                      : <></>}
-                    </tbody>
-                  </Table>
-                  ) ) 
-                )}
+                { patientID ? 
+                  allRecord.length > 0 && ( 
+                    allRecord.map((data) => ( 
+                    <Table className="med-record-table" key={data.id}>
+                      <tbody>
+                        <tr>
+                          <th><h6 style={{ fontWeight: 'bold' }}>Kunjungan {data.tipe ? data.tipe : '-'}</h6></th>
+                          <td>
+                              <span style={{ float: 'right' }}>
+                                {data.waktu_mulai ? moment(data.waktu_mulai).format("DD MMM YYYY - HH:mm") : '00/00/0000 - 00:00'} s/d {data.waktu_selesai ? moment(data.waktu_selesai).format("DD MMM YYYY - HH:mm") : '00/00/0000 - 00:00'}
+                              </span>
+                          </td>
+                        </tr>
+                        <tr>
+                          <th>Keluhan</th>
+                          <td style={{ width: '70%' }}>{data.keluhan ? data.keluhan : '-'}</td>
+                        </tr>
+                        <tr>
+                          <th>Anamnesis</th>
+                          <td>{data.anamnesis ? data.anamnesis : '-'}</td>
+                        </tr>
+                        <tr>
+                          <th>Pemeriksaan Fisik</th>
+                          <td>{data.pemeriksaan_fisik ? data.pemeriksaan_fisik : '-'}</td>
+                        </tr>
+                        { patientData && vitalSignsID ?
+                        <tr>
+                          <th></th>
+                          <td>
+                              <Link to={{
+                                  pathname: `/record/form`,
+                                  state: { patientID: patientID, patientData: patientData, recordID: data.id, watchID: watchID }
+                              }}>
+                                <Button color="secondary" size="xs" style={{ float: "right" }}>
+                                  Ubah Data
+                                </Button>
+                              </Link>
+                          </td>
+                        </tr>
+                        : <></>}
+                      </tbody>
+                    </Table>
+                    ) ) 
+                  ) : ''}
               </CardBody>
             </Card>
           </Colxx>

@@ -559,7 +559,7 @@ const Data = ({ match }) => {
     selectInsuranceClassByInsurance[index] = [{ label: "Pilih Kelas", value: "", key: 0, name: 'asuransi_kelas' }];
 
     try {
-      const response = await insuranceClassAPI.getByInsurance("", `/${id_asuransi}`);
+      const response = await insuranceClassAPI.getByInsurance(`/${id_asuransi}`);
       // console.log(response);
 
       if (response.status === 200) {
@@ -1171,7 +1171,7 @@ const Data = ({ match }) => {
     setTempInsurance([]);
 
     try {
-      const res = await participantAPI.getByPatient("", `/${id}`);
+      const res = await participantAPI.getByPatient(`/${id}`);
       let data = res.data.data;
       // console.log('data', data);
 

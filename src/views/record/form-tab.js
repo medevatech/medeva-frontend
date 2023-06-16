@@ -1640,7 +1640,7 @@ const FormRecord = ({ match, history }) => {
     // console.log('patientData', patientData);
 
     try {
-      const res = await vitalSignsAPI.getByPatient("", `/${id}`);
+      const res = await vitalSignsAPI.getByPatient(`/${id}`);
       let data = res.data.data[0];
       // console.log('vitalSigns', data);
 

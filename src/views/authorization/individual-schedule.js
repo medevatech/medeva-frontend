@@ -481,7 +481,7 @@ const Data = ({ match }) => {
     setShift([]);
     setTempShift([]);
     try {
-      const res = await scheduleAPI.getByEmployee("", `/${id}?searchStatus=1`);
+      const res = await scheduleAPI.getByEmployee(`/${id}?searchStatus=1`);
       let data = res.data.data;
       console.log("databy", data);
       if (data) {

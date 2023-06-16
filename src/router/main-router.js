@@ -105,7 +105,7 @@ const MainRouter = ( ) => {
             // console.log('tenSeconds', tenSeconds);
             // console.log('tokenExpiredAt', tokenExpiredAt);
             // console.log('isAlreadyExpired', isAlreadyExpired);
-          }, 1000);
+          }, 1000 * 60 * 15);
         }
       }
     }, [ ]);

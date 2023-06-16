@@ -7,9 +7,9 @@ const diagnose = {
     const url = api.diagnose.all + options
     return baseApi.get(url, { headers: getAuthHeader() })
   },
-  getByRecord: (payloads, options) => {
+  getByRecord: (options) => {
     const url = api.diagnose.record + options
-    return baseApi.get(url, payloads, { headers: getAuthHeader() })
+    return baseApi.get(url, { headers: getAuthHeader() })
   },
   add: (payloads) => {
     const url = api.diagnose.all

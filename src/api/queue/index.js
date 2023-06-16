@@ -4,7 +4,7 @@ import baseApi from 'service/api-general'
 
 const queue = {
   get: (options) => {
-    const url = api.queue + options;
+    const url = api.queue.all + options;
     return baseApi.get(url, { headers: getAuthHeader() });
   },
   getByScheduleId: (options) => {
@@ -12,11 +12,11 @@ const queue = {
     return baseApi.get(url, { headers: getAuthHeader() });
   },
   add: (payloads) => {
-    const url = api.queue;
+    const url = api.queue.all;
     return baseApi.post(url, payloads, { headers: getAuthHeader() });
   },
   update: (payloads, id) => {
-    const url = api.queue + `/${id}`;
+    const url = api.queue.all + `/${id}`;
     return baseApi.put(url, payloads, { headers: getAuthHeader() });
   },
   delete: (id) => {
