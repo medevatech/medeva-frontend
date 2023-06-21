@@ -2541,7 +2541,6 @@ const FormRecord = ({ match, history }) => {
               <CardBody>
                 <CardTitle>
                     {/* Form Registrasi Rekam Medis */}
-                    { console.log('recordID', recordID) }
                     { recordID === '' || recordID === null ? 'Form Tambah Rekam Medis' : 'Form Ubah Rekam Medis' }
                     {/* <span style={{ fontWeight: 'bold' }}>{patientData.nama_lengkap}</span> */}
                 </CardTitle>
