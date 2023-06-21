@@ -748,7 +748,7 @@ const Data = ({ match, history, loading, error }) => {
             </CardBody>
             : <CardBody style={{ textAlign: 'center', verticalAlign: 'middle'}}>
                 <img src="/assets/empty.svg" width={150} className="mt-5 mb-3"/>
-                <p className="mb-3">Silahkan memilih layanan untuk melihat, mengubah, menghapus, mengarsipkan, dan mengaktifkan data layanan.
+                <p className="mb-5">Silahkan memilih layanan untuk melihat, mengubah, menghapus, mengarsipkan, dan mengaktifkan data layanan.
                   Silahkan klik tombol tambah untuk menambahkan layanan baru.</p>
             </CardBody> }
           </Card>

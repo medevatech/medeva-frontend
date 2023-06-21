@@ -2508,7 +2508,7 @@ const Data = ({ match, history, loading, error }) => {
             </CardBody>
             : <CardBody style={{ textAlign: 'center', verticalAlign: 'middle'}}>
                 <img src="/assets/empty.svg" width={150} className="mt-5 mb-3"/>
-                <p className="mb-3">Silahkan memilih karyawan / tenaga kesehatan untuk melihat, mengubah, menghapus, mengarsipkan, dan mengaktifkan data karyawan / tenaga kesehatan.
+                <p className="mb-5">Silahkan memilih karyawan / tenaga kesehatan untuk melihat, mengubah, menghapus, mengarsipkan, dan mengaktifkan data karyawan / tenaga kesehatan.
                   Silahkan klik tombol tambah untuk menambahkan karyawan / tenaga kesehatan baru.</p>
             </CardBody> }
           </Card>

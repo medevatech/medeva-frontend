@@ -702,7 +702,7 @@ const Data = ({ match, history }) => {
             : <Card className="mb-4">
                 <CardBody style={{ textAlign: 'center', verticalAlign: 'middle'}}>
                     <img src="/assets/empty.svg" width={150} className="mt-5 mb-3"/>
-                    <p className="mb-3">Silahkan memilih antrian untuk melihat data pra-konsultasi dan riwayat rekam medis pasien.
+                    <p className="mb-5">Silahkan memilih antrian untuk melihat data pra-konsultasi dan riwayat rekam medis pasien.
                       Setelah data muncul, silahkan klik tombol tambah untuk menambahkan data pra-konsultasi pasien atau rekam medis baru.</p>
                 </CardBody>
             </Card> }

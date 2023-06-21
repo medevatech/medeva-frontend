@@ -1261,7 +1261,7 @@ const VitalSigns = ({ match }) => {
             : <Card className="mb-4">
                 <CardBody style={{ textAlign: 'center', verticalAlign: 'middle'}}>
                     <img src="/assets/empty.svg" width={150} className="mt-5 mb-3"/>
-                    <p className="mb-3">Silahkan memilih antrian untuk melihat, mengubah, dan menambah data pra-konsultasi pasien.</p>
+                    <p className="mb-5">Silahkan memilih antrian untuk melihat, mengubah, dan menambah data pra-konsultasi pasien.</p>
                 </CardBody>
             </Card> }
           </Colxx>
