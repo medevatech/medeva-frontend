@@ -17,7 +17,11 @@ import {
   Button,
   Form,
   Table,
-  Badge
+  Badge,
+  UncontrolledDropdown,
+  DropdownToggle,
+  DropdownMenu,
+  DropdownItem,
 } from "reactstrap";
 import { useDispatch, useSelector } from 'react-redux';
 import "react-tagsinput/react-tagsinput.css";
@@ -58,7 +62,7 @@ const Data = ({ match, history, loading, error }) => {
   const { errors, validate } = useForm();
 
   const [tableClass, setTableClass] = useState('');
-  const [dataStatus, setDataStatus] = useState("add");
+  const [dataStatus, setDataStatus] = useState("");
   const [rowSelected, setRowSelected] = useState(null);
 
   const [selectedKlinik, setSelectedKlinik] = useState([{ label: "Pilih Klinik", value: "", key: 0, name: 'id_klinik' }]);
@@ -214,7 +218,7 @@ const Data = ({ match, history, loading, error }) => {
     } catch (e) {
       Swal.fire({
         title: "Gagal!",
-        html: e,
+        html: e.response.data.message,
         icon: "error",
         confirmButtonColor: "#008ecc",
         confirmButtonText: "Coba lagi",
@@ -274,7 +278,7 @@ const Data = ({ match, history, loading, error }) => {
       } catch (e) {
         Swal.fire({
           title: "Gagal!",
-          html: e,
+          html: e.response.data.message,
           icon: "error",
           confirmButtonColor: "#008ecc",
           confirmButtonText: "Coba lagi",
@@ -315,7 +319,7 @@ const Data = ({ match, history, loading, error }) => {
       } catch (e) {
         Swal.fire({
           title: "Gagal!",
-          html: e,
+          html: e.response.data.message,
           icon: "error",
           confirmButtonColor: "#008ecc",
           confirmButtonText: "Coba lagi",
@@ -331,7 +335,7 @@ const Data = ({ match, history, loading, error }) => {
   };
 
   const resetForm = (e, scroll = false) => {
-    e.preventDefault();
+    e && e.preventDefault();
 
     setServiceID('');
     setServiceName('');
@@ -342,8 +346,13 @@ const Data = ({ match, history, loading, error }) => {
       if(window.innerWidth < 1280){
         const element = document.getElementById('manage-form-tab-mobile');
         if (element) {
-          window.scroll({
-            top: element,
+          // window.scroll({
+          //   top: element,
+          //   behavior: "smooth"
+          // })
+
+          element.scrollIntoView({
+            block: "end",
             behavior: "smooth"
           })
         }
@@ -385,16 +394,21 @@ const Data = ({ match, history, loading, error }) => {
   };
 
   const getServicePriceById = async (e, id) => {
-    e.preventDefault();
-    resetForm(e);
+    e && e.preventDefault();
+    e && resetForm(e);
     setDataStatus("update");
     setRowSelected(id);
 
     if(window.innerWidth < 1280){
       const element = document.getElementById('manage-form-tab-mobile');
       if (element) {
-        window.scroll({
-          top: element,
+        // window.scroll({
+        //   top: element,
+        //   behavior: "smooth"
+        // })
+
+        element.scrollIntoView({
+          block: "end",
           behavior: "smooth"
         })
       }
@@ -446,6 +460,38 @@ const Data = ({ match, history, loading, error }) => {
         return <ButtonArchive/>;
       } else if (serviceID && serviceStatus == 0) {
         return <ButtonActive/>;
+      } else {
+        return null;
+      }
+    } else {
+      return null;
+    }
+  }
+
+  function ActiveDropdown() {
+    return <>
+      <DropdownItem onClick={(e) => statusById(e, serviceID)}>
+        <i className="simple-icon-drawer"></i>&nbsp;Aktifkan
+      </DropdownItem>
+    </>;
+  }
+
+  function ArchiveDropdown() {
+    return <>
+      <DropdownItem onClick={(e) => statusById(e, serviceID)}>
+        <i className="simple-icon-drawer"></i>&nbsp;Arsipkan
+      </DropdownItem>
+    </>;
+  }
+
+  function IsActiveDropdown() {
+    if(userData.roles.includes('isDev') ||
+      userData.roles.includes('isManager') ||
+      userData.roles.includes('isAdmin')) {
+      if (serviceID && serviceStatus == 1) {
+        return <ArchiveDropdown/>;
+      } else if (serviceID && serviceStatus == 0) {
+        return <ActiveDropdown/>;
       } else {
         return null;
       }
@@ -533,7 +579,7 @@ const Data = ({ match, history, loading, error }) => {
     } catch (e) {
       Swal.fire({
         title: "Gagal!",
-        html: e,
+        html: e.response.data.message,
         icon: "error",
         confirmButtonColor: "#008ecc",
         confirmButtonText: "Coba lagi",
@@ -542,6 +588,7 @@ const Data = ({ match, history, loading, error }) => {
       console.log(e);
     } finally {
       getServicePrice("");
+      getServicePriceById("", serviceID);
     }
   };
 
@@ -594,7 +641,7 @@ const Data = ({ match, history, loading, error }) => {
     } catch (e) {
       Swal.fire({
         title: "Gagal!",
-        html: e,
+        html: e.response.data.message,
         icon: "error",
         confirmButtonColor: "#008ecc",
         confirmButtonText: "Coba lagi",
@@ -656,13 +703,23 @@ const Data = ({ match, history, loading, error }) => {
   return (
     <>
       <Row>
-        <Colxx sm="12" md="12" xl="4" className="mb-4 switch-table">
+        <Colxx sm="12" md="12" xl="4" className="mb-4">
           <Card className="mb-4">
             <CardBody>
               <CardTitle>
                 <Row>
-                  <Colxx sm="12" md="12" xl="12">
+                  <Colxx sm="8" md="8" xl="8" className="col-sm-8-mobile">
                     Data Harga Layanan
+                  </Colxx>
+                  <Colxx sm="4" md="4" xl="4" className="col-sm-4-mobile">
+                    <Button
+                      color="primary"
+                      style={{ float: "right" }}
+                      className="mb-4"
+                      onClick={(e) => resetForm(e, true)}
+                    >
+                      Tambah
+                    </Button>
                   </Colxx>
                 </Row>
               </CardTitle>
@@ -775,14 +832,16 @@ const Data = ({ match, history, loading, error }) => {
         </Colxx>
         <Colxx sm="12" md="12" xl="8" className="mb-4 manage-form" id="manage-form-tab-mobile">
           <Card className="mb-8">
+            { dataStatus ?
             <CardBody>
               <CardTitle>
                 <Row>
-                  <Colxx sm="5" md="6" xl="6">
-                    Form Manajemen Harga Layanan
+                  <Colxx sm="10" className="card-title-mobile">
+                    { dataStatus && dataStatus === "add" ? 'Form Tambah Harga Layanan' : 'Form Ubah Harga Layanan' }
+                    {/* Form Manajemen Harga Layanan */}
                   </Colxx>
-                  <Colxx sm="7" md="6" xl="6" style={{ textAlign: 'right' }}>
-                    {<IsActive/>}
+                  <Colxx sm="2" className="three-dots-menu">
+                    {/* {<IsActive/>}
                     {(userData.roles.includes('isDev') ||
                     userData.roles.includes('isManager')) && serviceID &&
                       <Button color="danger" size="xs"
@@ -790,6 +849,25 @@ const Data = ({ match, history, loading, error }) => {
                         >
                         <i className="simple-icon-trash"></i>&nbsp;Hapus
                       </Button>
+                    } */}
+                    { dataStatus === "update" && 
+                      <UncontrolledDropdown>
+                        <DropdownToggle color="default">
+                          <i className="simple-icon-options-vertical"></i>
+                        </DropdownToggle>
+                        <DropdownMenu right>
+                          {<IsActiveDropdown/>}
+                          {(userData.roles.includes('isDev') ||
+                          userData.roles.includes('isManager')) && serviceID &&
+                            <>
+                              <DropdownItem divider />
+                              <DropdownItem onClick={(e) => deleteById(e, divisionID)}>
+                                <i className="simple-icon-trash"></i>&nbsp;Hapus
+                              </DropdownItem>
+                            </>
+                          }
+                        </DropdownMenu>
+                      </UncontrolledDropdown>
                     }
                   </Colxx>
                 </Row>
@@ -929,6 +1007,11 @@ const Data = ({ match, history, loading, error }) => {
                 </Row>
               </Form>
             </CardBody>
+            : <CardBody style={{ textAlign: 'center', verticalAlign: 'middle'}}>
+                <img src="/assets/empty.svg" width={150} className="mt-5 mb-3"/>
+                <p>Silahkan memilih harga layanan untuk melihat, mengubah, menghapus, mengarsipkan, dan mengaktifkan data harga layanan.
+                  Silahkan klik tombol tambah untuk menambahkan harga layanan baru.</p>
+            </CardBody> }
           </Card>
         </Colxx>
         
@@ -1038,13 +1121,13 @@ const Data = ({ match, history, loading, error }) => {
           
       </Row>
 
-      <Button
+      {/* <Button
         color="primary"
         className="float-btn"
         onClick={(e) => resetForm(e, true)}
       >
         <i className="iconsminds-wallet"></i> Tambah Layanan
-      </Button>
+      </Button> */}
     </>
   );
 };

@@ -41,6 +41,7 @@ const selectRole = [
   { label: "Perawat", value: "Perawat", key: 4, name: "peran" },
   { label: "Dokter", value: "Dokter", key: 5, name: "peran" },
   { label: "Manajemen", value: "Manajemen", key: 6, name: "peran" },
+  { label: "Finance", value: "Finance", key: 7, name: "peran" },
 ];
 
 const selectType = [
@@ -50,7 +51,8 @@ const selectType = [
   { label: "Resepsionis", value: "Resepsionis", key: 3, name: "tipe" },
   { label: "Perawat", value: "Perawat", key: 4, name: "tipe" },
   { label: "Dokter", value: "Dokter", key: 5, name: "tipe" },
-  { label: "Manajemen", value: "Manajemen", key: 6, name: "tipe" }
+  { label: "Manajemen", value: "Manajemen", key: 6, name: "tipe" },
+  { label: "Finance", value: "Finance", key: 7, name: "tipe" },
 ];
 
 const selectWP = [
@@ -157,6 +159,7 @@ const Data = ({ match, history, loading, error }) => {
     is_perawat: 0,
     is_dokter: 0,
     is_manajemen: 0,
+    is_finance: 0,
     jenis_kelamin: '',
     nomor_kitas: '',
     tipe_izin: '',
@@ -353,10 +356,18 @@ const Data = ({ match, history, loading, error }) => {
 
           validate(e, 'peran', 1);
         } 
+        
+        if (e[i].value === "Finance") {
+          setEmployee(current => {
+              return { ...current, is_finance: 1 }
+          })
+
+          validate(e, 'peran', 1);
+        } 
       }
     } else if (e.length <= 0) {
       setEmployee(current => {
-          return { ...current, is_dev: 0, is_manager: 0, is_admin: 0, is_resepsionis: 0, is_perawat: 0, is_dokter: 0, is_manajemen: 0 }
+          return { ...current, is_dev: 0, is_manager: 0, is_admin: 0, is_resepsionis: 0, is_perawat: 0, is_dokter: 0, is_manajemen: 0, is_finance: 0 }
       })
 
       setSelectedRole(Array.isArray(e) ? e.map(x => x.value) : []);
@@ -490,11 +501,11 @@ const Data = ({ match, history, loading, error }) => {
   }
 
   const onEmployeeSubmit = async (e) => {
-    e.preventDefault();
+    e && e.preventDefault();
 
     let isError = false;
 
-    let isDev, isManager, isAdmin, isResepsionis, isPerawat, isDokter, isManajemen = false;
+    let isDev, isManager, isAdmin, isResepsionis, isPerawat, isDokter, isManajemen, isFinance = false;
 
     for(let [key, value] of Object.entries(employee)) {
       if((key === 'username' && value === '') || (key === 'no_kitas' && value === '')  ||
@@ -511,6 +522,7 @@ const Data = ({ match, history, loading, error }) => {
       key === 'is_perawat' && value === 0 ? isPerawat = false : isPerawat = true
       key === 'is_dokter' && value === 0 ? isDokter = false : isDokter = true
       key === 'is_manajemen' && value === 0 ? isManajemen = false : isManajemen = true
+      key === 'is_finance' && value === 0 ? isFinance = false : isFinance = true
 
       if((key === 'tipe' && value !== '') && (key === 'spesialis' && value === '')){
         validate(e, 'spesialis', value);
@@ -523,7 +535,7 @@ const Data = ({ match, history, loading, error }) => {
       isError = true;
     }
 
-    isDev == false && isManager == false && isAdmin == false && isResepsionis == false && isPerawat == false && isDokter == false && isManajemen == false && noPeran()
+    isDev == false && isManager == false && isAdmin == false && isResepsionis == false && isPerawat == false && isDokter == false && isManajemen == false && isFinance == false && noPeran()
 
     if(isError === true){
       return;
@@ -565,7 +577,7 @@ const Data = ({ match, history, loading, error }) => {
     } catch (e) {
         Swal.fire({
             title: "Gagal!",
-            html: e,
+            html: e.response.data.message.response.data.message,
             icon: "error",
             confirmButtonColor: "#008ecc",
             confirmButtonText: "Coba lagi",
@@ -578,7 +590,7 @@ const Data = ({ match, history, loading, error }) => {
   };
 
   const resetForm = (e) => {
-    // e.preventDefault();
+    e && e.preventDefault();
 
     setEmployeeID('');
     setEmployeeUsername('');
@@ -595,6 +607,7 @@ const Data = ({ match, history, loading, error }) => {
       is_perawat: 0,
       is_dokter: 0,
       is_manajemen: 0,
+      is_finance: 0,
       jenis_kelamin: '',
       nomor_kitas: '',
       tipe_izin: '',
@@ -643,8 +656,8 @@ const Data = ({ match, history, loading, error }) => {
   };
 
   const getEmployeeById = async (id) => {
-    // e.preventDefault();
-    resetForm();
+    // e && e.preventDefault();
+    // resetForm("");
 
     try {
       const res = await employeeAPI.get(`/${id}`);
@@ -665,6 +678,7 @@ const Data = ({ match, history, loading, error }) => {
         is_perawat: data.is_perawat,
         is_dokter: data.is_dokter,
         is_manajemen: data.is_manajemen,
+        is_finance: data.is_finance,
         jenis_kelamin: data.jenis_kelamin,
         nomor_kitas: data.nomor_kitas,
         tipe_izin: data.tipe_izin,
@@ -727,6 +741,12 @@ const Data = ({ match, history, loading, error }) => {
       if (data.is_manajemen === 1) {
         setSelectedRole((current) => [
           ...current, 'Manajemen'
+        ]);
+      }
+      
+      if (data.is_finance === 1) {
+        setSelectedRole((current) => [
+          ...current, 'Finance'
         ]);
       }
 
@@ -848,6 +868,14 @@ const Data = ({ match, history, loading, error }) => {
           }) : 
           setEmployee(current => {
               return { ...current, is_manajemen: 0 }
+          })
+
+        selectedRole.includes('Finance') ?
+          setEmployee(current => {
+              return { ...current, is_finance: 1 }
+          }) : 
+          setEmployee(current => {
+              return { ...current, is_finance: 0 }
           })
 
         // console.log('selectedRole onUpdate', selectedRole);
@@ -1312,7 +1340,6 @@ const Data = ({ match, history, loading, error }) => {
                       </FormGroup>
                     </Colxx>
 
-                    { userData.roles.includes('isAdmin') &&
                     <Colxx sm={12}>
                       <FormGroup>
                         <Label for="peran">
@@ -1325,86 +1352,48 @@ const Data = ({ match, history, loading, error }) => {
                             *
                           </span>
                         </Label>
-                        <Select
-                          components={{ Input: CustomSelectInput }}
-                          className="react-select"
-                          classNamePrefix="react-select"
-                          isMulti
-                          name="peran"
-                          id="peran"
-                          // value={selectedRole}
-                          value={selectRole.filter(item => selectedRole.includes(item.value)) || 'Pilih Peran'}
-                          options={selectRole.filter(roleChoices => roleChoices.label != 'Developer' && roleChoices.label != 'Manager' && roleChoices.label != 'Admin' && roleChoices.label != 'Manajemen').map(roleChoices => roleChoices)}
-                          onChange={onChange}
-                        />
-                        {errors.peran && (
-                          <div className="rounded invalid-feedback d-block">
-                            {errors.peran}
-                          </div>
-                        )}
-                      </FormGroup>
-                    </Colxx> }
-
-                    { userData.roles.includes('isManager') &&
-                    <Colxx sm={12}>
-                      <FormGroup>
-                        <Label for="peran">
-                          Peran
-                          <span
-                            className="required text-danger"
-                            aria-required="true"
-                          >
-                            {" "}
-                            *
-                          </span>
-                        </Label>
-                        <Select
-                          components={{ Input: CustomSelectInput }}
-                          className="react-select"
-                          classNamePrefix="react-select"
-                          isMulti
-                          name="peran"
-                          id="peran"
-                          // value={selectedRole}
-                          value={selectRole.filter(item => selectedRole.includes(item.value)) || 'Pilih Peran'}
-                          options={selectRole.filter(roleChoices => roleChoices.label != 'Developer' && roleChoices.label != 'Manager' && roleChoices.label != 'Manajemen').map(roleChoices => roleChoices)}
-                          onChange={onChange}
-                        />
-                        {errors.peran && (
-                          <div className="rounded invalid-feedback d-block">
-                            {errors.peran}
-                          </div>
-                        )}
-                      </FormGroup>
-                    </Colxx>
-                    }
-
-                    { userData.roles.includes('isDev') &&
-                    <Colxx sm={12}>
-                      <FormGroup>
-                        <Label for="peran">
-                          Peran
-                          <span
-                            className="required text-danger"
-                            aria-required="true"
-                          >
-                            {" "}
-                            *
-                          </span>
-                        </Label>
-                        <Select
-                          components={{ Input: CustomSelectInput }}
-                          className="react-select"
-                          classNamePrefix="react-select"
-                          isMulti
-                          name="peran"
-                          id="peran"
-                          // value={selectedRole}
-                          value={selectRole.filter(item => selectedRole.includes(item.value)) || ''}
-                          // options={selectRole}
-                          options={selectRole.filter(roleChoices => roleChoices.label != 'Developer').map(roleChoices => roleChoices)}
-                          onChange={onChange}
-                        />
+                        { userData.roles.includes('isDev') ?
+                            <Select
+                              components={{ Input: CustomSelectInput }}
+                              className="react-select"
+                              classNamePrefix="react-select"
+                              isMulti
+                              name="peran"
+                              id="peran"
+                              // value={selectedRole}
+                              value={selectRole.filter(item => selectedRole.includes(item.value)) || ''}
+                              // options={selectRole}
+                              options={selectRole.filter(roleChoices => roleChoices.label != 'Developer').map(roleChoices => roleChoices)}
+                              onChange={onChange}
+                            />
+                          : userData.roles.includes('isManager') ?
+                            <Select
+                              components={{ Input: CustomSelectInput }}
+                              className="react-select"
+                              classNamePrefix="react-select"
+                              isMulti
+                              name="peran"
+                              id="peran"
+                              // value={selectedRole}
+                              value={selectRole.filter(item => selectedRole.includes(item.value)) || 'Pilih Peran'}
+                              options={selectRole.filter(roleChoices => roleChoices.label != 'Developer' && roleChoices.label != 'Manager' && roleChoices.label != 'Admin' && roleChoices.label != 'Manajemen' && roleChoices.label != 'Finance').map(roleChoices => roleChoices)}
+                              onChange={onChange}
+                            />
+                          : userData.roles.includes('isAdmin') ?
+                            <Select
+                              components={{ Input: CustomSelectInput }}
+                              className="react-select"
+                              classNamePrefix="react-select"
+                              isMulti
+                              name="peran"
+                              id="peran"
+                              // value={selectedRole}
+                              value={selectRole.filter(item => selectedRole.includes(item.value)) || 'Pilih Peran'}
+                              options={selectRole.filter(roleChoices => roleChoices.label != 'Developer' && roleChoices.label != 'Manager' && roleChoices.label != 'Admin' && roleChoices.label != 'Manajemen' && roleChoices.label != 'Finance').map(roleChoices => roleChoices)}
+                              onChange={onChange}
+                            />
+                          : ''
+                        }
                         {errors.peran && (
                           <div className="rounded invalid-feedback d-block">
                             {errors.peran}
@@ -1412,7 +1401,6 @@ const Data = ({ match, history, loading, error }) => {
                         )}
                       </FormGroup>
                     </Colxx>
-                    }
                   </FormGroup>
 
                   <Row>

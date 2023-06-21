@@ -5,17 +5,15 @@ import { connect } from 'react-redux';
 import AppLayout from 'layout/AppLayout';
 import { ProtectedRoute } from 'helpers/authHelper';
 
-const Shift = React.lazy(() =>
-  import(/* webpackChunkName: "views-schedule-shift" */ './shift')
-);
-const ManageDoctor = React.lazy(() =>
-  import(/* webpackChunkName: "views-schedule-manage" */ './manage-doctor')
-);
-const ManageEmployee = React.lazy(() =>
-  import(/* webpackChunkName: "views-schedule-manage" */ './manage-employee')
+
+const Dashboard = React.lazy(() =>
+  import(/* webpackChunkName: "views-insurance-dashboard" */ './dashboard')
 );
 const Data = React.lazy(() =>
-  import(/* webpackChunkName: "views-schedule-data" */ './data')
+  import(/* webpackChunkName: "views-insurance-data" */ './data')
+);
+const Partnership = React.lazy(() =>
+  import(/* webpackChunkName: "views-insurance-partnership" */ './partnership')
 );
 
 const App = ({ match }) => {
@@ -35,19 +33,19 @@ const App = ({ match }) => {
               roles={[ "isDev", "isManager", "isAdmin", "isResepsionis", "isPerawat", "isDokter" ]}
             /> */}
             <ProtectedRoute
-              path={`${match.url}/shift`}
-              component={Shift}
-              roles={[ "isDev", "isManager", "isAdmin", "isResepsionis", "isPerawat", "isDokter" ]}
+              path={`${match.url}/dashboard`}
+              component={Dashboard}
+              roles={[ "isDev", "isFinance", "isManajemen" ]}
             />
             <ProtectedRoute
-              path={`${match.url}/manage-employee`}
-              component={ManageEmployee}
-              roles={[ "isDev", "isManager", "isAdmin", "isResepsionis", "isPerawat" ]}
+              path={`${match.url}/list`}
+              component={Data}
+              roles={[ "isDev", "isManager", "isAdmin" ]}
             />
             <ProtectedRoute
-              path={`${match.url}/manage-doctor`}
-              component={ManageDoctor}
-              roles={[ "isDev", "isManager", "isAdmin", "isResepsionis", "isPerawat", "isDokter" ]}
+              path={`${match.url}/partnership`}
+              component={Partnership}
+              roles={[ "isDev", "isManager", "isAdmin" ]}
             />
             <Redirect to="/error" />
           </Switch>

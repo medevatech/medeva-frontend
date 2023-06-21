@@ -327,15 +327,15 @@ const FormRecord = ({ match, history }) => {
   };
 
   const [reciept, setReciept] = useState([
-    { id: '', id_kunjungan: recordID, id_obat: "", jumlah: 0, satuan: "", frekuensi: 0, periode: "", aturan_pakai: "", metode_konsumsi: "" }
+    { id: '', id_pasien: patientID, id_kunjungan: recordID, id_obat: "", jumlah: 0, satuan: "", frekuensi: 0, periode: "", aturan_pakai: "", metode_konsumsi: "" }
   ]);
 
   const [tempReciept, setTempReciept] = useState([
-    { id: '', id_kunjungan: recordID, id_obat: "", jumlah: 0, satuan: "", frekuensi: 0, periode: "", aturan_pakai: "", metode_konsumsi: "" }
+    { id: '', id_pasien: patientID, id_kunjungan: recordID, id_obat: "", jumlah: 0, satuan: "", frekuensi: 0, periode: "", aturan_pakai: "", metode_konsumsi: "" }
   ]);
 
   const addRecieptFields = () => {
-    let newfieldReciept = { id: '', id_kunjungan: recordID, id_obat: "", jumlah: 0, satuan: "", frekuensi: 0, periode: "", aturan_pakai: "", metode_konsumsi: "" }
+    let newfieldReciept = { id: '', id_pasien: patientID, id_kunjungan: recordID, id_obat: "", jumlah: 0, satuan: "", frekuensi: 0, periode: "", aturan_pakai: "", metode_konsumsi: "" }
     setReciept([...reciept, newfieldReciept]);
   };
 
@@ -367,15 +367,15 @@ const FormRecord = ({ match, history }) => {
   };
 
   const [checkup, setCheckup] = useState([
-    { id: '', id_kunjungan: recordID, id_lab: "", id_pemeriksaan: "" }
+    { id: '', id_pasien: patientID, id_kunjungan: recordID, id_lab: "", id_pemeriksaan: "" }
   ]);
 
   const [tempCheckup, setTempCheckup] = useState([
-    { id: '', id_kunjungan: recordID, id_lab: "", id_pemeriksaan: "" }
+    { id: '', id_pasien: patientID, id_kunjungan: recordID, id_lab: "", id_pemeriksaan: "" }
   ]);
 
   const addCheckupFields = () => {
-    let newfieldCheckup = { id: '', id_kunjungan: recordID, id_lab: "", id_pemeriksaan: "" }
+    let newfieldCheckup = { id: '', id_pasien: patientID, id_kunjungan: recordID, id_lab: "", id_pemeriksaan: "" }
     setCheckup([...checkup, newfieldCheckup]);
   };
 
@@ -415,15 +415,15 @@ const FormRecord = ({ match, history }) => {
   };
 
   const [treatment, setTreatment] = useState([
-    { id: '', id_kunjungan: recordID, id_daftar_tindakan: "", catatan: "" }
+    { id: '', id_pasien: patientID, id_kunjungan: recordID, id_daftar_tindakan: "", catatan: "" }
   ]);
 
   const [tempTreatment, setTempTreatment] = useState([
-    { id: '', id_kunjungan: recordID, id_daftar_tindakan: "", catatan: "" }
+    { id: '', id_pasien: patientID, id_kunjungan: recordID, id_daftar_tindakan: "", catatan: "" }
   ]);
 
   const addTreatmentFields = () => {
-    let newfieldTreatment = { id: '', id_kunjungan: recordID, id_daftar_tindakan: "", catatan: "" }
+    let newfieldTreatment = { id: '', id_pasien: patientID, id_kunjungan: recordID, id_daftar_tindakan: "", catatan: "" }
     setTreatment([...treatment, newfieldTreatment]);
   };
 
@@ -453,15 +453,15 @@ const FormRecord = ({ match, history }) => {
   };
 
   const [service, setService] = useState([
-    { id: '', id_kunjungan: recordID, id_daftar_layanan: "", catatan: "" }
+    { id: '', id_pasien: patientID, id_kunjungan: recordID, id_daftar_layanan: "", catatan: "" }
   ]);
 
   const [tempService, setTempService] = useState([
-    { id: '', id_kunjungan: recordID, id_daftar_layanan: "", catatan: "" }
+    { id: '', id_pasien: patientID, id_kunjungan: recordID, id_daftar_layanan: "", catatan: "" }
   ]);
 
   const addServiceFields = () => {
-    let newfieldService = { id: '', id_kunjungan: recordID, id_daftar_layanan: "", catatan: "" }
+    let newfieldService = { id: '', id_pasien: patientID, id_kunjungan: recordID, id_daftar_layanan: "", catatan: "" }
     setService([...service, newfieldService]);
   };
 
@@ -491,7 +491,7 @@ const FormRecord = ({ match, history }) => {
   };
 
   const [reference, setReference] = useState(
-    { id: '', id_kunjungan: recordID, id_poli: "", id_rs: "", anamnesis: "", terapi: "", catatan: "" }
+    { id: '', id_pasien: patientID, id_kunjungan: recordID, id_poli: "", id_rs: "", anamnesis: "", terapi: "", catatan: "" }
   );
   
   const [diagnoseReference, setDiagnoseReference] = useState([
@@ -646,7 +646,7 @@ const FormRecord = ({ match, history }) => {
       } catch (e) {
         Swal.fire({
           title: "Gagal!",
-          html: e,
+          html: e.response.data.message,
           icon: "error",
           confirmButtonColor: "#008ecc",
           confirmButtonText: "Coba lagi",
@@ -686,7 +686,7 @@ const FormRecord = ({ match, history }) => {
       } catch (e) {
         Swal.fire({
           title: "Gagal!",
-          html: e,
+          html: e.response.data.message,
           icon: "error",
           confirmButtonColor: "#008ecc",
           confirmButtonText: "Coba lagi",
@@ -772,7 +772,7 @@ const FormRecord = ({ match, history }) => {
     } catch (e) {
       Swal.fire({
         title: "Gagal!",
-        html: e,
+        html: e.response.data.message,
         icon: "error",
         confirmButtonColor: "#008ecc",
         confirmButtonText: "Coba lagi",
@@ -811,7 +811,7 @@ const FormRecord = ({ match, history }) => {
     } catch (e) {
       Swal.fire({
         title: "Gagal!",
-        html: e,
+        html: e.response.data.message,
         icon: "error",
         confirmButtonColor: "#008ecc",
         confirmButtonText: "Coba lagi",
@@ -870,7 +870,7 @@ const FormRecord = ({ match, history }) => {
     } catch (e) {
       Swal.fire({
         title: "Gagal!",
-        html: e,
+        html: e.response.data.message,
         icon: "error",
         confirmButtonColor: "#008ecc",
         confirmButtonText: "Coba lagi",
@@ -909,7 +909,7 @@ const FormRecord = ({ match, history }) => {
     } catch (e) {
       Swal.fire({
         title: "Gagal!",
-        html: e,
+        html: e.response.data.message,
         icon: "error",
         confirmButtonColor: "#008ecc",
         confirmButtonText: "Coba lagi",
@@ -963,7 +963,7 @@ const FormRecord = ({ match, history }) => {
     } catch (e) {
       Swal.fire({
         title: "Gagal!",
-        html: e,
+        html: e.response.data.message,
         icon: "error",
         confirmButtonColor: "#008ecc",
         confirmButtonText: "Coba lagi",
@@ -1002,7 +1002,7 @@ const FormRecord = ({ match, history }) => {
     } catch (e) {
       Swal.fire({
         title: "Gagal!",
-        html: e,
+        html: e.response.data.message,
         icon: "error",
         confirmButtonColor: "#008ecc",
         confirmButtonText: "Coba lagi",
@@ -1056,7 +1056,7 @@ const FormRecord = ({ match, history }) => {
     } catch (e) {
       Swal.fire({
         title: "Gagal!",
-        html: e,
+        html: e.response.data.message,
         icon: "error",
         confirmButtonColor: "#008ecc",
         confirmButtonText: "Coba lagi",
@@ -1095,7 +1095,7 @@ const FormRecord = ({ match, history }) => {
     } catch (e) {
       Swal.fire({
         title: "Gagal!",
-        html: e,
+        html: e.response.data.message,
         icon: "error",
         confirmButtonColor: "#008ecc",
         confirmButtonText: "Coba lagi",
@@ -1149,7 +1149,7 @@ const FormRecord = ({ match, history }) => {
     } catch (e) {
       Swal.fire({
         title: "Gagal!",
-        html: e,
+        html: e.response.data.message,
         icon: "error",
         confirmButtonColor: "#008ecc",
         confirmButtonText: "Coba lagi",
@@ -1188,7 +1188,7 @@ const FormRecord = ({ match, history }) => {
     } catch (e) {
       Swal.fire({
         title: "Gagal!",
-        html: e,
+        html: e.response.data.message,
         icon: "error",
         confirmButtonColor: "#008ecc",
         confirmButtonText: "Coba lagi",
@@ -1240,7 +1240,7 @@ const FormRecord = ({ match, history }) => {
       } catch (e) {
         Swal.fire({
           title: "Gagal!",
-          html: e,
+          html: e.response.data.message,
           icon: "error",
           confirmButtonColor: "#008ecc",
           confirmButtonText: "Coba lagi",
@@ -1283,7 +1283,7 @@ const FormRecord = ({ match, history }) => {
       } catch (e) {
         Swal.fire({
           title: "Gagal!",
-          html: e,
+          html: e.response.data.message,
           icon: "error",
           confirmButtonColor: "#008ecc",
           confirmButtonText: "Coba lagi",
@@ -1358,7 +1358,7 @@ const FormRecord = ({ match, history }) => {
     } catch (e) {
       Swal.fire({
         title: "Gagal!",
-        html: e,
+        html: e.response.data.message,
         icon: "error",
         confirmButtonColor: "#008ecc",
         confirmButtonText: "Coba lagi",
@@ -1397,7 +1397,7 @@ const FormRecord = ({ match, history }) => {
     } catch (e) {
       Swal.fire({
         title: "Gagal!",
-        html: e,
+        html: e.response.data.message,
         icon: "error",
         confirmButtonColor: "#008ecc",
         confirmButtonText: "Coba lagi",
@@ -2129,27 +2129,27 @@ const FormRecord = ({ match, history }) => {
     if (recordSubmit === "done" && recordID) {
       setTimeout(() => {
 
-        if(diagnosis.length > 0 && recordID) {
+        if(diagnosis.length > 0 && diagnosis[0].id_penyakit && recordID) {
           // console.log('diagnosis', diagnosis);
           onDiagnosisSubmit();
         }
         
-        if(reciept.length > 0 && recordID) {
+        if(reciept.length > 0 && reciept[0].id_obat && recordID) {
           // console.log('reciept', reciept);
           onRecieptSubmit();
         }
 
-        if(checkup.length > 0 && recordID) {
+        if(checkup.length > 0 && reciept[0].id_lab && recordID) {
           // console.log('checkup', checkup);
           onCheckupSubmit();
         }
         
-        if(treatment.length > 0 && recordID) {
+        if(treatment.length > 0 && treatment[0].id_daftar_tindakan && recordID) {
           // console.log('treatment', treatment);
           onTreatmentSubmit();
         }
         
-        if(service.length > 0 && recordID) {
+        if(service.length > 0  && treatment[0].id_daftar_layanan && recordID) {
           // console.log('service', service);
           onServiceSubmit();
         }
@@ -2157,6 +2157,7 @@ const FormRecord = ({ match, history }) => {
         setTimeout(() => {
           // if (recordSubmit === "idle") {
             // resetForm();
+            recordID = "";
             history.push("/record", patientID);
           // }
         }, 5000);
@@ -2208,7 +2209,7 @@ const FormRecord = ({ match, history }) => {
     } catch (e) {
       Swal.fire({
         title: "Gagal!",
-        html: e,
+        html: e.response.data.message,
         icon: "error",
         confirmButtonColor: "#008ecc",
         confirmButtonText: "Coba lagi",
@@ -2248,7 +2249,7 @@ const FormRecord = ({ match, history }) => {
     } catch (e) {
       Swal.fire({
         title: "Gagal!",
-        html: e,
+        html: e.response.data.message,
         icon: "error",
         confirmButtonColor: "#008ecc",
         confirmButtonText: "Coba lagi",
@@ -2288,7 +2289,7 @@ const FormRecord = ({ match, history }) => {
     } catch (e) {
       Swal.fire({
         title: "Gagal!",
-        html: e,
+        html: e.response.data.message,
         icon: "error",
         confirmButtonColor: "#008ecc",
         confirmButtonText: "Coba lagi",
@@ -2328,7 +2329,7 @@ const FormRecord = ({ match, history }) => {
     } catch (e) {
       Swal.fire({
         title: "Gagal!",
-        html: e,
+        html: e.response.data.message,
         icon: "error",
         confirmButtonColor: "#008ecc",
         confirmButtonText: "Coba lagi",
@@ -2368,7 +2369,7 @@ const FormRecord = ({ match, history }) => {
     } catch (e) {
       Swal.fire({
         title: "Gagal!",
-        html: e,
+        html: e.response.data.message,
         icon: "error",
         confirmButtonColor: "#008ecc",
         confirmButtonText: "Coba lagi",
@@ -2408,7 +2409,7 @@ const FormRecord = ({ match, history }) => {
     } catch (e) {
       Swal.fire({
         title: "Gagal!",
-        html: e,
+        html: e.response.data.message,
         icon: "error",
         confirmButtonColor: "#008ecc",
         confirmButtonText: "Coba lagi",
@@ -2464,7 +2465,7 @@ const FormRecord = ({ match, history }) => {
                     <Colxx sm="6" md="6" xl="6">
                       { patientData ? patientData.nama_lengkap : 'Pasien' }<br/>
                       <Label>{ patientData ? `${patientData.jenis_kelamin}, ${new Date().getFullYear() - patientData.tanggal_lahir.substring(0,4)} tahun`  : 'Jenis Kelamin, Umur' }</Label><br/>
-                      <Badge color="dark" pill className="mt-2 patient-badge">
+                      {/* <Badge color="dark" pill className="mt-2 patient-badge">
                         <i className="iconsminds-microscope"></i>
                       </Badge>
                       {' '}
@@ -2475,7 +2476,7 @@ const FormRecord = ({ match, history }) => {
                       <Badge color="dark" pill className="mt-2 patient-badge">
                         <i className="iconsminds-atom"></i>
                       </Badge>
-                      {' '}
+                      {' '} */}
                     </Colxx>
                     <Colxx sm="6" md="6" xl="6">
                       <Label style={{ float: 'right', lineHeight: 2 }}>
@@ -2539,7 +2540,9 @@ const FormRecord = ({ match, history }) => {
             <Card className="mb-4">
               <CardBody>
                 <CardTitle>
-                    Form Registrasi Rekam Medis
+                    {/* Form Registrasi Rekam Medis */}
+                    { console.log('recordID', recordID) }
+                    { recordID === '' || recordID === null ? 'Form Tambah Rekam Medis' : 'Form Ubah Rekam Medis' }
                     {/* <span style={{ fontWeight: 'bold' }}>{patientData.nama_lengkap}</span> */}
                 </CardTitle>
                 <Form className="av-tooltip tooltip-right-top" onSubmit={onRecordSubmit}>
@@ -3450,18 +3453,21 @@ const FormRecord = ({ match, history }) => {
                         <Button
                             type="button"
                             color="light"
-                            onClick={(e) => history.push("/record")}>
+                            onClick={(e) => {
+                                history.push("/record");
+                                recordID = "";
+                              }}>
                                 Kembali
                         </Button>
                         &nbsp;&nbsp;
-                        <Button
+                        {/* <Button
                             type="button"
                             outline
                             color="danger"
                             onClick={(e) => resetForm(e)}>
                                 Batal
                         </Button>
-                        &nbsp;&nbsp;
+                        &nbsp;&nbsp; */}
                         <Button color="primary" 
                             // onClick={(e) => onRecordSubmit(e)}
                         >

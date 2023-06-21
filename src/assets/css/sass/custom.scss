@@ -330,7 +330,7 @@ label {
 }
 
 .manage-form {
-    scroll-margin: 150px;
+    // scroll-margin: 150px;
 }
 
 .responsive-modal-button {
@@ -370,6 +370,10 @@ label {
     -webkit-flex: 0 0 49.33333%;
     flex: 0 0 49.33333%;
     max-width: 49.33333%;
+}
+
+.three-dots-menu {
+    text-align: right;
 }
 
 @media (max-width: 1280px) {
@@ -547,6 +551,30 @@ label {
 
     .insurance-class-label {
         display: none;
+    }
+
+    .col-sm-8-mobile {
+        -webkit-flex: 0 0 66.66667%;
+        flex: 0 0 66.66667%;
+        max-width: 66.66667%;
+    }
+
+    .col-sm-4-mobile {
+        -webkit-flex: 0 0 33.33333%;
+        flex: 0 0 33.33333%;
+        max-width: 33.33333%;
+    }
+
+    .card-title-mobile {
+        -webkit-flex: 0 0 83.33333%;
+        flex: 0 0 83.33333%;
+        max-width: 83.33333%;
+    }
+
+    .three-dots-menu {
+        -webkit-flex: 0 0 16.66667%;
+        flex: 0 0 16.66667%;
+        max-width: 16.66667%;
     }
 }
 

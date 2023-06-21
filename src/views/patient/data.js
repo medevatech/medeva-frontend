@@ -17,8 +17,13 @@ import {
   Button,
   Form,
   Table,
-  Badge
+  Badge,
+  UncontrolledDropdown,
+  DropdownToggle,
+  DropdownMenu,
+  DropdownItem,
 } from "reactstrap";
+import { useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import "react-tagsinput/react-tagsinput.css";
 import "react-datepicker/dist/react-datepicker.css";
@@ -208,12 +213,13 @@ var urlKelurahan = "https://ibnux.github.io/data-indonesia/kelurahan/";
 
 const Data = ({ match }) => {
   const dispatch = useDispatch();
+  const location = useLocation();
   const patientAll = useSelector(state => state.patient);
   const patientTotalPage = useSelector(state => state.patientTotalPage);
   const { errors, validate } = useForm();
 
   const [tableClass, setTableClass] = useState('');
-  const [dataStatusPatient, setDataStatusPatient] = useState("add");
+  const [dataStatusPatient, setDataStatusPatient] = useState("");
   const [dataStatusAllergy, setDataStatusAllergy] = useState("add");
   const [dataStatusInsurance, setDataStatusInsurance] = useState("add");
   const [rowSelected, setRowSelected] = useState(null);
@@ -724,7 +730,7 @@ const Data = ({ match }) => {
       } catch (e) {
         Swal.fire({
           title: "Gagal!",
-          html: e,
+          html: e.response.data.message,
           icon: "error",
           confirmButtonColor: "#008ecc",
           confirmButtonText: "Coba lagi",
@@ -765,7 +771,7 @@ const Data = ({ match }) => {
       } catch (e) {
         Swal.fire({
           title: "Gagal!",
-          html: e,
+          html: e.response.data.message,
           icon: "error",
           confirmButtonColor: "#008ecc",
           confirmButtonText: "Coba lagi",
@@ -774,6 +780,7 @@ const Data = ({ match }) => {
         console.log(e);
       } finally {
         getPatient("");
+        getPatientById(patientID);
       }
     } else {
       console.log('dataStatusPatient undefined')
@@ -783,7 +790,7 @@ const Data = ({ match }) => {
   };
 
   const onAllergySubmit = async (e) => {
-    // e.preventDefault();
+    e && e.preventDefault();
 
     for (var i = 0; i < allergy.length; i++) {
       allergy[i].id_pasien = patientID;
@@ -825,7 +832,7 @@ const Data = ({ match }) => {
     } catch (e) {
       Swal.fire({
         title: "Gagal!",
-        html: e,
+        html: e.response.data.message,
         icon: "error",
         confirmButtonColor: "#008ecc",
         confirmButtonText: "Coba lagi",
@@ -864,7 +871,7 @@ const Data = ({ match }) => {
     } catch (e) {
       Swal.fire({
         title: "Gagal!",
-        html: e,
+        html: e.response.data.message,
         icon: "error",
         confirmButtonColor: "#008ecc",
         confirmButtonText: "Coba lagi",
@@ -875,7 +882,7 @@ const Data = ({ match }) => {
   }
 
   const onInsuranceSubmit = async (e) => {
-    // e.preventDefault();
+    e && e.preventDefault();
 
     for (var i = 0; i < insurance.length; i++) {
       insurance[i].id_pasien = patientID;
@@ -917,7 +924,7 @@ const Data = ({ match }) => {
     } catch (e) {
       Swal.fire({
         title: "Gagal!",
-        html: e,
+        html: e.response.data.message,
         icon: "error",
         confirmButtonColor: "#008ecc",
         confirmButtonText: "Coba lagi",
@@ -956,7 +963,7 @@ const Data = ({ match }) => {
     } catch (e) {
       Swal.fire({
         title: "Gagal!",
-        html: e,
+        html: e.response.data.message,
         icon: "error",
         confirmButtonColor: "#008ecc",
         confirmButtonText: "Coba lagi",
@@ -967,14 +974,19 @@ const Data = ({ match }) => {
   }
 
   const resetForm = (e, scroll = false) => {
-    // e.preventDefault();
+    e && e.preventDefault();
 
     if(scroll) {
       if(window.innerWidth < 1280){
         const element = document.getElementById('manage-form-tab-mobile');
         if (element) {
-          window.scroll({
-            top: element,
+          // window.scroll({
+          //   top: element,
+          //   behavior: "smooth",
+          // })
+
+          element.scrollIntoView({
+            block: "end",
             behavior: "smooth"
           })
         }
@@ -1055,16 +1067,21 @@ const Data = ({ match }) => {
   };
 
   const getPatientById = async (e, id) => {
-    e.preventDefault();
-    resetForm(e);
+    e && e.preventDefault();
+    e && resetForm(e);
     setDataStatusPatient("update");
     setRowSelected(id);
 
     if(window.innerWidth < 1280){
       const element = document.getElementById('manage-form-tab-mobile');
       if (element) {
-        window.scroll({
-          top: element,
+        // window.scroll({
+        //   top: element,
+        //   behavior: "smooth"
+        // })
+
+        element.scrollIntoView({
+          block: "end",
           behavior: "smooth"
         })
       }
@@ -1131,8 +1148,8 @@ const Data = ({ match }) => {
     } catch (e) {
       console.log(e);
     } finally {
-      getAllergyByPatientId(data.id);
-      getInsuranceByPatientId(data.id);
+      getAllergyByPatientId(id);
+      getInsuranceByPatientId(id);
     }
 
     // console.log(dataStatusPatient);
@@ -1235,6 +1252,37 @@ const Data = ({ match }) => {
     }
   }
 
+  function ActiveDropdown() {
+    return <>
+      <DropdownItem onClick={(e) => statusById(e, patientID)}>
+        <i className="simple-icon-drawer"></i>&nbsp;Aktifkan
+      </DropdownItem>
+    </>;
+  }
+
+  function ArchiveDropdown() {
+    return <>
+      <DropdownItem onClick={(e) => statusById(e, patientID)}>
+        <i className="simple-icon-drawer"></i>&nbsp;Arsipkan
+      </DropdownItem>
+    </>;
+  }
+
+  function IsActiveDropdown() {
+    if(userData.roles.includes('isDev') ||
+      userData.roles.includes('isResepsionis')){
+      if (patientID && patientStatus == 1) {
+        return <ArchiveDropdown/>;
+      } else if (patientID && patientStatus == 0) {
+        return <ActiveDropdown/>;
+      } else {
+        return null;
+      }
+    } else {
+      return null;
+    }
+  }
+
   const statusById = async (e, id) => {
     e.preventDefault();
 
@@ -1313,7 +1361,7 @@ const Data = ({ match }) => {
     } catch (e) {
       Swal.fire({
         title: "Gagal!",
-        html: e,
+        html: e.response.data.message,
         icon: "error",
         confirmButtonColor: "#008ecc",
         confirmButtonText: "Coba lagi",
@@ -1322,6 +1370,7 @@ const Data = ({ match }) => {
       console.log(e);
     } finally {
       getPatient("");
+      getPatientById("", patientID);
     }
   };
 
@@ -1375,7 +1424,7 @@ const Data = ({ match }) => {
     } catch (e) {
       Swal.fire({
         title: "Gagal!",
-        html: e,
+        html: e.response.data.message,
         icon: "error",
         confirmButtonColor: "#008ecc",
         confirmButtonText: "Coba lagi",
@@ -1417,7 +1466,7 @@ const Data = ({ match }) => {
     } catch (e) {
       Swal.fire({
         title: "Gagal!",
-        html: e,
+        html: e.response.data.message,
         icon: "error",
         confirmButtonColor: "#008ecc",
         confirmButtonText: "Coba lagi",
@@ -1457,7 +1506,7 @@ const Data = ({ match }) => {
     } catch (e) {
       Swal.fire({
         title: "Gagal!",
-        html: e,
+        html: e.response.data.message,
         icon: "error",
         confirmButtonColor: "#008ecc",
         confirmButtonText: "Coba lagi",
@@ -1519,12 +1568,12 @@ const Data = ({ match }) => {
     if (patientSubmit === "done") {
       setTimeout(() => {
 
-        if(allergy.length > 0 && patientID) {
-          onAllergySubmit();
+        if(allergy.length > 0 && allergy[0].id_alergi !== "" && patientID) {
+          onAllergySubmit("");
         }
         
-        if(insurance.length > 0 && patientID) {
-          onInsuranceSubmit();
+        if(insurance.length > 0 && insurance[0].id_asuransi !== "" && patientID) {
+          onInsuranceSubmit("");
         }
 
         setTimeout(() => {
@@ -1547,6 +1596,15 @@ const Data = ({ match }) => {
     // }
   // }, [ dataStatusInsurance ]);
 
+  useEffect(() => {
+    // console.log(location.state);
+
+    if (location.state) {
+      setPatientID(location.state.patientID);
+      getPatientById("", location.state.patientID);
+    }
+  }, [ ]);
+
   let startNumber = 1;
 
   if (currentPage !== 1) {
@@ -1560,13 +1618,23 @@ const Data = ({ match }) => {
   return (
     <>
       <Row>
-        <Colxx sm="12" md="12" xl="4" className="mb-4 switch-table">
+        <Colxx sm="12" md="12" xl="4" className="mb-4">
           <Card className="mb-4">
             <CardBody>
               <CardTitle>
                 <Row>
-                  <Colxx sm="12" md="12" xl="12">
+                  <Colxx sm="8" md="8" xl="8" className="col-sm-8-mobile">
                   Data Pasien
+                  </Colxx>
+                  <Colxx sm="4" md="4" xl="4" className="col-sm-4-mobile">
+                    <Button
+                      color="primary"
+                      style={{ float: "right" }}
+                      className="mb-4"
+                      onClick={(e) => resetForm(e, true)}
+                    >
+                      Tambah
+                    </Button>
                   </Colxx>
                 </Row>
               </CardTitle>
@@ -1667,14 +1735,31 @@ const Data = ({ match }) => {
 
         <Colxx sm="12" md="12" xl="8" className="mb-4 manage-form" id="manage-form-tab-mobile">
           <Card className="mb-4">
+            { dataStatusPatient ?
             <CardBody>
               <CardTitle>
                 <Row>
-                  <Colxx sm="5" md="6" xl="6">
-                    Form Manajemen Pasien
+                  <Colxx sm="10" className="card-title-mobile">
+                    { dataStatusPatient && dataStatusPatient === "add" ? 'Form Tambah Pasien' : 'Form Ubah Pasien' }
+                    {/* Form Manajemen Pasien */}
                   </Colxx>
-                  <Colxx sm="7" md="6" xl="6" style={{ textAlign: 'right' }}>
-                    {<IsActive/>}
+                  <Colxx sm="2" className="three-dots-menu">
+                    {/* {<IsActive/>} */}
+                    { dataStatusPatient === "update" &&
+                      <UncontrolledDropdown>
+                        <DropdownToggle color="default">
+                          <i className="simple-icon-options-vertical"></i>
+                        </DropdownToggle>
+                        <DropdownMenu right>
+                          <DropdownItem 
+                            // onClick={(e) => medicalRecordById(e, patientID)}
+                          >
+                            <i className="simple-icon-printer"></i>&nbsp;Cetak Dokumen
+                          </DropdownItem>
+                          {<IsActiveDropdown/>}
+                        </DropdownMenu>
+                      </UncontrolledDropdown>
+                    }
                   </Colxx>
                 </Row>
               </CardTitle>
@@ -2178,6 +2263,11 @@ const Data = ({ match }) => {
                 </Row>
               </Form>
             </CardBody>
+            : <CardBody style={{ textAlign: 'center', verticalAlign: 'middle'}}>
+            <img src="/assets/empty.svg" width={150} className="mt-5 mb-3"/>
+            <p>Silahkan memilih pasien untuk melihat, mengubah, menghapus, mengarsipkan, dan mengaktifkan data pasien.
+              Silahkan klik tombol tambah untuk menambahkan pasien baru.</p>
+        </CardBody> }
           </Card>
         </Colxx>
 
@@ -2228,13 +2318,13 @@ const Data = ({ match }) => {
         </Modal>
       </Row>
 
-      <Button
+      {/* <Button
         color="primary"
         className="float-btn"
         onClick={(e) => resetForm(e, true)}
       >
         <i className="iconsminds-add-user"></i> Tambah Pasien
-      </Button>
+      </Button> */}
     </>
   );
 };

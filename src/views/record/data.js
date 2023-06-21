@@ -232,8 +232,8 @@ const Data = ({ match, history }) => {
   };
 
   const getVitalSignsByPatientId = async (e, id, data) => {
-    // e.preventDefault();
-    // resetForm(e);
+    e && e.preventDefault();
+    e && resetForm(e);
     setRowSelected(data.id);
 
     setVitalSigns({
@@ -287,6 +287,21 @@ const Data = ({ match, history }) => {
         created_at: dataVs.created_at
       });
 
+      if(window.innerWidth < 1280){
+        const element = document.getElementById('manage-form-tab-mobile');
+        if (element) {
+          // window.scroll({
+          //   top: element,
+          //   behavior: "smooth"
+          // })
+    
+          element.scrollIntoView({
+            block: "end",
+            behavior: "smooth"
+          })
+        }
+      }
+
       // console.log(vitalSigns);
     } catch (e) {
       console.log(e);
@@ -332,10 +347,11 @@ const Data = ({ match, history }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchName, setSearchName] = useState("");
   const [searchDivisi, setSearchDivisi] = useState("");
+  const [searchDate, setSearchDate] = useState(new Date().toISOString().substr(0, 10));
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [ limit, searchName, searchDivisi, sortBy, sortOrder ]);
+  }, [ limit, searchName, searchDivisi, searchDate, sortBy, sortOrder ]);
 
   useEffect(() => {
     let params = "";
@@ -350,6 +366,9 @@ const Data = ({ match, history }) => {
     if (searchDivisi !== "") {
       params = `${params}&searchDivisi=${searchDivisi}`;
     }
+    if (searchDate !== "") {
+      params = `${params}&date=${moment(searchDate).format("YYYY-MM-DD")}`;
+    }
     if (!userData.roles.includes('isDev') && userData.roles.includes('isDokter')) {
       params = `${params}&searchJaga=${userData.id}`;
     }
@@ -361,9 +380,8 @@ const Data = ({ match, history }) => {
     getQueue(params);
 
     onLoadDivisi();
-  }, [limit, searchName, searchDivisi, sortBy, sortOrder, currentPage]);
+  }, [limit, searchName, searchDivisi, searchDate, sortBy, sortOrder, currentPage]);
 
-  
   useEffect(() => {
     // console.log(location.state);
 
@@ -410,15 +428,15 @@ const Data = ({ match, history }) => {
                 </CardTitle>
                 <FormGroup row style={{ margin: '0px', width: '100%' }}>
                   <Colxx sm="12" md="6" style={{ paddingLeft: '0px' }}>
-                    <Label for="tanggalRekamCari">
+                    <Label for="tanggal">
                           Tanggal
                         </Label>
                         <Input
                           type="date"
-                          name="tanggalRekamCari"
-                          id="tanggalRekamCari"
+                          name="tanggal"
                           placeholder="Tanggal"
-                          defaultValue={new Date().toISOString().substr(0, 10)}
+                          onChange={(e) => setSearchDate(e.target.value)}
+                          value={searchDate}
                         />
                   </Colxx>
                   <Colxx sm="12" md="6" style={{ paddingRight: '0px' }}>
@@ -509,175 +527,185 @@ const Data = ({ match, history }) => {
               </CardBody>
             </Card>
           </Colxx>
-          <Colxx sm="12" md="12" xl="8" className="mb-4">
-            <Card className="mb-4">
-              <CardBody>
-                <CardTitle>
-                  <Row>
-                    <Colxx sm="6" md="6" xl="6">
-                      { patientData ? patientData.nama_lengkap : 'Pasien' }<br/>
-                      <Label>{ patientData ? `${patientData.jenis_kelamin}, ${new Date().getFullYear() - patientData.tanggal_lahir.substring(0,4)} tahun`  : 'Jenis Kelamin, Umur' }</Label><br/>
-                      <Badge color="dark" pill className="mt-2 patient-badge">
-                        <i className="iconsminds-microscope"></i>
-                      </Badge>
-                      {' '}
-                      <Badge color="dark" pill className="mt-2 patient-badge">
-                        <i className="iconsminds-ambulance"></i>
-                      </Badge>
-                      {' '}
-                      <Badge color="dark" pill className="mt-2 patient-badge">
-                        <i className="iconsminds-atom"></i>
-                      </Badge>
-                      {' '}
-                    </Colxx>
-                    <Colxx sm="6" md="6" xl="6">
-                      <Label style={{ float: 'right', lineHeight: 2 }}>
-                        { vitalSigns.id_pasien && vitalSigns.created_at ? moment(vitalSigns.created_at).format("DD MMM YYYY - HH:mm") : 'Tanggal / Waktu' }
-                      </Label><br/>
-                    </Colxx>
-                  </Row>
-                </CardTitle>
-                <Table bordered style={{ display: {showRecord} }}>
-                  <tbody>
-                    <tr>
-                      <th>Keluhan</th>
-                      <td style={{ width: '70%' }}>{ vitalSigns.id_pasien ? vitalSigns.keluhan : '-' }</td>
-                    </tr>
-                    <tr>
-                      <th>Kesadaran</th>
-                      <td>{ vitalSigns.id_pasien ? vitalSigns.kesadaran : '-' }</td>
-                    </tr>
-                    <tr>
-                      <th>Temperatur</th>
-                      <td>{ vitalSigns.id_pasien ? vitalSigns.temperatur : '0' } <sup>0</sup>C</td>
-                    </tr>
-                    <tr>
-                      <th>Tinggi Badan</th>
-                      <td>{ vitalSigns.id_pasien ? vitalSigns.tinggi_badan : '0' } cm</td>
-                    </tr>
-                    <tr>
-                      <th>Berat Badan</th>
-                      <td>{ vitalSigns.id_pasien ? vitalSigns.berat_badan : '0' } kg</td>
-                    </tr>
-                    <tr>
-                      <th>Lingkar Perut</th>
-                      <td>{ vitalSigns.id_pasien ? vitalSigns.lingkar_perut : '0' } cm</td>
-                    </tr>
-                    <tr>
-                      <th>Tekanan Darah</th>
-                      <td>{ vitalSigns.id_pasien ? vitalSigns.sistole : '0' } mmHg / { vitalSigns ? vitalSigns.diastole : '0' } mmHg</td>
-                    </tr>
-                    <tr>
-                      <th>IMT</th>
-                      <td>{ vitalSigns.id_pasien ? vitalSigns.imt : '0' } kg/m<sup>2</sup></td>
-                    </tr>
-                    <tr>
-                      <th>Tingkat Pernapasan</th>
-                      <td>{ vitalSigns.id_pasien ? vitalSigns.respiratory_rate : '0' } / menit</td>
-                    </tr>
-                    <tr>
-                      <th>Detak Jantung</th>
-                      <td>{ vitalSigns.id_pasien ? vitalSigns.heart_rate : '0' } bpm</td>
-                    </tr>
-                    <tr>
-                      <th>Catatan Tambahan</th>
-                      <td style={{ width: '70%' }}>{ vitalSigns.id_pasien ? vitalSigns.catatan_tambahan : '-' }</td>
-                    </tr>
-                  </tbody>
-                </Table>
-              </CardBody>
-            </Card>
-            <Card className="mb-4">
-              <CardBody>
-                <CardTitle>
-                  { patientID ? 
-                    vitalSignsID ?
-                      <Link to={{
-                          pathname: `/record/form`,
-                          state: { patientID: patientID, patientData: patientData, watchID: watchID }
-                      }}>
-                        <Button color="primary" style={{ float: "right" }} className="mb-4">
-                          Tambah Rekam Medis
-                        </Button>
-                      </Link>
-                      :
-                      <Link to={{
-                          pathname: `/record/vital-sings`,
-                          state: { patientID: patientID, patientData: patientData }
-                      }}>
-                        <Button color="primary" style={{ float: "right" }} className="mb-4">
-                          Tambah Data Pra-Konsultasi
-                        </Button>
-                      </Link>
-                    : ''
-                  }
-                  { patientID ? 
-                    allRecord.length > 0 ?
-                      <>
-                        Riwayat Rekam Medis
-                        <br/>
-                        <Label style={{ fontWeight: 'bold' }}>{patientData.nama_lengkap}, </Label>&nbsp;
-                        <Label>
-                          {patientData.jenis_kelamin}, {new Date().getFullYear() - patientData.tanggal_lahir.substring(0,4)} tahun
-                        </Label>
-                      </>
-                      : vitalSignsID ? 'Riwayat Rekam Medis Tidak Ditemukan' :
-                      <>
-                        {'Riwayat Rekam Medis dan Data Pra-Konsultasi Hari Ini Tidak Ditemukan'}
-                        <br/>
-                        <Label>
-                          Silahkan mengisi data Pra-Konsultasi pasien <b>{patientData.nama_lengkap}</b> pada hari ini untuk administrasi data rekam medis
-                        </Label>
-                      </>
-                      : 'Silahkan memilih pasien pada antrian terlebih dahulu'
-                  }
-                </CardTitle>
-                { patientID ? 
-                  allRecord.length > 0 && ( 
-                    allRecord.map((data) => ( 
-                    <Table className="med-record-table" key={data.id}>
+          <Colxx sm="12" md="12" xl="8" className="mb-4 manage-form" id="manage-form-tab-mobile">
+          { patientID ?
+              <>
+                <Card className="mb-4">
+                  <CardBody>
+                    <CardTitle>
+                      <Row>
+                        <Colxx sm="6" md="6" xl="6">
+                          { patientData ? patientData.nama_lengkap : 'Pasien' }<br/>
+                          <Label>{ patientData ? `${patientData.jenis_kelamin}, ${new Date().getFullYear() - patientData.tanggal_lahir.substring(0,4)} tahun`  : 'Jenis Kelamin, Umur' }</Label><br/>
+                          {/* <Badge color="dark" pill className="mt-2 patient-badge">
+                            <i className="iconsminds-microscope"></i>
+                          </Badge>
+                          {' '}
+                          <Badge color="dark" pill className="mt-2 patient-badge">
+                            <i className="iconsminds-ambulance"></i>
+                          </Badge>
+                          {' '}
+                          <Badge color="dark" pill className="mt-2 patient-badge">
+                            <i className="iconsminds-atom"></i>
+                          </Badge>
+                          {' '} */}
+                        </Colxx>
+                        <Colxx sm="6" md="6" xl="6">
+                          <Label style={{ float: 'right', lineHeight: 2 }}>
+                            { vitalSigns.id_pasien && vitalSigns.created_at ? moment(vitalSigns.created_at).format("DD MMM YYYY - HH:mm") : 'Tanggal / Waktu' }
+                          </Label><br/>
+                        </Colxx>
+                      </Row>
+                    </CardTitle>
+                    <Table bordered style={{ display: {showRecord} }}>
                       <tbody>
                         <tr>
-                          <th><h6 style={{ fontWeight: 'bold' }}>Kunjungan {data.tipe ? data.tipe : '-'}</h6></th>
-                          <td>
-                              <span style={{ float: 'right' }}>
-                                {data.waktu_mulai ? moment(data.waktu_mulai).format("DD MMM YYYY - HH:mm") : '00/00/0000 - 00:00'} s/d {data.waktu_selesai ? moment(data.waktu_selesai).format("DD MMM YYYY - HH:mm") : '00/00/0000 - 00:00'}
-                              </span>
-                          </td>
-                        </tr>
-                        <tr>
                           <th>Keluhan</th>
-                          <td style={{ width: '70%' }}>{data.keluhan ? data.keluhan : '-'}</td>
+                          <td style={{ width: '70%' }}>{ vitalSigns.id_pasien ? vitalSigns.keluhan : '-' }</td>
                         </tr>
                         <tr>
-                          <th>Anamnesis</th>
-                          <td>{data.anamnesis ? data.anamnesis : '-'}</td>
+                          <th>Kesadaran</th>
+                          <td>{ vitalSigns.id_pasien ? vitalSigns.kesadaran : '-' }</td>
                         </tr>
                         <tr>
-                          <th>Pemeriksaan Fisik</th>
-                          <td>{data.pemeriksaan_fisik ? data.pemeriksaan_fisik : '-'}</td>
+                          <th>Temperatur</th>
+                          <td>{ vitalSigns.id_pasien ? vitalSigns.temperatur : '0' } <sup>0</sup>C</td>
                         </tr>
-                        { patientData && vitalSignsID ?
                         <tr>
-                          <th></th>
-                          <td>
-                              <Link to={{
-                                  pathname: `/record/form`,
-                                  state: { patientID: patientID, patientData: patientData, recordID: data.id, watchID: watchID }
-                              }}>
-                                <Button color="secondary" size="xs" style={{ float: "right" }}>
-                                  Ubah Data
-                                </Button>
-                              </Link>
-                          </td>
+                          <th>Tinggi Badan</th>
+                          <td>{ vitalSigns.id_pasien ? vitalSigns.tinggi_badan : '0' } cm</td>
                         </tr>
-                        : <></>}
+                        <tr>
+                          <th>Berat Badan</th>
+                          <td>{ vitalSigns.id_pasien ? vitalSigns.berat_badan : '0' } kg</td>
+                        </tr>
+                        <tr>
+                          <th>Lingkar Perut</th>
+                          <td>{ vitalSigns.id_pasien ? vitalSigns.lingkar_perut : '0' } cm</td>
+                        </tr>
+                        <tr>
+                          <th>Tekanan Darah</th>
+                          <td>{ vitalSigns.id_pasien ? vitalSigns.sistole : '0' } mmHg / { vitalSigns ? vitalSigns.diastole : '0' } mmHg</td>
+                        </tr>
+                        <tr>
+                          <th>IMT</th>
+                          <td>{ vitalSigns.id_pasien ? vitalSigns.imt : '0' } kg/m<sup>2</sup></td>
+                        </tr>
+                        <tr>
+                          <th>Tingkat Pernapasan</th>
+                          <td>{ vitalSigns.id_pasien ? vitalSigns.respiratory_rate : '0' } / menit</td>
+                        </tr>
+                        <tr>
+                          <th>Detak Jantung</th>
+                          <td>{ vitalSigns.id_pasien ? vitalSigns.heart_rate : '0' } bpm</td>
+                        </tr>
+                        <tr>
+                          <th>Catatan Tambahan</th>
+                          <td style={{ width: '70%' }}>{ vitalSigns.id_pasien ? vitalSigns.catatan_tambahan : '-' }</td>
+                        </tr>
                       </tbody>
                     </Table>
-                    ) ) 
-                  ) : ''}
-              </CardBody>
-            </Card>
+                  </CardBody>
+                </Card>
+                <Card className="mb-4">
+                  <CardBody>
+                    <CardTitle>
+                      { patientID ? 
+                        vitalSignsID ?
+                          <Link to={{
+                              pathname: `/record/form`,
+                              state: { patientID: patientID, patientData: patientData, watchID: watchID, recordID: '' }
+                          }}>
+                            <Button color="primary" style={{ float: "right" }} className="mb-4">
+                              Tambah Rekam Medis
+                            </Button>
+                          </Link>
+                          :
+                          <Link to={{
+                              pathname: `/record/vital-signs`,
+                              state: { patientID: patientID, patientData: patientData }
+                          }}>
+                            <Button color="primary" style={{ float: "right" }} className="mb-4">
+                              Tambah Data Pra-Konsultasi
+                            </Button>
+                          </Link>
+                        : ''
+                      }
+                      { patientID ? 
+                        allRecord.length > 0 ?
+                          <>
+                            Riwayat Rekam Medis
+                            <br/>
+                            <Label style={{ fontWeight: 'bold' }}>{patientData.nama_lengkap}, </Label>&nbsp;
+                            <Label>
+                              {patientData.jenis_kelamin}, {new Date().getFullYear() - patientData.tanggal_lahir.substring(0,4)} tahun
+                            </Label>
+                          </>
+                          : vitalSignsID ? 'Riwayat Rekam Medis Tidak Ditemukan' :
+                          <>
+                            {'Riwayat Rekam Medis dan Data Pra-Konsultasi Hari Ini Tidak Ditemukan'}
+                            <br/>
+                            <Label>
+                              Silahkan mengisi data Pra-Konsultasi pasien <b>{patientData.nama_lengkap}</b> pada hari ini untuk administrasi data rekam medis
+                            </Label>
+                          </>
+                          : 'Silahkan memilih pasien pada antrian terlebih dahulu'
+                      }
+                    </CardTitle>
+                    { patientID ? 
+                      allRecord.length > 0 && ( 
+                        allRecord.map((data) => ( 
+                        <Table className="med-record-table" key={data.id}>
+                          <tbody>
+                            <tr>
+                              <th><h6 style={{ fontWeight: 'bold' }}>Kunjungan {data.tipe ? data.tipe : '-'}</h6></th>
+                              <td>
+                                  <span style={{ float: 'right' }}>
+                                    {data.waktu_mulai ? moment(data.waktu_mulai).format("DD MMM YYYY - HH:mm") : '00/00/0000 - 00:00'} s/d {data.waktu_selesai ? moment(data.waktu_selesai).format("DD MMM YYYY - HH:mm") : '00/00/0000 - 00:00'}
+                                  </span>
+                              </td>
+                            </tr>
+                            <tr>
+                              <th>Keluhan</th>
+                              <td style={{ width: '70%' }}>{data.keluhan ? data.keluhan : '-'}</td>
+                            </tr>
+                            <tr>
+                              <th>Anamnesis</th>
+                              <td>{data.anamnesis ? data.anamnesis : '-'}</td>
+                            </tr>
+                            <tr>
+                              <th>Pemeriksaan Fisik</th>
+                              <td>{data.pemeriksaan_fisik ? data.pemeriksaan_fisik : '-'}</td>
+                            </tr>
+                            { patientData && vitalSignsID ?
+                            <tr>
+                              <th></th>
+                              <td>
+                                  <Link to={{
+                                      pathname: `/record/form`,
+                                      state: { patientID: patientID, patientData: patientData, recordID: data.id, watchID: watchID }
+                                  }}>
+                                    <Button color="secondary" size="xs" style={{ float: "right" }}>
+                                      Ubah Data
+                                    </Button>
+                                  </Link>
+                              </td>
+                            </tr>
+                            : <></>}
+                          </tbody>
+                        </Table>
+                        ) ) 
+                      ) : ''}
+                  </CardBody>
+                </Card>
+              </>
+            : <Card className="mb-4">
+                <CardBody style={{ textAlign: 'center', verticalAlign: 'middle'}}>
+                    <img src="/assets/empty.svg" width={150} className="mt-5 mb-3"/>
+                    <p>Silahkan memilih antrian untuk melihat data pra-konsultasi dan riwayat rekam medis pasien.
+                      Setelah data muncul, silahkan klik tombol tambah untuk menambahkan data pra-konsultasi pasien atau rekam medis baru.</p>
+                </CardBody>
+            </Card> }
           </Colxx>
         </Row>
     </>

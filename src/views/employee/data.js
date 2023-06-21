@@ -17,7 +17,11 @@ import {
   Button,
   Form,
   Table,
-  Badge
+  Badge,
+  UncontrolledDropdown,
+  DropdownToggle,
+  DropdownMenu,
+  DropdownItem,
 } from "reactstrap";
 import { useDispatch, useSelector } from 'react-redux';
 import "react-tagsinput/react-tagsinput.css";
@@ -50,6 +54,7 @@ const selectRole = [
   { label: "Perawat", value: "Perawat", key: 4, name: "peran" },
   { label: "Dokter", value: "Dokter", key: 5, name: "peran" },
   { label: "Manajemen", value: "Manajemen", key: 6, name: "peran" },
+  { label: "Finance", value: "Finance", key: 7, name: "peran" },
 ];
 
 const selectType = [
@@ -59,7 +64,8 @@ const selectType = [
   { label: "Resepsionis", value: "Resepsionis", key: 3, name: "tipe" },
   { label: "Perawat", value: "Perawat", key: 4, name: "tipe" },
   { label: "Dokter", value: "Dokter", key: 5, name: "tipe" },
-  { label: "Manajemen", value: "Manajemen", key: 6, name: "tipe" }
+  { label: "Manajemen", value: "Manajemen", key: 6, name: "tipe" },
+  { label: "Finance", value: "Finance", key: 7, name: "tipe" },
 ];
 
 const selectTypeF = [
@@ -69,7 +75,8 @@ const selectTypeF = [
   { label: "Resepsionis", value: "Resepsionis", key: 3, name: "tipe" },
   { label: "Perawat", value: "Perawat", key: 4, name: "tipe" },
   { label: "Dokter", value: "Dokter", key: 5, name: "tipe" },
-  { label: "Manajemen", value: "Manajemen", key: 6, name: "tipe" }
+  { label: "Manajemen", value: "Manajemen", key: 6, name: "tipe" },
+  { label: "Finance", value: "Finance", key: 7, name: "tipe" },
 ];
 
 const selectStatusF = [
@@ -204,7 +211,7 @@ const Data = ({ match, history, loading, error }) => {
   const { errors, validate } = useForm();
 
   const [tableClass, setTableClass] = useState('');
-  const [dataStatus, setDataStatus] = useState("add");
+  const [dataStatus, setDataStatus] = useState("");
   const [rowSelected, setRowSelected] = useState(null);
 
   const [selectedTypeF, setSelectedTypeF] = useState({ label: "Semua Tipe", value: "", key: 0, name: "tipe" },);
@@ -248,6 +255,7 @@ const Data = ({ match, history, loading, error }) => {
     is_perawat: 0,
     is_dokter: 0,
     is_manajemen: 0,
+    is_finance: 0,
     jenis_kelamin: '',
     nomor_kitas: '',
     tipe_izin: '',
@@ -444,10 +452,18 @@ const Data = ({ match, history, loading, error }) => {
 
           validate(e, 'peran', 1);
         } 
+        
+        if (e[i].value === "Finance") {
+          setEmployee(current => {
+              return { ...current, is_finance: 1 }
+          })
+
+          validate(e, 'peran', 1);
+        } 
       }
     } else if (e.length <= 0) {
       setEmployee(current => {
-          return { ...current, is_dev: 0, is_manager: 0, is_admin: 0, is_resepsionis: 0, is_perawat: 0, is_dokter: 0, is_manajemen: 0 }
+          return { ...current, is_dev: 0, is_manager: 0, is_admin: 0, is_resepsionis: 0, is_perawat: 0, is_dokter: 0, is_manajemen: 0, is_finance: 0 }
       })
 
       setSelectedRole(Array.isArray(e) ? e.map(x => x.value) : []);
@@ -585,7 +601,7 @@ const Data = ({ match, history, loading, error }) => {
 
     let isError = false;
 
-    let isDev, isManager, isAdmin, isResepsionis, isPerawat, isDokter, isManajemen = false;
+    let isDev, isManager, isAdmin, isResepsionis, isPerawat, isDokter, isManajemen, isFinance = false;
 
     for(let [key, value] of Object.entries(employee)) {
       if((key === 'username' && value === '') || (key === 'password' && value === '') || (key === 'no_kitas' && value === '')  ||
@@ -602,6 +618,7 @@ const Data = ({ match, history, loading, error }) => {
       key === 'is_perawat' && value === 0 ? isPerawat = false : isPerawat = true
       key === 'is_dokter' && value === 0 ? isDokter = false : isDokter = true
       key === 'is_manajemen' && value === 0 ? isManajemen = false : isManajemen = true
+      key === 'is_finance' && value === 0 ? isFinance = false : isFinance = true
 
       if((key === 'tipe' && value !== '') && (key === 'spesialis' && value === '')){
         validate(e, 'spesialis', value);
@@ -614,7 +631,7 @@ const Data = ({ match, history, loading, error }) => {
       isError = true;
     }
 
-    isDev == false && isManager == false && isAdmin == false && isResepsionis == false && isPerawat == false && isDokter == false && isManajemen == false && noPeran()
+    isDev == false && isManager == false && isAdmin == false && isResepsionis == false && isPerawat == false && isDokter == false && isManajemen == false && isFinance == false && noPeran()
 
     if(isError === true){
       return;
@@ -651,7 +668,7 @@ const Data = ({ match, history, loading, error }) => {
       } catch (e) {
         Swal.fire({
           title: "Gagal!",
-          html: e,
+          html: e.response.data.message,
           icon: "error",
           confirmButtonColor: "#008ecc",
           confirmButtonText: "Coba lagi",
@@ -692,7 +709,7 @@ const Data = ({ match, history, loading, error }) => {
       } catch (e) {
         Swal.fire({
           title: "Gagal!",
-          html: e,
+          html: e.response.data.message,
           icon: "error",
           confirmButtonColor: "#008ecc",
           confirmButtonText: "Coba lagi",
@@ -708,14 +725,19 @@ const Data = ({ match, history, loading, error }) => {
   };
 
   const resetForm = (e, scroll = false) => {
-    e.preventDefault();
+    e && e.preventDefault();
 
     if(scroll) {
       if(window.innerWidth < 1280){
         const element = document.getElementById('manage-form-tab-mobile');
         if (element) {
-          window.scroll({
-            top: element,
+          // window.scroll({
+          //   top: element,
+          //   behavior: "smooth"
+          // })
+
+          element.scrollIntoView({
+            block: "end",
             behavior: "smooth"
           })
         }
@@ -739,6 +761,7 @@ const Data = ({ match, history, loading, error }) => {
       is_perawat: 0,
       is_dokter: 0,
       is_manajemen: 0,
+      is_finance: 0,
       jenis_kelamin: '',
       nomor_kitas: '',
       tipe_izin: '',
@@ -811,8 +834,8 @@ const Data = ({ match, history, loading, error }) => {
   };
 
   const getEmployeeById = async (e, id) => {
-    e.preventDefault();
-    resetForm(e);
+    e && e.preventDefault();
+    e && resetForm(e);
     setDataStatus("update");
     setFieldColumn({ username: 6, email: 6 });
     setOpenPassword('none');
@@ -821,8 +844,13 @@ const Data = ({ match, history, loading, error }) => {
     if(window.innerWidth < 1280){
       const element = document.getElementById('manage-form-tab-mobile');
       if (element) {
-        window.scroll({
-          top: element,
+        // window.scroll({
+        //   top: element,
+        //   behavior: "smooth"
+        // })
+
+        element.scrollIntoView({
+          block: "end",
           behavior: "smooth"
         })
       }
@@ -847,6 +875,7 @@ const Data = ({ match, history, loading, error }) => {
         is_perawat: data.is_perawat,
         is_dokter: data.is_dokter,
         is_manajemen: data.is_manajemen,
+        is_finance: data.is_finance,
         jenis_kelamin: data.jenis_kelamin,
         nomor_kitas: data.nomor_kitas,
         tipe_izin: data.tipe_izin,
@@ -912,6 +941,12 @@ const Data = ({ match, history, loading, error }) => {
       if (data.is_manajemen === 1) {
         setSelectedRole((current) => [
           ...current, 'Manajemen'
+        ]);
+      }
+      
+      if (data.is_finance === 1) {
+        setSelectedRole((current) => [
+          ...current, 'Finance'
         ]);
       }
 
@@ -989,6 +1024,38 @@ const Data = ({ match, history, loading, error }) => {
     }
   }
 
+  function ActiveDropdown() {
+    return <>
+      <DropdownItem onClick={(e) => statusById(e, employeeID)}>
+        <i className="simple-icon-drawer"></i>&nbsp;Aktifkan
+      </DropdownItem>
+    </>;
+  }
+
+  function ArchiveDropdown() {
+    return <>
+      <DropdownItem onClick={(e) => statusById(e, employeeID)}>
+        <i className="simple-icon-drawer"></i>&nbsp;Arsipkan
+      </DropdownItem>
+    </>;
+  }
+
+  function IsActiveDropdown() {
+    if(userData.roles.includes('isDev') ||
+      userData.roles.includes('isManager') ||
+      userData.roles.includes('isAdmin')) {
+      if (employeeID && employeeStatus == 1) {
+        return <ArchiveDropdown/>;
+      } else if (employeeID && employeeStatus == 0) {
+        return <ActiveDropdown/>;
+      } else {
+        return null;
+      }
+    } else {
+      return null;
+    }
+  }
+
   const [employeePassword, setEmployeePassword] = useState({
     // id: employeeID,
     password: ''
@@ -1056,7 +1123,7 @@ const Data = ({ match, history, loading, error }) => {
       } catch (e) {
         Swal.fire({
           title: "Gagal!",
-          html: e,
+          html: e.response.data.message,
           icon: "error",
           confirmButtonColor: "#008ecc",
           confirmButtonText: "Coba lagi",
@@ -1146,7 +1213,7 @@ const Data = ({ match, history, loading, error }) => {
     } catch (e) {
       Swal.fire({
         title: "Gagal!",
-        html: e,
+        html: e.response.data.message,
         icon: "error",
         confirmButtonColor: "#008ecc",
         confirmButtonText: "Coba lagi",
@@ -1155,6 +1222,7 @@ const Data = ({ match, history, loading, error }) => {
       console.log(e);
     } finally {
       getEmployee("");
+      getEmployeeById("", employeeID);
     }
   };
 
@@ -1207,7 +1275,7 @@ const Data = ({ match, history, loading, error }) => {
     } catch (e) {
       Swal.fire({
         title: "Gagal!",
-        html: e,
+        html: e.response.data.message,
         icon: "error",
         confirmButtonColor: "#008ecc",
         confirmButtonText: "Coba lagi",
@@ -1317,6 +1385,12 @@ const Data = ({ match, history, loading, error }) => {
     //         return { ...current, is_manajemen: 0 }
     //       })
     //     } 
+
+    //     if (!selectedRole.includes('Finance')) {
+    //       setEmployee(current => {
+    //         return { ...current, is_finance: 0 }
+    //       })
+    //     } 
     //   }
     // } else if(dataStatus === "update") {
     //   if(selectedRole) {
@@ -1374,6 +1448,14 @@ const Data = ({ match, history, loading, error }) => {
     //       }) : 
     //       setEmployee(current => {
     //           return { ...current, is_manajemen: 0 }
+    //       })
+
+    //     selectedRole.includes('Finance') ?
+    //       setEmployee(current => {
+    //           return { ...current, is_finance: 1 }
+    //       }) : 
+    //       setEmployee(current => {
+    //           return { ...current, is_finance: 0 }
     //       })
 
     //     // console.log('selectedRole onUpdate', selectedRole);
@@ -1444,6 +1526,12 @@ const Data = ({ match, history, loading, error }) => {
             return { ...current, is_manajemen: 0 }
           })
         } 
+
+        if (!selectedRole.includes('Finance')) {
+          setEmployee(current => {
+            return { ...current, is_finance: 0 }
+          })
+        } 
       }
     } else if(dataStatus === "update") {
       if(selectedRole) {
@@ -1503,6 +1591,14 @@ const Data = ({ match, history, loading, error }) => {
               return { ...current, is_manajemen: 0 }
           })
 
+        selectedRole.includes('Finance') ?
+          setEmployee(current => {
+              return { ...current, is_finance: 1 }
+          }) : 
+          setEmployee(current => {
+              return { ...current, is_finance: 0 }
+          })
+
         // console.log('selectedRole onUpdate', selectedRole);
       }
     }
@@ -1521,24 +1617,24 @@ const Data = ({ match, history, loading, error }) => {
   return (
     <>
       <Row>
-        <Colxx sm="12" md="12" xl="4" className="mb-4 switch-table">
+        <Colxx sm="12" md="12" xl="4" className="mb-4">
           <Card className="mb-4">
             <CardBody>
               <CardTitle>
                 <Row>
-                  <Colxx sm="12" md="12" xl="12">
+                  <Colxx sm="8" md="8" xl="8" className="col-sm-8-mobile">
                     Data Karyawan & Tenaga Kesehatan
                   </Colxx>
-                  {/* <Colxx sm="12" md="4" xl="4">
+                  <Colxx sm="4" md="4" xl="4" className="col-sm-4-mobile">
                     <Button
                       color="primary"
                       style={{ float: "right" }}
                       className="mb-4"
-                      onClick={resetForm}
+                      onClick={(e) => resetForm(e, true)}
                     >
                       Tambah
                     </Button>
-                  </Colxx> */}
+                  </Colxx>
                 </Row>
               </CardTitle>
               <FormGroup row style={{ margin: '0px', width: '100%' }}>
@@ -1684,14 +1780,16 @@ const Data = ({ match, history, loading, error }) => {
         </Colxx>
         <Colxx sm="12" md="12" xl="8" className="mb-4 manage-form" id="manage-form-tab-mobile">
           <Card className="mb-8">
+            { dataStatus ?
             <CardBody>
               <CardTitle>
                 <Row>
-                  <Colxx sm="5" md="6" xl="6">
-                    Form Manajemen Karyawan & Tenaga Kesehatan
+                  <Colxx sm="10" className="card-title-mobile">
+                    { dataStatus && dataStatus === "add" ? 'Form Tambah Karyawan & Tenaga Kesehatan' : 'Form Ubah Karyawan & Tenaga Kesehatan' }
+                    {/* Form Manajemen Karyawan & Tenaga Kesehatan */}
                   </Colxx>
-                  <Colxx sm="7" md="6" xl="6" style={{ textAlign: 'right' }}>
-                    {(userData.roles.includes('isDev') ||
+                  <Colxx sm="2" className="three-dots-menu">
+                    {/* {(userData.roles.includes('isDev') ||
                     userData.roles.includes('isManager') ||
                     userData.roles.includes('isAdmin')) && employeeID &&
                       <>
@@ -1711,6 +1809,30 @@ const Data = ({ match, history, loading, error }) => {
                         >
                         <i className="simple-icon-trash"></i>&nbsp;Hapus
                       </Button>
+                    } */}
+                    {dataStatus === "update" && (userData.roles.includes('isDev') ||
+                    userData.roles.includes('isManager') ||
+                    userData.roles.includes('isAdmin')) && employeeID &&
+                      <UncontrolledDropdown>
+                        <DropdownToggle color="default">
+                          <i className="simple-icon-options-vertical"></i>
+                        </DropdownToggle>
+                        <DropdownMenu right>
+                          <DropdownItem onClick={(e) => changePasswordById(e, employeeID)}>
+                            <i className="simple-icon-lock"></i>&nbsp;Ganti Password
+                          </DropdownItem>
+                          {<IsActiveDropdown/>}
+                          {(userData.roles.includes('isDev') ||
+                          userData.roles.includes('isManager')) && employeeID &&
+                            <>
+                              <DropdownItem divider />
+                              <DropdownItem onClick={(e) => deleteById(e, employeeID)}>
+                                <i className="simple-icon-trash"></i>&nbsp;Hapus
+                              </DropdownItem>
+                            </>
+                          }
+                        </DropdownMenu>
+                      </UncontrolledDropdown>
                     }
                   </Colxx>
                 </Row>
@@ -2195,7 +2317,69 @@ const Data = ({ match, history, loading, error }) => {
                     </FormGroup>
                   </Colxx>
 
-                  { userData.roles.includes('isAdmin') &&
+                  <Colxx sm={12}>
+                    <FormGroup>
+                      <Label for="peran">
+                        Peran
+                        <span
+                          className="required text-danger"
+                          aria-required="true"
+                        >
+                          {" "}
+                          *
+                        </span>
+                      </Label>
+                      { userData.roles.includes('isDev') ?
+                          <Select
+                            components={{ Input: CustomSelectInput }}
+                            className="react-select"
+                            classNamePrefix="react-select"
+                            isMulti
+                            name="peran"
+                            id="peran"
+                            // value={selectedRole}
+                            value={selectRole.filter(item => selectedRole.includes(item.value)) || ''}
+                            // options={selectRole}
+                            options={selectRole.filter(roleChoices => roleChoices.label != 'Developer').map(roleChoices => roleChoices)}
+                            onChange={onChange}
+                          />
+                        : userData.roles.includes('isManager') ?
+                          <Select
+                            components={{ Input: CustomSelectInput }}
+                            className="react-select"
+                            classNamePrefix="react-select"
+                            isMulti
+                            name="peran"
+                            id="peran"
+                            // value={selectedRole}
+                            value={selectRole.filter(item => selectedRole.includes(item.value)) || 'Pilih Peran'}
+                            options={selectRole.filter(roleChoices => roleChoices.label != 'Developer' && roleChoices.label != 'Manager' && roleChoices.label != 'Admin' && roleChoices.label != 'Manajemen' && roleChoices.label != 'Finance').map(roleChoices => roleChoices)}
+                            onChange={onChange}
+                          />
+                        : userData.roles.includes('isAdmin') ?
+                          <Select
+                            components={{ Input: CustomSelectInput }}
+                            className="react-select"
+                            classNamePrefix="react-select"
+                            isMulti
+                            name="peran"
+                            id="peran"
+                            // value={selectedRole}
+                            value={selectRole.filter(item => selectedRole.includes(item.value)) || 'Pilih Peran'}
+                            options={selectRole.filter(roleChoices => roleChoices.label != 'Developer' && roleChoices.label != 'Manager' && roleChoices.label != 'Admin' && roleChoices.label != 'Manajemen' && roleChoices.label != 'Finance').map(roleChoices => roleChoices)}
+                            onChange={onChange}
+                          />
+                        : ''
+                      }
+                      {errors.peran && (
+                        <div className="rounded invalid-feedback d-block">
+                          {errors.peran}
+                        </div>
+                      )}
+                    </FormGroup>
+                  </Colxx>
+                  
+                  {/* { userData.roles.includes('isAdmin') &&
                     <Colxx sm={12}>
                       <FormGroup>
                         <Label for="peran">
@@ -2217,7 +2401,7 @@ const Data = ({ match, history, loading, error }) => {
                           id="peran"
                           // value={selectedRole}
                           value={selectRole.filter(item => selectedRole.includes(item.value)) || 'Pilih Peran'}
-                          options={selectRole.filter(roleChoices => roleChoices.label != 'Developer' && roleChoices.label != 'Manager' && roleChoices.label != 'Admin' && roleChoices.label != 'Manajemen').map(roleChoices => roleChoices)}
+                          options={selectRole.filter(roleChoices => roleChoices.label != 'Developer' && roleChoices.label != 'Manager' && roleChoices.label != 'Admin' && roleChoices.label != 'Manajemen' && roleChoices.label != 'Finance').map(roleChoices => roleChoices)}
                           onChange={onChange}
                         />
                         {errors.peran && (
@@ -2228,7 +2412,7 @@ const Data = ({ match, history, loading, error }) => {
                       </FormGroup>
                     </Colxx> }
 
-                    { userData.roles.includes('isManager') &&
+                  { userData.roles.includes('isManager') &&
                     <Colxx sm={12}>
                       <FormGroup>
                         <Label for="peran">
@@ -2260,9 +2444,9 @@ const Data = ({ match, history, loading, error }) => {
                         )}
                       </FormGroup>
                     </Colxx>
-                    }
+                  }
 
-                    { userData.roles.includes('isDev') &&
+                  { userData.roles.includes('isDev') &&
                     <Colxx sm={12}>
                       <FormGroup>
                         <Label for="peran">
@@ -2295,7 +2479,7 @@ const Data = ({ match, history, loading, error }) => {
                         )}
                       </FormGroup>
                     </Colxx>
-                    }
+                  } */}
                 </FormGroup>
 
                 <Row>
@@ -2322,6 +2506,11 @@ const Data = ({ match, history, loading, error }) => {
                 </Row>
               </Form>
             </CardBody>
+            : <CardBody style={{ textAlign: 'center', verticalAlign: 'middle'}}>
+                <img src="/assets/empty.svg" width={150} className="mt-5 mb-3"/>
+                <p>Silahkan memilih karyawan / tenaga kesehatan untuk melihat, mengubah, menghapus, mengarsipkan, dan mengaktifkan data karyawan / tenaga kesehatan.
+                  Silahkan klik tombol tambah untuk menambahkan karyawan / tenaga kesehatan baru.</p>
+            </CardBody> }
           </Card>
         </Colxx>
         
@@ -2422,13 +2611,13 @@ const Data = ({ match, history, loading, error }) => {
           
       </Row>
 
-      <Button
+      {/* <Button
         color="primary"
         className="float-btn"
         onClick={(e) => resetForm(e, true)}
       >
         <i className="iconsminds-male-female"></i> Tambah Karyawan
-      </Button>
+      </Button> */}
     </>
   );
 };

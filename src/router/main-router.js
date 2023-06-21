@@ -33,6 +33,9 @@ const Dashboard = React.lazy(() =>
 const Patient = React.lazy(() =>
   import(/* webpackChunkName: "views-patient" */ '../views/patient')
 );
+const Insurance = React.lazy(() =>
+  import(/* webpackChunkName: "views-insurance" */ '../views/insurance')
+);
 const Queue = React.lazy(() =>
   import(/* webpackChunkName: "views-queue" */ '../views/queue')
 );
@@ -105,7 +108,8 @@ const MainRouter = ( ) => {
             // console.log('tenSeconds', tenSeconds);
             // console.log('tokenExpiredAt', tokenExpiredAt);
             // console.log('isAlreadyExpired', isAlreadyExpired);
-          }, 1000 * 60 * 15);
+          // }, 1000 * 60 * 15);
+          }, 1000);
         }
       }
     }, [ ]);
@@ -131,6 +135,12 @@ const MainRouter = ( ) => {
                     path="/patient"
                     component={Patient}
                     roles={[ "isDev", "isResepsionis", "isPerawat", "isDokter" ]}
+                />
+                <ProtectedRoute
+                // <Route
+                    path="/insurance"
+                    component={Insurance}
+                    roles={[ "isDev", "isManager", "isAdmin", "isFinance", "isManajemen" ]}
                 />
                 <ProtectedRoute
                 // <Route

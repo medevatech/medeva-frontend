@@ -592,7 +592,7 @@ const FormRecord = ({ match, history }) => {
       } catch (e) {
         Swal.fire({
           title: "Gagal!",
-          html: e,
+          html: e.response.data.message,
           icon: "error",
           confirmButtonColor: "#008ecc",
           confirmButtonText: "Coba lagi",
@@ -632,7 +632,7 @@ const FormRecord = ({ match, history }) => {
       } catch (e) {
         Swal.fire({
           title: "Gagal!",
-          html: e,
+          html: e.response.data.message,
           icon: "error",
           confirmButtonColor: "#008ecc",
           confirmButtonText: "Coba lagi",
@@ -704,7 +704,7 @@ const FormRecord = ({ match, history }) => {
     } catch (e) {
       Swal.fire({
         title: "Gagal!",
-        html: e,
+        html: e.response.data.message,
         icon: "error",
         confirmButtonColor: "#008ecc",
         confirmButtonText: "Coba lagi",
@@ -743,7 +743,7 @@ const FormRecord = ({ match, history }) => {
     } catch (e) {
       Swal.fire({
         title: "Gagal!",
-        html: e,
+        html: e.response.data.message,
         icon: "error",
         confirmButtonColor: "#008ecc",
         confirmButtonText: "Coba lagi",
@@ -802,7 +802,7 @@ const FormRecord = ({ match, history }) => {
     } catch (e) {
       Swal.fire({
         title: "Gagal!",
-        html: e,
+        html: e.response.data.message,
         icon: "error",
         confirmButtonColor: "#008ecc",
         confirmButtonText: "Coba lagi",
@@ -841,7 +841,7 @@ const FormRecord = ({ match, history }) => {
     } catch (e) {
       Swal.fire({
         title: "Gagal!",
-        html: e,
+        html: e.response.data.message,
         icon: "error",
         confirmButtonColor: "#008ecc",
         confirmButtonText: "Coba lagi",
@@ -895,7 +895,7 @@ const FormRecord = ({ match, history }) => {
     } catch (e) {
       Swal.fire({
         title: "Gagal!",
-        html: e,
+        html: e.response.data.message,
         icon: "error",
         confirmButtonColor: "#008ecc",
         confirmButtonText: "Coba lagi",
@@ -934,7 +934,7 @@ const FormRecord = ({ match, history }) => {
     } catch (e) {
       Swal.fire({
         title: "Gagal!",
-        html: e,
+        html: e.response.data.message,
         icon: "error",
         confirmButtonColor: "#008ecc",
         confirmButtonText: "Coba lagi",
@@ -988,7 +988,7 @@ const FormRecord = ({ match, history }) => {
     } catch (e) {
       Swal.fire({
         title: "Gagal!",
-        html: e,
+        html: e.response.data.message,
         icon: "error",
         confirmButtonColor: "#008ecc",
         confirmButtonText: "Coba lagi",
@@ -1027,7 +1027,7 @@ const FormRecord = ({ match, history }) => {
     } catch (e) {
       Swal.fire({
         title: "Gagal!",
-        html: e,
+        html: e.response.data.message,
         icon: "error",
         confirmButtonColor: "#008ecc",
         confirmButtonText: "Coba lagi",
@@ -1081,7 +1081,7 @@ const FormRecord = ({ match, history }) => {
     } catch (e) {
       Swal.fire({
         title: "Gagal!",
-        html: e,
+        html: e.response.data.message,
         icon: "error",
         confirmButtonColor: "#008ecc",
         confirmButtonText: "Coba lagi",
@@ -1120,7 +1120,7 @@ const FormRecord = ({ match, history }) => {
     } catch (e) {
       Swal.fire({
         title: "Gagal!",
-        html: e,
+        html: e.response.data.message,
         icon: "error",
         confirmButtonColor: "#008ecc",
         confirmButtonText: "Coba lagi",
@@ -1172,7 +1172,7 @@ const FormRecord = ({ match, history }) => {
       } catch (e) {
         Swal.fire({
           title: "Gagal!",
-          html: e,
+          html: e.response.data.message,
           icon: "error",
           confirmButtonColor: "#008ecc",
           confirmButtonText: "Coba lagi",
@@ -1215,7 +1215,7 @@ const FormRecord = ({ match, history }) => {
       } catch (e) {
         Swal.fire({
           title: "Gagal!",
-          html: e,
+          html: e.response.data.message,
           icon: "error",
           confirmButtonColor: "#008ecc",
           confirmButtonText: "Coba lagi",
@@ -1290,7 +1290,7 @@ const FormRecord = ({ match, history }) => {
     } catch (e) {
       Swal.fire({
         title: "Gagal!",
-        html: e,
+        html: e.response.data.message,
         icon: "error",
         confirmButtonColor: "#008ecc",
         confirmButtonText: "Coba lagi",
@@ -1329,7 +1329,7 @@ const FormRecord = ({ match, history }) => {
     } catch (e) {
       Swal.fire({
         title: "Gagal!",
-        html: e,
+        html: e.response.data.message,
         icon: "error",
         confirmButtonColor: "#008ecc",
         confirmButtonText: "Coba lagi",
@@ -2132,7 +2132,7 @@ const FormRecord = ({ match, history }) => {
     } catch (e) {
       Swal.fire({
         title: "Gagal!",
-        html: e,
+        html: e.response.data.message,
         icon: "error",
         confirmButtonColor: "#008ecc",
         confirmButtonText: "Coba lagi",
@@ -2172,7 +2172,7 @@ const FormRecord = ({ match, history }) => {
     } catch (e) {
       Swal.fire({
         title: "Gagal!",
-        html: e,
+        html: e.response.data.message,
         icon: "error",
         confirmButtonColor: "#008ecc",
         confirmButtonText: "Coba lagi",
@@ -2212,7 +2212,7 @@ const FormRecord = ({ match, history }) => {
     } catch (e) {
       Swal.fire({
         title: "Gagal!",
-        html: e,
+        html: e.response.data.message,
         icon: "error",
         confirmButtonColor: "#008ecc",
         confirmButtonText: "Coba lagi",
@@ -2252,7 +2252,7 @@ const FormRecord = ({ match, history }) => {
     } catch (e) {
       Swal.fire({
         title: "Gagal!",
-        html: e,
+        html: e.response.data.message,
         icon: "error",
         confirmButtonColor: "#008ecc",
         confirmButtonText: "Coba lagi",
@@ -2292,7 +2292,7 @@ const FormRecord = ({ match, history }) => {
     } catch (e) {
       Swal.fire({
         title: "Gagal!",
-        html: e,
+        html: e.response.data.message,
         icon: "error",
         confirmButtonColor: "#008ecc",
         confirmButtonText: "Coba lagi",
@@ -2332,7 +2332,7 @@ const FormRecord = ({ match, history }) => {
     } catch (e) {
       Swal.fire({
         title: "Gagal!",
-        html: e,
+        html: e.response.data.message,
         icon: "error",
         confirmButtonColor: "#008ecc",
         confirmButtonText: "Coba lagi",

@@ -14,6 +14,32 @@ const data = [
     roles: [ "isDev", "isResepsionis", "isPerawat", "isDokter" ],
   },
   {
+    id: 'insurance',
+    icon: 'iconsminds-financial',
+    label: 'Asuransi',
+    to: `/insurance`,
+    subs: [
+      {
+        icon: 'iconsminds-bar-chart-4',
+        label: 'Dashboard Asuransi',
+        to: `/insurance/dashboard`,
+        roles: [ "isDev", "isFinance", "isManajemen" ],
+      },
+      {
+        icon: 'iconsminds-library',
+        label: 'Daftar Asuransi',
+        to: `/insurance/list`,
+        roles: [ "isDev", "isManager", "isAdmin" ],
+      },
+      {
+        icon: 'iconsminds-handshake',
+        label: 'Kerjasama Asuransi',
+        to: `/insurance/partnership`,
+        roles: [ "isDev", "isManager", "isAdmin" ],
+      },
+    ]
+  },
+  {
     id: 'queue',
     icon: 'iconsminds-profile',
     label: 'Antrian',
@@ -94,32 +120,38 @@ const data = [
       },
     ]
   },
+  // {
+  //   id: 'schedule',
+  //   icon: 'iconsminds-calendar-4',
+  //   label: 'Jadwal Jaga',
+  //   to: `/schedule`,
+  //   roles: [ "isDev", "isManager", "isAdmin", "isResepsionis", "isPerawat", "isDokter" ],
+  // },
   {
     id: 'schedule',
     icon: 'iconsminds-calendar-4',
     label: 'Jadwal Jaga',
     to: `/schedule`,
-    roles: [ "isDev", "isManager", "isAdmin", "isResepsionis", "isPerawat", "isDokter" ],
+    subs: [
+      {
+        icon: 'iconsminds-doctor',
+        label: 'Jadwal Dokter',
+        to: `/schedule/manage-doctor`,
+        roles: [ "isDev", "isManager", "isAdmin", "isDokter" ],
+      },
+      {
+        icon: 'iconsminds-male-female',
+        label: 'Jadwal Non-Dokter',
+        to: `/schedule/manage-employee`,
+        roles: [ "isDev", "isManager", "isAdmin", "isResepsionis", "isPerawat" ],
+      },
+      {
+        icon: 'iconsminds-watch',
+        label: 'Jadwal Shift',
+        to: `/schedule/shift`,
+        roles: [ "isDev", "isManager", "isAdmin", "isResepsionis", "isPerawat", "isDokter" ],
+      },
+    ]
   },
-  // {
-  //   id: 'schedule',
-  //   icon: 'iconsminds-calendar-4',
-  //   label: 'Jaga',
-  //   to: `/schedule`,
-  //   subs: [
-  //     {
-  //       icon: 'iconsminds-arrow-into',
-  //       label: 'Shift',
-  //       to: `/schedule/shift`,
-  //       roles: [ "isDev", "isManager", "isAdmin", "isResepsionis", "isPerawat", "isDokter" ],
-  //     },
-  //     {
-  //       icon: 'iconsminds-calendar-1',
-  //       label: 'Jadwal',
-  //       to: `/schedule/data`,
-  //       roles: [ "isDev", "isManager", "isAdmin", "isResepsionis", "isPerawat", "isDokter" ],
-  //     },
-  //   ]
-  // },
 ];
 export default data;

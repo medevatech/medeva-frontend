@@ -111,6 +111,10 @@ const Home = ({ history, loading, error }) => {
             if (data.is_manajemen === 1) {
               roles.push("isManajemen");
             }
+            
+            if (data.is_finance === 1) {
+              roles.push("isFinance");
+            }
 
             user.id = data.id; user.username = data.username; user.roles = roles; user.token = data.token;
 
@@ -180,7 +184,7 @@ const Home = ({ history, loading, error }) => {
     } catch (e) {
       Swal.fire({
         title: 'Error!',
-        html: e,
+        html: `Login gagal: ${e.response.data.message}`,
         icon: 'error',
         confirmButtonColor: '#008ecc',
         confirmButtonText: 'Coba lagi',
