@@ -1009,7 +1009,7 @@ const Data = ({ match, history, loading, error }) => {
             </CardBody>
             : <CardBody style={{ textAlign: 'center', verticalAlign: 'middle'}}>
                 <img src="/assets/empty.svg" width={150} className="mt-5 mb-3"/>
-                <p>Silahkan memilih harga layanan untuk melihat, mengubah, menghapus, mengarsipkan, dan mengaktifkan data harga layanan.
+                <p className="mb-3">Silahkan memilih harga layanan untuk melihat, mengubah, menghapus, mengarsipkan, dan mengaktifkan data harga layanan.
                   Silahkan klik tombol tambah untuk menambahkan harga layanan baru.</p>
             </CardBody> }
           </Card>

@@ -2265,7 +2265,7 @@ const Data = ({ match }) => {
             </CardBody>
             : <CardBody style={{ textAlign: 'center', verticalAlign: 'middle'}}>
             <img src="/assets/empty.svg" width={150} className="mt-5 mb-3"/>
-            <p>Silahkan memilih pasien untuk melihat, mengubah, menghapus, mengarsipkan, dan mengaktifkan data pasien.
+            <p className="mb-3">Silahkan memilih pasien untuk melihat, mengubah, menghapus, mengarsipkan, dan mengaktifkan data pasien.
               Silahkan klik tombol tambah untuk menambahkan pasien baru.</p>
         </CardBody> }
           </Card>
