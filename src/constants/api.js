@@ -46,7 +46,19 @@ const api = {
   insurance: {
     all: '/asuransi',
     class: '/asuransi-kelas',
-    classByInsurance: '/asuransi-kelas/asuransi'
+    classByInsurance: '/asuransi-kelas/asuransi',
+    archive: "/asuransi/archive",
+    activate: "/asuransi/activate",
+  },
+  partnership: {
+    all: '/kerjasama',
+    clinic: "/kerjasama/klinik",
+    distinct: '/kerjasama/distinct',
+    archive: "/kerjasama/archive",
+    activate: "/kerjasama/activate",
+    archiveByClinic: "/kerjasama/klinik/archive",
+    activateByClinic: "/kerjasama/klinik/activate",
+    deleteByClinic: "/kerjasama/klinik",
   },
   allergy: '/alergi', // MASTER OF 'ALERGI' FIELD
   patientAllergy: {  // JOIN TABLE ID ALERGY TO ID PATIENT AND ID RECORD

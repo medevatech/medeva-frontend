@@ -12,12 +12,20 @@ const insurance = {
     return baseApi.post(url, payloads, { headers: getAuthHeader() })
   },
   update: (payloads, id) => {
-    const url = api.insurance.all + id
+    const url = api.insurance.all + `/${id}`
     return baseApi.put(url, payloads, { headers: getAuthHeader() })
   },
-  edit: (payloads, id) => {
-    const url = api.insurance.all + `${id}`
+  archive: (payloads, id) => {
+    const url = api.insurance.archive + `/${id}`
     return baseApi.put(url, payloads, { headers: getAuthHeader() })
+  },
+  activate: (payloads, id) => {
+    const url = api.insurance.activate + `/${id}`
+    return baseApi.put(url, payloads, { headers: getAuthHeader() })
+  },
+  delete: (id) => {
+    const url = api.insurance.all + `/${id}`
+    return baseApi.delete(url, { headers: getAuthHeader() })
   },
 }
 export default insurance

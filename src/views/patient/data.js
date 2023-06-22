@@ -59,9 +59,9 @@ const selectKITAS = [
 
 const selectInsurance = [
   { label: "Pilih Asuransi", value: "", key: 0, name: "id_asuransi" },
-  { label: "PPS/Kapitasi", value: "PPS/Kapitasi", key: 1, name: "id_asuransi" },
-  { label: "FFS Paket", value: "FFS Paket", key: 2, name: "id_asuransi" },
-  { label: "FFS Non-Paket", value: "FFS Non-Paket", key: 3, name: "id_asuransi" },
+  { label: "PPS/Kapitasi", value: "PPS", key: 1, name: "id_asuransi" },
+  { label: "FFS Paket", value: "FFSP", key: 2, name: "id_asuransi" },
+  { label: "FFS Non-Paket", value: "FFSNP", key: 3, name: "id_asuransi" },
 ];
 
 const selectAllergy = [
@@ -275,6 +275,7 @@ const Data = ({ match }) => {
 
     // console.log(insurance.length + 1);
     disabledInsuranceClass[insurance.length] = true;
+    // console.log('disabledInsuranceClass', disabledInsuranceClass);
   };
 
   const removeInsuranceFields = (id, index) => {
@@ -302,10 +303,12 @@ const Data = ({ match }) => {
       // } else {
       //   disabledInsuranceClass[index] = true;
       // }
+      validate(event, event.name !== undefined ? event.name : event.target.name ? event.target.name : '', event.value !== undefined ? event.value : event.target.value ? event.target.value : '');
     } else if (event.name === "id_asuransi_kelas"){
       dataInsurance[index][event.name] = event.value;
     } else {
       dataInsurance[index][event.target.name] = event.target.value;
+      validate(event, event.name !== undefined ? event.name : event.target.name ? event.target.name : '', event.value !== undefined ? event.value : event.target.value ? event.target.value : '');
     }
 
     // if(dataStatusInsurance === "update") {
@@ -345,6 +348,7 @@ const Data = ({ match }) => {
 
     if (event.name === "id_alergi"){
       dataAllergy[index][event.name] = event.value;
+      validate(event, event.name !== undefined ? event.name : event.target.name ? event.target.name : '', event.value !== undefined ? event.value : event.target.value ? event.target.value : '');
     } else {
       dataAllergy[index][event.target.name] = event.target.value;
     }
@@ -585,6 +589,11 @@ const Data = ({ match }) => {
         }
 
         disabledInsuranceClass[index] = false;
+
+        if(id_asuransi_kelas) {
+          let event = { value: id_asuransi_kelas, name: 'id_asuransi_kelas' };
+          handleInsuranceChange(index, event);
+        }
       } else {
         disabledInsuranceClass[index] = true;
 
@@ -792,6 +801,13 @@ const Data = ({ match }) => {
   const onAllergySubmit = async (e) => {
     e && e.preventDefault();
 
+    for(let [key, value] of Object.entries(allergy)) {
+      if(key === 'id_alergi' && value === ''){
+        validate(e, key, value);
+        return;
+      }
+    }
+
     for (var i = 0; i < allergy.length; i++) {
       allergy[i].id_pasien = patientID;
 
@@ -883,6 +899,20 @@ const Data = ({ match }) => {
 
   const onInsuranceSubmit = async (e) => {
     e && e.preventDefault();
+
+    let isError = false;
+
+    for(let [key, value] of Object.entries(insurance)) {
+      if((key === 'id_asuransi' && value === '') || (key === 'nomor_asuransi' && value === '')){
+        validate(e, key, value);
+        isError = true;
+        // return;
+      }
+    }
+
+    if(isError === true) {
+      return;
+    }
 
     for (var i = 0; i < insurance.length; i++) {
       insurance[i].id_pasien = patientID;
@@ -1554,12 +1584,12 @@ const Data = ({ match }) => {
 
   useEffect(() => {
     if(selectedCity.length > 0 && editAddress.status === 2) {
-      let id_kota = selectedCity.find(item => item.value === editAddress.nama_kota).key || '';
+      let id_kota = editAddress.nama_kota ? selectedCity.find(item => item.value === editAddress.nama_kota).key : '';
       changeKecamatan(id_kota, editAddress);
     }
 
     if(selectedSubdistrict.length > 0 && editAddress.status === 3) {
-      let id_kecamatan = selectedSubdistrict.find(item => item.value === editAddress.nama_kecamatan).key || '';
+      let id_kecamatan = editAddress.nama_kecamatan ? selectedSubdistrict.find(item => item.value === editAddress.nama_kecamatan).key : '';
       changeKelurahan(id_kecamatan, editAddress);
     }
   }, [editAddress]);
@@ -1584,16 +1614,20 @@ const Data = ({ match }) => {
   }, [ patientSubmit ]);
 
   // useEffect(() => {
-    // if(dataStatusInsurance === "update" && insurance[0].id !== ''){
-      // let dataInsurance = [...insurance];
-      // console.log(dataInsurance);
-      // dataInsurance[index]['id_asuransi_kelas'] = id_asuransi_kelas;
-      // setInsurance(dataInsurance);
-      
-      // setTimeout(() => {
+  //   if(dataStatusInsurance === "update" && insurance[0].id !== ''){
+  //     let dataInsurance = [...insurance];
+  //     // console.log(dataInsurance);
 
-      // }, 5000);
-    // }
+  //     for(var index = 0; index < dataInsurance.length; index++){
+  //       dataInsurance[index]['id_asuransi_kelas'] = insurance[index].id_asuransi_kelas;
+  //     }
+      
+  //     setInsurance(dataInsurance);
+      
+  //     // setTimeout(() => {
+
+  //     // }, 5000);
+  //   }
   // }, [ dataStatusInsurance ]);
 
   useEffect(() => {
@@ -1630,7 +1664,7 @@ const Data = ({ match }) => {
                     <Button
                       color="primary"
                       style={{ float: "right" }}
-                      className="mb-4"
+                      // className="mb-4"
                       onClick={(e) => resetForm(e, true)}
                     >
                       Tambah
@@ -1727,7 +1761,7 @@ const Data = ({ match }) => {
                 currentPage={currentPage}
                 totalPage={patientTotalPage}
                 onChangePage={(i) => setCurrentPage(i)}
-                numberLimit={patientTotalPage}
+                numberLimit={patientTotalPage < 4 ? patientTotalPage : 3}
               />
             </CardBody>
           </Card>
@@ -2118,6 +2152,11 @@ const Data = ({ match }) => {
                                 handleAllergyChange(index, event)
                               }
                             />
+                            {errors.id_alergi && (
+                              <div className="rounded invalid-feedback d-block">
+                                {errors.id_alergi}
+                              </div>
+                            )}
                             {index > 0 && (
                               <Button
                                 color="danger"
@@ -2171,6 +2210,11 @@ const Data = ({ match }) => {
                                     handleInsuranceChange(index, event)
                                   }
                                 />
+                                {errors.id_asuransi && (
+                                  <div className="rounded invalid-feedback d-block">
+                                    {errors.id_asuransi}
+                                  </div>
+                                )}
                               </FormGroup>
                             </Colxx>
                             <Colxx sm={6}>
@@ -2210,6 +2254,11 @@ const Data = ({ match }) => {
                                     handleInsuranceChange(index, event)
                                   }
                                 />
+                                {errors.nomor_asuransi && (
+                                  <div className="rounded invalid-feedback d-block">
+                                    {errors.nomor_asuransi}
+                                  </div>
+                                )}
                                 {index > 0 && (
                                   <Button
                                     color="danger"

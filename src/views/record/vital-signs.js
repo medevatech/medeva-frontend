@@ -616,7 +616,7 @@ const VitalSigns = ({ match }) => {
                       <Button
                         color="primary"
                         style={{ float: "right" }}
-                        className="mb-4"
+                        // className="mb-4"
                         onClick={() => getQueue("?limit=10&page=1")}
                       >
                         Perbarui
@@ -785,7 +785,7 @@ const VitalSigns = ({ match }) => {
                   currentPage={currentPage}
                   totalPage={queueTotalPage}
                   onChangePage={(i) => setCurrentPage(i)}
-                  numberLimit={queueTotalPage}
+                  numberLimit={queueTotalPage < 4 ? queueTotalPage : 3}
                 />
               </CardBody>
             </Card>
@@ -800,14 +800,14 @@ const VitalSigns = ({ match }) => {
                         <Colxx sm="6" md="6" xl="6">
                         {/* Form Registrasi Pra-Konsultasi */}
                         { dataStatus && dataStatus === "add" ? 'Form Tambah Pra-Konsultasi' : 'Form Ubah Pra-Konsultasi' }
-                        {patientData ?
+                        { patientData ?
                           <>
                             <br/><br/>{patientData.nama_lengkap}<br/><p style={{ fontWeight: 'normal' }}>{patientData.jenis_kelamin.substring(0,1)}, {new Date().getFullYear() - patientData.tanggal_lahir.substring(0,4)}</p>
                           </> : ''}
                         </Colxx>
                         <Colxx sm="6" md="6" xl="6">
                           <Label style={{ float: 'right', lineHeight: 2 }}>
-                            { vitalSigns.id_pasien ? <><br/><br/>{moment(vitalSigns.created_at).format("DD MMM YYYY - HH:mm")}</> : 'Tanggal / Waktu' }
+                            { vitalSigns.id_pasien && vitalSigns.created_at ? <><br/><br/>{moment(vitalSigns.created_at).format("DD MMM YYYY - HH:mm")}</> : 'Tanggal / Waktu' }
                             {/* {startDateTime} */}
                           </Label><br/>
                         </Colxx>

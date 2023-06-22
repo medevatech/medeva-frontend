@@ -604,11 +604,18 @@ const Data = ({ match, history, loading, error }) => {
     let isDev, isManager, isAdmin, isResepsionis, isPerawat, isDokter, isManajemen, isFinance = false;
 
     for(let [key, value] of Object.entries(employee)) {
-      if((key === 'username' && value === '') || (key === 'password' && value === '') || (key === 'no_kitas' && value === '')  ||
+      if((key === 'username' && value === '') || (key === 'no_kitas' && value === '')  ||
         (key === 'tipe' && value === '') || (key === 'tipe_izin' && value === '') || (key === 'nomor_izin' && value === '') ||
         (key === 'kadaluarsa_izin' && value === '') || (key === 'peran' && value === '')){
         validate(e, key, value);
         isError = true;
+      }
+
+      if(dataStatus === "add") {
+        if(key === 'password' && value === '') {
+          validate(e, key, value);
+          isError = true;
+        }
       }
 
       key === 'is_dev' && value === 0 ? isDev = false : isDev = true
@@ -632,6 +639,10 @@ const Data = ({ match, history, loading, error }) => {
     }
 
     isDev == false && isManager == false && isAdmin == false && isResepsionis == false && isPerawat == false && isDokter == false && isManajemen == false && isFinance == false && noPeran()
+
+    console.log('dataStatus', dataStatus);
+    console.log('isError', isError);
+    console.log('errors', errors);
 
     if(isError === true){
       return;
@@ -1469,7 +1480,7 @@ const Data = ({ match, history, loading, error }) => {
       // console.log('changeKota', selectedCity);
       // console.log('status', editAddress.status);
 
-      let id_kota = selectedCity.find(item => item.value === editAddress.nama_kota).key || '';
+      let id_kota = editAddress.nama_kota ? selectedCity.find(item => item.value === editAddress.nama_kota).key : '';
       changeKecamatan(id_kota, editAddress);
     }
 
@@ -1477,7 +1488,7 @@ const Data = ({ match, history, loading, error }) => {
       // console.log('changeKecamatan', selectedSubdistrict);
       // console.log('status', editAddress.status);
 
-      let id_kecamatan = selectedSubdistrict.find(item => item.value === editAddress.nama_kecamatan).key || '';
+      let id_kecamatan = editAddress.nama_kecamatan ? selectedSubdistrict.find(item => item.value === editAddress.nama_kecamatan).key : '';
       changeKelurahan(id_kecamatan, editAddress);
     }
   }, [ editAddress ]);
@@ -1629,7 +1640,7 @@ const Data = ({ match, history, loading, error }) => {
                     <Button
                       color="primary"
                       style={{ float: "right" }}
-                      className="mb-4"
+                      // className="mb-4"
                       onClick={(e) => resetForm(e, true)}
                     >
                       Tambah
@@ -1773,7 +1784,7 @@ const Data = ({ match, history, loading, error }) => {
                 currentPage={currentPage}
                 totalPage={employeeTotalPage}
                 onChangePage={(i) => setCurrentPage(i)}
-                numberLimit={employeeTotalPage}
+                numberLimit={employeeTotalPage < 4 ? employeeTotalPage : 3}
               />
             </CardBody>
           </Card>
@@ -1958,6 +1969,11 @@ const Data = ({ match, history, loading, error }) => {
                         value={employee.nama}
                         onChange={onChange}
                       />
+                      {errors.nama && (
+                        <div className="rounded invalid-feedback d-block">
+                          {errors.nama}
+                        </div>
+                      )}
                     </FormGroup>
                   </Colxx>
 
@@ -2337,11 +2353,10 @@ const Data = ({ match, history, loading, error }) => {
                             isMulti
                             name="peran"
                             id="peran"
-                            // value={selectedRole}
-                            value={selectRole.filter(item => selectedRole.includes(item.value)) || ''}
-                            // options={selectRole}
+                            value={selectRole.filter(item => selectedRole.includes(item.value))}
                             options={selectRole.filter(roleChoices => roleChoices.label != 'Developer').map(roleChoices => roleChoices)}
                             onChange={onChange}
+                            placeholder="Pilih Peran"
                           />
                         : userData.roles.includes('isManager') ?
                           <Select
@@ -2351,10 +2366,10 @@ const Data = ({ match, history, loading, error }) => {
                             isMulti
                             name="peran"
                             id="peran"
-                            // value={selectedRole}
-                            value={selectRole.filter(item => selectedRole.includes(item.value)) || 'Pilih Peran'}
+                            value={selectRole.filter(item => selectedRole.includes(item.value))}
                             options={selectRole.filter(roleChoices => roleChoices.label != 'Developer' && roleChoices.label != 'Manager' && roleChoices.label != 'Admin' && roleChoices.label != 'Manajemen' && roleChoices.label != 'Finance').map(roleChoices => roleChoices)}
                             onChange={onChange}
+                            placeholder="Pilih Peran"
                           />
                         : userData.roles.includes('isAdmin') ?
                           <Select
@@ -2364,10 +2379,10 @@ const Data = ({ match, history, loading, error }) => {
                             isMulti
                             name="peran"
                             id="peran"
-                            // value={selectedRole}
-                            value={selectRole.filter(item => selectedRole.includes(item.value)) || 'Pilih Peran'}
+                            value={selectRole.filter(item => selectedRole.includes(item.value))}
                             options={selectRole.filter(roleChoices => roleChoices.label != 'Developer' && roleChoices.label != 'Manager' && roleChoices.label != 'Admin' && roleChoices.label != 'Manajemen' && roleChoices.label != 'Finance').map(roleChoices => roleChoices)}
                             onChange={onChange}
+                            placeholder="Pilih Peran"
                           />
                         : ''
                       }

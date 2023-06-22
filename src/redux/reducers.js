@@ -3,6 +3,8 @@ import menu from './menu/reducer';
 
 import dashboard from "store/dashboard";
 import { patient, patientTotalPage } from "store/patient";
+import { insurance, insuranceTotalPage } from "store/insurance";
+import { partnership, partnershipTotalPage } from "store/partnership";
 import { vitalSigns, vitalSignsTotalPage, allVitalSignsByPatient } from "store/vital-signs";
 import { record, recordTotalPage, allRecordByPatient } from "store/record";
 import { schedule, scheduleTotalPage } from "store/schedule";
@@ -27,6 +29,10 @@ const reducers = combineReducers({
   patient,
   patientTotalPage,
   allRecordByPatient,
+  insurance,
+  insuranceTotalPage,
+  partnership,
+  partnershipTotalPage,
   queue,
   queueTotalPage,
   vitalSigns,

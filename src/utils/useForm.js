@@ -46,7 +46,9 @@ const useForm = (callback) => {
                 (name === 'sistole' && value === '') ||
                 (name === 'diastole' && value === '') ||
                 (name === 'respiratory_rate' && value === '') ||
-                (name === 'heart_rate' && value === '')) {
+                (name === 'heart_rate' && value === '') ||
+                (name === 'nama_kelas' && value === '') ||
+                (name === 'nomor_asuransi' && value === '')) {
                 
                 setErrors(errors => ({
                     ...errors,
@@ -68,7 +70,9 @@ const useForm = (callback) => {
                 (name === 'sistole' && value !== '') ||
                 (name === 'diastole' && value !== '') ||
                 (name === 'respiratory_rate' && value !== '') ||
-                (name === 'heart_rate' && value !== '')) {
+                (name === 'heart_rate' && value !== '') ||
+                (name === 'nama_kelas' && value !== '') ||
+                (name === 'nomor_asuransi' && value !== '')) {
                 
                 let newObj = omit(errors, name);
                 setErrors(newObj);
@@ -84,7 +88,11 @@ const useForm = (callback) => {
                 (name === 'kesadaran' && value === '') ||
                 (name === 'status_pulang' && value === '') ||
                 (name === 'id_penyakit' && value === '') ||
-                (name === 'id_pasien' && value === '')) {
+                (name === 'id_pasien' && value === '') ||
+                (name === 'id_asuransi' && value === '') ||
+                (name === 'id_alergi' && value === '') ||
+                (name === 'id_asuransi_kelas' && value === '') ||
+                (name === 'tipe_kerjasama' && value === '')) {
 
                 setErrors(errors => ({
                     ...errors,
@@ -100,7 +108,11 @@ const useForm = (callback) => {
                 (name === 'kesadaran' && value !== '') ||
                 (name === 'status_pulang' && value !== '') ||
                 (name === 'id_penyakit' && value !== '') ||
-                (name === 'id_pasien' && value !== '')) {
+                (name === 'id_pasien' && value !== '') ||
+                (name === 'id_asuransi' && value !== '') ||
+                (name === 'id_alergi' && value !== '') ||
+                (name === 'id_asuransi_kelas' && value !== '') ||
+                (name === 'tipe_kerjasama' && value !== '')) {
 
                 let newObj = omit(errors, name);
                 setErrors(newObj);

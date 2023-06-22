@@ -136,12 +136,17 @@ label {
     width: 30%;
 }
 
-.select-allergy {
+.select-allergy, .select-partnership {
     margin-bottom: 1rem;
 }
 
 .select-allergy:not(:first-of-type) {
     width: 89%;
+    display: inline-block;
+}
+
+.partnership-form > .partnership-row ~ .partnership-row .select-partnership {
+    width: 79%;
     display: inline-block;
 }
 
@@ -164,7 +169,7 @@ label {
     // margin-right: 10px;
 }
 
-.remove-allergy, .remove-insurance, .remove-diagnosis, .remove-reciept {
+.remove-allergy, .remove-insurance, .remove-diagnosis, .remove-reciept, .remove-partnership {
     border-radius: 0 0.1rem 0.1rem 0;
 }
 
@@ -407,7 +412,7 @@ label {
         max-width: 8.33333% !important;
     }
 
-    .select-allergy:not(:first-of-type) {
+    .select-allergy:not(:first-of-type), .select-partnership:not(:first-of-type) {
         width: 84%;
     }
 }
@@ -487,7 +492,7 @@ label {
         padding-right: 20px;
     }
 
-    .select-allergy:not(:first-of-type) {
+    .select-allergy:not(:first-of-type), .select-partnership:not(:first-of-type) {
         width: 81%;
     }
     

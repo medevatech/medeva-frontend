@@ -547,7 +547,7 @@ const Data = ({ match, history, loading, error }) => {
                     <Button
                       color="primary"
                       style={{ float: "right" }}
-                      className="mb-4"
+                      // className="mb-4"
                       onClick={(e) => resetForm(e, true)}
                     >
                       Tambah
@@ -643,7 +643,7 @@ const Data = ({ match, history, loading, error }) => {
                 currentPage={currentPage}
                 totalPage={serviceTotalPage}
                 onChangePage={(i) => setCurrentPage(i)}
-                numberLimit={serviceTotalPage}
+                numberLimit={serviceTotalPage < 4 ? serviceTotalPage : 3}
               />
             </CardBody>
           </Card>

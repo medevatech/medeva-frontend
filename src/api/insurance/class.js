@@ -16,12 +16,12 @@ const kelas = {
     return baseApi.post(url, payloads, { headers: getAuthHeader() })
   },
   update: (payloads, id) => {
-    const url = api.insurance.class + `${id}`
+    const url = api.insurance.class + `/${id}`
     return baseApi.put(url, payloads, { headers: getAuthHeader() })
   },
-  edit: (payloads, id) => {
-    const url = api.insurance.class + `${id}`
-    return baseApi.put(url, payloads, { headers: getAuthHeader() })
+  delete: (id) => {
+    const url = api.insurance.class + `/${id}`
+    return baseApi.delete(url, { headers: getAuthHeader() })
   },
 }
 export default kelas

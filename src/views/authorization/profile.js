@@ -1360,11 +1360,10 @@ const Data = ({ match, history, loading, error }) => {
                               isMulti
                               name="peran"
                               id="peran"
-                              // value={selectedRole}
-                              value={selectRole.filter(item => selectedRole.includes(item.value)) || ''}
-                              // options={selectRole}
+                              value={selectRole.filter(item => selectedRole.includes(item.value))}
                               options={selectRole.filter(roleChoices => roleChoices.label != 'Developer').map(roleChoices => roleChoices)}
                               onChange={onChange}
+                              placeholder="Pilih Peran"
                             />
                           : userData.roles.includes('isManager') ?
                             <Select
@@ -1374,10 +1373,10 @@ const Data = ({ match, history, loading, error }) => {
                               isMulti
                               name="peran"
                               id="peran"
-                              // value={selectedRole}
-                              value={selectRole.filter(item => selectedRole.includes(item.value)) || 'Pilih Peran'}
+                              value={selectRole.filter(item => selectedRole.includes(item.value))}
                               options={selectRole.filter(roleChoices => roleChoices.label != 'Developer' && roleChoices.label != 'Manager' && roleChoices.label != 'Admin' && roleChoices.label != 'Manajemen' && roleChoices.label != 'Finance').map(roleChoices => roleChoices)}
                               onChange={onChange}
+                              placeholder="Pilih Peran"
                             />
                           : userData.roles.includes('isAdmin') ?
                             <Select
@@ -1387,10 +1386,10 @@ const Data = ({ match, history, loading, error }) => {
                               isMulti
                               name="peran"
                               id="peran"
-                              // value={selectedRole}
-                              value={selectRole.filter(item => selectedRole.includes(item.value)) || 'Pilih Peran'}
+                              value={selectRole.filter(item => selectedRole.includes(item.value))}
                               options={selectRole.filter(roleChoices => roleChoices.label != 'Developer' && roleChoices.label != 'Manager' && roleChoices.label != 'Admin' && roleChoices.label != 'Manajemen' && roleChoices.label != 'Finance').map(roleChoices => roleChoices)}
                               onChange={onChange}
+                              placeholder="Pilih Peran"
                             />
                           : ''
                         }
