@@ -89,10 +89,25 @@ const Data = ({ match, history, loading, error }) => {
     e.preventDefault();
     setInsuranceSubmit("process");
 
+    // console.log('insurance', insurance);
+
     for(let [key, value] of Object.entries(insurance)) {
+      // console.log(key, value);
+
       if((key === 'nama' && value === '')){
         validate(e, key, value);
+
+        // console.log('errors', errors);
         return;
+      }
+    }
+
+    for (var i = 0; i < insuranceClass.length; i++) {
+      for(let [key, value] of Object.entries(insuranceClass[i])) {
+        if((key === 'nama_kelas' && value === '')){
+          validate(e, key, value);
+          return;
+        }
       }
     }
 
@@ -134,8 +149,6 @@ const Data = ({ match, history, loading, error }) => {
         });
   
         console.log(e);
-      } finally {
-        getInsurance("");
       }
     } else if (dataStatus === 'update') {
       try {
@@ -175,8 +188,6 @@ const Data = ({ match, history, loading, error }) => {
         });
   
         console.log(e);
-      } finally {
-        getInsurance("");
       }
     } else {
       console.log('dataStatus undefined')
@@ -227,13 +238,6 @@ const Data = ({ match, history, loading, error }) => {
   const onInsuranceClassSubmit = async (e) => {
     e && e.preventDefault();
 
-    for(let [key, value] of Object.entries(insuranceClass)) {
-      if((key === 'nama_kelas' && value === '')){
-        validate(e, key, value);
-        return;
-      }
-    }
-
     for (var i = 0; i < insuranceClass.length; i++) {
       insuranceClass[i].id_asuransi = insuranceID;
 
@@ -242,6 +246,13 @@ const Data = ({ match, history, loading, error }) => {
       } else if(insuranceClass[i].id === '') {
         onInsuranceClassAdd(insuranceClass[i]);
       }
+    }
+    
+    getInsurance("");
+    if(insuranceID){
+      getInsuranceById("", insuranceID);
+    } else {
+      resetForm();
     }
   }
 
@@ -750,7 +761,7 @@ const Data = ({ match, history, loading, error }) => {
                     <Button
                       color="primary"
                       style={{ float: "right" }}
-                      // className="mb-4"
+                      className="mb-4"
                       onClick={(e) => resetForm(e, true)}
                     >
                       Tambah
@@ -918,7 +929,15 @@ const Data = ({ match, history, loading, error }) => {
                     <FormGroup>
                       <Row>
                         <Colxx sm={6}>
-                          <Label>Kelas Asuransi</Label>
+                          <Label>Kelas Asuransi
+                            <span
+                              className="required text-danger"
+                              aria-required="true"
+                            >
+                              {" "}
+                              *
+                            </span>
+                          </Label>
                         </Colxx>
                       </Row>
                       {insuranceClass.map((input, index) => {

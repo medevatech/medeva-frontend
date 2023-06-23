@@ -83,8 +83,9 @@ const Data = ({ match, history, loading, error }) => {
   const [modalDelete, setModalDelete] = useState(false);
   const [partnershipID, setPartnershipID] = useState('');
   const [clinicID, setClinicID] = useState('');
-  const [clinicName, setClinicName] = useState('');
+  const [insuranceName, setInsuranceName] = useState('');
   const [partnershipStatus, setPartnershipStatus] = useState(0);
+  const [partnershipFetch, setPartnershipFetch] = useState("");
 
   const onLoadKlinik = async () => {
     try {
@@ -193,19 +194,18 @@ const Data = ({ match, history, loading, error }) => {
           })
         }
 
-        // dataDisabledInsuranceClass[index] = false;
+        dataDisabledInsuranceClass[index] = false;
       } else {
-        // dataDisabledInsuranceClass[index] = true;
+        dataDisabledInsuranceClass[index] = true;
 
         throw Error(`Error status: ${response.status}`);
       }
     } catch (e) {
       console.log(e);
-    }
-    finally {
-      // if(id_asuransi_kelas) {
-      //   dataDisabledInsuranceClass[index] = false;
-      // }
+    } finally {
+      if(id_asuransi_kelas) {
+        dataDisabledInsuranceClass[index] = false;
+      }
 
       setDisabledInsuranceClass(dataDisabledInsuranceClass);
     }
@@ -223,7 +223,7 @@ const Data = ({ match, history, loading, error }) => {
     // console.log('e', e);
 
     setClinicID(e.value);
-    validate(e, e.name , e.value);
+    validate(e, e.name !== undefined ? e.name : e.name ? e.name : '', e.value !== undefined ? e.value : e.value ? e.value : '');
 
     // console.log('partnership', partnership);
   }
@@ -232,7 +232,7 @@ const Data = ({ match, history, loading, error }) => {
     let newfieldPartnership = { id: '', id_klinik: clinicID, id_asuransi: '', id_asuransi_kelas: '', tipe: '' };
     setPartnership([...partnership, newfieldPartnership]);
 
-    // disabledInsuranceClass[partnership.length] = true;
+    disabledInsuranceClass[partnership.length] = true;
   };
 
   const removePartnershipFields = (id, index) => {
@@ -401,7 +401,7 @@ const Data = ({ match, history, loading, error }) => {
     e && e.preventDefault();
 
     setPartnershipID('');
-    setClinicName('');
+    setInsuranceName('');
     setPartnershipStatus(0);
 
     if(scroll) {
@@ -421,7 +421,11 @@ const Data = ({ match, history, loading, error }) => {
       }
     }
 
+    setPartnershipStatus(0);
+    setInsuranceName('');
+    setPartnershipID('');
     setClinicID('');
+
     setPartnership([]);
     setPartnership([{ id: "", id_klinik: "", id_asuransi: "", id_asuransi_kelas: "", tipe: "" }]);
 
@@ -429,11 +433,9 @@ const Data = ({ match, history, loading, error }) => {
 
     setDisabledClinic(false);
     setDataStatus("add");
-    // setDisabledInsuranceClass([true]);
-    setSelectInsuranceClassByInsurance([]);
 
     onLoadKlinik();
-    // onLoadAsuransi();
+    onLoadAsuransi();
     // onLoadKelasAsuransi();
   };
 
@@ -458,13 +460,9 @@ const Data = ({ match, history, loading, error }) => {
 
   const getPartnershipByClinicId = async (e, id) => {
     e && e.preventDefault();
-    // e && resetForm(e);
-
-    setPartnership([]);
-    setTempPartnership([]);
-    // setDisabledInsuranceClass([]);
-
+    e && resetForm(e);
     setDataStatus("update");
+    setPartnershipFetch("process");
     setRowSelected(id);
 
     if(window.innerWidth < 1280){
@@ -488,9 +486,11 @@ const Data = ({ match, history, loading, error }) => {
       // console.log('data', data);
 
       setClinicID(id);
-      setDisabledClinic(true);
 
-      let isActive = false;
+      setPartnership([]);
+      setTempPartnership([]);
+      setDisabledClinic(true);
+      setDisabledInsuranceClass([]);
 
       if(data) {
         data.map((data, index) => {
@@ -504,19 +504,6 @@ const Data = ({ match, history, loading, error }) => {
           ]);
         })
 
-        for (var i = 0; i < data.length; i++) {
-          for(let [key, value] of Object.entries(data[i])) {
-            // console.log(key, value);
-
-            if(key === 'is_active' && value === 1){
-              // console.log('isActive', isActive);
-              isActive = true;
-            }
-          }
-        }
-
-        isActive ? setPartnershipStatus(1) : setPartnershipStatus(0);
-
         setDataStatus("update");
         setDataStatusInsurance("update");
       }
@@ -529,24 +516,49 @@ const Data = ({ match, history, loading, error }) => {
       setTempPartnership([{ id: '', id_klinik: '', id_asuransi: '', id_asuransi_kelas: '', tipe: '' }]);
 
       setDataStatusInsurance("add");
+    } finally {
+      setPartnershipFetch("done");
+      // console.log('disabledInsuranceClass', disabledInsuranceClass);
     }
 
     // console.log(dataStatus);
   };
 
-  // useEffect(() => {
-  //   console.log('dataStatus', dataStatus);
+  useEffect(() => {
+    // console.log('dataStatus', dataStatus);
 
-  //   if(dataStatus === "add") {
-  //     // setDisabledInsuranceClass([true]);
-  //   } else {
-  //     // setDisabledInsuranceClass([]);
-  //   }
-  // }, [ dataStatus ]);
+    // if(dataStatus === "add") {
+    //   resetForm();
+    //   setDisabledInsuranceClass([true]);
+    // }
+  }, [ dataStatus ]);
+
+  // useEffect(() => {
+    // console.log('disabledInsuranceClass', disabledInsuranceClass);
+
+    // if(partnershipFetch === "done" && disabledInsuranceClass){
+    //   let dataDisabledInsuranceClass = [...disabledInsuranceClass];
+
+    //   for(var index = 0; index < partnership.length; index++){
+    //   //   console.log('partnership[' + index + ']', partnership[index]);
+
+    //     if (partnership[index].id_asuransi_kelas){
+    //       dataDisabledInsuranceClass[index] = false;
+    //     } else {
+    //       dataDisabledInsuranceClass[index] = true;
+    //     }
+
+    //     console.log('disabledInsuranceClass[' + index + "]", disabledInsuranceClass[index]);
+    //   }
+
+    //   setDisabledInsuranceClass(dataDisabledInsuranceClass);
+    //   setPartnershipFetch("idle");
+    // }
+  // }, [ disabledInsuranceClass ]);
 
   function ActiveDropdown() {
     return <>
-      <DropdownItem onClick={(e) => statusByClinicId(e, clinicID)}>
+      <DropdownItem onClick={(e) => statusByClinicId(e, partnershipID)}>
         <i className="simple-icon-drawer"></i>&nbsp;Aktifkan
       </DropdownItem>
     </>;
@@ -554,7 +566,7 @@ const Data = ({ match, history, loading, error }) => {
 
   function ArchiveDropdown() {
     return <>
-      <DropdownItem onClick={(e) => statusByClinicId(e, clinicID)}>
+      <DropdownItem onClick={(e) => statusByClinicId(e, partnershipID)}>
         <i className="simple-icon-drawer"></i>&nbsp;Arsipkan
       </DropdownItem>
     </>;
@@ -564,9 +576,9 @@ const Data = ({ match, history, loading, error }) => {
     if(userData.roles.includes('isDev') ||
       userData.roles.includes('isManager') ||
       userData.roles.includes('isAdmin')) {
-      if (clinicID && partnershipStatus == 1) {
+      if (partnershipID && partnershipStatus == 1) {
         return <ArchiveDropdown/>;
-      } else if (clinicID && partnershipStatus == 0) {
+      } else if (partnershipID && partnershipStatus == 0) {
         return <ActiveDropdown/>;
       } else {
         return null;
@@ -581,12 +593,12 @@ const Data = ({ match, history, loading, error }) => {
 
     setModalArchive(true);
     try {
-      const res = await partnershipAPI.getByClinic(`/${id}`);
-      let data = res.data.data;
+      const res = await partnershipAPI.get(`/${id}`);
+      let data = res.data.data[0];
 
-      // setPartnershipID(data.id);
-      // setPartnershipStatus(data.is_active);
-      setClinicName(data[0].nama_klinik);
+      setPartnershipID(data.id);
+      setPartnershipStatus(data.is_active);
+      setInsuranceName(data.nama);
     } catch (e) {
       console.log(e);
     }
@@ -671,11 +683,11 @@ const Data = ({ match, history, loading, error }) => {
 
     setModalDelete(true);
     try {
-      const res = await partnershipAPI.getByClinic(`/${id}`);
-      let data = res.data.data;
+      const res = await insuranceAPI.get(`/${id}`);
+      let data = res.data.data[0];
 
-      // setPartnershipID(data.id);
-      setClinicName(data[0].nama_klinik);
+      setPartnershipID(data.id);
+      setInsuranceName(data.nama);
     } catch (e) {
       console.log(e);
     }
@@ -685,7 +697,7 @@ const Data = ({ match, history, loading, error }) => {
     e.preventDefault();
 
     try {
-      const response = await partnershipAPI.deleteByClinic(clinicID);
+      const response = await partnershipAPI.deleteByClinic("", clinicID);
 
       if (response.status == 200) {
         let data = await response.data.data;
@@ -724,13 +736,12 @@ const Data = ({ match, history, loading, error }) => {
       console.log(e);
     } finally {
       getPartnership("");
-      resetForm();
     }
   };
 
-  const onDeletePartnership = async (id) => {
+  const onDeletePartnership = async (id_klinik) => {
     try {
-      const response = await partnershipAPI.delete(id);
+      const response = await partnershipAPI.delete(partnershipID);
 
       if (response.status == 200) {
         let data = await response.data.data;
@@ -827,7 +838,7 @@ const Data = ({ match, history, loading, error }) => {
                     <Button
                       color="primary"
                       style={{ float: "right" }}
-                      className="mb-4"
+                      // className="mb-4"
                       onClick={(e) => resetForm(e, true)}
                     >
                       Tambah
@@ -961,10 +972,10 @@ const Data = ({ match, history, loading, error }) => {
                         <DropdownMenu right>
                           {<IsActiveDropdown/>}
                           {(userData.roles.includes('isDev') ||
-                          userData.roles.includes('isManager')) && clinicID &&
+                          userData.roles.includes('isManager')) && partnershipID &&
                             <>
                               <DropdownItem divider />
-                              <DropdownItem onClick={(e) => deleteByClinicId(e, clinicID)}>
+                              <DropdownItem onClick={(e) => deleteByClinicId(e, partnershipID)}>
                                 <i className="simple-icon-trash"></i>&nbsp;Hapus
                               </DropdownItem>
                             </>
@@ -1023,7 +1034,7 @@ const Data = ({ match, history, loading, error }) => {
                           </Label>
                         </Colxx>
                         <Colxx sm={4}>
-                          <Label>Kelas (pilih asuransi dahulu)
+                          <Label>Kelas Asuransi
                             <span
                               className="required text-danger"
                               aria-required="true"
@@ -1084,7 +1095,7 @@ const Data = ({ match, history, loading, error }) => {
                                   onChange={(event) =>
                                     handlePartnershipChange(index, event)
                                   }
-                                  // isDisabled={disabledInsuranceClass[index]}
+                                  isDisabled={disabledInsuranceClass[index]}
                                   // placeholder="Pilih Kelas"
                                 />
                                 {errors.id_asuransi_kelas && (
@@ -1181,7 +1192,7 @@ const Data = ({ match, history, loading, error }) => {
         >
           <ModalHeader>Arsip Kerjasama Asuransi</ModalHeader>
           <ModalBody>
-            <h5>Apakah Anda ingin {partnershipStatus == 1 ?  'mengarsipkan'  : 'aktivasi' } <b>{clinicName}</b>?</h5>
+            <h5>Apakah Anda ingin {partnershipStatus == 1 ?  'mengarsipkan'  : 'aktivasi' } <b>{insuranceName}</b>?</h5>
           </ModalBody>
           <ModalFooter>
             <Button
@@ -1204,7 +1215,7 @@ const Data = ({ match, history, loading, error }) => {
         >
           <ModalHeader>Hapus Kerjasama Asuransi</ModalHeader>
           <ModalBody>
-            <h5>Apakah Anda ingin menghapus <b>{clinicName}</b>?</h5>
+            <h5>Apakah Anda ingin menghapus <b>{insuranceName}</b>?</h5>
           </ModalBody>
           <ModalFooter>
             <Button

@@ -418,7 +418,7 @@ const Data = ({ match, history }) => {
                       <Button
                         color="primary"
                         style={{ float: "right" }}
-                        // className="mb-4"
+                        className="mb-4"
                         onClick={() => getQueue("?limit=10&page=1")}
                       >
                         Perbarui
@@ -528,7 +528,7 @@ const Data = ({ match, history }) => {
             </Card>
           </Colxx>
           <Colxx sm="12" md="12" xl="8" className="mb-4 manage-form" id="manage-form-tab-mobile">
-          { patientID ?
+          { patientID && vitalSignsID ?
               <>
                 <Card className="mb-4">
                   <CardBody>

@@ -566,8 +566,55 @@ const Data = ({ match }) => {
 
   const [selectInsuranceClassByInsurance, setSelectInsuranceClassByInsurance] = useState([]);
 
+  // const changeKelasAsuransi = async (index, id_asuransi, id_asuransi_kelas = null) => {
+  //   selectInsuranceClassByInsurance[index] = [{ label: "Pilih Kelas", value: "", key: 0, name: 'asuransi_kelas' }];
+
+  //   try {
+  //     const response = await insuranceClassAPI.getByInsurance(`/${id_asuransi}`);
+  //     // console.log(response);
+
+  //     if (response.status === 200) {
+  //       let data = response.data.data;
+  //       // console.log(data);
+
+  //       if(data){
+  //         data.map((data) => {
+  //           selectInsuranceClassByInsurance[index].push({ 
+  //             label: data.nama_kelas,
+  //             value: data.id,
+  //             key: data.id,
+  //             name: 'id_asuransi_kelas'
+  //           });
+  //         })
+  //       }
+
+  //       disabledInsuranceClass[index] = false;
+  //     } else {
+  //       disabledInsuranceClass[index] = true;
+
+  //       throw Error(`Error status: ${response.status}`);
+  //     }
+  //   } catch (e) {
+  //     console.log(e);
+  //   }
+
+  //   // console.log(index, selectInsuranceClassByInsurance[index]);
+  //   // console.log(index, insurance[index].id_asuransi_kelas);
+  //   // if (dataStatusInsurance === "update" || id_asuransi_kelas) {
+  //   //   let set_id_asuransi_kelas = selectInsuranceClassByInsurance[index].find(item => item.value === id_asuransi_kelas) || '';
+  //   //   insuranceClassValue[index] = set_id_asuransi_kelas;
+  //   //   console.log('set', insuranceClassValue[index]);
+  //   // } else {
+  //   //   let get_id_asuransi_kelas = selectInsuranceClassByInsurance[index].find(item => item.value === insurance[index].id_asuransi_kelas) || '';
+  //   //   insuranceClassValue[index] = get_id_asuransi_kelas;
+  //   //   console.log('get', insuranceClassValue[index]);
+  //   // }
+  // };
+
   const changeKelasAsuransi = async (index, id_asuransi, id_asuransi_kelas = null) => {
-    selectInsuranceClassByInsurance[index] = [{ label: "Pilih Kelas", value: "", key: 0, name: 'asuransi_kelas' }];
+    selectInsuranceClassByInsurance[index] = [{ label: "Pilih Kelas", value: "", key: 0, name: 'id_asuransi_kelas' }];
+    
+    let dataDisabledInsuranceClass = [...disabledInsuranceClass];
 
     try {
       const response = await insuranceClassAPI.getByInsurance(`/${id_asuransi}`);
@@ -588,32 +635,22 @@ const Data = ({ match }) => {
           })
         }
 
-        disabledInsuranceClass[index] = false;
-
-        if(id_asuransi_kelas) {
-          let event = { value: id_asuransi_kelas, name: 'id_asuransi_kelas' };
-          handleInsuranceChange(index, event);
-        }
+        // dataDisabledInsuranceClass[index] = false;
       } else {
-        disabledInsuranceClass[index] = true;
+        // dataDisabledInsuranceClass[index] = true;
 
         throw Error(`Error status: ${response.status}`);
       }
     } catch (e) {
       console.log(e);
     }
+    finally {
+      // if(id_asuransi_kelas) {
+      //   dataDisabledInsuranceClass[index] = false;
+      // }
 
-    // console.log(index, selectInsuranceClassByInsurance[index]);
-    // console.log(index, insurance[index].id_asuransi_kelas);
-    // if (dataStatusInsurance === "update" || id_asuransi_kelas) {
-    //   let set_id_asuransi_kelas = selectInsuranceClassByInsurance[index].find(item => item.value === id_asuransi_kelas) || '';
-    //   insuranceClassValue[index] = set_id_asuransi_kelas;
-    //   console.log('set', insuranceClassValue[index]);
-    // } else {
-    //   let get_id_asuransi_kelas = selectInsuranceClassByInsurance[index].find(item => item.value === insurance[index].id_asuransi_kelas) || '';
-    //   insuranceClassValue[index] = get_id_asuransi_kelas;
-    //   console.log('get', insuranceClassValue[index]);
-    // }
+      setDisabledInsuranceClass(dataDisabledInsuranceClass);
+    }
   };
 
   const onChange = (e) => {
@@ -801,10 +838,12 @@ const Data = ({ match }) => {
   const onAllergySubmit = async (e) => {
     e && e.preventDefault();
 
-    for(let [key, value] of Object.entries(allergy)) {
-      if(key === 'id_alergi' && value === ''){
-        validate(e, key, value);
-        return;
+    for (var i = 0; i < allergy.length; i++) {
+      for(let [key, value] of Object.entries(allergy[i])) {
+        if(key === 'id_alergi' && value === ''){
+          validate(e, key, value);
+          return;
+        }
       }
     }
 
@@ -902,11 +941,13 @@ const Data = ({ match }) => {
 
     let isError = false;
 
-    for(let [key, value] of Object.entries(insurance)) {
-      if((key === 'id_asuransi' && value === '') || (key === 'nomor_asuransi' && value === '')){
-        validate(e, key, value);
-        isError = true;
-        // return;
+    for (var i = 0; i < insurance.length; i++) {
+      for(let [key, value] of Object.entries(insurance[i])) {
+        if((key === 'id_asuransi' && value === '') || (key === 'nomor_asuransi' && value === '')){
+          validate(e, key, value);
+          isError = true;
+          // return;
+        }
       }
     }
 
@@ -1067,7 +1108,7 @@ const Data = ({ match }) => {
     setAllergy([{ id: "", id_pasien: patientID, id_alergi: "" }]);
     setInsurance([{ id: '', id_pasien: patientID, id_asuransi: "", id_asuransi_kelas: "", nomor_asuransi: "" }]);
 
-    setDisabledInsuranceClass([{0: false}]);
+    // setDisabledInsuranceClass([{0: false}]);
     setDataStatusPatient("add");
     setDataStatusAllergy("add");
     setDataStatusInsurance("add");
@@ -1664,7 +1705,7 @@ const Data = ({ match }) => {
                     <Button
                       color="primary"
                       style={{ float: "right" }}
-                      // className="mb-4"
+                      className="mb-4"
                       onClick={(e) => resetForm(e, true)}
                     >
                       Tambah
@@ -2190,7 +2231,7 @@ const Data = ({ match }) => {
                           <Label>Asuransi</Label>
                         </Colxx>
                         <Colxx sm={6} className="insurance-class-label">
-                          <Label>Kelas Asuransi</Label>
+                          <Label>Kelas (pilih asuransi)</Label>
                         </Colxx>
                       </Row>
                       {insurance.map((input, index) => {
@@ -2237,7 +2278,7 @@ const Data = ({ match }) => {
                                   onChange={(event) =>
                                     handleInsuranceChange(index, event)
                                   }
-                                  isDisabled={disabledInsuranceClass[index]}
+                                  // isDisabled={disabledInsuranceClass[index]}
                                 />
                               </FormGroup>
                             </Colxx>

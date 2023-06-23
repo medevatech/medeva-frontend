@@ -15,6 +15,9 @@ const Data = React.lazy(() =>
 const Partnership = React.lazy(() =>
   import(/* webpackChunkName: "views-insurance-partnership" */ './partnership')
 );
+const PartnershipBackup = React.lazy(() =>
+  import(/* webpackChunkName: "views-insurance-partnership-backup" */ './partnership-backup')
+);
 
 const App = ({ match }) => {
   return (
@@ -40,6 +43,11 @@ const App = ({ match }) => {
             <ProtectedRoute
               path={`${match.url}/list`}
               component={Data}
+              roles={[ "isDev", "isManager", "isAdmin" ]}
+            />
+            <ProtectedRoute
+              path={`${match.url}/partnership-backup`}
+              component={PartnershipBackup}
               roles={[ "isDev", "isManager", "isAdmin" ]}
             />
             <ProtectedRoute

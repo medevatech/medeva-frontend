@@ -616,7 +616,7 @@ const VitalSigns = ({ match }) => {
                       <Button
                         color="primary"
                         style={{ float: "right" }}
-                        // className="mb-4"
+                        className="mb-4"
                         onClick={() => getQueue("?limit=10&page=1")}
                       >
                         Perbarui
