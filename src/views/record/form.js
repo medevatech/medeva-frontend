@@ -589,23 +589,25 @@ const FormRecord = ({ match, history }) => {
 
     let isError = false;
 
-    for(let [key, value] of Object.entries(diagnosis)) {
-      if((key === 'id_penyakit' && value === '')){
-        validate(e, key, value);
-        isError = true;
-        // return;
-      }
-      
-      if((key === 'wd' && value === '')){
-        validate(e, key, value);
-        isError = true;
-        // return;
-      }
-      
-      if((key === 'dd' && value === '')){
-        validate(e, key, value);
-        isError = true;
-        // return;
+    for (var i = 0; i < diagnosis.length; i++) {
+      for(let [key, value] of Object.entries(diagnosis[i])) {
+        if((key === 'id_penyakit' && value === '')){
+          validate(e, key, value);
+          isError = true;
+          // return;
+        }
+        
+        if((key === 'wd' && value === '')){
+          validate(e, key, value);
+          isError = true;
+          // return;
+        }
+        
+        if((key === 'dd' && value === '')){
+          validate(e, key, value);
+          isError = true;
+          // return;
+        }
       }
     }
 
@@ -718,11 +720,13 @@ const FormRecord = ({ match, history }) => {
 
     let isError = false;
 
-    for(let [key, value] of Object.entries(diagnosis)) {
-      if((key === 'id_penyakit' && value === '') || (key === 'wd' && value === '') || (key === 'dd' && value === '')){
-        validate(e, key, value);
-        isError = true;
-        // return;
+    for (var i = 0; i < diagnosis.length; i++) {
+      for(let [key, value] of Object.entries(diagnosis[i])) {
+        if((key === 'id_penyakit' && value === '') || (key === 'wd' && value === '') || (key === 'dd' && value === '')){
+          validate(e, key, value);
+          isError = true;
+          // return;
+        }
       }
     }
 
@@ -2139,7 +2143,7 @@ const FormRecord = ({ match, history }) => {
           onRecieptSubmit();
         }
 
-        if(checkup.length > 0 && reciept[0].id_lab && recordID) {
+        if(checkup.length > 0 && checkup[0].id_lab && recordID) {
           // console.log('checkup', checkup);
           onCheckupSubmit();
         }
@@ -2149,7 +2153,7 @@ const FormRecord = ({ match, history }) => {
           onTreatmentSubmit();
         }
         
-        if(service.length > 0  && treatment[0].id_daftar_layanan && recordID) {
+        if(service.length > 0  && service[0].id_daftar_layanan && recordID) {
           // console.log('service', service);
           onServiceSubmit();
         }
@@ -3034,6 +3038,7 @@ const FormRecord = ({ match, history }) => {
                                               }
                                               options={selectLabTreatment[index]}
                                               onChange={(event) => handleCheckupChange(index, event)}
+                                              placeholder="Pilih Layanan"
                                           />
                                         </FormGroup>
                                     </Colxx>
