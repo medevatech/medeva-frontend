@@ -592,7 +592,7 @@ const Data = ({ match, history, loading, error }) => {
         console.log(e);
       }
     }
-
+    
     // console.log('employee', employee);
   }
 
@@ -640,9 +640,9 @@ const Data = ({ match, history, loading, error }) => {
 
     isDev == false && isManager == false && isAdmin == false && isResepsionis == false && isPerawat == false && isDokter == false && isManajemen == false && isFinance == false && noPeran()
 
-    console.log('dataStatus', dataStatus);
-    console.log('isError', isError);
-    console.log('errors', errors);
+    // console.log('dataStatus', dataStatus);
+    // console.log('isError', isError);
+    // console.log('errors', errors);
 
     if(isError === true){
       return;
@@ -1564,10 +1564,10 @@ const Data = ({ match, history, loading, error }) => {
 
         selectedRole.includes('Admin') ?
           setEmployee(current => {
-              return { ...current, is_admin: 0 }
+              return { ...current, is_admin: 1 }
           }) : 
           setEmployee(current => {
-              return { ...current, is_admin: 1 }
+              return { ...current, is_admin: 0 }
           })
 
         selectedRole.includes('Resepsionis') ?
