@@ -15,6 +15,9 @@ const DashboardPPS = React.lazy(() =>
 const DashboardFFS = React.lazy(() =>
   import(/* webpackChunkName: "views-insurance-dashboard-ffs" */ './dashboard-ffs')
 );
+const Target = React.lazy(() =>
+  import(/* webpackChunkName: "views-insurance-target" */ './target')
+);
 const Data = React.lazy(() =>
   import(/* webpackChunkName: "views-insurance-data" */ './data')
 );
@@ -55,6 +58,11 @@ const App = ({ match }) => {
               path={`${match.url}/dashboard-ffs`}
               component={DashboardFFS}
               roles={[ "isDev", "isFinance", "isManajemen" ]}
+            />
+            <ProtectedRoute
+              path={`${match.url}/target`}
+              component={Target}
+              roles={[ "isDev", "isManager", "isAdmin" ]}
             />
             <ProtectedRoute
               path={`${match.url}/list`}

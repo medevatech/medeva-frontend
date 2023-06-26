@@ -360,7 +360,7 @@ const Dashboard = ({ match, history, loading, error }) => {
     tooltip: {
       trigger: 'item',
       formatter: (data) => {
-        return data.name + ': <b>' + data.value + '%</b>';
+        return data.name + ' <b>' + data.value + '%</b>';
       },
     },
     legend: {
@@ -452,15 +452,20 @@ const Dashboard = ({ match, history, loading, error }) => {
               >
                 Tanggal
               </Button>
-              <Button
-                // outline
-                color="primary"
-                style={{ float: "right", borderRadius: '5px', marginLeft: '5px' }}
-                className="mb-4"
-                onClick={() => handleShowDateRangePicker(!showDateRangePicker)}
-              >
-                Target
-              </Button>
+              <Link to={{
+                    pathname: `/insurance/target`,
+                    // state: { insuranceID: insuranceID, insuranceType: insuranceType }
+                    state: { insuranceID: 2, insuranceType: "PPS" }
+                }}>
+                <Button
+                    // outline
+                    color="primary"
+                    style={{ float: "right", borderRadius: '5px', marginLeft: '5px' }}
+                    className="mb-4"
+                >
+                    Target
+                </Button>
+              </Link>
               <DateRangePicker
                 className={dateRangePicker}
                 ranges={[{

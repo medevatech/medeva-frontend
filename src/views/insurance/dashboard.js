@@ -56,6 +56,8 @@ const Dashboard = ({ match, history, loading, error }) => {
   const [tableClass, setTableClass] = useState('');
   const [rowSelected, setRowSelected] = useState(null);
 
+  const [insuranceID, setInsuranceID] = useState('');
+
   const handleShowDateRangePicker = (shown) => {
     shown ? setDateRangePicker('drp-inline') : setDateRangePicker('drp-none');
     setShowDateRangePicker(shown);
@@ -87,6 +89,69 @@ const Dashboard = ({ match, history, loading, error }) => {
       console.log(e);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const goToInsuranceDashboard = async (e, id) => {
+    // e && e.preventDefault();
+    // setRowSelected(id);
+
+    // try {
+    //   const res = await insuranceAPI.get(`/${id}`);
+    //   let data = res.data.data[0];
+    //   // console.log(data);
+
+    //   if(data.tipe === "PPS") {
+    //     history.push({
+    //       pathname: "/insurance/dashboard-pps",
+    //       state: { insuranceID: data.id, insuranceType: data.tipe }
+    //     });
+    //   } else if (data.tipe === "FFSP" || data.tipe === "FFSNP") {
+    //     history.push({
+    //       pathname: "/insurance/dashboard-ffs",
+    //       state: { insuranceID: data.id, insuranceType: data.tipe }
+    //     });
+    //   } else {
+    //     Swal.fire({
+    //       title: "Gagal!",
+    //       html: "Tipe asuransi tidak valid, silahkan memvalidasi ulang data asuransi",
+    //       icon: "error",
+    //       confirmButtonColor: "#008ecc",
+    //       // confirmButtonText: "Coba lagi",
+    //     });
+    //   }
+
+    //   // console.log(insurance);
+    // } catch (e) {
+    //   Swal.fire({
+    //     title: "Gagal!",
+    //     html: e.response.data.message,
+    //     icon: "error",
+    //     confirmButtonColor: "#008ecc",
+    //     confirmButtonText: "Coba lagi",
+    //   });
+
+    //   console.log(e);
+    // }
+
+    if(id === "PPS") {
+      history.push({
+        pathname: "/insurance/dashboard-pps",
+        state: { insuranceID: 1, insuranceType: "PPS" }
+      });
+    } else if (id === "FFSP" || id === "FFSNP") {
+      history.push({
+        pathname: "/insurance/dashboard-ffs",
+        state: { insuranceID: 2, insuranceType: "FFSNP" }
+      });
+    } else {
+      Swal.fire({
+        title: "Gagal!",
+        html: "Tipe asuransi tidak valid, silahkan memvalidasi ulang data asuransi",
+        icon: "error",
+        confirmButtonColor: "#008ecc",
+        // confirmButtonText: "Coba lagi",
+      });
     }
   };
 
@@ -218,7 +283,7 @@ const Dashboard = ({ match, history, loading, error }) => {
                   ) :
                   insuranceData.length > 0 ? (
                     insuranceData.map((data) => (
-                      <tr key={data.id} onClick={(e) => getInsuranceById(e, data.id)} style={{ cursor: 'pointer'}} className={`${rowSelected == data.id && 'row-selected'}`}>
+                      <tr key={data.id} onClick={(e) => goToInsuranceDashboard(e, data.id)} style={{ cursor: 'pointer'}} className={`${rowSelected == data.id && 'row-selected'}`}>
                         <th scope="row" style={{ textAlign: "center", verticalAlign: 'middle' }}>
                           {startNumber++}
                         </th>
@@ -232,7 +297,7 @@ const Dashboard = ({ match, history, loading, error }) => {
                         </td>
                         <td style={{ textAlign: "center", verticalAlign: 'middle' }}>
                           <Button color="secondary" size="xs" className="button-xs"
-                            onClick={(e) => getInsuranceById(e, data.id)}
+                            onClick={(e) => goToInsuranceDashboard(e, data.id)}
                             >
                             <i className="simple-icon-arrow-right-circle"></i>
                           </Button>
@@ -256,23 +321,33 @@ const Dashboard = ({ match, history, loading, error }) => {
                     <td>Rp24.242.424</td>
                     <td>Rp23.230.230</td>
                   </tr>
-                  <tr>
+                  <tr 
+                    onClick={(e) => goToInsuranceDashboard("", "PPS")}
+                    // onClick={(e) => goToInsuranceDashboard(e, data.id)}
+                    style={{ cursor: 'pointer'}}
+                    // className={`${rowSelected == data.id && 'row-selected'}`}
+                  >
                     <th>2</th>
-                    <td><h6 style={{ fontWeight: 'bold' }}>Kelas B</h6></td>
+                    <td><h6 style={{ fontWeight: 'bold' }}>Kelas B (PPS)</h6></td>
                     <td>BPJS</td>
                     <td>Rp24.242.424</td>
                     <td>Rp23.230.230</td>
                   </tr>
-                  <tr>
+                  <tr 
+                    onClick={(e) => goToInsuranceDashboard("", "FFSNP")}
+                    // onClick={(e) => goToInsuranceDashboard(e, data.id)}
+                    style={{ cursor: 'pointer'}}
+                    // className={`${rowSelected == data.id && 'row-selected'}`}
+                  >
                     <th>3</th>
-                    <td><h6 style={{ fontWeight: 'bold' }}>MILA Plus (PPS)</h6></td>
+                    <td><h6 style={{ fontWeight: 'bold' }}>MILA Plus (FFS-P)</h6></td>
                     <td>AIA</td>
                     <td>Rp222.222.222</td>
                     <td>Rp111.111.111</td>
                   </tr>
                   <tr>
                     <th>4</th>
-                    <td><h6 style={{ fontWeight: 'bold' }}>Optima Accident Pro. (FFS-P)</h6></td>
+                    <td><h6 style={{ fontWeight: 'bold' }}>Optima Accident Pro.</h6></td>
                     <td>AIA</td>
                     <td>Rp999.999.999</td>
                     <td>Rp888.888.888</td>
