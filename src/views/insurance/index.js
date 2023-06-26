@@ -9,6 +9,12 @@ import { ProtectedRoute } from 'helpers/authHelper';
 const Dashboard = React.lazy(() =>
   import(/* webpackChunkName: "views-insurance-dashboard" */ './dashboard')
 );
+const DashboardPPS = React.lazy(() =>
+  import(/* webpackChunkName: "views-insurance-dashboard-pps" */ './dashboard-pps')
+);
+const DashboardFFS = React.lazy(() =>
+  import(/* webpackChunkName: "views-insurance-dashboard-ffs" */ './dashboard-ffs')
+);
 const Data = React.lazy(() =>
   import(/* webpackChunkName: "views-insurance-data" */ './data')
 );
@@ -38,6 +44,16 @@ const App = ({ match }) => {
             <ProtectedRoute
               path={`${match.url}/dashboard`}
               component={Dashboard}
+              roles={[ "isDev", "isFinance", "isManajemen" ]}
+            />
+            <ProtectedRoute
+              path={`${match.url}/dashboard-pps`}
+              component={DashboardPPS}
+              roles={[ "isDev", "isFinance", "isManajemen" ]}
+            />
+            <ProtectedRoute
+              path={`${match.url}/dashboard-ffs`}
+              component={DashboardFFS}
               roles={[ "isDev", "isFinance", "isManajemen" ]}
             />
             <ProtectedRoute

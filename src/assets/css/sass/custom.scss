@@ -382,6 +382,41 @@ label {
     text-align: right;
 }
 
+.drp-none {
+    display: none !important;
+}
+
+.drp-inline {
+    display: inline-flex !important;
+}
+
+.rdrDateRangePickerWrapper {
+    // display: none !important;
+    position: absolute;
+    z-index: 20;
+    will-change: transform;
+    top: 0px;
+    right: 0px;
+    transform: translate3d(-15px, 50px, 0px);
+    box-shadow: 0 1px 15px rgba(0, 0, 0, 0.04), 0 1px 6px rgba(0, 0, 0, 0.04);
+}
+
+.rdrStaticRange:first-of-type {
+    // border-radius: 10px 0 0 0;
+}
+
+.rdrCalendarWrapper {
+    // border-radius: 0 10px 10px 0;
+}
+
+.rdrDateDisplayWrapper {
+    // border-radius: 0 10px 0 0;
+}
+
+.rdrDefinedRangesWrapper {
+    // border-radius: 10px 0 0 10px;
+}
+
 @media (max-width: 1280px) {
     .remove-diagnosis, .remove-reciept {
         padding: 0.5rem 0.5rem 0.5rem 0.5rem;

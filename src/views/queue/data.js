@@ -19,6 +19,10 @@ import {
   Form,
   Table,
   Badge,
+  UncontrolledDropdown,
+  DropdownToggle,
+  DropdownMenu,
+  DropdownItem,
 } from "reactstrap";
 import { useDispatch, useSelector } from "react-redux";
 import DatePicker from "react-datepicker";
@@ -35,10 +39,13 @@ import Select from "react-select";
 import { Colxx, Separator } from "components/common/CustomBootstrap";
 import Pagination from "components/common/Pagination";
 
+import { Link, NavLink } from "react-router-dom";
+
 import CustomSelectInput from "components/common/CustomSelectInput";
 
 import queueAPI from "api/queue";
 import patientAPI from "api/patient";
+import participantAPI from "api/participant";
 // import vitalSignsAPI from "api/vital-signs";
 import divisionAPI from "api/division";
 import scheduleAPI from "api/schedule";
@@ -56,11 +63,14 @@ const Data = ({ match }) => {
 
   const [tableClass, setTableClass] = useState("");
   const [dataStatus, setDataStatus] = useState("add");
+  const [dataStatusQueue, setDataStatusQueue] = useState("");
 
   const [scheduleId, setScheduleId] = useState([]);
   const scheduleAll = useSelector((state) => state.schedule);
   const scheduleTotalPage = useSelector((state) => state.scheduleTotalPage);
   const { errors, validate } = useForm();
+
+  // const participantAll = useSelector((state) => state.participant);
 
   const [schedule, setSchedule] = useState({
     nama_karyawan: "",
@@ -74,10 +84,12 @@ const Data = ({ match }) => {
   const [selectedSchedule, setSelectedSchedule] = useState([]);
   const [selectedPatient, setSelectedPatient] = useState([]);
   const [selectedQueue, setSelectedQueue] = useState([]);
+  const [selectedParticipant, setSelectedParticipant] = useState([]);
 
   const [startDateTime, setStartDateTime] = useState(new Date());
 
   const [patientID, setPatientID] = useState("");
+  console.log(patientID);
   const [patientData, setPatientData] = useState("");
 
   const [isLoading, setIsLoading] = useState(false);
@@ -90,7 +102,7 @@ const Data = ({ match }) => {
   const selectPriority = [
     {
       label: "Rendah",
-      value: 1,
+      value: 3,
       key: 1,
       name: "prioritas",
     },
@@ -102,7 +114,7 @@ const Data = ({ match }) => {
     },
     {
       label: "Tinggi",
-      value: 3,
+      value: 1,
       key: 3,
       name: "prioritas",
     },
@@ -111,7 +123,8 @@ const Data = ({ match }) => {
   const [queue, setQueue] = useState({
     id_jaga: "",
     id_pasien: "",
-    prioritas: 1,
+    id_peserta: "",
+    prioritas: 3,
   });
 
   console.log("total page jaga", scheduleTotalPage);
@@ -194,22 +207,6 @@ const Data = ({ match }) => {
   const defaultDate = new Date().toISOString().substr(0, 10);
   const [date, setDate] = useState(defaultDate);
 
-  // const getQueue = async (params) => {
-  //   try {
-  //     setIsLoading(true);
-  //     const res = await queueAPI.get(params);
-  //     dispatch({ type: "GET_QUEUE", payload: res.data.data });
-  //     dispatch({
-  //       type: "GET_TOTAL_PAGE_QUEUE",
-  //       payload: res.data.pagination.totalPage,
-  //     });
-  //   } catch (e) {
-  //     console.log(e);
-  //   } finally {
-  //     setIsLoading(false);
-  //   }
-  // };
-
   const getQueueById = async (params) => {
     try {
       setIsLoadingQueue(true);
@@ -291,15 +288,71 @@ const Data = ({ match }) => {
       if (response.status === 200) {
         let data = response.data.data;
         // console.log(data);
-
         for (var i = 0; i < data.length; i++) {
+          let jk = data[i].jenis_kelamin
+            ? data[i].jenis_kelamin.substring(0, 1)
+            : "-";
           setSelectedPatient((current) => [
             ...current,
             {
-              label: data[i].nama_lengkap,
+              label:
+                data[i].nama_lengkap +
+                " ( " +
+                jk +
+                ", " +
+                (new Date().getFullYear() -
+                  data[i].tanggal_lahir.substring(0, 4)) +
+                " " +
+                "tahun" +
+                ", " +
+                data[i].nomor_kitas +
+                " ) ",
               value: data[i].id,
               key: data[i].id,
               name: "id_pasien",
+            },
+          ]);
+        }
+      } else {
+        throw Error(`Error status: ${response.status}`);
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  const onLoadParticipantByPatient = async (id) => {
+    try {
+      const response = await participantAPI.getByPatient(`/${id}`);
+      // console.log("rak", response);
+
+      setSelectedParticipant([
+        {
+          label: "Pilih Asuransi",
+          value: "",
+          key: 0,
+          name: "id_peserta",
+        },
+      ]);
+
+      if (response.status === 200) {
+        let data = response.data.data;
+        // console.log(data);
+        for (var i = 0; i < data.length; i++) {
+          setSelectedParticipant((current) => [
+            ...current,
+            {
+              label:
+                data[i].nama_asuransi +
+                " ( " +
+                "Kelas: " +
+                data[i].nama_kelas +
+                ", No: " +
+                data[i].nomor_asuransi +
+                " ) ",
+              value: data[i].id,
+              key: data[i].id,
+              name: "id_peserta",
             },
           ]);
         }
@@ -336,6 +389,10 @@ const Data = ({ match }) => {
     onLoadSchedule();
     onLoadPatient();
   }, []);
+
+  useEffect(() => {
+    onLoadParticipantByPatient(patientID);
+  }, [patientID]);
 
   let paramsQueue = `/${searchDivisi}`;
   useEffect(() => {
@@ -391,7 +448,6 @@ const Data = ({ match }) => {
             icon: "success",
             confirmButtonColor: "#008ecc",
           });
-
           // resetForm(e);
         } else {
           Swal.fire({
@@ -407,7 +463,7 @@ const Data = ({ match }) => {
       } catch (e) {
         Swal.fire({
           title: "Gagal!",
-          html: e.response.data.message,
+          html: e,
           icon: "error",
           confirmButtonColor: "#008ecc",
           confirmButtonText: "Coba lagi",
@@ -415,6 +471,14 @@ const Data = ({ match }) => {
 
         console.log(e);
       } finally {
+        setPatientID("");
+        setQueue({
+          id_jaga: "",
+          id_pasien: "",
+          id_peserta: "",
+          prioritas: 3,
+        });
+        setModalAdd(false);
         getQueueById(paramsQueue);
       }
     } else {
@@ -439,14 +503,14 @@ const Data = ({ match }) => {
         } else {
           Swal.fire({
             title: "Gagal!",
-            html: e.response.data.message,
+            html: e,
             confirmButtonText: "Coba lagi",
           });
         }
       } catch (e) {
         Swal.fire({
           title: "Gagal!",
-          html: e.response.data.message,
+          html: e,
           confirmButtonText: "Coba lagi",
         });
 
@@ -512,7 +576,7 @@ const Data = ({ match }) => {
     } catch (e) {
       Swal.fire({
         title: "Gagal!",
-        html: e.response.data.message,
+        html: e,
         icon: "error",
         confirmButtonColor: "#008ecc",
         confirmButtonText: "Coba lagi",
@@ -531,6 +595,20 @@ const Data = ({ match }) => {
     setQueueId(id);
   };
 
+  const handleDoctorId = async () => {
+    if (idDoctor) {
+      setModalAdd(true);
+    } else {
+      Swal.fire({
+        title: "Gagal!",
+        html: "Pilih dokter terlebih dahulu!",
+        icon: "error",
+        confirmButtonColor: "#008ecc",
+        confirmButtonText: "OK",
+      });
+    }
+  };
+
   const onChange = (e) => {
     if (e.name === "id_jaga") {
       console.log(e);
@@ -539,6 +617,8 @@ const Data = ({ match }) => {
         return { ...current, id_jaga: e ? e.value : "" };
       });
     } else if (e.name === "id_pasien") {
+      console.log(e);
+      setPatientID(e.value);
       setQueue((current) => {
         return { ...current, id_pasien: e ? e.value : "" };
       });
@@ -547,6 +627,10 @@ const Data = ({ match }) => {
         e.name !== undefined ? e.name : e.target.name ? e.target.name : "",
         e.value !== undefined ? e.value : e.target.value ? e.target.value : ""
       );
+    } else if (e.name === "id_peserta") {
+      setQueue((current) => {
+        return { ...current, id_peserta: e ? e.value : "" };
+      });
     } else if (e.name === "prioritas") {
       setQueue((current) => {
         return { ...current, prioritas: e ? e.value : "" };
@@ -555,12 +639,6 @@ const Data = ({ match }) => {
       console.log(e);
     }
   };
-
-  // console.log("pororo", selectedSchedule);
-  // console.log("poro", selectedPatient);
-  // console.log(schedule);
-  // console.log(queue);
-  // console.log(queueId);
 
   return (
     <>
@@ -680,245 +758,246 @@ const Data = ({ match }) => {
         </Colxx>
         <Colxx sm="12" md="12" xl="8" className="mb-4">
           <Card className="mb-8">
-            <CardBody>
-              <CardTitle>
-                <Row>
-                  <Colxx sm="6" md="6" xl="6">
-                    {schedule ? (
-                      <>
-                        Daftar Antrian {schedule.tipe} <br />
-                        <br />
-                      </>
-                    ) : (
-                      ""
-                    )}
-                  </Colxx>
-                  <Colxx sm="6" md="6" xl="6">
-                    {searchDivisi ? (
-                      <Button
-                        color="primary"
-                        style={{ float: "right" }}
-                        className="mb-2"
-                        onClick={() => setModalAdd(true)}
-                      >
-                        Tambah
-                      </Button>
-                    ) : (
-                      <></>
-                    )}
-                  </Colxx>
-                </Row>
-              </CardTitle>
-              <Row>
-                <FormGroup row style={{ margin: "0px", width: "100%" }}>
-                  <Colxx
-                    sm="6"
-                    md="6"
-                    style={{ paddingLeft: "16px", paddingRight: "16px" }}
-                  >
-                    <Label for="date">Hari</Label>
-                    <p>
-                      <b>{getDay()}</b>
-                    </p>
-                  </Colxx>
-                  <Colxx
-                    sm="6"
-                    md="6"
-                    style={{ paddingLeft: "16px", paddingRight: "16px" }}
-                  >
-                    <Label for="date">Tanggal</Label>
-                    {searchDivisi ? (
-                      <Input
-                        type="date"
-                        name="date"
-                        id="date"
-                        placeholder="Tanggal"
-                        value={date}
-                        onChange={(e) => setDate(e.target.value)}
-                      />
-                    ) : (
-                      <Input
-                        type="date"
-                        name="date"
-                        id="date"
-                        placeholder="Tanggal"
-                        value={date}
-                        // onChange={(e) => setDate(e.target.value)}
-                      />
-                    )}
-                  </Colxx>
-                  {searchDivisi ? (
-                    <Colxx
-                      sm="12"
-                      md="12"
-                      style={{ paddingLeft: "16px", paddingRight: "16px" }}
-                      className="react-select"
-                    >
-                      <Label for="id_jaga">Dokter</Label>
-                      <Select
-                        components={{ Input: CustomSelectInput }}
-                        className="react-select"
-                        classNamePrefix="react-select"
-                        // placeholder="Pilih Dokter"
-                        name="id_jaga"
-                        id="id_jaga"
-                        options={selectedSchedule}
-                        value={selectedSchedule.find(
-                          (item) => item.value === queue.id_jaga
-                        )}
-                        onChange={onChange}
-                      />
+            {searchDivisi ? (
+              <CardBody>
+                <CardTitle>
+                  <Row>
+                    <Colxx sm="6" md="6" xl="6">
+                      {schedule ? (
+                        <>
+                          Daftar Antrian {schedule.tipe} <br />
+                          <br />
+                        </>
+                      ) : (
+                        ""
+                      )}
                     </Colxx>
-                  ) : (
-                    <></>
-                  )}
-                </FormGroup>
-                <Colxx sm={12}>
-                  <Table className="mt-4">
+                    <Colxx sm="6" md="6" xl="6">
+                      {searchDivisi ? (
+                        <Button
+                          color="primary"
+                          style={{ float: "right" }}
+                          className="mb-2"
+                          onClick={() => handleDoctorId()}
+                        >
+                          Tambah
+                        </Button>
+                      ) : (
+                        <></>
+                      )}
+                    </Colxx>
+                  </Row>
+                </CardTitle>
+                <Row>
+                  <FormGroup row style={{ margin: "0px", width: "100%" }}>
+                    <Colxx
+                      sm="6"
+                      md="6"
+                      style={{ paddingLeft: "16px", paddingRight: "16px" }}
+                    >
+                      <Label for="date">Hari</Label>
+                      <p>
+                        <b>{getDay()}</b>
+                      </p>
+                    </Colxx>
+                    <Colxx
+                      sm="6"
+                      md="6"
+                      style={{ paddingLeft: "16px", paddingRight: "16px" }}
+                    >
+                      <Label for="date">Tanggal</Label>
+                      {searchDivisi ? (
+                        <Input
+                          type="date"
+                          name="date"
+                          id="date"
+                          placeholder="Tanggal"
+                          value={date}
+                          onChange={(e) => setDate(e.target.value)}
+                        />
+                      ) : (
+                        <Input
+                          type="date"
+                          name="date"
+                          id="date"
+                          placeholder="Tanggal"
+                          value={date}
+                          // onChange={(e) => setDate(e.target.value)}
+                        />
+                      )}
+                    </Colxx>
                     {searchDivisi ? (
-                      <thead>
-                        <tr>
-                          <th
-                            style={{
-                              textAlign: "center",
-                              verticalAlign: "middle",
-                            }}
-                          >
-                            #
-                          </th>
-                          <th
-                            style={{
-                              textAlign: "left",
-                              verticalAlign: "middle",
-                            }}
-                          >
-                            Pasien
-                          </th>
-                          <th
-                            style={{
-                              textAlign: "left",
-                              verticalAlign: "middle",
-                            }}
-                          >
-                            Dokter Jaga
-                          </th>
-                          <th
-                            style={{
-                              textAlign: "center",
-                              verticalAlign: "middle",
-                            }}
-                          >
-                            Prioritas
-                          </th>
-                          <th
-                            style={{
-                              textAlign: "center",
-                              verticalAlign: "middle",
-                              width: "5%",
-                            }}
-                          ></th>
-                        </tr>
-                      </thead>
+                      <Colxx
+                        sm="12"
+                        md="12"
+                        style={{ paddingLeft: "16px", paddingRight: "16px" }}
+                        className="react-select"
+                      >
+                        <Label for="id_jaga">Dokter</Label>
+                        <Select
+                          components={{ Input: CustomSelectInput }}
+                          className="react-select"
+                          classNamePrefix="react-select"
+                          // placeholder="Pilih Dokter"
+                          name="id_jaga"
+                          id="id_jaga"
+                          options={selectedSchedule}
+                          value={selectedSchedule.find(
+                            (item) => item.value === queue.id_jaga
+                          )}
+                          onChange={onChange}
+                        />
+                      </Colxx>
                     ) : (
                       <></>
                     )}
-                    <tbody>
-                      {isLoadingQueue ? (
-                        <tr>
-                          <td>&nbsp;</td>
-                          <td align="center" colSpan={3}>
-                            <img src={loader} alt="loading..." width="100" />
-                          </td>
-                          <td>&nbsp;</td>
-                        </tr>
-                      ) : searchDivisi !== "" && queueAll?.length ? (
-                        queueAll.map((data) => (
-                          <tr
-                            key={`basic_${data.id}`}
-                            style={{ cursor: "pointer" }}
-                          >
-                            <td
-                              scope="row"
+                  </FormGroup>
+                  <Colxx sm={12}>
+                    <Table className="mt-4">
+                      {searchDivisi ? (
+                        <thead>
+                          <tr>
+                            <th
                               style={{
                                 textAlign: "center",
                                 verticalAlign: "middle",
                               }}
                             >
-                              {data.no_antrian}
-                            </td>
-                            <td
+                              #
+                            </th>
+                            <th
                               style={{
                                 textAlign: "left",
                                 verticalAlign: "middle",
                               }}
                             >
-                              <h6
-                                style={{ fontWeight: "bold" }}
-                                className="max-text"
+                              Pasien
+                            </th>
+                            <th
+                              style={{
+                                textAlign: "left",
+                                verticalAlign: "middle",
+                              }}
+                            >
+                              Dokter Jaga
+                            </th>
+                            <th
+                              style={{
+                                textAlign: "center",
+                                verticalAlign: "middle",
+                              }}
+                            >
+                              Prioritas
+                            </th>
+                            <th
+                              style={{
+                                textAlign: "center",
+                                verticalAlign: "middle",
+                                width: "5%",
+                              }}
+                            ></th>
+                          </tr>
+                        </thead>
+                      ) : (
+                        <></>
+                      )}
+                      <tbody>
+                        {isLoadingQueue ? (
+                          <tr>
+                            <td>&nbsp;</td>
+                            <td align="center" colSpan={3}>
+                              <img src={loader} alt="loading..." width="100" />
+                            </td>
+                            <td>&nbsp;</td>
+                          </tr>
+                        ) : searchDivisi !== "" && queueAll?.length ? (
+                          queueAll.map((data) => (
+                            <tr
+                              key={`basic_${data.id}`}
+                              style={{ cursor: "pointer" }}
+                            >
+                              <td
+                                scope="row"
+                                style={{
+                                  textAlign: "center",
+                                  verticalAlign: "middle",
+                                }}
                               >
-                                {data.nama_lengkap}
-                              </h6>
-                              {data.jenis_kelamin.substring(0, 1)},{" "}
-                              {new Date().getFullYear() -
-                                data.tanggal_lahir.substring(0, 4)}{" "}
-                              tahun
-                              <br />
-                              {data.tipe_kitas} {data.nomor_kitas}
-                            </td>
-                            <td
-                              style={{
-                                textAlign: "left",
-                                verticalAlign: "middle",
-                              }}
-                            >
-                              {data.nama_karyawan}
-                            </td>
-                            <td
-                              style={{
-                                textAlign: "center",
-                                verticalAlign: "middle",
-                              }}
-                            >
-                              <h6 className="mt-2">
-                                {data.prioritas === 1 ? (
-                                  <Button
-                                    color="success"
-                                    className=""
-                                    size="xs"
-                                    onClick={(e) =>
-                                      handleButtonEditP(e, data.id)
-                                    }
-                                  >
-                                    Rendah
-                                  </Button>
-                                ) : data.prioritas === 2 ? (
-                                  <Button
-                                    color="warning"
-                                    className=""
-                                    size="xs"
-                                    onClick={(e) =>
-                                      handleButtonEditP(e, data.id)
-                                    }
-                                  >
-                                    Sedang
-                                  </Button>
-                                ) : data.prioritas === 3 ? (
-                                  <Button
-                                    color="danger"
-                                    className=""
-                                    size="xs"
-                                    onClick={(e) =>
-                                      handleButtonEditP(e, data.id)
-                                    }
-                                  >
-                                    Tinggi
-                                  </Button>
-                                ) : (
-                                  "0"
-                                )}
-                              </h6>
-                            </td>
-                            <td
+                                {data.no_antrian}
+                              </td>
+                              <td
+                                style={{
+                                  textAlign: "left",
+                                  verticalAlign: "middle",
+                                }}
+                              >
+                                <h6
+                                  style={{ fontWeight: "bold" }}
+                                  className="max-text"
+                                >
+                                  {data.nama_lengkap}
+                                </h6>
+                                {data.jenis_kelamin.substring(0, 1)},{" "}
+                                {new Date().getFullYear() -
+                                  data.tanggal_lahir.substring(0, 4)}{" "}
+                                tahun
+                                <br />
+                                {data.tipe_kitas} {data.nomor_kitas}
+                              </td>
+                              <td
+                                style={{
+                                  textAlign: "left",
+                                  verticalAlign: "middle",
+                                }}
+                              >
+                                {data.nama_karyawan}
+                              </td>
+                              <td
+                                style={{
+                                  textAlign: "center",
+                                  verticalAlign: "middle",
+                                }}
+                              >
+                                <h6 className="mt-2">
+                                  {data.prioritas === 1 ? (
+                                    <Button
+                                      color="danger"
+                                      className=""
+                                      size="xs"
+                                      onClick={(e) =>
+                                        handleButtonEditP(e, data.id)
+                                      }
+                                    >
+                                      Tinggi
+                                    </Button>
+                                  ) : data.prioritas === 2 ? (
+                                    <Button
+                                      color="warning"
+                                      className=""
+                                      size="xs"
+                                      onClick={(e) =>
+                                        handleButtonEditP(e, data.id)
+                                      }
+                                    >
+                                      Sedang
+                                    </Button>
+                                  ) : data.prioritas === 3 ? (
+                                    <Button
+                                      color="success"
+                                      className=""
+                                      size="xs"
+                                      onClick={(e) =>
+                                        handleButtonEditP(e, data.id)
+                                      }
+                                    >
+                                      Rendah
+                                    </Button>
+                                  ) : (
+                                    "0"
+                                  )}
+                                </h6>
+                              </td>
+                              {/* <td
                               style={{
                                 textAlign: "center",
                                 verticalAlign: "middle",
@@ -933,47 +1012,94 @@ const Data = ({ match }) => {
                               >
                                 <i className="simple-icon-trash"></i>
                               </Button>
+                            </td> */}
+                              <td
+                                style={{
+                                  textAlign: "center",
+                                  verticalAlign: "middle",
+                                }}
+                                className="mt-2"
+                              >
+                                <UncontrolledDropdown>
+                                  <DropdownToggle color="default">
+                                    <i className="simple-icon-options-vertical"></i>
+                                  </DropdownToggle>
+                                  <DropdownMenu right>
+                                    <DropdownItem
+                                    // onClick={(e) =>
+                                    //   changePasswordById(e, employeeID)
+                                    // }
+                                    >
+                                      <i className="iconsminds-arrow-right-2"></i>
+                                      &nbsp;Lewati Antrian
+                                    </DropdownItem>
+                                    {/* {<IsActiveDropdown />} */}
+                                    <>
+                                      <DropdownItem divider />
+                                      <DropdownItem
+                                        onClick={(e) => deleteById(e, data.id)}
+                                      >
+                                        <i className="simple-icon-trash"></i>
+                                        &nbsp; Hapus Antrian
+                                      </DropdownItem>
+                                    </>
+                                  </DropdownMenu>
+                                </UncontrolledDropdown>
+                              </td>
+                            </tr>
+                          ))
+                        ) : searchDivisi === "" ? (
+                          <tr>
+                            <td>&nbsp;</td>
+                            <td align="center" colSpan={3}>
+                              <h5
+                                style={{
+                                  marginTop: "1.5rem",
+                                  textAlign: "center",
+                                  verticalAlign: "middle",
+                                }}
+                              >
+                                <b>Silahkan pilih divisi</b>
+                              </h5>
                             </td>
+                            <td>&nbsp;</td>
                           </tr>
-                        ))
-                      ) : searchDivisi === "" ? (
-                        <tr>
-                          <td>&nbsp;</td>
-                          <td align="center" colSpan={3}>
-                            <h5
-                              style={{
-                                marginTop: "1.5rem",
-                                textAlign: "center",
-                                verticalAlign: "middle",
-                              }}
-                            >
-                              <b>Silahkan pilih divisi</b>
-                            </h5>
-                          </td>
-                          <td>&nbsp;</td>
-                        </tr>
-                      ) : (
-                        <tr>
-                          <td>&nbsp;</td>
-                          <td align="center" colSpan={3}>
-                            <h5
-                              style={{
-                                marginTop: "1.5rem",
-                                textAlign: "center",
-                                verticalAlign: "middle",
-                              }}
-                            >
-                              <b>Antrian kosong</b>
-                            </h5>
-                          </td>
-                          <td>&nbsp;</td>
-                        </tr>
-                      )}
-                    </tbody>
-                  </Table>
-                </Colxx>
-              </Row>
-            </CardBody>
+                        ) : (
+                          <tr>
+                            <td>&nbsp;</td>
+                            <td align="center" colSpan={3}>
+                              <h5
+                                style={{
+                                  marginTop: "1.5rem",
+                                  textAlign: "center",
+                                  verticalAlign: "middle",
+                                }}
+                              >
+                                <b>Antrian kosong</b>
+                              </h5>
+                            </td>
+                            <td>&nbsp;</td>
+                          </tr>
+                        )}
+                      </tbody>
+                    </Table>
+                  </Colxx>
+                </Row>
+              </CardBody>
+            ) : (
+              <CardBody
+                style={{ textAlign: "center", verticalAlign: "middle" }}
+              >
+                <img
+                  src="/assets/empty.svg"
+                  width={150}
+                  className="mt-5 mb-3"
+                />
+                <p className="mb-3">
+                  Silahkan memilih poli / divisi untuk melihat antrian.
+                </p>
+              </CardBody>
+            )}
           </Card>
         </Colxx>
 
@@ -1004,6 +1130,99 @@ const Data = ({ match }) => {
                   </div>
                 )}
               </FormGroup>
+              <Row>
+                <Colxx
+                  lg={10}
+                  className="col-tp-3"
+                  style={{ paddingRight: "0px" }}
+                >
+                  <FormGroup>
+                    <Label for="id_asuransi">
+                      Metode Pembayaran
+                      <span
+                        className="required text-danger"
+                        aria-required="true"
+                      >
+                        {" "}
+                        *
+                      </span>
+                    </Label>
+                    <Select
+                      components={{ Input: CustomSelectInput }}
+                      className="react-select"
+                      classNamePrefix="react-select"
+                      name="id_peserta"
+                      id="id_peserta"
+                      placeholder="Pilih Pasien Terlebih Dahulu"
+                      options={selectedParticipant}
+                      value={selectedParticipant.find(
+                        (item) => item.value === queue.id_peserta
+                      )}
+                      onChange={onChange}
+                      required
+                    />
+                    {/* {errors.id_daftar_layanan && (
+                    <div className="rounded invalid-feedback d-block">
+                      {errors.id_daftar_layanan}
+                    </div>
+                  )} */}
+                  </FormGroup>
+                </Colxx>
+
+                <Colxx
+                  lg={1}
+                  className="col-tp-1"
+                  style={{ paddingLeft: "0px" }}
+                >
+                  <FormGroup>
+                    <Label>&nbsp;</Label>
+                    <br />
+                    {patientID ? (
+                      <Link
+                        to={{
+                          pathname: `/patient/data`,
+                          state: {
+                            patientID: patientID,
+                          },
+                        }}
+                      >
+                        <Button
+                          color="primary"
+                          className="btn-sm"
+                          // onClick={() => {
+                          //   setModalAddList(true), setService({ nama: "" });
+                          // }}
+
+                          style={{
+                            borderRadius: "0 5px 5px 0",
+                            padding: "0.45rem",
+                            border: "2px solid #008ecc",
+                          }}
+                        >
+                          Tambah
+                        </Button>
+                      </Link>
+                    ) : (
+                      <Button
+                        color="primary"
+                        className="btn-sm"
+                        // onClick={() => {
+                        //   setModalAddList(true), setService({ nama: "" });
+                        // }}
+
+                        style={{
+                          borderRadius: "0 5px 5px 0",
+                          padding: "0.45rem",
+                          border: "2px solid #008ecc",
+                        }}
+                        disabled
+                      >
+                        Tambah
+                      </Button>
+                    )}
+                  </FormGroup>
+                </Colxx>
+              </Row>
               <FormGroup>
                 <Label for="prioritas">Prioritas</Label>
                 <Select
@@ -1018,7 +1237,7 @@ const Data = ({ match }) => {
                   )}
                   defaultValue={{
                     label: "Rendah",
-                    value: "1",
+                    value: 3,
                     name: "prioritas",
                   }}
                   onChange={onChange}
