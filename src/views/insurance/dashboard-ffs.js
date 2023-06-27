@@ -39,15 +39,6 @@ import { addDays } from 'date-fns';
 
 import ReactEcharts from "echarts-for-react"; 
 
-import ProfileStatuses from 'containers/dashboards/ProfileStatuses';
-import SmallLineCharts from 'containers/dashboards/SmallLineCharts';
-import SalesChartCard from 'containers/dashboards/SalesChartCard';
-import ProductCategoriesDoughnut from 'containers/dashboards/ProductCategoriesDoughnut';
-import WebsiteVisitsChartCard from 'containers/dashboards/WebsiteVisitsChartCard';
-import ConversionRatesChartCard from 'containers/dashboards/ConversionRatesChartCard';
-import OrderStockRadarChart from 'containers/dashboards/OrderStockRadarChart';
-import ProductCategoriesPolarArea from 'containers/dashboards/ProductCategoriesPolarArea';
-
 import Swal from "sweetalert2";
 
 import loader from '../../assets/img/loading.gif';
@@ -592,7 +583,7 @@ const Dashboard = ({ match, history, loading, error }) => {
                 Tanggal
               </Button>
               <Link to={{
-                    pathname: `/insurance/target`,
+                    pathname: `/insurance/target-ffs`,
                     // state: { insuranceID: insuranceID, insuranceType: insuranceType }
                     state: { insuranceID: 2, insuranceType: "FFSNP" }
                 }}>

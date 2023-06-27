@@ -317,6 +317,79 @@ label {
     margin-right: 0;
 }
 
+#nav-target-asuransi {
+    padding: 1rem 0;
+    text-align: center;
+}
+
+#nav-target-asuransi .tab-content {
+    text-align: initial;
+}
+
+#nav-target-asuransi .tab-content .pagination {
+    display: -webkit-flex;
+    display: flex;
+    padding-left: 0;
+    list-style: none;
+    border-radius: 0.25rem;
+}
+
+#nav-target-asuransi .tab-content .nav {
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-wrap: wrap;
+    flex-wrap: wrap;
+    padding-left: 0;
+    margin-bottom: 0;
+    list-style: none;
+}
+
+#nav-target-asuransi .tab-content .nav::before {
+    content: '';
+    bottom: 0px;
+    height: 0px;
+}
+
+#nav-target-asuransi .tab-content li {
+    position: initial;
+    padding: 5px;
+    display: list-item;
+    text-align: -webkit-match-parent;
+}
+
+#nav-target-asuransi .tab-content ul.nav li a:before {
+    display: none;
+}
+
+#nav-target-asuransi .tab-content .page-item .page-link.next {
+    background: #008ecc;
+    color: white !important;
+    border: 1px solid #008ecc;
+}
+
+#nav-target-asuransi .tab-content .page-item .page-link.first, .page-item .page-link.last {
+    background: transparent;
+    color: #008ecc;
+    border: 1px solid #008ecc;
+    border-radius: 30px;
+}
+
+#nav-target-asuransi .tab-content .page-item:first-child .page-link {
+    margin-left: 0;
+    border-top-left-radius: 0.25rem;
+    border-bottom-left-radius: 0.25rem;
+}
+
+#nav-target-asuransi .tab-content .page-item.disabled .page-link {
+    border-color: #d7d7d7;
+    color: #d7d7d7 !important;
+    background: transparent;
+}
+
+#nav-target-asuransi .tab-content ul.nav li a, #nav-target-asuransi .tab-content ul.nav li a:focus {
+    // color: inherit;
+}
+
 .row-selected {
     background: rgba(0,0,0,0.075);
 }
@@ -622,6 +695,10 @@ label {
 @media (min-width: 576px) {
     .modal-record {
         max-width: 1200px;
+    }
+
+    .modal-pps {
+        max-width: 750px;
     }
 
     .responsive-mobile-vertical-xs-5 {

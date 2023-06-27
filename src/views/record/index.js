@@ -14,6 +14,9 @@ const Data = React.lazy(() =>
 const Form = React.lazy(() =>
   import(/* webpackChunkName: "views-record-form" */ './form')
 );
+const FormTab = React.lazy(() =>
+  import(/* webpackChunkName: "views-record-form" */ './form-tab')
+);
 
 const App = ({ match }) => {
   return (
@@ -42,6 +45,11 @@ const App = ({ match }) => {
             <ProtectedRoute
               path={`${match.url}/form`}
               component={Form}
+              roles={[ "isDev", "isDokter" ]}
+            />
+            <ProtectedRoute
+              path={`${match.url}/form-tab`}
+              component={FormTab}
               roles={[ "isDev", "isDokter" ]}
             />
             <ProtectedRoute

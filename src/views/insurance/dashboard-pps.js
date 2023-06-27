@@ -13,7 +13,7 @@ import {
   CustomInput,
   Button,
   Form,
-  Table, 
+  Table,
 } from 'reactstrap';
 import { useLocation, Link, NavLink } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
@@ -39,15 +39,6 @@ import { addDays } from 'date-fns';
 
 import ReactEcharts from "echarts-for-react"; 
 
-import ProfileStatuses from 'containers/dashboards/ProfileStatuses';
-import SmallLineCharts from 'containers/dashboards/SmallLineCharts';
-import SalesChartCard from 'containers/dashboards/SalesChartCard';
-import ProductCategoriesDoughnut from 'containers/dashboards/ProductCategoriesDoughnut';
-import WebsiteVisitsChartCard from 'containers/dashboards/WebsiteVisitsChartCard';
-import ConversionRatesChartCard from 'containers/dashboards/ConversionRatesChartCard';
-import OrderStockRadarChart from 'containers/dashboards/OrderStockRadarChart';
-import ProductCategoriesPolarArea from 'containers/dashboards/ProductCategoriesPolarArea';
-
 import Swal from "sweetalert2";
 
 import loader from '../../assets/img/loading.gif';
@@ -66,6 +57,9 @@ const Dashboard = ({ match, history, loading, error }) => {
 
   const [tableClass, setTableClass] = useState('');
   const [rowSelected, setRowSelected] = useState(null);
+
+  const [doctorName, setDoctorName] = useState('');
+  const [modalDoctor, setModalDoctor] = useState(false);
 
   const handleShowDateRangePicker = (shown) => {
     shown ? setDateRangePicker('drp-inline') : setDateRangePicker('drp-none');
@@ -453,7 +447,7 @@ const Dashboard = ({ match, history, loading, error }) => {
                 Tanggal
               </Button>
               <Link to={{
-                    pathname: `/insurance/target`,
+                    pathname: `/insurance/target-pps`,
                     // state: { insuranceID: insuranceID, insuranceType: insuranceType }
                     state: { insuranceID: 2, insuranceType: "PPS" }
                 }}>
@@ -673,7 +667,7 @@ const Dashboard = ({ match, history, loading, error }) => {
                     <td><h6 style={{ fontWeight: 'bold' }}>dr. Lorem Ipsum 2</h6></td>
                     <td className="center-xy">23</td>
                   </tr>
-                  <tr>
+                  <tr onClick={() => setModalDoctor(!modalDoctor)} style={{ cursor: 'pointer' }}>
                     <th>3</th>
                     <td><h6 style={{ fontWeight: 'bold' }}>dr. Lorem Ipsum 3</h6></td>
                     <td className="center-xy">11</td>
@@ -849,6 +843,74 @@ const Dashboard = ({ match, history, loading, error }) => {
             </CardBody>
           </Card>
         </Colxx>
+        
+        <Modal
+          isOpen={modalDoctor}
+          toggle={() => setModalDoctor(!modalDoctor)}
+          className='modal-pps'
+        >
+          <ModalHeader>Analisis Rujukan <b>dr. Lorem Ipsum 3{doctorName}</b></ModalHeader>
+          <ModalBody>
+            <Table
+              // className={tableClass}
+              hover
+              responsive
+            >
+              <thead>
+                <tr>
+                  <th className="center-xy" style={{ width: '40px' }}>#</th>
+                  <th>Tanggal</th>
+                  <th>Diagnosis</th>
+                  <th>Alasan</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <th className="center-xy">1</th>
+                  <td>20 Jan 2021</td>
+                  <td>Sakit Typhez</td>
+                  <td>Rumah Kurang Layak</td>
+                </tr>
+                <tr>
+                  <th className="center-xy">2</th>
+                  <td>21 Jan 2022</td>
+                  <td>Sakit Kepala</td>
+                  <td>Banyak Hutang</td>
+                </tr>
+                <tr>
+                  <th className="center-xy">3</th>
+                  <td>22 Jan 2023</td>
+                  <td>Sakit Perut</td>
+                  <td>Kurang Gizi</td>
+                </tr>
+                <tr>
+                  <th className="center-xy">4</th>
+                  <td>23 Jan 2024</td>
+                  <td>Sakit Badan</td>
+                  <td>Nama Tidak Cocok</td>
+                </tr>
+              </tbody>
+            </Table>
+            <Pagination
+              // currentPage={currentPage}
+              // totalPage={insuranceTotalPage}
+              // onChangePage={(i) => setCurrentPage(i)}
+              // numberLimit={insuranceTotalPage < 4 ? insuranceTotalPage : 3}
+              currentPage={1}
+              totalPage={3}
+              numberLimit={3}
+            />
+          </ModalBody>
+          <ModalFooter>
+            <Button
+              type="button"
+              color="primary"
+              onClick={() => setModalDoctor(false)}
+            >
+              Tutup
+            </Button>
+          </ModalFooter>
+        </Modal>
       </Row>
 
     </>

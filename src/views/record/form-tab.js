@@ -135,7 +135,7 @@ const FormRecord = ({ match, history }) => {
         confirmButtonColor: "#008ecc",
     });
 
-    history.push("/record");
+    // history.push("/record");
   }
 
   const [selectedType, setSelectedType] = useState('');
@@ -1686,7 +1686,7 @@ const FormRecord = ({ match, history }) => {
     onLoadPoliRujukan();
     onLoadRSRujukan();
 
-    getVitalSignsByPatientId(patientID, patientData);
+    // getVitalSignsByPatientId(patientID, patientData);
   }, [ ]);
 
   return (

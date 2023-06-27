@@ -109,7 +109,7 @@ const MainRouter = ( ) => {
             // console.log('tokenExpiredAt', tokenExpiredAt);
             // console.log('isAlreadyExpired', isAlreadyExpired);
           // }, 1000 * 60 * 15);
-          }, 1000);
+          }, 3000);
         }
       }
     }, [ ]);

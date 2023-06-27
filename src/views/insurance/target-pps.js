@@ -22,6 +22,10 @@ import {
   DropdownToggle,
   DropdownMenu,
   DropdownItem,
+  Nav,
+  NavItem,
+  TabContent,
+  TabPane,
 } from "reactstrap";
 import { useLocation, Link, NavLink } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
@@ -38,6 +42,11 @@ import { Colxx, Separator } from "components/common/CustomBootstrap";
 import Pagination from "components/common/Pagination";
 
 import CustomSelectInput from "components/common/CustomSelectInput";
+
+import classnames from 'classnames';
+import { Wizard, Steps, Step } from 'react-albus';
+
+import ReactEcharts from "echarts-for-react"; 
 
 import insuranceAPI from "api/insurance";
 import insuranceClassAPI from "api/insurance/class";
@@ -64,6 +73,8 @@ const Data = ({ match, history, loading, error }) => {
   const [dataStatus, setDataStatus] = useState("");
   const [dataStatusInsuranceClass, setDataStatusInsuranceClass] = useState("add");
   const [rowSelected, setRowSelected] = useState(null);
+
+  const [activeTab, setActiveTab] = useState('pendapatan');
   
   const [modalArchive, setModalArchive] = useState(false);
   const [modalDelete, setModalDelete] = useState(false);
@@ -759,6 +770,174 @@ const Data = ({ match, history, loading, error }) => {
   const [sortBy, setSortBy] = useState("");
   const [sortOrder, setSortOrder] = useState("");
 
+  const dataPendapatan = {
+    grid: { top: 8, right: 8, bottom: 24, left: 38 },
+    xAxis: {
+      type: 'category',
+      data: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'],
+      axisTick: {
+        alignWithLabel: true,
+        // length: -88
+      },
+      axisLabel: {
+        // rotate: 30
+      },
+    },
+    yAxis: {
+      type: 'value',
+      // max: 2000,
+    },
+    series: [
+      {
+        data: [820, 932, 901, 934, 1290, 1330, 1320, 820, 932, 901, 901, 1200],
+        type: 'line',
+        smooth: true,
+        lineStyle: {
+          normal: {
+            color: '#39addf',
+            width: 4,
+          }
+        },
+        label: {
+          show: true,
+          position: 'top',
+          textStyle: {
+            fontSize: 12
+          }
+        }
+      },
+    ],
+    tooltip: {
+      trigger: 'axis',
+    },
+  }; 
+
+  const dataKunjungan = {
+    grid: { top: 8, right: 8, bottom: 24, left: 38 },
+    xAxis: {
+      type: 'category',
+      data: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'],
+      axisTick: {
+        alignWithLabel: true,
+        // length: -88
+      },
+      axisLabel: {
+        // rotate: 30
+      },
+    },
+    yAxis: {
+      type: 'value',
+      // max: 2000,
+    },
+    series: [
+      {
+        data: [820, 932, 901, 934, 1290, 1330, 1320, 820, 932, 901, 901, 1200],
+        type: 'line',
+        smooth: true,
+        lineStyle: {
+          normal: {
+            color: '#39addf',
+            width: 4,
+          }
+        },
+        label: {
+          show: true,
+          position: 'top',
+          textStyle: {
+            fontSize: 12
+          }
+        }
+      },
+    ],
+    tooltip: {
+      trigger: 'axis',
+    },
+  }; 
+
+  const dataKlaim = {
+    grid: { top: 8, right: 8, bottom: 24, left: 38 },
+    xAxis: {
+      type: 'category',
+      data: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'],
+      axisTick: {
+        alignWithLabel: true,
+        // length: -88
+      },
+      axisLabel: {
+        // rotate: 30
+      },
+    },
+    yAxis: {
+      type: 'value',
+      // max: 2000,
+    },
+    series: [
+      {
+        data: [820, 932, 901, 934, 1290, 1330, 1320, 820, 932, 901, 901, 1200],
+        type: 'line',
+        smooth: true,
+        lineStyle: {
+          normal: {
+            color: '#39addf',
+            width: 4,
+          }
+        },
+        label: {
+          show: true,
+          position: 'top',
+          textStyle: {
+            fontSize: 12
+          }
+        }
+      },
+    ],
+    tooltip: {
+      trigger: 'axis',
+    },
+  }; 
+
+  const dataBiaya = {
+    grid: { top: 8, right: 8, bottom: 24, left: 38 },
+    xAxis: {
+      type: 'category',
+      data: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'],
+      axisTick: {
+        alignWithLabel: true,
+        // length: -88
+      },
+      axisLabel: {
+        // rotate: 30
+      },
+    },
+    yAxis: {
+      type: 'value',
+      // max: 2000,
+    },
+    series: [
+      {
+        data: [820, 932, 901, 934, 1290, 1330, 1320, 820, 932, 901, 901, 1200],
+        type: 'line',
+        smooth: true,
+        lineStyle: {
+          normal: {
+            color: '#39addf',
+            width: 4,
+          }
+        },
+        label: {
+          show: true,
+          position: 'top',
+          textStyle: {
+            fontSize: 12
+          }
+        }
+      },
+    ],
+    tooltip: {
+      trigger: 'axis',
+    },
+  }; 
+
   return (
     <>
       <Row>
@@ -766,21 +945,7 @@ const Data = ({ match, history, loading, error }) => {
           <Card className="mb-4">
             <CardBody>
               <CardTitle>
-                <Row>
-                  <Colxx sm="8" md="8" xl="8" className="col-sm-8-mobile">
-                    Data Produk
-                  </Colxx>
-                  <Colxx sm="4" md="4" xl="4" className="col-sm-4-mobile">
-                    <Button
-                      color="primary"
-                      style={{ float: "right" }}
-                      className="mb-4"
-                      onClick={(e) => resetForm(e, true)}
-                    >
-                      Tambah
-                    </Button>
-                  </Colxx>
-                </Row>
+                Data Produk
               </CardTitle>
               <FormGroup row style={{ margin: '0px', width: '100%' }}>
                 <Colxx sm="12" md="12" style={{ paddingLeft: '0px', paddingRight: '0px' }}>
@@ -870,7 +1035,7 @@ const Data = ({ match, history, loading, error }) => {
               <Pagination
                 currentPage={currentPage}
                 totalPage={insuranceTotalPage}
-                onChangePage={(i) => setCurrentPage(i)}
+                // onChangePage={(i) => setCurrentPage(i)}
                 numberLimit={insuranceTotalPage < 4 ? insuranceTotalPage : 3}
               />
             </CardBody>
@@ -878,212 +1043,356 @@ const Data = ({ match, history, loading, error }) => {
         </Colxx>
         <Colxx sm="12" md="12" xl="8" className="mb-4 manage-form" id="manage-form-tab-mobile">
           <Card className="mb-8">
-            { dataStatus ?
+            {/* { dataStatus ? */}
             <CardBody>
-              <CardTitle>
-                <Row>
-                  <Colxx sm="10" className="card-title-mobile">
-                    { dataStatus && dataStatus === "add" ? 'Form Tambah Asuransi' : 'Form Ubah Asuransi' }
-                  </Colxx>
-                  <Colxx sm="2" className="three-dots-menu">
-                    { dataStatus === "update" && 
-                      <UncontrolledDropdown>
-                        <DropdownToggle color="default">
-                          <i className="simple-icon-options-vertical"></i>
-                        </DropdownToggle>
-                        <DropdownMenu right>
-                          {<IsActiveDropdown/>}
-                          {(userData.roles.includes('isDev') ||
-                          userData.roles.includes('isManager')) && insuranceID &&
-                            <>
-                              <DropdownItem divider />
-                              <DropdownItem onClick={(e) => deleteById(e, insuranceID)}>
-                                <i className="simple-icon-trash"></i>&nbsp;Hapus
-                              </DropdownItem>
-                            </>
-                          }
-                        </DropdownMenu>
-                      </UncontrolledDropdown>
-                    }
-                  </Colxx>
-                </Row>
-              </CardTitle>
-              <Table className={tableClass}>
-                <thead>
-                  <tr>
-                    <th className="center-xy" style={{ width: '40px' }}>#</th>
-                    <th>Asuransi</th>
-                    <th className="center-xy" style={{ width: '55px' }}>&nbsp;</th>
-                  </tr>
-                </thead>
-                <tbody>
-                {isLoading && rowSelected === false ? (
-                  <tr>
-                    <td>&nbsp;</td>
-                    <td align="center">
-                      <img src={loader} alt="loading..." width="100"/>
-                    </td>
-                    <td>&nbsp;</td>
-                  </tr>
-                  ) : 
-                  insuranceData.length > 0 ? (
-                    insuranceData.map((data) => (
-                      <tr key={data.id} onClick={(e) => getInsuranceById(e, data.id)} style={{ cursor: 'pointer'}} className={`${rowSelected == data.id && 'row-selected'}`}>
-                        <th scope="row" style={{ textAlign: "center", verticalAlign: 'middle' }}>
-                          {startNumber++}
-                        </th>
-                        <td>
-                          <h6 style={{ fontWeight: 'bold' }} className="max-text">{data.nama}</h6>
-                          {data.nama_kelas}
-                          {data.is_active == 1 ? (
-                            <Badge color="success" className="mt-2">Aktif</Badge>
-                          ) : (
-                            <Badge color="warning" className="mt-2">Non-Aktif</Badge>
-                          )}
-                        </td>
-                        <td style={{ textAlign: "center", verticalAlign: 'middle' }}>
-                          <Button color="secondary" size="xs" className="button-xs"
-                            // onClick={(e) => getInsuranceById(e, data.id)}
+              <Form className="wizard wizard-default">
+                <Wizard>
+                  <div id="nav-target-asuransi">
+                    <Nav tabs className="separator-tabs ml-0">
+                        <NavItem>
+                            <a
+                                className={classnames({
+                                  active: activeTab === 'pendapatan',
+                                  'nav-link': true,
+                                })}
+                                aria-disabled="true"
+                                onClick={() => setActiveTab('pendapatan')}
                             >
-                            <i className="simple-icon-arrow-right-circle"></i>
-                          </Button>
-                        </td>
-                      </tr>
-                    ))
-                  ) : (
-                    <tr>
-                      <td>&nbsp;</td>
-                      <td align="center">
-                        <h5 style={{ marginTop: '1.5rem' }}><b>Data tidak ditemukan</b></h5>
-                      </td>
-                      <td>&nbsp;</td>
-                    </tr>
-                  )
-                }
-                </tbody>
-              </Table>
-              {/* <Form className="av-tooltip tooltip-right-top" onSubmit={onInsuranceSubmit}>
-                <FormGroup row>
-                  <Colxx sm={12}>
-                    <FormGroup>
-                      <Label for="nama">
-                        Nama
-                        <span
-                          className="required text-danger"
-                          aria-required="true"
-                        >
-                          {" "}
-                          *
-                        </span>
-                      </Label>
-                      <Input
-                        type="text"
-                        name="nama"
-                        id="nama"
-                        placeholder="Nama"
-                        value={insurance.nama}
-                        onChange={onChange}
-                        // required
-                      />
-                      {errors.nama && (
-                        <div className="rounded invalid-feedback d-block">
-                          {errors.nama}
-                        </div>
-                      )}
-                    </FormGroup>
-                  </Colxx>
-
-                  <Colxx sm={12}>
-                    <FormGroup>
-                      <Row>
-                        <Colxx sm={6}>
-                          <Label>Kelas Asuransi
-                            <span
-                              className="required text-danger"
-                              aria-required="true"
+                                Pendapatan
+                            </a>
+                        </NavItem>
+                        <NavItem>
+                            <a
+                                className={classnames({
+                                  active: activeTab === 'kunjungan',
+                                  'nav-link': true,
+                                })}
+                                aria-disabled="true"
+                                onClick={() => setActiveTab('kunjungan')}
                             >
-                              {" "}
-                              *
-                            </span>
-                          </Label>
-                        </Colxx>
-                      </Row>
-                      {insuranceClass.map((input, index) => {
-                        return (
-                          <Row key={index}>
-                            <Colxx sm={12}>
-                              <InputGroup className="input-group-insurance">
-                                <Input
-                                  name="nama_kelas"
-                                  placeholder="Kelas Asuransi"
-                                  value={insuranceClass[index].nama_kelas}
-                                  onChange={(event) =>
-                                    handleInsuranceClassChange(index, event)
-                                  }
-                                />
-                                {errors.nama_kelas && (
-                                  <div className="rounded invalid-feedback d-block">
-                                    {errors.nama_kelas}
-                                  </div>
-                                )}
-                                {index > 0 && (
-                                  <Button
-                                    color="danger"
-                                    style={{ float: "right" }}
-                                    onClick={() =>
-                                      removeInsuranceClassFields(input.id, index)
-                                    }
-                                    className="remove-insurance"
-                                  >
-                                    <i className="simple-icon-trash"></i>
-                                  </Button>
-                                )}
-                              </InputGroup>
-                            </Colxx>
-                          </Row>
-                        );
-                      })}
-                      <Button
-                        color="primary"
-                        // style={{ float: "right" }}
-                        className="mb-2"
-                        onClick={addInsuranceClassFields}
-                      >
-                        Tambah
-                      </Button>
-                    </FormGroup>
-                  </Colxx>
-                </FormGroup>
+                                Kunjungan
+                            </a>
+                        </NavItem>
+                        <NavItem>
+                            <a
+                                className={classnames({
+                                  active: activeTab === 'klaim',
+                                  'nav-link': true,
+                                })}
+                                aria-disabled="true"
+                                onClick={() => setActiveTab('klaim')}
+                            >
+                                % Klaim Disetujui
+                            </a>
+                        </NavItem>
+                        <NavItem>
+                            <a
+                                className={classnames({
+                                  active: activeTab === 'biaya',
+                                  'nav-link': true,
+                                })}
+                                aria-disabled="true"
+                                onClick={() => setActiveTab('biaya')}
+                            >
+                                % Biaya Layanan
+                            </a>
+                        </NavItem>
+                    </Nav>
 
-                <Row>
-                  <Colxx sm={6}>
-                    <Label>* ) Wajib diisi</Label>
-                  </Colxx>
-                  <Colxx sm={6} className="text-right">
-                    <Button
-                      type="button"
-                      onClick={resetForm}
-                      outline
-                      color="danger"
-                    >
-                      Batal
-                    </Button>
-                    &nbsp;&nbsp;
-                    <Button
-                      color="primary"
-                      // onClick={(e) => onInsuranceSubmit(e)}
-                    >
-                      Simpan
-                    </Button>
-                  </Colxx>
-                </Row>
-              </Form> */}
+                    <TabContent activeTab={activeTab}>
+                        <TabPane tabId="pendapatan">
+                            <FormGroup style={{ marginTop: '2rem' }}>
+                              <ReactEcharts
+                                option={dataPendapatan}
+                              />
+                            </FormGroup>
+                            <FormGroup style={{ marginTop: '2rem' }}>
+                              <Table
+                                // className={tableClass}
+                                hover
+                                responsive
+                              >
+                                <thead>
+                                  <tr>
+                                    <th className="center-xy" style={{ width: '40px' }}>#</th>
+                                    <th>Bulan</th>
+                                    <th>Target</th>
+                                    <th>Pendapatan</th>
+                                    <th className="center-xy">Pemenuhan</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  <tr>
+                                    <th className="center-xy">1</th>
+                                    <td>Januari 2023</td>
+                                    <td>Rp99.999.999</td>
+                                    <td>Rp24.242.424</td>
+                                    <td className="center-xy">20%</td>
+                                  </tr>
+                                  <tr>
+                                    <th className="center-xy">2</th>
+                                    <td>Februari 2023</td>
+                                    <td>Rp99.999.999</td>
+                                    <td>Rp24.242.424</td>
+                                    <td className="center-xy">20%</td>
+                                  </tr>
+                                  <tr>
+                                    <th className="center-xy">3</th>
+                                    <td>Maret 2023</td>
+                                    <td>Rp99.999.999</td>
+                                    <td>Rp222.222.222</td>
+                                    <td className="center-xy">20%</td>
+                                  </tr>
+                                  <tr>
+                                    <th className="center-xy">4</th>
+                                    <td>April 2023</td>
+                                    <td>Rp99.999.999</td>
+                                    <td>Rp999.999.999</td>
+                                    <td className="center-xy">100%</td>
+                                  </tr>
+                                </tbody>
+                              </Table>
+                              <Button
+                                color="primary"
+                                // style={{ float: "right" }}
+                                className="mb-2"
+                                // onClick={addPartnershipFields}
+                              >
+                                Tambah
+                              </Button>
+                              <Pagination
+                                // currentPage={currentPage}
+                                // totalPage={insuranceTotalPage}
+                                // onChangePage={(i) => setCurrentPage(i)}
+                                // numberLimit={insuranceTotalPage < 4 ? insuranceTotalPage : 3}
+                                currentPage={1}
+                                totalPage={3}
+                                numberLimit={3}
+                              />
+                            </FormGroup>
+                        </TabPane>
+                        <TabPane tabId="kunjungan">
+                            <FormGroup style={{ marginTop: '2rem' }}>
+                              <ReactEcharts
+                                option={dataKunjungan}
+                              />
+                            </FormGroup>
+                            <FormGroup style={{ marginTop: '2rem' }}>
+                              <Table
+                                // className={tableClass}
+                                hover
+                                responsive
+                              >
+                                <thead>
+                                  <tr>
+                                    <th className="center-xy" style={{ width: '40px' }}>#</th>
+                                    <th>Bulan</th>
+                                    <th className="center-xy">Target</th>
+                                    <th className="center-xy">Kunjungan</th>
+                                    <th className="center-xy">Pemenuhan</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  <tr>
+                                    <th className="center-xy">1</th>
+                                    <td>Januari 2023</td>
+                                    <td className="center-xy">99</td>
+                                    <td className="center-xy">24</td>
+                                    <td className="center-xy">20%</td>
+                                  </tr>
+                                  <tr>
+                                    <th className="center-xy">2</th>
+                                    <td>Februari 2023</td>
+                                    <td className="center-xy">99</td>
+                                    <td className="center-xy">24</td>
+                                    <td className="center-xy">20%</td>
+                                  </tr>
+                                  <tr>
+                                    <th className="center-xy">3</th>
+                                    <td>Maret 2023</td>
+                                    <td className="center-xy">99</td>
+                                    <td className="center-xy">22</td>
+                                    <td className="center-xy">20%</td>
+                                  </tr>
+                                  <tr>
+                                    <th className="center-xy">4</th>
+                                    <td>April 2023</td>
+                                    <td className="center-xy">99</td>
+                                    <td className="center-xy">999</td>
+                                    <td className="center-xy">100%</td>
+                                  </tr>
+                                </tbody>
+                              </Table>
+                              <Button
+                                color="primary"
+                                // style={{ float: "right" }}
+                                className="mb-2"
+                                // onClick={addPartnershipFields}
+                              >
+                                Tambah
+                              </Button>
+                              <Pagination
+                                // currentPage={currentPage}
+                                // totalPage={insuranceTotalPage}
+                                // onChangePage={(i) => setCurrentPage(i)}
+                                // numberLimit={insuranceTotalPage < 4 ? insuranceTotalPage : 3}
+                                currentPage={1}
+                                totalPage={3}
+                                numberLimit={3}
+                              />
+                            </FormGroup>
+                        </TabPane>
+                        <TabPane tabId="klaim">
+                            <FormGroup style={{ marginTop: '2rem' }}>
+                              <ReactEcharts
+                                option={dataKlaim}
+                              />
+                            </FormGroup>
+                            <FormGroup style={{ marginTop: '2rem' }}>
+                              <Table
+                                // className={tableClass}
+                                hover
+                                responsive
+                              >
+                                <thead>
+                                  <tr>
+                                    <th className="center-xy" style={{ width: '40px' }}>#</th>
+                                    <th>Bulan</th>
+                                    <th className="center-xy">Target</th>
+                                    <th className="center-xy">Disetujui</th>
+                                    <th className="center-xy">Pemenuhan</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  <tr>
+                                    <th className="center-xy">1</th>
+                                    <td>Januari 2023</td>
+                                    <td className="center-xy">99</td>
+                                    <td className="center-xy">24</td>
+                                    <td className="center-xy">20%</td>
+                                  </tr>
+                                  <tr>
+                                    <th className="center-xy">2</th>
+                                    <td>Februari 2023</td>
+                                    <td className="center-xy">99</td>
+                                    <td className="center-xy">24</td>
+                                    <td className="center-xy">20%</td>
+                                  </tr>
+                                  <tr>
+                                    <th className="center-xy">3</th>
+                                    <td>Maret 2023</td>
+                                    <td className="center-xy">99</td>
+                                    <td className="center-xy">22</td>
+                                    <td className="center-xy">20%</td>
+                                  </tr>
+                                  <tr>
+                                    <th className="center-xy">4</th>
+                                    <td>April 2023</td>
+                                    <td className="center-xy">99</td>
+                                    <td className="center-xy">999</td>
+                                    <td className="center-xy">100%</td>
+                                  </tr>
+                                </tbody>
+                              </Table>
+                              <Button
+                                color="primary"
+                                // style={{ float: "right" }}
+                                className="mb-2"
+                                // onClick={addPartnershipFields}
+                              >
+                                Tambah
+                              </Button>
+                              <Pagination
+                                // currentPage={currentPage}
+                                // totalPage={insuranceTotalPage}
+                                // onChangePage={(i) => setCurrentPage(i)}
+                                // numberLimit={insuranceTotalPage < 4 ? insuranceTotalPage : 3}
+                                currentPage={1}
+                                totalPage={3}
+                                numberLimit={3}
+                              />
+                            </FormGroup>
+                        </TabPane>
+                        <TabPane tabId="biaya">
+                            <FormGroup style={{ marginTop: '2rem' }}>
+                              <ReactEcharts
+                                option={dataBiaya}
+                              />
+                            </FormGroup>
+                            <FormGroup style={{ marginTop: '2rem' }}>
+                              <Table
+                                // className={tableClass}
+                                hover
+                                responsive
+                              >
+                                <thead>
+                                  <tr>
+                                    <th className="center-xy" style={{ width: '40px' }}>#</th>
+                                    <th>Bulan</th>
+                                    <th>Target</th>
+                                    <th>Biaya</th>
+                                    <th className="center-xy">Pemenuhan</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  <tr>
+                                    <th className="center-xy">1</th>
+                                    <td>Januari 2023</td>
+                                    <td>Rp99.999.999</td>
+                                    <td>Rp24.242.424</td>
+                                    <td className="center-xy">20%</td>
+                                  </tr>
+                                  <tr>
+                                    <th className="center-xy">2</th>
+                                    <td>Februari 2023</td>
+                                    <td>Rp99.999.999</td>
+                                    <td>Rp24.242.424</td>
+                                    <td className="center-xy">20%</td>
+                                  </tr>
+                                  <tr>
+                                    <th className="center-xy">3</th>
+                                    <td>Maret 2023</td>
+                                    <td>Rp99.999.999</td>
+                                    <td>Rp222.222.222</td>
+                                    <td className="center-xy">20%</td>
+                                  </tr>
+                                  <tr>
+                                    <th className="center-xy">4</th>
+                                    <td>April 2023</td>
+                                    <td>Rp99.999.999</td>
+                                    <td>Rp999.999.999</td>
+                                    <td className="center-xy">100%</td>
+                                  </tr>
+                                </tbody>
+                              </Table>
+                              <Button
+                                color="primary"
+                                // style={{ float: "right" }}
+                                className="mb-2"
+                                // onClick={addPartnershipFields}
+                              >
+                                Tambah
+                              </Button>
+                              <Pagination
+                                // currentPage={currentPage}
+                                // totalPage={insuranceTotalPage}
+                                // onChangePage={(i) => setCurrentPage(i)}
+                                // numberLimit={insuranceTotalPage < 4 ? insuranceTotalPage : 3}
+                                currentPage={1}
+                                totalPage={3}
+                                numberLimit={3}
+                              />
+                            </FormGroup>
+                        </TabPane>
+                    </TabContent>
+                  </div>
+                </Wizard>
+              </Form>
             </CardBody>
-            : <CardBody style={{ textAlign: 'center', verticalAlign: 'middle'}}>
+            {/* : <CardBody style={{ textAlign: 'center', verticalAlign: 'middle'}}>
                 <img src="/assets/empty.svg" width={150} className="mt-5 mb-3"/>
-                <p className="mb-5">Silahkan memilih asuransi untuk melihat, mengubah, menghapus, mengarsipkan, dan mengaktifkan data asuransi.
-                  Silahkan klik tombol tambah untuk menambahkan asuransi baru.</p>
-            </CardBody> }
+                <p className="mb-5">Silahkan memilih produk untuk melihat pendapatan, kunjungan, % klaim disetujui, dan % biaya layanan pada setiap produk.</p>
+            </CardBody> } */}
           </Card>
         </Colxx>
         
