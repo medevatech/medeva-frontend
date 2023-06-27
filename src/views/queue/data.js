@@ -322,13 +322,14 @@ const Data = ({ match }) => {
   };
 
   const onLoadParticipantByPatient = async (id) => {
+    setSelectedParticipant([]);
     try {
       const response = await participantAPI.getByPatient(`/${id}`);
       // console.log("rak", response);
 
       setSelectedParticipant([
         {
-          label: "Pilih Asuransi",
+          label: "Pilih Metode Pembayaran",
           value: "",
           key: 0,
           name: "id_peserta",
@@ -390,9 +391,9 @@ const Data = ({ match }) => {
     onLoadPatient();
   }, []);
 
-  useEffect(() => {
-    onLoadParticipantByPatient(patientID);
-  }, [patientID]);
+  // useEffect(() => {
+  //   onLoadParticipantByPatient(patientID);
+  // }, [patientID]);
 
   let paramsQueue = `/${searchDivisi}`;
   useEffect(() => {
@@ -408,9 +409,22 @@ const Data = ({ match }) => {
     if (idDoctor !== "") {
       paramsQueue = `${paramsQueue}&searchDoctor=${idDoctor}`;
     }
+    // if (currentPage !== 1) {
+    //   params = `${params}&page=${currentPage}`;
+    // }
     // getQueue(paramsQueue);
     getQueueById(paramsQueue);
-  }, [limit, searchDivisi, sortBy, sortOrder, currentPage, date, idDoctor]);
+    onLoadParticipantByPatient(patientID);
+  }, [
+    limit,
+    searchDivisi,
+    sortBy,
+    sortOrder,
+    currentPage,
+    date,
+    idDoctor,
+    patientID,
+  ]);
 
   let startNumber = 1;
 
@@ -667,7 +681,7 @@ const Data = ({ match }) => {
                   </Button>
                 </InputGroupAddon>
               </InputGroup>
-              <Table className={tableClass}>
+              <Table hover responsive>
                 <thead>
                   <tr>
                     <th className="center-xy" style={{ width: "40px" }}>
@@ -773,7 +787,7 @@ const Data = ({ match }) => {
                       )}
                     </Colxx>
                     <Colxx sm="6" md="6" xl="6">
-                      {searchDivisi ? (
+                      {searchDivisi && idDoctor ? (
                         <Button
                           color="primary"
                           style={{ float: "right" }}
@@ -833,7 +847,9 @@ const Data = ({ match }) => {
                         style={{ paddingLeft: "16px", paddingRight: "16px" }}
                         className="react-select"
                       >
-                        <Label for="id_jaga">Dokter</Label>
+                        <Label for="id_jaga">
+                          Dokter (pilih dokter sebelum menambah antrian)
+                        </Label>
                         <Select
                           components={{ Input: CustomSelectInput }}
                           className="react-select"
@@ -1068,7 +1084,7 @@ const Data = ({ match }) => {
                           <tr>
                             <td>&nbsp;</td>
                             <td align="center" colSpan={3}>
-                              <h5
+                              {/* <h5
                                 style={{
                                   marginTop: "1.5rem",
                                   textAlign: "center",
@@ -1076,7 +1092,23 @@ const Data = ({ match }) => {
                                 }}
                               >
                                 <b>Antrian kosong</b>
-                              </h5>
+                              </h5> */}
+                              <CardBody
+                                colSpan={3}
+                                style={{
+                                  textAlign: "center",
+                                  verticalAlign: "middle",
+                                }}
+                              >
+                                <img
+                                  src="/assets/empty.svg"
+                                  width={150}
+                                  className="mt-5 mb-3"
+                                />
+                                <p className="mb-3">
+                                  Antrian kosong, silahkan menambahkan antrian.
+                                </p>
+                              </CardBody>
                             </td>
                             <td>&nbsp;</td>
                           </tr>
@@ -1138,7 +1170,7 @@ const Data = ({ match }) => {
                 >
                   <FormGroup>
                     <Label for="id_asuransi">
-                      Metode Pembayaran
+                      Metode Pembayaran (pilih pasien terlebih dahulu)
                       <span
                         className="required text-danger"
                         aria-required="true"
@@ -1147,20 +1179,38 @@ const Data = ({ match }) => {
                         *
                       </span>
                     </Label>
-                    <Select
-                      components={{ Input: CustomSelectInput }}
-                      className="react-select"
-                      classNamePrefix="react-select"
-                      name="id_peserta"
-                      id="id_peserta"
-                      placeholder="Pilih Pasien Terlebih Dahulu"
-                      options={selectedParticipant}
-                      value={selectedParticipant.find(
-                        (item) => item.value === queue.id_peserta
-                      )}
-                      onChange={onChange}
-                      required
-                    />
+                    {patientID ? (
+                      <Select
+                        components={{ Input: CustomSelectInput }}
+                        className="react-select"
+                        classNamePrefix="react-select"
+                        name="id_peserta"
+                        id="id_peserta"
+                        placeholder="Pilih Metode Pembayaran"
+                        options={selectedParticipant}
+                        value={selectedParticipant.find(
+                          (item) => item.value === queue.id_peserta
+                        )}
+                        onChange={onChange}
+                        required
+                      />
+                    ) : (
+                      <Select
+                        components={{ Input: CustomSelectInput }}
+                        className="react-select"
+                        classNamePrefix="react-select"
+                        name="id_peserta"
+                        id="id_peserta"
+                        placeholder="Pilih Metode Pembayaran"
+                        options={selectedParticipant}
+                        value={selectedParticipant.find(
+                          (item) => item.value === queue.id_peserta
+                        )}
+                        // onChange={onChange}
+                        required
+                        isDisabled={true}
+                      />
+                    )}
                     {/* {errors.id_daftar_layanan && (
                     <div className="rounded invalid-feedback d-block">
                       {errors.id_daftar_layanan}
@@ -1189,10 +1239,6 @@ const Data = ({ match }) => {
                         <Button
                           color="primary"
                           className="btn-sm"
-                          // onClick={() => {
-                          //   setModalAddList(true), setService({ nama: "" });
-                          // }}
-
                           style={{
                             borderRadius: "0 5px 5px 0",
                             padding: "0.45rem",
@@ -1206,10 +1252,6 @@ const Data = ({ match }) => {
                       <Button
                         color="primary"
                         className="btn-sm"
-                        // onClick={() => {
-                        //   setModalAddList(true), setService({ nama: "" });
-                        // }}
-
                         style={{
                           borderRadius: "0 5px 5px 0",
                           padding: "0.45rem",
@@ -1301,11 +1343,13 @@ const Data = ({ match }) => {
         </Modal>
 
         <Modal isOpen={modalDelete} toggle={() => setModalDelete(!modalDelete)}>
-          <ModalHeader>Hapus antrian</ModalHeader>
+          <ModalHeader>Hapus Antrian</ModalHeader>
           <ModalBody>
             <FormGroup>
-              Apakah anda ingin menghapus antrian dengan nama pasien{" "}
-              <b>{patientName}</b> ?
+              <h5>
+                Apakah anda ingin menghapus antrian dengan nama pasien{" "}
+                <b>{patientName}</b> ?
+              </h5>
             </FormGroup>
           </ModalBody>
           <ModalFooter>
