@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Row,
   Card,
@@ -39,6 +39,7 @@ import { addDays } from 'date-fns';
 
 import ReactEcharts from "echarts-for-react"; 
 
+import insuranceAPI from "api/insurance";
 import Swal from "sweetalert2";
 
 import loader from '../../assets/img/loading.gif';
@@ -55,6 +56,9 @@ const Dashboard = ({ match, history, loading, error }) => {
   const [showDateRangePicker, setShowDateRangePicker] = useState(false);
   const [dateRangePicker, setDateRangePicker] = useState('drp-none');
 
+  const [insuranceID, setInsuranceID] = useState('');
+  const [insuranceClassID, setInsuranceClassID] = useState('');
+  const [insuranceType, setInsuranceType] = useState('');
   const [tableClass, setTableClass] = useState('');
   const [rowSelected, setRowSelected] = useState(null);
 
@@ -341,9 +345,17 @@ const Dashboard = ({ match, history, loading, error }) => {
     },
     series: [
       {
-        data: [932, 1200, 777],
+        data: [{ 
+            value: 932,
+            itemStyle: { color: '#006894' },
+           }, {
+            value: 1200,
+            itemStyle: { color: '#007fb6' },
+           },{ 
+            value: 777,
+            itemStyle: { color: '#39addf' },
+          }],
         type: 'bar',
-        itemStyle: { color: '#006894' },
         label: {
           show: true,
           // position: 'top',
@@ -400,9 +412,17 @@ const Dashboard = ({ match, history, loading, error }) => {
     },
     series: [
       {
-        data: [932, 1200, 777],
+        data: [{ 
+            value: 932,
+            itemStyle: { color: '#006894' },
+           }, {
+            value: 1200,
+            itemStyle: { color: '#007fb6' },
+           },{ 
+            value: 777,
+            itemStyle: { color: '#39addf' },
+          }],
         type: 'bar',
-        itemStyle: { color: '#006894' },
         label: {
           show: true,
           // position: 'top',
@@ -522,9 +542,17 @@ const Dashboard = ({ match, history, loading, error }) => {
     },
     series: [
       {
-        data: [932, 1200, 777],
+        data: [{ 
+            value: 932,
+            itemStyle: { color: '#006894' },
+           }, {
+            value: 1200,
+            itemStyle: { color: '#007fb6' },
+           },{ 
+            value: 777,
+            itemStyle: { color: '#39addf' },
+          }],
         type: 'bar',
-        itemStyle: { color: '#006894' },
         label: {
           show: true,
           // position: 'top',

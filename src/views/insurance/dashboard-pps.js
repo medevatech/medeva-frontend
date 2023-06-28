@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Row,
   Card,
@@ -39,6 +39,7 @@ import { addDays } from 'date-fns';
 
 import ReactEcharts from "echarts-for-react"; 
 
+import insuranceAPI from "api/insurance";
 import Swal from "sweetalert2";
 
 import loader from '../../assets/img/loading.gif';
@@ -58,6 +59,9 @@ const Dashboard = ({ match, history, loading, error }) => {
   const [tableClass, setTableClass] = useState('');
   const [rowSelected, setRowSelected] = useState(null);
 
+  const [insuranceID, setInsuranceID] = useState('');
+  const [insuranceClassID, setInsuranceClassID] = useState('');
+  const [insuranceType, setInsuranceType] = useState('');
   const [doctorName, setDoctorName] = useState('');
   const [modalDoctor, setModalDoctor] = useState(false);
 
@@ -77,23 +81,6 @@ const Dashboard = ({ match, history, loading, error }) => {
   }
 
   const [isLoading, setIsLoading] = useState(false);
-
-  const getInsurance = async (params) => {
-    try {
-      setIsLoading(true);
-      // const res = await insuranceAPI.get(params);
-      // dispatch({type: "GET_INSURANCE", payload: res.data.data});
-      // dispatch({type: "GET_TOTAL_PAGE_INSURANCE", payload: res.data.pagination.totalPage});
-
-      // if(res.data.data.length > 0) {
-      //   setTableClass('table-hover');
-      // }
-    } catch (e) {
-      console.log(e);
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   const totalKunjungan = {
     grid: { top: 8, right: 8, bottom: 24, left: 38 },
@@ -290,7 +277,7 @@ const Dashboard = ({ match, history, loading, error }) => {
         data: [1200, 901, 901, 932, 820, 1320, 1330, 1290, 934, 901, 932, 820],
         type: 'bar',
         stack: 'x',
-        itemStyle: { color: '#39addf' },
+        itemStyle: { color: '#007fb6' },
         label: {
           show: true,
           position: 'top',
@@ -386,9 +373,17 @@ const Dashboard = ({ match, history, loading, error }) => {
     },
     series: [
       {
-        data: [932, 1200, 777],
+        data: [{ 
+            value: 932,
+            itemStyle: { color: '#006894' },
+           }, {
+            value: 1200,
+            itemStyle: { color: '#007fb6' },
+           },{ 
+            value: 777,
+            itemStyle: { color: '#39addf' },
+          }],
         type: 'bar',
-        itemStyle: { color: '#006894' },
         label: {
           show: true,
           // position: 'top',
@@ -426,6 +421,60 @@ const Dashboard = ({ match, history, loading, error }) => {
       trigger: 'axis',
     },
   }; 
+
+  useEffect(() => {
+    console.log(location.state);
+
+    if (location.state) {
+      setInsuranceID(location.state.insuranceID);
+      setInsuranceClassID(location.state.insuranceClassID);
+      setInsuranceType(location.state.insuranceType);
+      getInsuranceByInsuranceIdAndInsuranceClassId(location.state.insuranceID, location.state.insuranceClassID);
+    }
+  }, [ ]);
+
+  const getInsuranceByInsuranceIdAndInsuranceClassId = async (insuranceID, insuranceClassID) => {
+
+    try {
+      const res = await insuranceAPI.getTypeDashboard(`?id_asuransi=${insuranceID}&id_asuransi_kelas=${insuranceClassID}`);
+      let data = res.data.data;
+      console.log(data);
+
+      if(data){
+        if(dataReq.tipe === "PPSK") {
+          history.push({
+            pathname: "/insurance/dashboard-pps",
+            state: { insuranceID: dataReq.id, insuranceClassID: dataReq.id_asuransi_kelas, insuranceType: dataReq.tipe }
+          });
+        } else if (dataReq.tipe === "FFSP" || data.tipe === "FFSNP") {
+          history.push({
+            pathname: "/insurance/dashboard-ffs",
+            state: { insuranceID: dataReq.id, insuranceClassID: dataReq.id_asuransi_kelas, insuranceType: dataReq.tipe }
+          });
+        } else {
+          Swal.fire({
+            title: "Gagal!",
+            html: "Tipe asuransi tidak valid, silahkan memvalidasi ulang data asuransi",
+            icon: "error",
+            confirmButtonColor: "#008ecc",
+            // confirmButtonText: "Coba lagi",
+          });
+        }
+      }
+
+      // console.log(insurance);
+    } catch (e) {
+      Swal.fire({
+        title: "Gagal!",
+        html: e.response.data.message,
+        icon: "error",
+        confirmButtonColor: "#008ecc",
+        confirmButtonText: "Coba lagi",
+      });
+
+      console.log(e);
+    }
+  }
 
   return (
     <>

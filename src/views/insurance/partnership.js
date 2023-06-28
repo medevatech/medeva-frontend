@@ -56,7 +56,7 @@ const selectStatusF = [
 
 const selectType = [
   { label: "Pilih Tipe", value: "", key: 0, name: 'tipe' },
-  { label: "PPS / Kapitasi", value: "PPS", key: 1, name: "tipe" },
+  { label: "PPS / Kapitasi", value: "PPSK", key: 1, name: "tipe" },
   { label: "FFS Paket", value: "FFSP", key: 2, name: "tipe" },
   { label: "FFS Non-Paket", value: "FFSNP", key: 3, name: "tipe" },
 ];

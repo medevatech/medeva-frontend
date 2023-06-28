@@ -255,7 +255,9 @@ const Data = ({ match }) => {
   const [disabledInsuranceClass, setDisabledInsuranceClass] = useState([{0: false}]);
   const [modalArchive, setModalArchive] = useState(false);
   const [modalDelete, setModalDelete] = useState(false);
+  const [modalRecord, setModalRecord] = useState(false);
   const [patientStatus, setPatientStatus] = useState(0);
+  const [recordStatus, setRecordStatus] = useState(0);
   const [patientName, setPatientName] = useState('');
   const [patientSubmit, setPatientSubmit] = useState('');
 
@@ -1444,7 +1446,6 @@ const Data = ({ match }) => {
       getPatientById("", patientID);
     }
   };
-
   
   const deleteById = async (e, id) => {
     e.preventDefault();
@@ -1586,6 +1587,97 @@ const Data = ({ match }) => {
       console.log(e);
     }
   };
+
+  const recordById = async (e, id) => {
+    e.preventDefault();
+
+    setModalRecord(true);
+    try {
+      const res = await patientAPI.get(`/${id}`);
+      let data = res.data.data[0];
+      // console.log(data);
+
+      setPatientID(data.id);
+      setRecordStatus(data.status);
+      setPatientName(data.nama_lengkap);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  // const onRecordStatusSubmit = async (e) => {
+  //   e.preventDefault();
+
+  //   try {
+  //     if (patientStatus == 1) {
+  //       const response = await patientAPI.archive("", patientID);
+
+  //       if (response.status == 200) {
+  //         let data = await response.data.data;
+  //         // console.log(data);
+
+  //         Swal.fire({
+  //           title: "Sukses!",
+  //           html: `Arsip pasien sukses`,
+  //           icon: "success",
+  //           confirmButtonColor: "#008ecc",
+  //         });
+
+  //         setModalRecord(false);
+  //       } else {
+  //         Swal.fire({
+  //           title: "Gagal!",
+  //           html: `Arsip pasien gagal: ${response.message}`,
+  //           icon: "error",
+  //           confirmButtonColor: "#008ecc",
+  //           confirmButtonText: "Coba lagi",
+  //         });
+
+  //         throw Error(`Error status: ${response.status}`);
+  //       }
+  //     } else {
+  //       const response = await patientAPI.activate("", patientID);
+
+  //       if (response.status == 200) {
+  //         let data = await response.data.data;
+  //         // console.log(data);
+
+  //         Swal.fire({
+  //           title: "Sukses!",
+  //           html: `Aktivasi pasien sukses`,
+  //           icon: "success",
+  //           confirmButtonColor: "#008ecc",
+  //         });
+
+  //         setModalRecord(false);
+  //       } else {
+  //         Swal.fire({
+  //           title: "Gagal!",
+  //           html: `Aktivasi pasien gagal: ${response.message}`,
+  //           icon: "error",
+  //           confirmButtonColor: "#008ecc",
+  //           confirmButtonText: "Coba lagi",
+  //         });
+
+  //         throw Error(`Error status: ${response.status}`);
+  //       }
+  //     }
+  //     // console.log(response);
+  //   } catch (e) {
+  //     Swal.fire({
+  //       title: "Gagal!",
+  //       html: e.response.data.message,
+  //       icon: "error",
+  //       confirmButtonColor: "#008ecc",
+  //       confirmButtonText: "Coba lagi",
+  //     });
+
+  //     console.log(e);
+  //   } finally {
+  //     getPatient("");
+  //     getPatientById("", patientID);
+  //   }
+  // };
 
   const [currentPage, setCurrentPage] = useState(1);
   const [searchName, setSearchName] = useState("");
@@ -1827,7 +1919,7 @@ const Data = ({ match }) => {
                         </DropdownToggle>
                         <DropdownMenu right>
                           <DropdownItem 
-                            // onClick={(e) => medicalRecordById(e, patientID)}
+                            onClick={(e) => recordById(e, patientID)}
                           >
                             <i className="simple-icon-printer"></i>&nbsp;Cetak Dokumen
                           </DropdownItem>
@@ -2404,6 +2496,137 @@ const Data = ({ match }) => {
             <Button color="primary" onClick={(e) => onDeleteSubmit(e)}>
               Ya
             </Button>{" "}
+          </ModalFooter>
+        </Modal>
+
+        <Modal
+          isOpen={modalRecord}
+          toggle={() => setModalRecord(!modalRecord)}
+          className='modal-patient'
+        >
+          <ModalHeader>Dokumen Tata Laksana <b>{patientName}</b></ModalHeader>
+          <ModalBody>
+            <Table
+              // className={tableClass}
+              hover
+              responsive
+            >
+              <thead>
+                <tr>
+                  <th className="center-xy" style={{ width: '40px' }}>#</th>
+                  <th>Tipe Dokumen</th>
+                  <th>Keterangan</th>
+                  <th>Tgl Diberikan</th>
+                  <th>Tgl Cetak</th>
+                  <th className="center-xy">Status</th>
+                  <th className="center-xy">Cetak</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <th className="center-xy">1</th>
+                  <td>Surat Rujukan</td>
+                  <td>Ke dokter kulit</td>
+                  <td>20 Jan 2021</td>
+                  <td>20 Jan 2021</td>
+                  <td className="center-xy">
+                    <Button color="warning" size="xs"
+                      // onClick={(e) => onRecordStatusSubmit(e, data.id)}
+                    >
+                      Belum Selesai
+                    </Button>
+                  </td>
+                  <td className="center-xy">
+                    <Button color="dark" size="xs" style={{ borderRadius: '5px' }} outline
+                      // onClick={(e) => onRecordStatusPrint(e, data.id)}
+                    >
+                      <i className="simple-icon-printer"></i>
+                    </Button>
+                  </td>
+                </tr>
+                <tr>
+                  <th className="center-xy">2</th>
+                  <td>Surat Periksa Lab</td>
+                  <td>Periksa kreatinin, hemoglobin</td>
+                  <td>21 Jan 2022</td>
+                  <td>21 Jan 2022</td>
+                  <td className="center-xy">
+                    <Button color="success" size="xs"
+                      // onClick={(e) => onRecordStatusSubmit(e, data.id)}
+                    >
+                      Selesai
+                    </Button>
+                  </td>
+                  <td className="center-xy">
+                    <Button color="dark" size="xs" style={{ borderRadius: '5px' }} outline
+                      // onClick={(e) => onRecordStatusPrint(e, data.id)}
+                    >
+                      <i className="simple-icon-printer"></i>
+                    </Button>
+                  </td>
+                </tr>
+                <tr>
+                  <th className="center-xy">3</th>
+                  <td>Surat Periksa Rontgen</td>
+                  <td>Foto thorax</td>
+                  <td>22 Jan 2023</td>
+                  <td>22 Jan 2023</td>
+                  <td className="center-xy">
+                    <Button color="success" size="xs"
+                      // onClick={(e) => onRecordStatusSubmit(e, data.id)}
+                    >
+                      Selesai
+                    </Button>
+                  </td>
+                  <td className="center-xy">
+                    <Button color="dark" size="xs" style={{ borderRadius: '5px' }} outline
+                      // onClick={(e) => onRecordStatusPrint(e, data.id)}
+                    >
+                      <i className="simple-icon-printer"></i>
+                    </Button>
+                  </td>
+                </tr>
+                <tr>
+                  <th className="center-xy">4</th>
+                  <td>Resep</td>
+                  <td>Amlodipine 10mg, 20 tablet</td>
+                  <td>23 Jan 2024</td>
+                  <td>23 Jan 2024</td>
+                  <td className="center-xy">
+                    <Button color="warning" size="xs"
+                      // onClick={(e) => onRecordStatusSubmit(e, data.id)}
+                    >
+                      Belum Selesai
+                    </Button>
+                  </td>
+                  <td className="center-xy">
+                    <Button color="dark" size="xs" style={{ borderRadius: '5px' }} outline
+                      // onClick={(e) => onRecordStatusPrint(e, data.id)}
+                    >
+                      <i className="simple-icon-printer"></i>
+                    </Button>
+                  </td>
+                </tr>
+              </tbody>
+            </Table>
+            <Pagination
+              // currentPage={currentPage}
+              // totalPage={insuranceTotalPage}
+              // onChangePage={(i) => setCurrentPage(i)}
+              // numberLimit={insuranceTotalPage < 4 ? insuranceTotalPage : 3}
+              currentPage={1}
+              totalPage={3}
+              numberLimit={3}
+            />
+          </ModalBody>
+          <ModalFooter>
+            <Button
+              type="button"
+              color="primary"
+              onClick={() => setModalRecord(false)}
+            >
+              Tutup
+            </Button>
           </ModalFooter>
         </Modal>
       </Row>

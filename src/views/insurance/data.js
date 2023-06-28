@@ -91,15 +91,32 @@ const Data = ({ match, history, loading, error }) => {
 
     // console.log('insurance', insurance);
 
+    let isError = false;
+
     for(let [key, value] of Object.entries(insurance)) {
       // console.log(key, value);
 
       if((key === 'nama' && value === '')){
         validate(e, key, value);
-
+        isError = true;
         // console.log('errors', errors);
-        return;
+        // return;
       }
+    }
+
+    for (var i = 0; i < insuranceClass.length; i++) {
+      for(let [key, value] of Object.entries(insuranceClass[i])) {
+        if((key === 'nama_kelas' && value === '')){
+          validate(e, key, value);
+          isError = true;
+          // console.log('errors', errors);
+          // return;
+        }
+      }
+    }
+
+    if(isError === true) {
+      return;
     }
 
     for (var i = 0; i < insuranceClass.length; i++) {
@@ -237,6 +254,23 @@ const Data = ({ match, history, loading, error }) => {
 
   const onInsuranceClassSubmit = async (e) => {
     e && e.preventDefault();
+
+    let isError = false;
+
+    for (var i = 0; i < insuranceClass.length; i++) {
+      for(let [key, value] of Object.entries(insuranceClass[i])) {
+        if((key === 'nama_kelas' && value === '')){
+          validate(e, key, value);
+  
+          // console.log('errors', errors);
+          return;
+        }
+      }
+    }
+
+    if(isError === true) {
+      return;
+    }
 
     for (var i = 0; i < insuranceClass.length; i++) {
       insuranceClass[i].id_asuransi = insuranceID;

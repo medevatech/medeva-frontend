@@ -139,6 +139,7 @@ const Data = ({ match, history }) => {
   const [vitalSignsID, setVitalSignsID] = useState('');
   const [recordID, setRecordID] = useState('');
   const [watchID, setWatchID] = useState('');
+  const [participantID, setParticipantID] = useState('');
 
   const [ vitalSigns, setVitalSigns ] = useState({
     id_pasien: patientID,
@@ -256,6 +257,7 @@ const Data = ({ match, history }) => {
     setPatientID(id);
     setPatientData(data);
     setWatchID(data.id_jaga);
+    setParticipantID(data.id_peserta);
 
     // console.log('patientID', id);
     // console.log('patientData', data);
@@ -614,7 +616,7 @@ const Data = ({ match, history }) => {
                         vitalSignsID ?
                           <Link to={{
                               pathname: `/record/form`,
-                              state: { patientID: patientID, patientData: patientData, watchID: watchID, recordID: '' }
+                              state: { patientID: patientID, patientData: patientData, watchID: watchID, recordID: '', participantID: participantID }
                           }}>
                             <Button color="primary" style={{ float: "right" }} className="mb-4">
                               Tambah Rekam Medis
@@ -683,7 +685,7 @@ const Data = ({ match, history }) => {
                               <td>
                                   <Link to={{
                                       pathname: `/record/form`,
-                                      state: { patientID: patientID, patientData: patientData, recordID: data.id, watchID: watchID }
+                                      state: { patientID: patientID, patientData: patientData, recordID: data.id, watchID: watchID, participantID: participantID }
                                   }}>
                                     <Button color="secondary" size="xs" style={{ float: "right" }}>
                                       Ubah Data

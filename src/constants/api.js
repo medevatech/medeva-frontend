@@ -49,6 +49,8 @@ const api = {
     classByInsurance: '/asuransi-kelas/asuransi',
     archive: "/asuransi/archive",
     activate: "/asuransi/activate",
+    dashboard: "dashboard/as-02",
+    dashboardByType: "dashboard/as-03"
   },
   partnership: {
     all: '/kerjasama',

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Row,
   Card,
@@ -12,7 +12,6 @@ import {
   Label,
   CustomInput,
   Button,
-  Form,
   Table, 
 } from 'reactstrap';
 import { useLocation, Link, NavLink } from 'react-router-dom';
@@ -23,32 +22,33 @@ import "rc-switch/assets/index.css";
 import "rc-slider/assets/index.css";
 import "react-rater/lib/react-rater.css";
 
-import useForm from 'utils/useForm';
-
-import Select from "react-select";
-
 import { Colxx, Separator } from "components/common/CustomBootstrap";
 import Pagination from "components/common/Pagination";
-
-import CustomSelectInput from "components/common/CustomSelectInput";
 
 import 'react-date-range/dist/styles.css';
 import 'react-date-range/dist/theme/default.css';
 import { DateRangePicker } from 'react-date-range';
 import { addDays } from 'date-fns';
 
+import insuranceAPI from "api/insurance";
 import Swal from "sweetalert2";
 
 import loader from '../../assets/img/loading.gif';
+
+import { currencyFormat } from 'utils';
 
 const userData = JSON.parse(localStorage.getItem('user_data'));
 
 const Dashboard = ({ match, history, loading, error }) => {
   const dispatch = useDispatch();
   const location = useLocation();
-  // const insuranceData = useSelector(state => state.insurance);
-  // const insuranceTotalPage = useSelector(state => state.insuranceTotalPage);
-  const { errors, validate } = useForm();
+  const insuranceMetrics = useSelector(state => state.insuranceMetrics);
+  const insuranceData = useSelector(state => state.insuranceDashboard);
+  const insuranceTotalPage = useSelector(state => state.insuranceDashboardTotalPage);
+
+  const [claimTotal, setClaimTotal] = useState([]);
+  const [incomeTotal, setIncomeTotal] = useState([]);
+  const [successClaim, setSuccessClaim] = useState([]);
   
   const [showDateRangePicker, setShowDateRangePicker] = useState(false);
   const [dateRangePicker, setDateRangePicker] = useState('drp-none');
@@ -75,16 +75,23 @@ const Dashboard = ({ match, history, loading, error }) => {
 
   const [isLoading, setIsLoading] = useState(false);
 
-  const getInsurance = async (params) => {
+  const onLoadInsuranceDashboard = async (params) => {
     try {
       setIsLoading(true);
-      // const res = await insuranceAPI.get(params);
-      // dispatch({type: "GET_INSURANCE", payload: res.data.data});
-      // dispatch({type: "GET_TOTAL_PAGE_INSURANCE", payload: res.data.pagination.totalPage});
+      const res = await insuranceAPI.getMainDashboard(params);
+      // console.log('res', res);
 
-      // if(res.data.data.length > 0) {
-      //   setTableClass('table-hover');
-      // }
+      dispatch({type: "GET_METRICS_INSURANCE_DASHBOARD", payload: res.data.data});
+      dispatch({type: "GET_INSURANCE_DASHBOARD", payload: res.data.data.tabel.result});
+      dispatch({type: "GET_TOTAL_PAGE_INSURANCE_DASHBOARD", payload: res.data.data.tabel.pagination.totalPage});
+      
+      setClaimTotal(res.data.data.total_klaim);
+      setIncomeTotal(res.data.data.total_pendapatan);
+      setSuccessClaim(res.data.data.klaim_berhasil);
+
+      if(res.data.data.tabel.result.length > 0) {
+        setTableClass('table-hover');
+      }
     } catch (e) {
       console.log(e);
     } finally {
@@ -92,68 +99,110 @@ const Dashboard = ({ match, history, loading, error }) => {
     }
   };
 
-  const goToInsuranceDashboard = async (e, id) => {
-    // e && e.preventDefault();
-    // setRowSelected(id);
+  const goToInsuranceDashboard = async (e, dataReq) => {
+    e && e.preventDefault();
+    setRowSelected(dataReq.id);
 
-    // try {
-    //   const res = await insuranceAPI.get(`/${id}`);
-    //   let data = res.data.data[0];
-    //   // console.log(data);
+    try {
+      const res = await insuranceAPI.getTypeDashboard(`?id_asuransi=${dataReq.id_asuransi}&id_asuransi_kelas=${dataReq.id_asuransi_kelas}`);
+      let data = res.data.data;
+      // console.log(data);
 
-    //   if(data.tipe === "PPS") {
-    //     history.push({
-    //       pathname: "/insurance/dashboard-pps",
-    //       state: { insuranceID: data.id, insuranceType: data.tipe }
-    //     });
-    //   } else if (data.tipe === "FFSP" || data.tipe === "FFSNP") {
-    //     history.push({
-    //       pathname: "/insurance/dashboard-ffs",
-    //       state: { insuranceID: data.id, insuranceType: data.tipe }
-    //     });
-    //   } else {
-    //     Swal.fire({
-    //       title: "Gagal!",
-    //       html: "Tipe asuransi tidak valid, silahkan memvalidasi ulang data asuransi",
-    //       icon: "error",
-    //       confirmButtonColor: "#008ecc",
-    //       // confirmButtonText: "Coba lagi",
-    //     });
-    //   }
+      if(data){
+        if(dataReq.tipe === "PPSK" || dataReq.tipe === "PPST") {
+          history.push({
+            pathname: "/insurance/dashboard-pps",
+            state: { insuranceID: dataReq.id_asuransi, insuranceClassID: dataReq.id_asuransi_kelas, insuranceType: dataReq.tipe }
+          });
+        } else if (dataReq.tipe === "FFSP" || data.tipe === "FFSNP") {
+          history.push({
+            pathname: "/insurance/dashboard-ffs",
+            state: { insuranceID: dataReq.id_asuransi, insuranceClassID: dataReq.id_asuransi_kelas, insuranceType: dataReq.tipe }
+          });
+        } else {
+          Swal.fire({
+            title: "Gagal!",
+            html: "Tipe asuransi tidak valid, silahkan memvalidasi ulang data asuransi",
+            icon: "error",
+            confirmButtonColor: "#008ecc",
+            // confirmButtonText: "Coba lagi",
+          });
+        }
+      }
 
-    //   // console.log(insurance);
-    // } catch (e) {
-    //   Swal.fire({
-    //     title: "Gagal!",
-    //     html: e.response.data.message,
-    //     icon: "error",
-    //     confirmButtonColor: "#008ecc",
-    //     confirmButtonText: "Coba lagi",
-    //   });
-
-    //   console.log(e);
-    // }
-
-    if(id === "PPS") {
-      history.push({
-        pathname: "/insurance/dashboard-pps",
-        state: { insuranceID: 1, insuranceType: "PPS" }
-      });
-    } else if (id === "FFSP" || id === "FFSNP") {
-      history.push({
-        pathname: "/insurance/dashboard-ffs",
-        state: { insuranceID: 2, insuranceType: "FFSNP" }
-      });
-    } else {
+      // console.log(insurance);
+    } catch (e) {
       Swal.fire({
         title: "Gagal!",
-        html: "Tipe asuransi tidak valid, silahkan memvalidasi ulang data asuransi",
+        html: e.response.data.message,
         icon: "error",
         confirmButtonColor: "#008ecc",
-        // confirmButtonText: "Coba lagi",
+        confirmButtonText: "Coba lagi",
       });
+
+      console.log(e);
     }
+
+    // if(id === "PPSK") {
+    //   history.push({
+    //     pathname: "/insurance/dashboard-pps",
+    //     state: { insuranceID: 1, insuranceType: "PPSK" }
+    //   });
+    // } else if (id === "FFSP" || id === "FFSNP") {
+    //   history.push({
+    //     pathname: "/insurance/dashboard-ffs",
+    //     state: { insuranceID: 2, insuranceType: "FFSNP" }
+    //   });
+    // } else {
+    //   Swal.fire({
+    //     title: "Gagal!",
+    //     html: "Tipe asuransi tidak valid, silahkan memvalidasi ulang data asuransi",
+    //     icon: "error",
+    //     confirmButtonColor: "#008ecc",
+    //     // confirmButtonText: "Coba lagi",
+    //   });
+    // }
   };
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const [searchName, setSearchName] = useState("");
+  const [searchStatus, setSearchStatus] = useState("");
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [ limit, searchName, searchStatus, sortBy, sortOrder ]);
+
+  useEffect(() => {
+    let params = "";
+    
+    if (limit !== 10) {
+      params = `${params}?limit=${limit}`;
+    } else {
+      params = `${params}?limit=10`;
+    }
+    if (searchName !== "") {
+      params = `${params}&search=${searchName}`;
+    }
+    if (searchStatus !== "") {
+      params = `${params}&searchStatus=${searchStatus}`;
+    }
+    if (currentPage !== 1) {
+      params = `${params}&page=${currentPage}`;
+    }
+
+    setRowSelected(false);
+    onLoadInsuranceDashboard(params);
+  }, [limit, searchName, searchStatus, sortBy, sortOrder, currentPage]);
+
+  let startNumber = 1;
+
+  if (currentPage !== 1) {
+    startNumber = (currentPage - 1) * 10 + 1;
+  }
+
+  const [limit, setLimit] = useState(10);
+  const [sortBy, setSortBy] = useState("");
+  const [sortOrder, setSortOrder] = useState("");
 
   return (
     <>
@@ -198,7 +247,7 @@ const Dashboard = ({ match, history, loading, error }) => {
                 />
                 <div>
                   <p className="text-small text-white">Total Klaim</p>
-                  <h1 className="text-white">Rp9.999.999.999</h1>
+                  <h1 className="text-white">{ insuranceMetrics ? currencyFormat(claimTotal.result) : 'Rp0' }</h1>
                 </div>
               </div>
             </CardBody>
@@ -213,7 +262,7 @@ const Dashboard = ({ match, history, loading, error }) => {
                 />
                 <div>
                   <p className="text-small text-white">Total Pendapatan</p>
-                  <h1 className="text-white">Rp9.999.999.999</h1>
+                  <h1 className="text-white">{ insuranceMetrics ? currencyFormat(incomeTotal.result) : 'Rp0' }</h1>
                 </div>
               </div>
             </CardBody>
@@ -228,7 +277,7 @@ const Dashboard = ({ match, history, loading, error }) => {
                 />
                 <div>
                   <p className="text-small text-white">Klaim Berhasil</p>
-                  <h1 className="text-white">99.9999%</h1>
+                  <h1 className="text-white">{ insuranceMetrics ? parseFloat(successClaim.result).toFixed(2) + '%' : '0%' }</h1>
                 </div>
               </div>
             </CardBody>
@@ -241,25 +290,10 @@ const Dashboard = ({ match, history, loading, error }) => {
           <Card>
             <CardBody>
               <CardTitle>
-                {/* <Row> */}
-                  {/* <Colxx sm="8" md="8" xl="8" className="col-sm-8-mobile"> */}
-                    Analisa Asuransi
-                  {/* </Colxx> */}
-                  {/* <Colxx sm="4" md="4" xl="4" className="col-sm-4-mobile">
-                    <Button
-                      color="primary"
-                      style={{ float: "right" }}
-                      className="mb-4"
-                      onClick={(e) => resetForm(e, true)}
-                    >
-                      Tambah
-                    </Button>
-                  </Colxx> */}
-                {/* </Row> */}
+                Analisa Asuransi
               </CardTitle>
               <Table
-                // className={tableClass}
-                hover
+                className={tableClass}
                 responsive
               >
                 <thead>
@@ -267,54 +301,46 @@ const Dashboard = ({ match, history, loading, error }) => {
                     <th className="center-xy" style={{ width: '40px' }}>#</th>
                     <th>Produk</th>
                     <th>Asuransi</th>
+                    <th className="center-xy">Kunjungan</th>
                     <th>Jumlah Klaim</th>
                     <th>Pendapatan</th>
                   </tr>
                 </thead>
                 <tbody>
-                {/* {isLoading && rowSelected === false ? (
+                {isLoading && rowSelected === false ? (
                   <tr>
-                    <td>&nbsp;</td>
-                    <td align="center">
+                    <td align="center" colSpan={6}>
                       <img src={loader} alt="loading..." width="100"/>
                     </td>
-                    <td>&nbsp;</td>
                   </tr>
                   ) :
                   insuranceData.length > 0 ? (
-                    insuranceData.map((data) => (
-                      <tr key={data.id} onClick={(e) => goToInsuranceDashboard(e, data.id)} style={{ cursor: 'pointer'}} className={`${rowSelected == data.id && 'row-selected'}`}>
+                    insuranceData.map((data, index) => (
+                      <tr key={data.id} onClick={(e) => goToInsuranceDashboard(e, data, data.id)} style={{ cursor: 'pointer'}} className={`${rowSelected == data.id && 'row-selected'}`}>
                         <th scope="row" style={{ textAlign: "center", verticalAlign: 'middle' }}>
                           {startNumber++}
                         </th>
                         <td>
-                          <h6 style={{ fontWeight: 'bold' }} className="max-text">{data.nama}</h6>
-                          {data.is_active == 1 ? (
-                            <Badge color="success" className="mt-2">Aktif</Badge>
-                          ) : (
-                            <Badge color="warning" className="mt-2">Non-Aktif</Badge>
-                          )}
+                          <h6 style={{ fontWeight: 'bold' }} className="max-text">
+                            [{data.tipe}] 
+                            {data.produk}
+                          </h6>
                         </td>
-                        <td style={{ textAlign: "center", verticalAlign: 'middle' }}>
-                          <Button color="secondary" size="xs" className="button-xs"
-                            onClick={(e) => goToInsuranceDashboard(e, data.id)}
-                            >
-                            <i className="simple-icon-arrow-right-circle"></i>
-                          </Button>
-                        </td>
+                        <td>{ data.asuransi ? data.asuransi : '-' }</td>
+                        <td className="center-xy">{ data.kunjungan ? data.kunjungan : '0' }</td>
+                        <td>{ data.total_klaim ? currencyFormat(data.total_klaim) : 'Rp0' }</td>
+                        <td>{ data.pendapatan ? currencyFormat(data.pendapatan) : 'Rp0' }</td>
                       </tr>
                     ))
                   ) : (
                     <tr>
-                      <td>&nbsp;</td>
-                      <td align="center">
+                      <td align="center" colSpan={6}>
                         <h5 style={{ marginTop: '1.5rem' }}><b>Data tidak ditemukan</b></h5>
                       </td>
-                      <td>&nbsp;</td>
                     </tr>
                   )
-                } */}
-                  <tr>
+                }
+                  {/* <tr>
                     <th>1</th>
                     <td><h6 style={{ fontWeight: 'bold' }}>Kelas A</h6></td>
                     <td>BPJS</td>
@@ -322,13 +348,13 @@ const Dashboard = ({ match, history, loading, error }) => {
                     <td>Rp23.230.230</td>
                   </tr>
                   <tr 
-                    onClick={(e) => goToInsuranceDashboard("", "PPS")}
+                    onClick={(e) => goToInsuranceDashboard("", "PPSK")}
                     // onClick={(e) => goToInsuranceDashboard(e, data.id)}
                     style={{ cursor: 'pointer'}}
                     // className={`${rowSelected == data.id && 'row-selected'}`}
                   >
                     <th>2</th>
-                    <td><h6 style={{ fontWeight: 'bold' }}>Kelas B (PPS)</h6></td>
+                    <td><h6 style={{ fontWeight: 'bold' }}>Kelas B (PPSK)</h6></td>
                     <td>BPJS</td>
                     <td>Rp24.242.424</td>
                     <td>Rp23.230.230</td>
@@ -351,18 +377,14 @@ const Dashboard = ({ match, history, loading, error }) => {
                     <td>AIA</td>
                     <td>Rp999.999.999</td>
                     <td>Rp888.888.888</td>
-                  </tr>
+                  </tr> */}
                 </tbody>
               </Table>
               <Pagination
-                // currentPage={currentPage}
-                // totalPage={insuranceTotalPage}
-                // onChangePage={(i) => setCurrentPage(i)}
-                // numberLimit={insuranceTotalPage < 4 ? insuranceTotalPage : 3}
-
-                currentPage={1}
-                totalPage={3}
-                numberLimit={3}
+                currentPage={currentPage}
+                totalPage={insuranceTotalPage}
+                onChangePage={(i) => setCurrentPage(i)}
+                numberLimit={insuranceTotalPage < 4 ? insuranceTotalPage : 3}
               />
             </CardBody>
           </Card>

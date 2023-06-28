@@ -7,6 +7,14 @@ const insurance = {
     const url = api.insurance.all + options
     return baseApi.get(url, { headers: getAuthHeader() })
   },
+  getMainDashboard: (options) => {
+    const url = api.insurance.dashboard + options
+    return baseApi.get(url, { headers: getAuthHeader() })
+  },
+  getTypeDashboard: (options) => {
+    const url = api.insurance.dashboardByType + options
+    return baseApi.get(url, { headers: getAuthHeader() })
+  },
   add: (payloads) => {
     const url = api.insurance.all
     return baseApi.post(url, payloads, { headers: getAuthHeader() })

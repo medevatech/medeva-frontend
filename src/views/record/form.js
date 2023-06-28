@@ -118,6 +118,7 @@ let patientID = "";
 let patientData = "";
 let recordID = "";
 let watchID = "";
+let participantID = "";
 
 const FormRecord = ({ match, history }) => {
   const dispatch = useDispatch();
@@ -180,6 +181,7 @@ const FormRecord = ({ match, history }) => {
     status_pulang: '',
     keluhan: '',
     catatan_tambahan: '',
+    id_peserta: participantID
   });
 
   const onChange = (e, name = "") => {
@@ -579,6 +581,7 @@ const FormRecord = ({ match, history }) => {
     record.id_vs = vitalSignsID;
     record.id_pasien = patientID;
     record.id_jaga = watchID;
+    record.id_peserta = participantID;
 
     for(let [key, value] of Object.entries(record)) {
       if((key === 'status_pulang' && value === '')){
@@ -1427,7 +1430,8 @@ const FormRecord = ({ match, history }) => {
       kasus_kll: false,
       status_pulang: '',
       keluhan: '',
-      catatan_tambahan: ''
+      catatan_tambahan: '',
+      id_peserta: participantID
     });
     
     setIsChecked(false);
@@ -2091,6 +2095,7 @@ const FormRecord = ({ match, history }) => {
       patientID = location.state.patientID;
       patientData = location.state.patientData;
       watchID = location.state.watchID;
+      participantID = location.state.participantID;
 
       if (location.state.recordID) {
         recordID = location.state.recordID;

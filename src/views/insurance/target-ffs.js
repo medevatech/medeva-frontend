@@ -79,6 +79,7 @@ const Data = ({ match, history, loading, error }) => {
   const [modalArchive, setModalArchive] = useState(false);
   const [modalDelete, setModalDelete] = useState(false);
   const [insuranceID, setInsuranceID] = useState('');
+  const [insuranceClassID, setInsuranceClassID] = useState('');
   const [insuranceName, setInsuranceName] = useState('');
   const [insuranceType, setInsuranceType] = useState('');
   const [insuranceStatus, setInsuranceStatus] = useState(0);
