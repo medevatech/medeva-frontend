@@ -41,7 +41,8 @@ const api = {
   patient: {
     all: '/pasien',
     archive: '/pasien/archive',
-    activate: '/pasien/activate'
+    activate: '/pasien/activate',
+    clinicalRules: '/tata-laksana'
   },
   insurance: {
     all: '/asuransi',
@@ -50,7 +51,10 @@ const api = {
     archive: "/asuransi/archive",
     activate: "/asuransi/activate",
     dashboard: "dashboard/as-02",
-    dashboardByType: "dashboard/as-03"
+    dashboardPPS: "dashboard/as-03",
+    dashboardPPSByDoctor: "dashboard/as-03/analisa-rujukan",
+    dashboardFFSP: "dashboard/as-04",
+    dashboardFFSNP: "dashboard/as-05"
   },
   partnership: {
     all: '/kerjasama',

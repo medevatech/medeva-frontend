@@ -11,8 +11,20 @@ const insurance = {
     const url = api.insurance.dashboard + options
     return baseApi.get(url, { headers: getAuthHeader() })
   },
-  getTypeDashboard: (options) => {
-    const url = api.insurance.dashboardByType + options
+  getPPSDashboard: (options) => {
+    const url = api.insurance.dashboardPPS + options
+    return baseApi.get(url, { headers: getAuthHeader() })
+  },
+  getPPSDashboardByDoctor: (options) => {
+    const url = api.insurance.dashboardPPSByDoctor + options
+    return baseApi.get(url, { headers: getAuthHeader() })
+  },
+  getFFSPDashboard: (options) => {
+    const url = api.insurance.dashboardFFSP + options
+    return baseApi.get(url, { headers: getAuthHeader() })
+  },
+  getFFSNPDashboard: (options) => {
+    const url = api.insurance.dashboardFFNSP + options
     return baseApi.get(url, { headers: getAuthHeader() })
   },
   add: (payloads) => {

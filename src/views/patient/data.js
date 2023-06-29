@@ -255,7 +255,7 @@ const Data = ({ match }) => {
   const [disabledInsuranceClass, setDisabledInsuranceClass] = useState([{0: false}]);
   const [modalArchive, setModalArchive] = useState(false);
   const [modalDelete, setModalDelete] = useState(false);
-  const [modalRecord, setModalRecord] = useState(false);
+  const [modalClinicalRules, setModalClinicalRules] = useState(false);
   const [patientStatus, setPatientStatus] = useState(0);
   const [recordStatus, setRecordStatus] = useState(0);
   const [patientName, setPatientName] = useState('');
@@ -1294,36 +1294,35 @@ const Data = ({ match }) => {
     }
   };
 
-  function ButtonActive() {
-    return <>
-    <Button color="success" size="xs" onClick={(e) => statusById(e, patientID)}>
-      <i className="simple-icon-drawer"></i>&nbsp;Aktifkan
-    </Button>
-    </>;
-  }
+  const [clinicalRules, setClinicalRules] = useState([
+    { id: '', id_pasien: patientID, id_pemeriksaan: "", nama_pemeriksaan: "", id_lab: "", id_lab: "", nama_laboratorium: "",
+      id_kunjungan: "", keluhan: "", nama_lengkap: "", status: "", is_active: "" }
+  ]);
 
-  function ButtonArchive() {
-    return <>
-    <Button color="warning" size="xs" onClick={(e) => statusById(e, patientID)}>
-      <i className="simple-icon-drawer"></i>&nbsp;Arsipkan
-    </Button>
-    </>;
-  }
+  const getClinicalRulesByPatientId = async (id, data) => {
+    setClinicalRules([
+      { id: '', id_pasien: patientID, id_pemeriksaan: "", nama_pemeriksaan: "", id_lab: "", id_lab: "", nama_laboratorium: "",
+        id_kunjungan: "", keluhan: "", nama_lengkap: "", status: "", is_active: "" }
+    ]);
+    
+    setPatientID(data.id);
+    setPatientName(data.nama_lengkap);
 
-  function IsActive() {
-    if(userData.roles.includes('isDev') ||
-    userData.roles.includes('isResepsionis')){
-      if (patientID && patientStatus == 1) {
-        return <ButtonArchive/>;
-      } else if (patientID && patientStatus == 0) {
-        return <ButtonActive/>;
-      } else {
-        return null;
+    setModalClinicalRules(true);
+    try {
+      const res = await patientAPI.getClinicalRules(`/${id}`);
+      let data = res.data.data;
+      // console.log('data', data);
+
+      if(data) {
+        data.map((data, index) => {
+          
+        })
       }
-    } else {
-      return null;
+    } catch (e) {
+      console.log(e);
     }
-  }
+  };
 
   function ActiveDropdown() {
     return <>
@@ -1591,7 +1590,7 @@ const Data = ({ match }) => {
   const recordById = async (e, id) => {
     e.preventDefault();
 
-    setModalRecord(true);
+    setModalClinicalRules(true);
     try {
       const res = await patientAPI.get(`/${id}`);
       let data = res.data.data[0];
@@ -1623,7 +1622,7 @@ const Data = ({ match }) => {
   //           confirmButtonColor: "#008ecc",
   //         });
 
-  //         setModalRecord(false);
+  //         setModalClinicalRules(false);
   //       } else {
   //         Swal.fire({
   //           title: "Gagal!",
@@ -1649,7 +1648,7 @@ const Data = ({ match }) => {
   //           confirmButtonColor: "#008ecc",
   //         });
 
-  //         setModalRecord(false);
+  //         setModalClinicalRules(false);
   //       } else {
   //         Swal.fire({
   //           title: "Gagal!",
@@ -2500,8 +2499,8 @@ const Data = ({ match }) => {
         </Modal>
 
         <Modal
-          isOpen={modalRecord}
-          toggle={() => setModalRecord(!modalRecord)}
+          isOpen={modalClinicalRules}
+          toggle={() => setModalClinicalRules(!modalClinicalRules)}
           className='modal-patient'
         >
           <ModalHeader>Dokumen Tata Laksana <b>{patientName}</b></ModalHeader>
@@ -2623,7 +2622,7 @@ const Data = ({ match }) => {
             <Button
               type="button"
               color="primary"
-              onClick={() => setModalRecord(false)}
+              onClick={() => setModalClinicalRules(false)}
             >
               Tutup
             </Button>

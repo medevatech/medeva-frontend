@@ -43,6 +43,7 @@ import insuranceAPI from "api/insurance";
 import Swal from "sweetalert2";
 
 import loader from '../../assets/img/loading.gif';
+import { currencyFormat } from 'utils';
 
 const userData = JSON.parse(localStorage.getItem('user_data'));
 
@@ -52,15 +53,23 @@ const Dashboard = ({ match, history, loading, error }) => {
   // const insuranceData = useSelector(state => state.insurance);
   // const insuranceTotalPage = useSelector(state => state.insuranceTotalPage);
   const { errors, validate } = useForm();
+
+  const [insuranceMetrics, setInsuranceMetrics] = useState({ total_klaim: 0, total_klaim_ditolak: 0, jumlah_anggota: 0, biaya_layanan: { low: 0, medium: 0, high: 0 }, komponen_layanan: { bhp: 0, bnmhp: 0, jasa_medis: 0 }, status_klaim: { ditolak: 0, dipertimbangkan: 0, diterima: 0 }, alasan_penolakan: { berkas_tidak_lengkap: 0, diagnosa_tidak_tepat: 0, penanganan_tidak_tepat: 0, tidak_ditanggung: 0, lainnya: 0 }, layanan_terklaim: { tambal_gigi: 0, suntik_vitamin: 0, penanganan_luka: 0 } });
+  const [incomeMetrics, setIncomeMetrics] = useState({});
+  const [visitationMetrics, setVisitationMetrics] = useState({});
+  const [unitCostData, setUnitCostData] = useState([]);
+  const [unitCostTotalPage, setUnitCostTotalPage] = useState(0);
   
   const [showDateRangePicker, setShowDateRangePicker] = useState(false);
   const [dateRangePicker, setDateRangePicker] = useState('drp-none');
 
-  const [insuranceID, setInsuranceID] = useState('');
-  const [insuranceClassID, setInsuranceClassID] = useState('');
-  const [insuranceType, setInsuranceType] = useState('');
   const [tableClass, setTableClass] = useState('');
   const [rowSelected, setRowSelected] = useState(null);
+
+  const [insuranceID, setInsuranceID] = useState('');
+  const [insuranceClassID, setInsuranceClassID] = useState('');
+  const [insuranceName, setInsuranceName] = useState('');
+  const [insuranceType, setInsuranceType] = useState('');
 
   const handleShowDateRangePicker = (shown) => {
     shown ? setDateRangePicker('drp-inline') : setDateRangePicker('drp-none');
@@ -79,65 +88,6 @@ const Dashboard = ({ match, history, loading, error }) => {
 
   const [isLoading, setIsLoading] = useState(false);
 
-  const getInsurance = async (params) => {
-    try {
-      setIsLoading(true);
-      // const res = await insuranceAPI.get(params);
-      // dispatch({type: "GET_INSURANCE", payload: res.data.data});
-      // dispatch({type: "GET_TOTAL_PAGE_INSURANCE", payload: res.data.pagination.totalPage});
-
-      // if(res.data.data.length > 0) {
-      //   setTableClass('table-hover');
-      // }
-    } catch (e) {
-      console.log(e);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const totalKunjungan = {
-    grid: { top: 8, right: 8, bottom: 24, left: 38 },
-    xAxis: {
-      type: 'category',
-      data: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'],
-      axisTick: {
-        alignWithLabel: true,
-        // length: -88
-      },
-      axisLabel: {
-        // rotate: 30
-      },
-    },
-    yAxis: {
-      type: 'value',
-      // max: 2000,
-    },
-    series: [
-      {
-        data: [820, 932, 901, 934, 1290, 1330, 1320, 820, 932, 901, 901, 1200],
-        type: 'line',
-        smooth: true,
-        lineStyle: {
-          normal: {
-            color: '#39addf',
-            width: 4,
-          }
-        },
-        label: {
-          show: true,
-          position: 'top',
-          textStyle: {
-            fontSize: 12
-          }
-        }
-      },
-    ],
-    tooltip: {
-      trigger: 'axis',
-    },
-  }; 
-
   const totalPendapatan = {
     grid: { top: 8, right: 8, bottom: 24, left: 38 },
     xAxis: {
@@ -152,7 +102,9 @@ const Dashboard = ({ match, history, loading, error }) => {
     },
     series: [
         {
-        data: [820, 932, 901, 934, 1290, 1330, 1320, 820, 932, 901, 901, 1200],
+        // data: [820, 932, 901, 934, 1290, 1330, 1320, 820, 932, 901, 901, 1200],
+        data: [incomeMetrics.januari, incomeMetrics.februari, incomeMetrics.maret, incomeMetrics.april, incomeMetrics.mei, incomeMetrics.juni,
+                incomeMetrics.juli, incomeMetrics.agustus, incomeMetrics.september, incomeMetrics.oktober, incomeMetrics.november, incomeMetrics.desember],
         type: 'line',
         smooth: true,
         lineStyle: {
@@ -175,44 +127,7 @@ const Dashboard = ({ match, history, loading, error }) => {
     },
   }; 
 
-  const totalRujukan = {
-    grid: { top: 8, right: 8, bottom: 24, left: 38 },
-    xAxis: {
-      type: 'category',
-      data: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'],
-      axisTick: {
-        alignWithLabel: true
-      },
-    },
-    yAxis: {
-      type: 'value',
-    },
-    series: [
-      {
-        data: [820, 932, 901, 934, 1290, 1330, 1320, 820, 932, 901, 901, 1200],
-        type: 'line',
-        smooth: true,
-        lineStyle: {
-          normal: {
-            color: '#39addf',
-            width: 4,
-          }
-        },
-        label: {
-          show: true,
-          position: 'top',
-          textStyle: {
-            fontSize: 12
-          }
-        }
-      },
-    ],
-    tooltip: {
-      trigger: 'axis',
-    },
-  }; 
-
-  const tipeRujukan = {
+  const totalKunjungan = {
     grid: { top: 8, right: 8, bottom: 24, left: 38 },
     xAxis: {
       type: 'category',
@@ -231,25 +146,17 @@ const Dashboard = ({ match, history, loading, error }) => {
     },
     series: [
       {
-        name: 'Spesialistik',
-        data: [820, 932, 901, 934, 1290, 1330, 1320, 820, 932, 901, 901, 1200],
-        type: 'bar',
-        stack: 'x',
-        itemStyle: { color: '#006894' },
-        label: {
-          show: true,
-          position: 'top',
-          textStyle: {
-            fontSize: 12, color: '#ffffff'
+        // data: [820, 932, 901, 934, 1290, 1330, 1320, 820, 932, 901, 901, 1200],
+        data: [visitationMetrics.januari, visitationMetrics.februari, visitationMetrics.maret, visitationMetrics.april, visitationMetrics.mei, visitationMetrics.juni,
+                visitationMetrics.juli, visitationMetrics.agustus, visitationMetrics.september, visitationMetrics.oktober, visitationMetrics.november, visitationMetrics.desember],
+        type: 'line',
+        smooth: true,
+        lineStyle: {
+          normal: {
+            color: '#39addf',
+            width: 4,
           }
-        }
-      },
-      {
-        name: 'Non-Spesialistik',
-        data: [1200, 901, 901, 932, 820, 1320, 1330, 1290, 934, 901, 932, 820],
-        type: 'bar',
-        stack: 'x',
-        itemStyle: { color: '#39addf' },
+        },
         label: {
           show: true,
           position: 'top',
@@ -274,17 +181,17 @@ const Dashboard = ({ match, history, loading, error }) => {
         type: 'pie',
         data: [
           {
-            value: 26,
+            value: insuranceMetrics.status_klaim.diterima,
             name: 'Diterima',
             itemStyle: { color: '#006894' },
           },
           {
-            value: 75,
+            value:  insuranceMetrics.status_klaim.ditolak,
             name: 'Ditolak',
             itemStyle: { color: '#007fb6' },
           },
           {
-            value: 23,
+            value:  insuranceMetrics.status_klaim.dipertimbangkan,
             name: 'Dipertimbangkan',
             itemStyle: { color: '#39addf' },
           }
@@ -327,11 +234,11 @@ const Dashboard = ({ match, history, loading, error }) => {
     },
   }; 
 
-  const alasanPenolakan = {
-    grid: { top: 8, right: 20, bottom: 24, left: 46 },
+  const layananTerklaim = {
+    grid: { top: 8, right: 42, bottom: 24, left: '12%' },
     yAxis: {
       type: 'category',
-      data: ['Kurang Privilege', 'Kurang Kaya', 'Kurang Ganteng' ],
+      data: ['Tambal Gigi', 'Suntik Vitamin', 'Penanganan Luka' ],
       axisTick: {
         alignWithLabel: true,
         // length: -88
@@ -342,17 +249,18 @@ const Dashboard = ({ match, history, loading, error }) => {
     },
     xAxis: {
       type: 'value',
+      max: 120000000
     },
     series: [
       {
         data: [{ 
-            value: 932,
+            value: insuranceMetrics.layanan_terklaim.tambal_gigi,
             itemStyle: { color: '#006894' },
            }, {
-            value: 1200,
+            value: insuranceMetrics.layanan_terklaim.suntik_vitamin,
             itemStyle: { color: '#007fb6' },
            },{ 
-            value: 777,
+            value: insuranceMetrics.layanan_terklaim.penanganan_luka,
             itemStyle: { color: '#39addf' },
           }],
         type: 'bar',
@@ -394,11 +302,11 @@ const Dashboard = ({ match, history, loading, error }) => {
     },
   }; 
 
-  const layananTerklaim = {
-    grid: { top: 8, right: 20, bottom: 24, left: 46 },
+  const alasanPenolakan = {
+    grid: { top: 8, right: 20, bottom: 24, left: '10%' },
     yAxis: {
       type: 'category',
-      data: ['Melayani Sejiwa Janji', 'Melayani Setengah Mati', 'Melayani Separuh Hari' ],
+      data: ['Berkas Tidak Lengkap', 'Diagnosa Tidak Tepat', 'Penanganan Tidak Tepat', 'Tidak Ditanggung', 'Lainnya' ],
       axisTick: {
         alignWithLabel: true,
         // length: -88
@@ -413,13 +321,19 @@ const Dashboard = ({ match, history, loading, error }) => {
     series: [
       {
         data: [{ 
-            value: 932,
+            value: insuranceMetrics.alasan_penolakan.berkas_tidak_lengkap,
             itemStyle: { color: '#006894' },
            }, {
-            value: 1200,
+            value: insuranceMetrics.alasan_penolakan.diagnosa_tidak_tepat,
             itemStyle: { color: '#007fb6' },
-           },{ 
-            value: 777,
+           }, { 
+            value: insuranceMetrics.alasan_penolakan.penanganan_tidak_tepat,
+            itemStyle: { color: '#37b9f1' },
+          }, { 
+            value: insuranceMetrics.alasan_penolakan.tidak_ditanggung,
+            itemStyle: { color: '#56c4f3' },
+          }, { 
+            value: insuranceMetrics.alasan_penolakan.lainnya,
             itemStyle: { color: '#39addf' },
           }],
         type: 'bar',
@@ -471,18 +385,18 @@ const Dashboard = ({ match, history, loading, error }) => {
         type: 'pie',
         data: [
           {
-            value: 35,
-            name: 'Low',
+            value: insuranceMetrics.biaya_layanan.low,
+            name: 'Rendah',
             itemStyle: { color: '#006894' },
           },
           {
-            value: 23,
-            name: 'Med',
+            value: insuranceMetrics.biaya_layanan.medium,
+            name: 'Sedang',
             itemStyle: { color: '#007fb6' },
           },
           {
-            value: 48,
-            name: 'High',
+            value: insuranceMetrics.biaya_layanan.high,
+            name: 'Tinggi',
             itemStyle: { color: '#39addf' },
           }
         ],
@@ -525,7 +439,7 @@ const Dashboard = ({ match, history, loading, error }) => {
   }; 
 
   const komponenLayanan = {
-    grid: { top: 8, right: 20, bottom: 24, left: 46 },
+    grid: { top: 8, right: 20, bottom: 24, left: '10%' },
     yAxis: {
       type: 'category',
       data: ['Jasa Medis', 'BNMHP', 'BHP' ],
@@ -543,13 +457,13 @@ const Dashboard = ({ match, history, loading, error }) => {
     series: [
       {
         data: [{ 
-            value: 932,
+            value: insuranceMetrics.komponen_layanan.bhp,
             itemStyle: { color: '#006894' },
            }, {
-            value: 1200,
+            value: insuranceMetrics.komponen_layanan.bnmhp,
             itemStyle: { color: '#007fb6' },
            },{ 
-            value: 777,
+            value: insuranceMetrics.komponen_layanan.jasa_medis,
             itemStyle: { color: '#39addf' },
           }],
         type: 'bar',
@@ -591,14 +505,173 @@ const Dashboard = ({ match, history, loading, error }) => {
     },
   }; 
 
+  useEffect(() => {
+    // console.log(location.state);
+
+    if (location.state) {
+      setInsuranceID(location.state.insuranceID);
+      setInsuranceClassID(location.state.insuranceClassID);
+      setInsuranceName(location.state.insuranceName);
+      setInsuranceType(location.state.insuranceType);
+      if(location.state.insuranceType === "FFSP") {
+        getInsuranceByInsuranceIdAndInsuranceClassIdFFSP(location.state.insuranceID, location.state.insuranceClassID);
+      } else if (location.state.insuranceType === "FFSNP") {
+        getInsuranceByInsuranceIdAndInsuranceClassIdFFSNP(location.state.insuranceID, location.state.insuranceClassID);
+      }
+    }
+  }, [ ]);
+
+  const getInsuranceByInsuranceIdAndInsuranceClassIdFFSP = async (insuranceID, insuranceClassID) => {
+    setInsuranceMetrics({ total_klaim: 0, total_klaim_ditolak: 0, jumlah_anggota: 0, biaya_layanan: { low: 0, medium: 0, high: 0 }, komponen_layanan: { bhp: 0, bnmhp: 0, jasa_medis: 0 }, status_klaim: { ditolak: 0, dipertimbangkan: 0, diterima: 0 }, alasan_penolakan: { berkas_tidak_lengkap: 0, diagnosa_tidak_tepat: 0, penanganan_tidak_tepat: 0, tidak_ditanggung: 0, lainnya: 0 }, layanan_terklaim: { tambal_gigi: 0, suntik_vitamin: 0, penanganan_luka: 0 } });
+    setIncomeMetrics({});
+    setVisitationMetrics({});
+    setUnitCostData([]);
+    setUnitCostTotalPage(0);
+
+    try {
+      setIsLoading(true);
+      const res = await insuranceAPI.getFFSPDashboard(`?id_asuransi=${insuranceID}&id_asuransi_kelas=${insuranceClassID}`);
+      let data = res.data.data;
+      // console.log(data);
+
+      if(data){
+        setInsuranceMetrics({ total_klaim: data.total_klaim, total_klaim_ditolak: data.total_klaim_ditolak, jumlah_anggota: data.jumlah_anggota, biaya_layanan: { low: data.biaya_layanan.low, medium: data.biaya_layanan.medium, high: data.biaya_layanan.high }, komponen_layanan: { bhp: data.komponen_layanan.bhp, bnmhp: data.komponen_layanan.bnmhp, jasa_medis: data.komponen_layanan.jasa_medis }, status_klaim: { ditolak: data.status_klaim.ditolak, dipertimbangkan: data.status_klaim.dipertimbangkan, diterima: data.status_klaim.diterima }, alasan_penolakan: { berkas_tidak_lengkap: data.alasan_penolakan.berkas_tidak_lengkap, diagnosa_tidak_tepat: data.alasan_penolakan.diagnosa_tidak_tepat, penanganan_tidak_tepat: data.alasan_penolakan.penanganan_tidak_tepat, tidak_ditanggung: data.alasan_penolakan.tidak_ditanggung, lainnya: data.alasan_penolakan.lainnya }, layanan_terklaim: { tambal_gigi: data.layanan_terklaim.tambal_gigi, suntik_vitamin: data.layanan_terklaim.suntik_vitamin, penanganan_luka: data.layanan_terklaim.penanganan_luka } });
+        setIncomeMetrics(data.total_pendapatan);
+        setVisitationMetrics(data.total_kunjungan);
+        setUnitCostData(data.analisa_unit_cost);
+        setUnitCostTotalPage(data.pagination.totalPage);
+
+        if(data.pagination > 0) {
+          setTableClass('table-hover');
+        }
+      }
+    } catch (e) {
+      Swal.fire({
+        title: "Gagal!",
+        html: e.response.data.message,
+        icon: "error",
+        confirmButtonColor: "#008ecc",
+        confirmButtonText: "Coba lagi",
+      });
+
+      console.log(e);
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  const getInsuranceByInsuranceIdAndInsuranceClassIdFFSNP = async (insuranceID, insuranceClassID) => {
+    setInsuranceMetrics({ total_klaim: 0, total_klaim_ditolak: 0, jumlah_anggota: 0, biaya_layanan: { low: 0, medium: 0, high: 0 }, komponen_layanan: { bhp: 0, bnmhp: 0, jasa_medis: 0 }, status_klaim: { ditolak: 0, dipertimbangkan: 0, diterima: 0 }, alasan_penolakan: { berkas_tidak_lengkap: 0, diagnosa_tidak_tepat: 0, penanganan_tidak_tepat: 0, tidak_ditanggung: 0, lainnya: 0 }, layanan_terklaim: { tambal_gigi: 0, suntik_vitamin: 0, penanganan_luka: 0 } });
+    setIncomeMetrics({});
+    setVisitationMetrics({});
+    setUnitCostData([]);
+    setUnitCostTotalPage(0);
+
+    try {
+      setIsLoading(true);
+      const res = await insuranceAPI.getFFSNPDashboard(`?id_asuransi=${insuranceID}&id_asuransi_kelas=${insuranceClassID}`);
+      let data = res.data.data;
+      // console.log(data);
+
+      if(data){
+        setInsuranceMetrics({ total_klaim: data.total_klaim, total_klaim_ditolak: data.total_klaim_ditolak, jumlah_anggota: data.jumlah_anggota, biaya_layanan: { low: data.biaya_layanan.low, medium: data.biaya_layanan.medium, high: data.biaya_layanan.high }, komponen_layanan: { bhp: data.komponen_layanan.bhp, bnmhp: data.komponen_layanan.bnmhp, jasa_medis: data.komponen_layanan.jasa_medis }, status_klaim: { ditolak: data.status_klaim.ditolak, dipertimbangkan: data.status_klaim.dipertimbangkan, diterima: data.status_klaim.diterima }, alasan_penolakan: { berkas_tidak_lengkap: data.alasan_penolakan.berkas_tidak_lengkap, diagnosa_tidak_tepat: data.alasan_penolakan.diagnosa_tidak_tepat, penanganan_tidak_tepat: data.alasan_penolakan.penanganan_tidak_tepat, tidak_ditanggung: data.alasan_penolakan.tidak_ditanggung, lainnya: data.alasan_penolakan.lainnya }, layanan_terklaim: { tambal_gigi: data.layanan_terklaim.tambal_gigi, suntik_vitamin: data.layanan_terklaim.suntik_vitamin, penanganan_luka: data.layanan_terklaim.penanganan_luka } });
+        setIncomeMetrics(data.total_pendapatan);
+        setVisitationMetrics(data.total_kunjungan);
+        setUnitCostData(data.analisa_unit_cost);
+        setUnitCostTotalPage(data.pagination.totalPage);
+
+        if(data.pagination > 0) {
+          setTableClass('table-hover');
+        }
+      }
+    } catch (e) {
+      Swal.fire({
+        title: "Gagal!",
+        html: e.response.data.message,
+        icon: "error",
+        confirmButtonColor: "#008ecc",
+        confirmButtonText: "Coba lagi",
+      });
+
+      console.log(e);
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  const getUnitCostData = async (insuranceID, insuranceClassID) => {
+    setUnitCostData([]);
+    setUnitCostTotalPage(0);
+
+    try {
+      setIsLoading(true);
+      const res = await insuranceAPI.getFFSPDashboard(`?id_asuransi=${insuranceID}&id_asuransi_kelas=${insuranceClassID}`);
+      let data = res.data.data;
+      // console.log(data);
+
+      if(data){
+        setUnitCostData(data.analisa_unit_cost);
+        setUnitCostTotalPage(data.pagination.totalPage);
+
+        if(data.pagination > 0) {
+          setTableClass('table-hover');
+        }
+      }
+    } catch (e) {
+      Swal.fire({
+        title: "Gagal!",
+        html: e.response.data.message,
+        icon: "error",
+        confirmButtonColor: "#008ecc",
+        confirmButtonText: "Coba lagi",
+      });
+
+      console.log(e);
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  const [currentPage, setCurrentPage] = useState(1);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [ limit, sortBy, sortOrder ]);
+
+  // useEffect(() => {
+  //   let params = "";
+      
+  //   if (limit !== 10) {
+  //     params = `${params}?limit=${limit}`;
+  //   } else {
+  //     params = `${params}?limit=10`;
+  //   }
+  //   if (currentPage !== 1) {
+  //     params = `${params}&page=${currentPage}`;
+  //   }
+    
+  //   setRowSelected(false);
+  //   getUnitCostData(params);
+  // }, [limit, sortBy, sortOrder, currentPage ]);
+
+  let startNumber = 1;
+
+  if (currentPage !== 1) {
+    startNumber = (currentPage - 1) * 10 + 1;
+  }
+
+  const [limit, setLimit] = useState(10);
+  const [sortBy, setSortBy] = useState("");
+  const [sortOrder, setSortOrder] = useState("");
+
   return (
     <>
       <Row>
         <Colxx xxs="12">
           <Row>
             <Colxx sm="10">
-              <h2><b>MILA Plus</b></h2>
-              <p>Fee For Services - Non Package</p>
+            <h2><b>{ insuranceName ? insuranceName : '-' }</b></h2>
+            <p>{ insuranceType === "FFSP" ? 'Fee For Services - Package' : 'Fee For Services - Non Package' }</p>
             </Colxx>
             <Colxx sm="2" className="d-block text-right">
               <Button
@@ -680,7 +753,7 @@ const Dashboard = ({ match, history, loading, error }) => {
                 />
                 <div>
                   <p className="text-small text-white">Total Klaim</p>
-                  <h1 className="text-white">Rp9.999.999.999</h1>
+                  <h1 className="text-white">{ insuranceMetrics ? currencyFormat(insuranceMetrics.total_klaim) : 'Rp0' }</h1>
                 </div>
               </div>
             </CardBody>
@@ -695,7 +768,7 @@ const Dashboard = ({ match, history, loading, error }) => {
                 />
                 <div>
                   <p className="text-small text-white">Biaya Klaim Ditolak</p>
-                  <h1 className="text-white">Rp9.999.999.999</h1>
+                  <h1 className="text-white">{ insuranceMetrics ? currencyFormat(insuranceMetrics.total_klaim_ditolak) : 'Rp0' }</h1>
                 </div>
               </div>
             </CardBody>
@@ -710,7 +783,7 @@ const Dashboard = ({ match, history, loading, error }) => {
                 />
                 <div>
                   <p className="text-small text-white">Jumlah Anggota</p>
-                  <h1 className="text-white">999.999 orang</h1>
+                  <h1 className="text-white">{ insuranceMetrics ? insuranceMetrics.jumlah_anggota.toLocaleString('id-ID') : '0' } orang</h1>
                 </div>
               </div>
             </CardBody>
@@ -732,7 +805,19 @@ const Dashboard = ({ match, history, loading, error }) => {
                 </CardBody>
             </Card>
         </Colxx>
-        <Colxx sm="12" md="4" className="mb-4">
+        <Colxx sm="12" md="8" className="mb-4">
+            <Card>
+                <CardBody>
+                    <CardTitle>
+                      { insuranceType === "FFSP" ? 'Paket' : 'Layanan' } Terklaim
+                    </CardTitle>
+                    <ReactEcharts
+                        option={layananTerklaim}
+                    />
+                </CardBody>
+            </Card>
+        </Colxx>
+        <Colxx sm="12" md="12" className="mb-4">
             <Card>
                 <CardBody>
                     <CardTitle>
@@ -744,18 +829,6 @@ const Dashboard = ({ match, history, loading, error }) => {
                 </CardBody>
             </Card>
         </Colxx>
-        <Colxx sm="12" md="4" className="mb-4">
-            <Card>
-                <CardBody>
-                    <CardTitle>
-                        Layanan Terklaim
-                    </CardTitle>
-                    <ReactEcharts
-                        option={layananTerklaim}
-                    />
-                </CardBody>
-            </Card>
-        </Colxx>
       </Row>
 
       <Row>
@@ -763,7 +836,7 @@ const Dashboard = ({ match, history, loading, error }) => {
           <Card>
             <CardBody>
               <CardTitle>
-                Biaya Layanan
+                Biaya { insuranceType === "FFSP" ? 'Paket' : 'Layanan' }
               </CardTitle>
               <ReactEcharts
                 option={biayaLayanan}
@@ -776,7 +849,7 @@ const Dashboard = ({ match, history, loading, error }) => {
           <Card>
             <CardBody>
               <CardTitle>
-                Komponen Layanan
+                Komponen { insuranceType === "FFSP" ? 'Paket' : 'Layanan' }
               </CardTitle>
               <ReactEcharts
                 option={komponenLayanan}
@@ -808,101 +881,63 @@ const Dashboard = ({ match, history, loading, error }) => {
                 {/* </Row> */}
               </CardTitle>
               <Table
-                // className={tableClass}
-                hover
+                className={tableClass}
+                // hover
                 responsive
               >
                 <thead>
                   <tr>
                     <th className="center-xy" style={{ width: '40px' }}>#</th>
-                    <th>Layanan</th>
+                    <th>{ insuranceType === "FFSP" ? 'Paket' : 'Layanan' }</th>
                     <th>Harga Jual</th>
                     <th>Unit Cost</th>
                     <th className="center-xy">% Unit Cost</th>
                   </tr>
                 </thead>
                 <tbody>
-                {/* {isLoading && rowSelected === false ? (
+                {isLoading && rowSelected === false ? (
                   <tr>
                     <td>&nbsp;</td>
-                    <td align="center">
+                    <td align="center" colSpan={3}>
                       <img src={loader} alt="loading..." width="100"/>
                     </td>
                     <td>&nbsp;</td>
                   </tr>
                   ) :
-                  insuranceData.length > 0 ? (
-                    insuranceData.map((data) => (
-                      <tr key={data.id} onClick={(e) => getInsuranceById(e, data.id)} style={{ cursor: 'pointer'}} className={`${rowSelected == data.id && 'row-selected'}`}>
-                        <th scope="row" style={{ textAlign: "center", verticalAlign: 'middle' }}>
+                  unitCostData.length > 0 ? (
+                    unitCostData.map((data) => (
+                      <tr key={data.id}
+                        // onClick={(e) => getInsuranceById(e, data.id)}
+                        // style={{ cursor: 'pointer'}}
+                        className={`${rowSelected == data.id && 'row-selected'} center-xy`}>
+                        <th scope="row">
                           {startNumber++}
                         </th>
                         <td>
-                          <h6 style={{ fontWeight: 'bold' }} className="max-text">{data.nama}</h6>
-                          {data.is_active == 1 ? (
-                            <Badge color="success" className="mt-2">Aktif</Badge>
-                          ) : (
-                            <Badge color="warning" className="mt-2">Non-Aktif</Badge>
-                          )}
+                          <h6 style={{ fontWeight: 'bold', textAlign: 'left' }} className="max-text">{ data.layanan ? data.layanan : '-' }</h6>
                         </td>
-                        <td style={{ textAlign: "center", verticalAlign: 'middle' }}>
-                          <Button color="secondary" size="xs" className="button-xs"
-                            onClick={(e) => getInsuranceById(e, data.id)}
-                            >
-                            <i className="simple-icon-arrow-right-circle"></i>
-                          </Button>
-                        </td>
+                        <td style={{ textAlign: 'left' }}>{ data.harga_jual ? currencyFormat(data.harga_jual) : 'Rp0'  }</td>
+                        <td style={{ textAlign: 'left' }}>{ data.unit_cost ? currencyFormat(data.unit_cost) : 'Rp0'  }</td>
+                        <td className="center-xy">{ data.persen_unit_cost ? `${data.persen_unit_cost}%` : '0%'  }</td>
                       </tr>
                     ))
                   ) : (
                     <tr>
                       <td>&nbsp;</td>
-                      <td align="center">
+                      <td align="center" colSpan={3}>
                         <h5 style={{ marginTop: '1.5rem' }}><b>Data tidak ditemukan</b></h5>
                       </td>
                       <td>&nbsp;</td>
                     </tr>
                   )
-                } */}
-                  <tr>
-                    <th>1</th>
-                    <td><h6 style={{ fontWeight: 'bold' }}>Layanan A</h6></td>
-                    <td>Rp9.999.999</td>
-                    <td>Rp24.242.424</td>
-                    <td className="center-xy">23%</td>
-                  </tr>
-                  <tr>
-                    <th>2</th>
-                    <td><h6 style={{ fontWeight: 'bold' }}>Layanan X</h6></td>
-                    <td>Rp9.999.999</td>
-                    <td>Rp24.242.424</td>
-                    <td className="center-xy">23%</td>
-                  </tr>
-                  <tr>
-                    <th>3</th>
-                    <td><h6 style={{ fontWeight: 'bold' }}>Layanan F</h6></td>
-                    <td>Rp9.999.999</td>
-                    <td>Rp222.222.222</td>
-                    <td className="center-xy">11%</td>
-                  </tr>
-                  <tr>
-                    <th>4</th>
-                    <td><h6 style={{ fontWeight: 'bold' }}>Layanan O</h6></td>
-                    <td>Rp9.999.999</td>
-                    <td>Rp999.999.999</td>
-                    <td className="center-xy">88%</td>
-                  </tr>
+                }
                 </tbody>
               </Table>
               <Pagination
-                // currentPage={currentPage}
-                // totalPage={insuranceTotalPage}
-                // onChangePage={(i) => setCurrentPage(i)}
-                // numberLimit={insuranceTotalPage < 4 ? insuranceTotalPage : 3}
-
-                currentPage={1}
-                totalPage={3}
-                numberLimit={3}
+                currentPage={currentPage}
+                totalPage={unitCostTotalPage}
+                onChangePage={(i) => setCurrentPage(i)}
+                numberLimit={unitCostTotalPage < 4 ? unitCostTotalPage : 3}
               />
             </CardBody>
           </Card>
