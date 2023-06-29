@@ -493,7 +493,7 @@ const FormRecord = ({ match, history }) => {
   };
 
   const [reference, setReference] = useState(
-    { id: '', id_pasien: patientID, id_kunjungan: recordID, id_poli: "", id_rs: "", anamnesis: "", terapi: "", catatan: "" }
+    { id: '', id_pasien: patientID, id_kunjungan: recordID, id_poli: "", id_rs: "", anamnesis: "", terapi: "", catatan: "", alasan_rujuk: "" }
   );
   
   const [diagnoseReference, setDiagnoseReference] = useState([
@@ -2037,7 +2037,8 @@ const FormRecord = ({ match, history }) => {
         id_rs: data.id_rs,
         anamnesis: data.anamnesis,
         terapi: data.terapi,
-        catatan: data.catatan ? data.catatan : ""
+        catatan: data.catatan ? data.catatan : "",
+        alasan_rujuk: data.alasan_rujuk ? data.alasan_rujuk : ""
       });
 
       // console.log(record);
@@ -3429,7 +3430,23 @@ const FormRecord = ({ match, history }) => {
                                     />
                                   </FormGroup>
                               </Colxx>
-                              <Colxx sm={11} md={11} xl={11}>
+                              <Colxx sm={6} md={6} xl={6}>
+                                  <FormGroup>
+                                    <Label for="alasan">
+                                      Alasan Rujukan
+                                    </Label>
+                                    <Input
+                                        type="textarea"
+                                        name="alasan"
+                                        id="alasan"
+                                        placeholder="Alasan"
+                                        style={{minHeight: '150px'}}
+                                        value={reference.alasan_rujuk}
+                                        onChange={(event) => handleReferenceChange(event)}
+                                    />
+                                  </FormGroup>
+                              </Colxx>
+                              <Colxx sm={6} md={6} xl={6}>
                                   <FormGroup>
                                     <Label for="catatan">
                                       Catatan Tambahan
