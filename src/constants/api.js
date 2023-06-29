@@ -36,7 +36,13 @@ const api = {
     onemployee: "/jaga/on-employee",
     archive: "/jaga/archive",
     distinct: "/jaga/distinct",
-    bytoday: "/jaga/dvs",
+    bytoday: "/jaga/dvs"
+  },
+  doctorSchedule: {
+    all: "/praktik",
+    archive: "/praktik/archive",
+    activate: "/praktik/activate",
+
   },
   patient: {
     all: '/pasien',
