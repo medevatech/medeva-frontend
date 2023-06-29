@@ -235,7 +235,7 @@ const Data = ({ match, history }) => {
   const getVitalSignsByPatientId = async (e, id, data) => {
     e && e.preventDefault();
     e && resetForm(e);
-    setRowSelected(data.id);
+    data.id ? setRowSelected(data.id) : setRowSelected(id);
 
     setVitalSigns({
       id_pasien: patientID,
@@ -256,7 +256,7 @@ const Data = ({ match, history }) => {
 
     setPatientID(id);
     setPatientData(data);
-    setWatchID(data.id_jaga);
+    data.id_jaga ? setWatchID(data.id_jaga) : setWatchID(watchID);
     setParticipantID(data.id_peserta);
 
     // console.log('patientID', id);
@@ -390,6 +390,7 @@ const Data = ({ match, history }) => {
     if (location.state) {
       setPatientID(location.state.patientID);
       setPatientData(location.state.patientData);
+      setWatchID(location.state.watchID);
       getVitalSignsByPatientId("", location.state.patientID, location.state.patientData);
     }
   }, [ ]);

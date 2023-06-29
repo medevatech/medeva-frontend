@@ -1210,6 +1210,7 @@ const FormRecord = ({ match, history }) => {
 
     setReferenceSubmit("process");
     reference.id_kunjungan = recordID;
+    reference.id_pasien = patientID;
 
     // console.log(reference);
     if(dataStatusReference === 'add') {
@@ -2116,7 +2117,7 @@ const FormRecord = ({ match, history }) => {
   
       history.push({
         pathname: "/record",
-        state: { patientID: patientID, patientData: patientData }
+        state: { patientID: patientID, patientData: patientData, watchID: watchID }
       });
     }
 
@@ -2168,7 +2169,10 @@ const FormRecord = ({ match, history }) => {
           // if (recordSubmit === "idle") {
             // resetForm();
             recordID = "";
-            history.push("/record", patientID);
+            history.push({
+              pathname: "/record",
+              state: { patientID: patientID, patientData: patientData, watchID: watchID }
+            });
           // }
         }, 5000);
       }, 3000);
@@ -3437,8 +3441,8 @@ const FormRecord = ({ match, history }) => {
                                     </Label>
                                     <Input
                                         type="textarea"
-                                        name="alasan"
-                                        id="alasan"
+                                        name="alasan_rujuk"
+                                        id="alasan_rujuk"
                                         placeholder="Alasan"
                                         style={{minHeight: '150px'}}
                                         value={reference.alasan_rujuk}
@@ -3446,7 +3450,7 @@ const FormRecord = ({ match, history }) => {
                                     />
                                   </FormGroup>
                               </Colxx>
-                              <Colxx sm={6} md={6} xl={6}>
+                              <Colxx sm={5} md={5} xl={5}>
                                   <FormGroup>
                                     <Label for="catatan">
                                       Catatan Tambahan

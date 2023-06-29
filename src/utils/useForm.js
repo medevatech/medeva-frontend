@@ -152,10 +152,10 @@ const useForm = (callback) => {
             } else if((isWD === true && isDD === false) ||
                 (isWD === false && isDD === true)) {
 
-                let newObjwd = omit(errors, wd);
+                let newObjwd = omit(errors, 'wd');
                 setErrors(newObjwd);
 
-                let newObjdd = omit(errors, dd);
+                let newObjdd = omit(errors, 'dd');
                 setErrors(newObjdd);
             }
         }
