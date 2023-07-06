@@ -7,6 +7,10 @@ const clinic = {
     const url = api.clinic.all + options
     return baseApi.get(url, { headers: getAuthHeader() })
   },
+  getLogin: (options) => {
+    const url = api.clinic.all + options
+    return baseApi.get(url, { headers: getOriginHeader() })
+  },
   add: (payloads) => {
     const url = api.clinic.all
     return baseApi.post(url, payloads, { headers: getAuthHeader() })

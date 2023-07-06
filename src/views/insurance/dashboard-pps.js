@@ -55,7 +55,7 @@ const Dashboard = ({ match, history, loading, error }) => {
   // const insuranceTotalPage = useSelector(state => state.insuranceTotalPage);
   const { errors, validate } = useForm();
 
-  const [insuranceMetrics, setInsuranceMetrics] = useState({ peserta: 0, pendapatan: 0, total_biaya_layanan: 0, biaya_layanan: { low: 0, medium: 0, high: 0 }, komponen_layanan: { bhp: 0, bnmhp: 0, jasa_medis: 0 } });
+  const [insuranceMetrics, setInsuranceMetrics] = useState({ peserta: 0, pendapatan: 0, total_biaya_layanan: 0, biaya_layanan: { biaya: 0, pendapatan: 0 }, komponen_layanan: { bhp: 0, bnmhp: 0, jasa_medis: 0 } });
   const [visitationMetrics, setVisitationMetrics] = useState({});
   const [visitationTypeMetrics, setVisitationTypeMetrics] = useState({
                                                                       januari: { jalan: 0, inap: 0, promotif: 0, preventif: 0}, 
@@ -186,7 +186,7 @@ const Dashboard = ({ match, history, loading, error }) => {
     },
     yAxis: {
       type: 'value',
-      max: 750
+      max: 125
     },
     series: [
       {
@@ -204,7 +204,10 @@ const Dashboard = ({ match, history, loading, error }) => {
           position: 'top',
           textStyle: {
             fontSize: 12, color: '#ffffff'
-          }
+          },
+          formatter: (data) => {
+            return data.value + '%';
+          },
         }
       },
       {
@@ -222,7 +225,10 @@ const Dashboard = ({ match, history, loading, error }) => {
           position: 'top',
           textStyle: {
             fontSize: 12, color: '#ffffff'
-          }
+          },
+          formatter: (data) => {
+            return data.value + '%';
+          },
         }
       },
       {
@@ -240,13 +246,16 @@ const Dashboard = ({ match, history, loading, error }) => {
           position: 'top',
           textStyle: {
             fontSize: 12, color: '#ffffff'
-          }
+          },
+          formatter: (data) => {
+            return data.value + '%';
+          },
         }
       },
       {
         name: 'Preventif',
         // data: [1200, 901, 901, 932, 820, 1320, 1330, 1290, 934, 901, 932, 820],
-        data: [visitationTypeMetrics.januari.prefentif, visitationTypeMetrics.februari.preventif, visitationTypeMetrics.maret.preventif,
+        data: [visitationTypeMetrics.januari.preventif, visitationTypeMetrics.februari.preventif, visitationTypeMetrics.maret.preventif,
           visitationTypeMetrics.april.preventif, visitationTypeMetrics.mei.preventif, visitationTypeMetrics.juni.preventif,
           visitationTypeMetrics.juli.preventif, visitationTypeMetrics.agustus.preventif, visitationTypeMetrics.september.preventif,
           visitationTypeMetrics.oktober.preventif, visitationTypeMetrics.november.preventif, visitationTypeMetrics.desember.preventif],
@@ -258,12 +267,16 @@ const Dashboard = ({ match, history, loading, error }) => {
           position: 'top',
           textStyle: {
             fontSize: 12
-          }
+          },
+          formatter: (data) => {
+            return data.value + '%';
+          },
         }
       },
     ],
     tooltip: {
       trigger: 'axis',
+      valueFormatter: (value) => value + "%"
     },
   }; 
 
@@ -323,7 +336,7 @@ const Dashboard = ({ match, history, loading, error }) => {
     },
     yAxis: {
       type: 'value',
-      // max: 2000,
+      max: 120,
     },
     series: [
       {
@@ -341,7 +354,10 @@ const Dashboard = ({ match, history, loading, error }) => {
           position: 'top',
           textStyle: {
             fontSize: 12, color: '#ffffff'
-          }
+          },
+          formatter: (data) => {
+            return data.value + '%';
+          },
         }
       },
       {
@@ -359,14 +375,18 @@ const Dashboard = ({ match, history, loading, error }) => {
           position: 'top',
           textStyle: {
             fontSize: 12
-          }
+          },
+          formatter: (data) => {
+            return data.value + '%';
+          },
         }
       },
     ],
     tooltip: {
       trigger: 'axis',
+      valueFormatter: (value) => value + "%"
     },
-  }; 
+  };
 
   const biayaLayanan = {
     title: {
@@ -378,19 +398,14 @@ const Dashboard = ({ match, history, loading, error }) => {
         type: 'pie',
         data: [
           {
-            value: insuranceMetrics.biaya_layanan.low,
-            name: 'Rendah',
+            value: insuranceMetrics.biaya_layanan.biaya,
+            name: 'Biaya',
             itemStyle: { color: '#006894' },
           },
           {
-            value: insuranceMetrics.biaya_layanan.medium,
-            name: 'Sedang',
+            value: insuranceMetrics.biaya_layanan.pendapatan,
+            name: 'Total Pendapatan',
             itemStyle: { color: '#007fb6' },
-          },
-          {
-            value: insuranceMetrics.biaya_layanan.high,
-            name: 'Tinggi',
-            itemStyle: { color: '#39addf' },
           }
         ],
         radius: ['50%', '70%'],
@@ -431,6 +446,87 @@ const Dashboard = ({ match, history, loading, error }) => {
     },
   }; 
 
+  const biayaLayananGauge = {
+    series: [
+      {
+        type: 'gauge',
+        startAngle: 90,
+        endAngle: -270,
+        pointer: {
+          show: false
+        },
+        progress: {
+          show: true,
+          overlap: false,
+          roundCap: true,
+          clip: false,
+          itemStyle: {
+            borderWidth: 0,
+            borderColor: '#ffffff'
+          }
+        },
+        axisLine: {
+          lineStyle: {
+            width: 20
+          }
+        },
+        splitLine: {
+          show: false,
+          distance: 0,
+          length: 10
+        },
+        axisTick: {
+          show: false
+        },
+        axisLabel: {
+          show: false,
+          distance: 50
+        },
+        data: [
+                {
+                  value: insuranceMetrics.biaya_layanan.pendapatan,
+                  name: 'Total Pendapatan',
+                  title: {
+                    offsetCenter: ['0%', '20%'],
+                    fontSize: 12
+                  },
+                  itemStyle: { color: '#006894' },
+                  detail: {
+                    valueAnimation: true,
+                    offsetCenter: ['0%', '50%'],
+                    fontSize: 12
+                  }
+                },{
+                  value: insuranceMetrics.biaya_layanan.biaya,
+                  name: 'Biaya',
+                  title: {
+                    offsetCenter: ['0%', '-50%'],
+                    fontSize: 12
+                  },
+                  itemStyle: { color: '#39addf' },
+                  detail: {
+                    valueAnimation: true,
+                    offsetCenter: ['0%', '-20%'],
+                    fontSize: 12
+                  }
+                },],
+        title: {
+          fontSize: 14
+        },
+        detail: {
+          width: 50,
+          height: 14,
+          fontSize: 14,
+          color: 'inherit',
+          borderColor: 'inherit',
+          borderRadius: 20,
+          borderWidth: 1,
+          formatter: '{value}%'
+        }
+      }
+    ]
+  };
+
   const komponenLayanan = {
     grid: { top: 8, right: 20, bottom: 24, left: '10%' },
     yAxis: {
@@ -446,6 +542,11 @@ const Dashboard = ({ match, history, loading, error }) => {
     },
     xAxis: {
       type: 'value',
+      axisLabel: {
+        formatter: (value) => {
+          return currencyFormat(value);
+        }
+      },
     },
     series: [
       {
@@ -465,7 +566,10 @@ const Dashboard = ({ match, history, loading, error }) => {
           // position: 'top',
           textStyle: {
             fontSize: 12, color: '#ffffff'
-          }
+          },
+          formatter: (data) => {
+            return currencyFormat(data.value);
+          },
         }
       },
       // {
@@ -495,6 +599,7 @@ const Dashboard = ({ match, history, loading, error }) => {
     ],
     tooltip: {
       trigger: 'axis',
+      valueFormatter: (value) => currencyFormat(value)
     },
   }; 
 
@@ -511,7 +616,7 @@ const Dashboard = ({ match, history, loading, error }) => {
   }, [ ]);
 
   const getInsuranceByInsuranceIdAndInsuranceClassId = async (insuranceID, insuranceClassID) => {
-    setInsuranceMetrics({ peserta: 0, pendapatan: 0, total_biaya_layanan: 0, biaya_layanan: { low: 0, medium: 0, high: 0 }, komponen_layanan: { bhp: 0, bnmhp: 0, jasa_medis: 0 } });
+    setInsuranceMetrics({ peserta: 0, pendapatan: 0, total_biaya_layanan: 0, biaya_layanan: { biaya: 0, pendapatan: 0 }, komponen_layanan: { bhp: 0, bnmhp: 0, jasa_medis: 0 } });
     setReferenceData([]);
     setReferenceTotalPage(0);
     setDiseaseData([]);
@@ -524,7 +629,7 @@ const Dashboard = ({ match, history, loading, error }) => {
       // console.log(data);
 
       if(data){
-        setInsuranceMetrics({ peserta: data.peserta, pendapatan: data.pendapatan, total_biaya_layanan: data.total_biaya_layanan, biaya_layanan: { low: data.biaya_layanan.low, medium: data.biaya_layanan.medium, high: data.biaya_layanan.high }, komponen_layanan: { bhp: data.komponen_layanan.bhp, bnmhp: data.komponen_layanan.bnmhp, jasa_medis: data.komponen_layanan.jasa_medis } });
+        setInsuranceMetrics({ peserta: data.peserta, pendapatan: data.pendapatan, total_biaya_layanan: data.total_biaya_layanan, biaya_layanan: { biaya: data.biaya_layanan.biaya, pendapatan: data.biaya_layanan.pendapatan }, komponen_layanan: { bhp: data.komponen_layanan.bhp, bnmhp: data.komponen_layanan.bnmhp, jasa_medis: data.komponen_layanan.jasa_medis } });
         
         setVisitationMetrics(data.kunjungan);
         setVisitationTypeMetrics(data.tipe_kunjungan);
@@ -988,7 +1093,7 @@ const Dashboard = ({ match, history, loading, error }) => {
                 Biaya Layanan
               </CardTitle>
               <ReactEcharts
-                option={biayaLayanan}
+                option={biayaLayananGauge}
                 style={{ paddingBottom: '1.5rem' }}
               />
             </CardBody>

@@ -1,6 +1,6 @@
-const medicine = (state = [], action) => {
+const consumables = (state = [], action) => {
     switch (action.type) {
-        case "GET_MEDICINE":
+        case "GET_CONSUMABLES":
             return action.payload;
             break;
         default:
@@ -9,9 +9,9 @@ const medicine = (state = [], action) => {
     }
 }
 
-const medicineTotalPage = (state = 0, action) => {
+const consumablesTotalPage = (state = 0, action) => {
     switch (action.type) {
-        case "GET_TOTAL_PAGE_MEDICINE":
+        case "GET_TOTAL_PAGE_CONSUMABLES":
             return action.payload;
             break;
         default:
@@ -20,9 +20,9 @@ const medicineTotalPage = (state = 0, action) => {
     }
 }
 
-const medicineList = (state = [], action) => {
+const consumablesClinic = (state = [], action) => {
     switch (action.type) {
-        case "GET_MEDICINE_LIST":
+        case "GET_CONSUMABLES_CLINIC":
             return action.payload;
             break;
         default:
@@ -31,9 +31,9 @@ const medicineList = (state = [], action) => {
     }
 }
 
-const medicineListTotalPage = (state = 0, action) => {
+const consumablesClinicTotalPage = (state = 0, action) => {
     switch (action.type) {
-        case "GET_TOTAL_PAGE_MEDICINE_LIST":
+        case "GET_TOTAL_PAGE_CONSUMABLES_CLINIC":
             return action.payload;
             break;
         default:
@@ -42,9 +42,9 @@ const medicineListTotalPage = (state = 0, action) => {
     }
 }
 
-const medicineClinic = (state = [], action) => {
+const consumablesService = (state = [], action) => {
     switch (action.type) {
-        case "GET_MEDICINE_CLINIC":
+        case "GET_CONSUMABLES_SERVICE":
             return action.payload;
             break;
         default:
@@ -53,9 +53,9 @@ const medicineClinic = (state = [], action) => {
     }
 }
 
-const medicineClinicTotalPage = (state = 0, action) => {
+const consumablesServiceTotalPage = (state = 0, action) => {
     switch (action.type) {
-        case "GET_TOTAL_PAGE_MEDICINE_CLINIC":
+        case "GET_TOTAL_PAGE_CONSUMABLES_SERVICE":
             return action.payload;
             break;
         default:
@@ -64,4 +64,4 @@ const medicineClinicTotalPage = (state = 0, action) => {
     }
 }
 
-export { medicine, medicineTotalPage, medicineList, medicineListTotalPage, medicineClinic, medicineClinicTotalPage } ;
+export { consumables, consumablesTotalPage, consumablesClinic, consumablesClinicTotalPage, consumablesService, consumablesServiceTotalPage } ;

@@ -3,18 +3,23 @@ import { Row, Card, CardTitle, Label, FormGroup, Button, Input, Form } from 'rea
 import { NavLink } from 'react-router-dom';
 import { connect } from 'react-redux';
 
+import Select from 'react-select';
 import useForm from 'utils/useForm';
+import CustomSelectInput from 'components/common/CustomSelectInput';
 
 import { Colxx } from 'components/common/CustomBootstrap';
 
 import UserLayout from 'layout/UserLayout';
 
-import auth from 'api/authorization';
+import authAPI from 'api/authorization';
+import clinicAPI from "api/clinic";
 import Swal from 'sweetalert2';
 
 const Home = ({ history, loading, error }) => {
-  const [ login, setLogin ] = useState({ input_login: 'dev@medeva.tech', password: 'dev123'});
+  const [ login, setLogin ] = useState({ input_login: 'dev@medeva.tech', password: 'dev123', id_klinik: 'KLN974745' });
   const { errors, validate } = useForm();
+
+  const [selectedKlinik, setSelectedKlinik] = useState([{ label: "Pilih Klinik", value: "", key: 0, name: 'id_klinik' }]);
 
   // const parseJwt = (token) => {
   //   var base64Url = token.split('.')[1]
@@ -32,6 +37,8 @@ const Home = ({ history, loading, error }) => {
   // }
 
   useEffect(() => {
+    onLoadKlinik();
+
     localStorage.getItem('user_data') && JSON.parse(localStorage.getItem('user_data')).token ? history.push("/dashboard") : history.push("/login");
   }, [ ]);
 
@@ -39,14 +46,51 @@ const Home = ({ history, loading, error }) => {
   const onChange = (e) => {
     // console.log('e', e);
 
-    setLogin(current => {
-        return { ...current, [e.target.name]: e.target.value }
-    })
+    if(e.name) {
+      setLogin(current => {
+          return { ...current, [e.name]: e.value }
+      })
 
-    validate(e, e.target.name === 'password' ? 'password_login' : e.target.name, e.value ? e.value : e.target.value);
+      validate(e, e.name ? e.name : e.target.name, e.value ? e.value : e.target.value);
+    } else {
+      if(e.target.name === 'password'){
+        validate(e, e.target.name === 'password' ? 'password_login' : e.target.name, e.value ? e.value : e.target.value);
+      } else {
+        validate(e, e.name ? e.name : e.target.name, e.value ? e.value : e.target.value);
+      }
+
+      setLogin(current => {
+          return { ...current, [e.target.name]: e.target.value }
+      })
+    }
 
     // console.log('login', login);
   }
+
+  const onLoadKlinik = async () => {
+    try {
+      const response = await clinicAPI.getLogin("?limit=1000");
+      // console.log(response);
+
+      setSelectedKlinik([{ label: "Pilih Klinik", value: "", key: 0, name: 'id_klinik' }]);
+
+      if (response.status === 200) {
+        let data = response.data.data;
+        // console.log(data);
+      
+        for (var i = 0; i < data.length; i++) {
+          setSelectedKlinik((current) => [
+            ...current,
+            { label: data[i].nama_klinik, value: data[i].id, key: data[i].id, name: 'id_klinik' },
+          ]);
+        }
+      } else {
+        throw Error(`Error status: ${response.status}`);
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  };
 
   const onLoginSubmit = async (e) => {
     e.preventDefault();
@@ -65,6 +109,12 @@ const Home = ({ history, loading, error }) => {
         isError = true;
         // return;
       }
+
+      if(key === 'id_klinik' && value === ''){
+        validate(e, 'id_klinik', value);
+        isError = true;
+        // return;
+      }
     }
 
     if(isError === true){
@@ -72,7 +122,7 @@ const Home = ({ history, loading, error }) => {
     }
 
     try {
-      const response = await auth.login(login);
+      const response = await authAPI.login(login);
       // console.log(response);
 
       if (response.status == 200) {
@@ -80,7 +130,7 @@ const Home = ({ history, loading, error }) => {
           // console.log(data);
 
           if(data.is_active === 1){
-            let user = { id : "", username: "", roles: {}, token: ""};
+            let user = { id : "", username: "", roles: {}, id_klinik: "", token: ""};
 
             let roles = [];
 
@@ -115,8 +165,12 @@ const Home = ({ history, loading, error }) => {
             if (data.is_finance === 1) {
               roles.push("isFinance");
             }
+            
+            if (data.is_cashier === 1) {
+              roles.push("isCashier");
+            }
 
-            user.id = data.id; user.username = data.username; user.roles = roles; user.token = data.token;
+            user.id = data.id; user.username = data.username; user.roles = roles; user.id_klinik = data.id_klinik; user.token = data.token;
 
             localStorage.setItem('user_data', JSON.stringify(user));
             // console.log(localStorage.getItem('user_data'));
@@ -182,6 +236,8 @@ const Home = ({ history, loading, error }) => {
         throw Error(`Error status: ${response.statusCode}`);
       }
     } catch (e) {
+      console.log(e);
+
       Swal.fire({
         title: 'Error!',
         html: `Login gagal: ${e.response.data.message}`,
@@ -189,8 +245,6 @@ const Home = ({ history, loading, error }) => {
         confirmButtonColor: '#008ecc',
         confirmButtonText: 'Coba lagi',
       })
-      
-      console.log(e);
     }
   }
 
@@ -219,6 +273,27 @@ const Home = ({ history, loading, error }) => {
               </CardTitle>
 
               <Form className="av-tooltip tooltip-right-top" onSubmit={onLoginSubmit}>
+                <FormGroup className="form-group has-float-label">
+                  <Label>
+                    Klinik<span className="required text-danger" aria-required="true"> *</span>
+                  </Label>
+                  <Select
+                    components={{ Input: CustomSelectInput }}
+                    className="react-select"
+                    classNamePrefix="react-select"
+                    name="id_klinik"
+                    id="id_klinik"
+                    options={selectedKlinik}
+                    value={selectedKlinik.find(item => item.value === login.id_klinik) || { label: "Pilik Klinik", value: "", key: 0, name: 'id_klinik' }}
+                    onChange={onChange}
+                    // required
+                  />
+                  {errors.id_klinik && (
+                    <div className="rounded invalid-feedback invalid-feedback-login d-block">
+                      {errors.id_klinik}
+                    </div>
+                  )}
+                </FormGroup>
                 <FormGroup className="form-group has-float-label">
                   <Label>
                     Username atau Email<span className="required text-danger" aria-required="true"> *</span>

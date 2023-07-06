@@ -10,7 +10,9 @@ const api = {
     updatePhoto: '/karyawan/photo',
     updatePassword: '/karyawan/password',
     archive: '/karyawan/archive',
-    activate: '/karyawan/activate'
+    activate: '/karyawan/activate',
+    contract: '/kontrak',
+    contractByEmployee: '/kontrak/karyawan'
   },
   clinic: {
     all: '/klinik',
@@ -124,13 +126,31 @@ const api = {
     clinicPrice: '/harga-layanan/klinik', // MASTER OF 'HARGA LAYANAN' FIELD,
     archivePrice: '/harga-layanan/archive',
     activatePrice: '/harga-layanan/activate',
-    record: '/layanan/kunjungan'
+    record: '/layanan/kunjungan',
+    clinic: '/klinik-layanan',
+    archiveClinic: '/klinik-layanan/archive',
+    activateClinic: '/klinik-layanan/activate',
   },
   disease: {
     all: '/penyakit', // MASTER OF 'PENYAKIT' FIELD
     getAll: 'penyakit/all'
   },
-  medicine: '/obat', // MASTER OF 'OBAT' FIELD
+  medicine: {
+    all: '/obat',  // MASTER OF 'OBAT' FIELD
+    archive: '/obat/archive',
+    activate: '/obat/activate',
+    clinic: "/klinik-obat",
+    archiveClinic: '/klinik-obat/archive',
+    activateClinic: '/klinik-obat/activate',
+  },
+  consumables: {
+    clinic: "/klinik-bhp",
+    archiveClinic: '/klinik-bhp/archive',
+    activateClinic: '/klinik-bhp/activate',
+    service: "/layanan-bhp",
+    archiveService: '/layanan-bhp/archive',
+    activateService: '/layanan-bhp/activate',
+  },
   lab: {
     all: '/laboratorium', // MASTER OF 'LABORATORIUM' FIELD
     treatment: '/layanan-laboratorium', // JOIN TABLE ID LAB TO ID PEMERIKSAAN

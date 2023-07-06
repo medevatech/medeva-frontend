@@ -308,25 +308,25 @@ const Data = ({ match, history }) => {
     } catch (e) {
       console.log(e);
 
-      setVitalSignsID("");
+      // setVitalSignsID("");
 
-      Swal.fire({
-        title: "Gagal!",
-        html: `Pra-Konsultasi pasien <b>${data.nama_lengkap}</b> hari ini tidak ditemukan, silahkan klik tombol berikut untuk menambah data Pra-Konsultasi`,
-        icon: "error",
-        confirmButtonColor: "#008ecc",
-        confirmButtonText: "Tambah Data Pra-Konsultasi",
-        showDenyButton: true,
-        denyButtonText: "Kembali",
-        reverseButtons: true
-      }).then((result) => {
-        if (result.isConfirmed) {
-          history.push({
-            pathname: "/record/vital-signs",
-            state: { patientID: id, patientData: data }
-          });
-        }
-      })
+      // Swal.fire({
+      //   title: "Gagal!",
+      //   html: `Pra-Konsultasi pasien <b>${data.nama_lengkap}</b> hari ini tidak ditemukan, silahkan klik tombol berikut untuk menambah data Pra-Konsultasi`,
+      //   icon: "error",
+      //   confirmButtonColor: "#008ecc",
+      //   confirmButtonText: "Tambah Data Pra-Konsultasi",
+      //   showDenyButton: true,
+      //   denyButtonText: "Kembali",
+      //   reverseButtons: true
+      // }).then((result) => {
+      //   if (result.isConfirmed) {
+      //     history.push({
+      //       pathname: "/record/vital-signs",
+      //       state: { patientID: id, patientData: data }
+      //     });
+      //   }
+      // })
     } finally {
       getAllRecordByPatientId(e, id);
     }
@@ -531,7 +531,8 @@ const Data = ({ match, history }) => {
             </Card>
           </Colxx>
           <Colxx sm="12" md="12" xl="8" className="mb-4 manage-form" id="manage-form-tab-mobile">
-          { patientID && vitalSignsID ?
+          { patientID ?
+            // && vitalSignsID
               <>
                 <Card className="mb-4">
                   <CardBody>
@@ -614,7 +615,7 @@ const Data = ({ match, history }) => {
                   <CardBody>
                     <CardTitle>
                       { patientID ? 
-                        vitalSignsID ?
+                        // vitalSignsID ?
                           <Link to={{
                               pathname: `/record/form`,
                               state: { patientID: patientID, patientData: patientData, watchID: watchID, recordID: '', participantID: participantID }
@@ -623,15 +624,15 @@ const Data = ({ match, history }) => {
                               Tambah Rekam Medis
                             </Button>
                           </Link>
-                          :
-                          <Link to={{
-                              pathname: `/record/vital-signs`,
-                              state: { patientID: patientID, patientData: patientData }
-                          }}>
-                            <Button color="primary" style={{ float: "right" }} className="mb-4">
-                              Tambah Data Pra-Konsultasi
-                            </Button>
-                          </Link>
+                          // :
+                          // <Link to={{
+                          //     pathname: `/record/vital-signs`,
+                          //     state: { patientID: patientID, patientData: patientData }
+                          // }}>
+                          //   <Button color="primary" style={{ float: "right" }} className="mb-4">
+                          //     Tambah Data Pra-Konsultasi
+                          //   </Button>
+                          // </Link>
                         : ''
                       }
                       { patientID ? 
@@ -644,14 +645,15 @@ const Data = ({ match, history }) => {
                               {patientData.jenis_kelamin}, {new Date().getFullYear() - patientData.tanggal_lahir.substring(0,4)} tahun
                             </Label>
                           </>
-                          : vitalSignsID ? 'Riwayat Rekam Medis Tidak Ditemukan' :
-                          <>
-                            {'Riwayat Rekam Medis dan Data Pra-Konsultasi Hari Ini Tidak Ditemukan'}
-                            <br/>
-                            <Label>
-                              Silahkan mengisi data Pra-Konsultasi pasien <b>{patientData.nama_lengkap}</b> pada hari ini untuk administrasi data rekam medis
-                            </Label>
-                          </>
+                          : 'Riwayat Rekam Medis Tidak Ditemukan'
+                          // vitalSignsID ? 'Riwayat Rekam Medis Tidak Ditemukan' :
+                          // <>
+                          //   {'Riwayat Rekam Medis dan Data Pra-Konsultasi Hari Ini Tidak Ditemukan'}
+                          //   <br/>
+                          //   <Label>
+                          //     Silahkan mengisi data Pra-Konsultasi pasien <b>{patientData.nama_lengkap}</b> pada hari ini untuk administrasi data rekam medis
+                          //   </Label>
+                          // </>
                           : 'Silahkan memilih pasien pada antrian terlebih dahulu'
                       }
                     </CardTitle>

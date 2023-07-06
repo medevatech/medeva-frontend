@@ -2855,7 +2855,7 @@ const FormRecord = ({ match, history }) => {
                                 return (
                                   <div key={index} className="med-record-form">
                                       <FormGroup row>
-                                          <Colxx sm={6} md={6} xl={6}>
+                                          <Colxx sm={6} md={12} xl={6}>
                                               <FormGroup>
                                                   <Label for="id_obat">
                                                       Obat

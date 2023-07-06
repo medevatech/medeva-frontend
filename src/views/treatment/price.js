@@ -40,7 +40,9 @@ import Pagination from "components/common/Pagination";
 import CustomSelectInput from "components/common/CustomSelectInput";
 
 import treatmentAPI from "api/treatment/list";
+import serviceAPI from "api/service/list";
 import treatmentPriceAPI from "api/treatment/price";
+import serviceClinicAPI from "api/service/clinic";
 import clinicAPI from "api/clinic";
 import Swal from "sweetalert2";
 
@@ -66,7 +68,7 @@ const Data = ({ match, history, loading, error }) => {
   const [rowSelected, setRowSelected] = useState(null);
 
   const [selectedKlinik, setSelectedKlinik] = useState([{ label: "Pilih Klinik", value: "", key: 0, name: 'id_klinik' }]);
-  const [selectedTreatment, setSelectedTreatment] = useState([{ label: "Pilih Tindakan", value: "", key: 0, name: 'id_daftar_tindakan' }]);
+  const [selectedTreatment, setSelectedTreatment] = useState([{ label: "Pilih Tindakan", value: "", key: 0, name: 'id_daftar_layanan' }]);
   const [selectedKlinikF, setSelectedKlinikF] = useState([{ label: "Semua Klinik", value: "", key: 0, name: 'id_klinik' }]);
 
   const [modalArchive, setModalArchive] = useState(false);
@@ -74,11 +76,13 @@ const Data = ({ match, history, loading, error }) => {
   const [modalAddList, setModalAddList] = useState(false);
   const [treatmentID, setTreatmentID] = useState('');
   const [treatmentStatus, setTreatmentStatus] = useState(0);
+  const [clinicID, setClinicID] = useState(!userData.roles.includes('isDev') ? userData.id_klinik : '');
 
   const [treatmentPrice, setTreatmentPrice] = useState({
-    id_daftar_tindakan: '',
-    id_klinik: '',
-    harga: '',
+    id_daftar_layanan: '',
+    id_klinik: clinicID,
+    harga_jasa: '',
+    harga_jual: '',
   });
 
   const onLoadKlinik = async () => {
@@ -114,10 +118,10 @@ const Data = ({ match, history, loading, error }) => {
 
   const onLoadDaftarTindakan = async () => {
     try {
-      const response = await treatmentAPI.get("?limit=1000");
+      const response = await serviceAPI.get("?limit=1000&searchTipe=Tindakan");
       // console.log(response);
 
-      setSelectedTreatment([{ label: "Pilih Tindakan", value: "", key: 0, name: 'id_daftar_tindakan' }]);
+      setSelectedTreatment([{ label: "Pilih Tindakan", value: "", key: 0, name: 'id_daftar_layanan' }]);
 
       if (response.status === 200) {
         let data = response.data.data;
@@ -126,7 +130,7 @@ const Data = ({ match, history, loading, error }) => {
         for (var i = 0; i < data.length; i++) {
           setSelectedTreatment((current) => [
             ...current,
-            { label: data[i].nama, value: data[i].id, key: data[i].id, name: 'id_daftar_tindakan' },
+            { label: data[i].nama, value: data[i].id, key: data[i].id, name: 'id_daftar_layanan' },
           ]);
         }
       } else {
@@ -138,7 +142,8 @@ const Data = ({ match, history, loading, error }) => {
   };
 
   const [treatment, setTreatment] = useState({
-    nama: ''
+    nama: '',
+    tipe: 'Tindakan'
   });
 
   const onChange = (e) => {
@@ -149,9 +154,9 @@ const Data = ({ match, history, loading, error }) => {
             return { ...current, id_klinik: e ? e.value : ''}
         })
         validate(e, e.name !== undefined ? e.name : e.target.name ? e.target.name : '', e.value !== undefined ? e.value : e.target.value ? e.target.value : '');
-    } else if (e.name === 'id_daftar_tindakan') {
+    } else if (e.name === 'id_daftar_layanan') {
         setTreatmentPrice(current => {
-            return { ...current, id_daftar_tindakan: e ? e.value : ''}
+            return { ...current, id_daftar_layanan: e ? e.value : ''}
         })
         validate(e, e.name !== undefined ? e.name : e.target.name ? e.target.name : '', e.value !== undefined ? e.value : e.target.value ? e.target.value : '');
     } else {
@@ -178,7 +183,6 @@ const Data = ({ match, history, loading, error }) => {
   const onTreatmentListSubmit = async (e) => {
     e.preventDefault();
     setModalAddList(false);
-    onLoadDaftarTindakan();
 
     for(let [key, value] of Object.entries(treatment)) {
       if((key === 'nama' && value === '')){
@@ -188,7 +192,7 @@ const Data = ({ match, history, loading, error }) => {
     }
 
     try {
-      const response = await treatmentAPI.add(treatment);
+      const response = await serviceAPI.add(treatment);
       // console.log(response);
 
       if (response.status == 200) {
@@ -235,7 +239,7 @@ const Data = ({ match, history, loading, error }) => {
     let isError = false;
 
     for(let [key, value] of Object.entries(treatmentPrice)) {
-      if((key === 'id_klinik' && value === '') || (key === 'id_daftar_tindakan' && value === '') || (key === 'harga' && value === '')){
+      if((key === 'id_klinik' && value === '') || (key === 'id_daftar_layanan' && value === '') || (key === 'harga_jasa' && value === '') || (key === 'harga_jual' && value === '')){
         validate(e, key, value);
         isError = true;
       //   return;
@@ -248,7 +252,7 @@ const Data = ({ match, history, loading, error }) => {
 
     if(dataStatus === 'add') {
       try {
-        const response = await treatmentPriceAPI.add(treatmentPrice);
+        const response = await serviceClinicAPI.add(treatmentPrice);
         // console.log(response);
   
         if (response.status == 200) {
@@ -285,11 +289,11 @@ const Data = ({ match, history, loading, error }) => {
   
         console.log(e);
       } finally {
-        getTreatmentPrice("");
+        !userData.roles.includes('isDev') ? getTreatmentPrice(`?searchTipeDaftarLayanan=Tindakan&searchKlinik=${userData.id_klinik}`) : getTreatmentPrice("?searchTipeDaftarLayanan=Tindakan");
       }
     } else if (dataStatus === 'update') {
       try {
-        const response = await treatmentPriceAPI.update(treatmentPrice, treatmentID);
+        const response = await serviceClinicAPI.update(treatmentPrice, treatmentID);
         // console.log(response);
   
         if (response.status == 200) {
@@ -326,7 +330,7 @@ const Data = ({ match, history, loading, error }) => {
   
         console.log(e);
       } finally {
-        getTreatmentPrice("");
+        !userData.roles.includes('isDev') ? getTreatmentPrice(`?searchTipeDaftarLayanan=Tindakan&searchKlinik=${userData.id_klinik}`) : getTreatmentPrice("?searchTipeDaftarLayanan=Tindakan");
       }
     } else {
       console.log('dataStatus undefined')
@@ -339,7 +343,10 @@ const Data = ({ match, history, loading, error }) => {
     setTreatmentID('');
     setTreatmentName('');
     setTreatmentStatus(0);
-    setTreatment({nama: ''});
+    setTreatment({
+      nama: '',
+      tipe: 'Tindakan'
+    });
 
     if(scroll) {
       if(window.innerWidth < 1280){
@@ -359,14 +366,15 @@ const Data = ({ match, history, loading, error }) => {
     }
 
     setTreatmentPrice({
-      id_daftar_tindakan: treatmentID,
-      id_klinik: '',
-      harga: '',
+      id_daftar_layanan: treatmentID,
+      id_klinik: clinicID,
+      harga_jasa: '',
+      harga_jual: '',
     });
     
     setSelectedKlinik([{ label: "Pilih Klinik", value: "", key: 0, name: 'id_klinik' }]);
     setSelectedKlinikF([{ label: "Semua Klinik", value: "", key: 0, name: 'id_klinik' }]);
-    setSelectedTreatment([{ label: "Pilih Tindakan", value: "", key: 0, name: 'id_daftar_tindakan' }]);
+    setSelectedTreatment([{ label: "Pilih Tindakan", value: "", key: 0, name: 'id_daftar_layanan' }]);
 
     setDataStatus("add");
     onLoadKlinik();
@@ -378,7 +386,7 @@ const Data = ({ match, history, loading, error }) => {
   const getTreatmentPrice = async (params) => {
     try {
       setIsLoading(true);
-      const res = await treatmentPriceAPI.get(params);
+      const res = await serviceClinicAPI.get(params);
       dispatch({type: "GET_TREATMENT_PRICE", payload: res.data.data});
       dispatch({type: "GET_TOTAL_PAGE_TREATMENT_PRICE", payload: res.data.pagination.totalPage});
 
@@ -414,15 +422,16 @@ const Data = ({ match, history, loading, error }) => {
     }
 
     try {
-      const res = await treatmentPriceAPI.get(`/${id}`);
+      const res = await serviceClinicAPI.get(`/${id}`);
       let data = res.data.data[0];
       // console.log(data);
 
       setTreatmentID(data.id);
       setTreatmentPrice({
-        id_daftar_tindakan: data.id_daftar_tindakan,
+        id_daftar_layanan: data.id_daftar_layanan,
         id_klinik: data.id_klinik,
-        harga: data.harga
+        harga_jasa: data.harga_jasa,
+        harga_jual: data.harga_jual
       });
       setTreatmentStatus(data.is_active);
 
@@ -506,12 +515,12 @@ const Data = ({ match, history, loading, error }) => {
 
     setModalArchive(true);
     try {
-      const res = await treatmentAPI.get(`/${id}`);
+      const res = await serviceClinicAPI.get(`/${id}`);
       let data = res.data.data[0];
 
       setTreatmentID(data.id);
       setTreatmentStatus(data.is_active);
-      setTreatmentName(data.nama);
+      setTreatmentName(data.nama_daftar_layanan);
     } catch (e) {
       console.log(e);
     }
@@ -522,7 +531,7 @@ const Data = ({ match, history, loading, error }) => {
 
     try {
       if (treatmentStatus == 1) {
-        const response = await treatmentPriceAPI.archive("", treatmentID);
+        const response = await serviceClinicAPI.archive("", treatmentID);
 
         if (response.status == 200) {
           let data = await response.data.data;
@@ -548,7 +557,7 @@ const Data = ({ match, history, loading, error }) => {
           throw Error(`Error status: ${response.status}`);
         }
       } else {
-        const response = await treatmentPriceAPI.activate("", treatmentID);
+        const response = await serviceClinicAPI.activate("", treatmentID);
 
         if (response.status == 200) {
           let data = await response.data.data;
@@ -586,7 +595,7 @@ const Data = ({ match, history, loading, error }) => {
 
       console.log(e);
     } finally {
-      getTreatmentPrice("");
+      !userData.roles.includes('isDev') ? getTreatmentPrice(`?searchTipeDaftarLayanan=Tindakan&searchKlinik=${userData.id_klinik}`) : getTreatmentPrice("?searchTipeDaftarLayanan=Tindakan");
       getTreatmentPriceById("", treatmentID);
     }
   };
@@ -596,11 +605,11 @@ const Data = ({ match, history, loading, error }) => {
 
     setModalDelete(true);
     try {
-      const res = await treatmentPriceAPI.get(`/${id}`);
+      const res = await serviceClinicAPI.get(`/${id}`);
       let data = res.data.data[0];
 
       setTreatmentID(data.id);
-      setTreatmentName(data.nama);
+      setTreatmentName(data.nama_daftar_layanan);
     } catch (e) {
       console.log(e);
     }
@@ -610,7 +619,7 @@ const Data = ({ match, history, loading, error }) => {
     e.preventDefault();
 
     try {
-      const response = await treatmentPriceAPI.delete(treatmentID);
+      const response = await serviceClinicAPI.delete(treatmentID);
 
       if (response.status == 200) {
         let data = await response.data.data;
@@ -648,7 +657,7 @@ const Data = ({ match, history, loading, error }) => {
 
       console.log(e);
     } finally {
-      getTreatmentPrice("");
+      !userData.roles.includes('isDev') ? getTreatmentPrice(`?searchTipeDaftarLayanan=Tindakan&searchKlinik=${userData.id_klinik}`) : getTreatmentPrice("?searchTipeDaftarLayanan=Tindakan");
     }
   };
 
@@ -675,12 +684,17 @@ const Data = ({ match, history, loading, error }) => {
     if (searchKlinik !== "") {
       params = `${params}&searchKlinik=${searchKlinik}`;
     }
+    if (!userData.roles.includes('isDev')) {
+      params = `${params}&searchKlinik=${userData.id_klinik}`;
+    }
     if (searchStatus !== "") {
       params = `${params}&searchStatus=${searchStatus}`;
     }
     if (currentPage !== 1) {
       params = `${params}&page=${currentPage}`;
     }
+
+    params = `${params}&searchTipeDaftarLayanan=Tindakan`;
 
     setRowSelected(false);
     getTreatmentPrice(params);
@@ -723,35 +737,55 @@ const Data = ({ match, history, loading, error }) => {
                 </Row>
               </CardTitle>
               <FormGroup row style={{ margin: '0px', width: '100%' }}>
-                <Colxx sm="12" md="6" style={{ paddingLeft: '0px' }}>
-                  <Label for="klinik">
-                    Klinik
-                  </Label>
-                  <Select
-                    components={{ Input: CustomSelectInput }}
-                    className="react-select"
-                    classNamePrefix="react-select"
-                    name="klinik"
-                    onChange={(e) => setSearchKlinik(e.value)}
-                    options={selectedKlinikF}
-                    defaultValue={{ label: "Semua Klinik", value: "", key: 0, name: 'id_klinik' }}
-                  />
-                </Colxx>
-                <Colxx sm="12" md="6" style={{ paddingRight: '0px' }}>
-                  <Label for="status">
-                      Status
-                    </Label>
-                    <Select
-                      components={{ Input: CustomSelectInput }}
-                      className="react-select"
-                      classNamePrefix="react-select"
-                      name="status"
-                      onChange={(e) => setSearchStatus(e.value)}
-                      options={selectStatusF}
-                      isSearchable={false}
-                      defaultValue={{ label: "Semua Status", value: "", key: 0, name: "status" }}
-                    />
-                </Colxx>
+                { !userData.roles.includes('isDev') ?
+                  <Colxx sm="12" md="12" style={{ paddingLeft: '0px', paddingRight: '0px' }}>
+                      <Label for="status">
+                          Status
+                        </Label>
+                        <Select
+                          components={{ Input: CustomSelectInput }}
+                          className="react-select"
+                          classNamePrefix="react-select"
+                          name="status"
+                          onChange={(e) => setSearchStatus(e.value)}
+                          options={selectStatusF}
+                          isSearchable={false}
+                          defaultValue={{ label: "Semua Status", value: "", key: 0, name: "status" }}
+                        />
+                    </Colxx>
+                  :
+                    <>
+                        <Colxx sm="12" md="6" style={{ paddingLeft: '0px' }}>
+                          <Label for="klinik">
+                            Klinik
+                          </Label>
+                          <Select
+                            components={{ Input: CustomSelectInput }}
+                            className="react-select"
+                            classNamePrefix="react-select"
+                            name="klinik"
+                            onChange={(e) => setSearchKlinik(e.value)}
+                            options={selectedKlinikF}
+                            defaultValue={{ label: "Semua Klinik", value: "", key: 0, name: 'id_klinik' }}
+                          />
+                        </Colxx>
+                        <Colxx sm="12" md="6" style={{ paddingRight: '0px' }}>
+                          <Label for="status">
+                              Status
+                            </Label>
+                            <Select
+                              components={{ Input: CustomSelectInput }}
+                              className="react-select"
+                              classNamePrefix="react-select"
+                              name="status"
+                              onChange={(e) => setSearchStatus(e.value)}
+                              options={selectStatusF}
+                              isSearchable={false}
+                              defaultValue={{ label: "Semua Status", value: "", key: 0, name: "status" }}
+                            />
+                        </Colxx>
+                    </>
+                }
               </FormGroup>
               <InputGroup className="my-4">
                 <Input
@@ -792,8 +826,8 @@ const Data = ({ match, history, loading, error }) => {
                           {startNumber++}
                         </th>
                         <td>
-                          <h6 style={{ fontWeight: 'bold' }} className="max-text">{data.nama}</h6>
-                          {data.nama_klinik ? data.nama_klinik : "-"}, {data.harga ? currencyFormat(data.harga) : "-"}<br/>
+                          <h6 style={{ fontWeight: 'bold' }} className="max-text">{data.nama_daftar_layanan}</h6>
+                          Jasa: {data.harga_jasa ? currencyFormat(data.harga_jasa) : "-"}, Jual: {data.harga_jual ? currencyFormat(data.harga_jual) : "-"}<br/>
                           {data.is_active == 1 ? (
                             <Badge color="success" className="mt-2">Aktif</Badge>
                           ) : (
@@ -874,7 +908,8 @@ const Data = ({ match, history, loading, error }) => {
               </CardTitle>
               <Form className="av-tooltip tooltip-right-top" onSubmit={onTreatmentSubmit}>
                 <FormGroup row>
-                  <Colxx lg={4} className="col-tp-4">
+                  { userData.roles.includes('isDev') &&
+                  <Colxx lg={12}>
                     <FormGroup>
                       <Label for="id_klinik">Klinik
                         <span
@@ -892,7 +927,7 @@ const Data = ({ match, history, loading, error }) => {
                         name="id_klinik"
                         id="id_klinik"
                         options={selectedKlinik}
-                        value={selectedKlinik.find(item => item.value === treatmentPrice.id_klinik) || ''}
+                        value={selectedKlinik.find(item => item.value === treatmentPrice.id_klinik) || { label: "Pilih Klinik", value: "", key: 0, name: 'id_klinik' }}
                         onChange={onChange}
                         // required
                       />
@@ -903,10 +938,11 @@ const Data = ({ match, history, loading, error }) => {
                       )}
                     </FormGroup>
                   </Colxx>
+                  }
 
                   <Colxx lg={3} className="col-tp-3" style={{ paddingRight: '0px' }}>
                     <FormGroup>
-                      <Label for="id_daftar_tindakan">
+                      <Label for="id_daftar_layanan">
                         Tindakan
                         <span
                           className="required text-danger"
@@ -920,16 +956,16 @@ const Data = ({ match, history, loading, error }) => {
                         components={{ Input: CustomSelectInput }}
                         className="react-select"
                         classNamePrefix="react-select"
-                        name="id_daftar_tindakan"
-                        id="id_daftar_tindakan"
+                        name="id_daftar_layanan"
+                        id="id_daftar_layanan"
                         options={selectedTreatment}
-                        value={selectedTreatment.find(item => item.value === treatmentPrice.id_daftar_tindakan) || { label: "Pilih Tindakan", value: "", key: 0, name: 'id_daftar_tindakan' }}
+                        value={selectedTreatment.find(item => item.value === treatmentPrice.id_daftar_layanan) || { label: "Pilih Tindakan", value: "", key: 0, name: 'id_daftar_layanan' }}
                         onChange={onChange}
                         // required
                       />
-                      {errors.id_daftar_tindakan && (
+                      {errors.id_daftar_layanan && (
                         <div className="rounded invalid-feedback d-block">
-                          {errors.id_daftar_tindakan}
+                          {errors.id_daftar_layanan}
                         </div>
                       )}
                     </FormGroup>
@@ -944,7 +980,7 @@ const Data = ({ match, history, loading, error }) => {
                       <Button
                         color="primary"
                         className="btn-sm"
-                        onClick={() => { setModalAddList(true), setTreatment({nama: ''}) }}
+                        onClick={() => { setModalAddList(true), setTreatment({nama: '', tipe: 'Tindakan'}) }}
                         style={{ borderRadius: '0 5px 5px 0', padding: '0.45rem', border: '2px solid #008ecc' }}
                       >
                         Tambah
@@ -954,8 +990,8 @@ const Data = ({ match, history, loading, error }) => {
 
                   <Colxx lg={4} className="col-tp-4">
                     <FormGroup>
-                      <Label for="harga">
-                        Harga (Rp)
+                      <Label for="harga_jasa">
+                        Harga Jasa (Rp)
                         <span
                           className="required text-danger"
                           aria-required="true"
@@ -966,17 +1002,47 @@ const Data = ({ match, history, loading, error }) => {
                       </Label>
                       <Input
                         type="number"
-                        name="harga"
-                        id="harga"
-                        placeholder="Harga"
-                        value={treatmentPrice.harga}
+                        name="harga_jasa"
+                        id="harga_jasa"
+                        placeholder="Harga Jasa"
+                        value={treatmentPrice.harga_jasa}
                         pattern="[0-9]*"
                         onChange={onChange}
                         // required={true}
                       />
-                      {errors.harga && (
+                      {errors.harga_jasa && (
                         <div className="rounded invalid-feedback d-block">
-                          {errors.harga}
+                          {errors.harga_jasa}
+                        </div>
+                      )}
+                    </FormGroup>
+                  </Colxx>
+
+                  <Colxx lg={4} className="col-tp-4">
+                    <FormGroup>
+                      <Label for="harga_jual">
+                        Harga Jual (Rp)
+                        <span
+                          className="required text-danger"
+                          aria-required="true"
+                        >
+                          {" "}
+                          *
+                        </span>
+                      </Label>
+                      <Input
+                        type="number"
+                        name="harga_jual"
+                        id="harga_jual"
+                        placeholder="Harga Jual"
+                        value={treatmentPrice.harga_jual}
+                        pattern="[0-9]*"
+                        onChange={onChange}
+                        // required={true}
+                      />
+                      {errors.harga_jual && (
+                        <div className="rounded invalid-feedback d-block">
+                          {errors.harga_jual}
                         </div>
                       )}
                     </FormGroup>

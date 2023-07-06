@@ -212,11 +212,11 @@ const Data = ({ match, history, loading, error }) => {
   };
 
   const [partnership, setPartnership] = useState([{
-    id: '', id_klinik: clinicID, id_asuransi: '', id_asuransi_kelas: '', tipe: ''
+    id: '', id_klinik: clinicID, id_asuransi: '', id_asuransi_kelas: '', tipe: '', besar_klaim: ''
   }]);
 
   const [tempPartnership, setTempPartnership] = useState([{
-    id: '', id_klinik: clinicID, id_asuransi: '', id_asuransi_kelas: '', tipe: ''
+    id: '', id_klinik: clinicID, id_asuransi: '', id_asuransi_kelas: '', tipe: '', besar_klaim: ''
   }]);
 
   const onChange = (e) => {
@@ -229,7 +229,7 @@ const Data = ({ match, history, loading, error }) => {
   }
 
   const addPartnershipFields = () => {
-    let newfieldPartnership = { id: '', id_klinik: clinicID, id_asuransi: '', id_asuransi_kelas: '', tipe: '' };
+    let newfieldPartnership = { id: '', id_klinik: clinicID, id_asuransi: '', id_asuransi_kelas: '', tipe: '', besar_klaim: '' };
     setPartnership([...partnership, newfieldPartnership]);
 
     // disabledInsuranceClass[partnership.length] = true;
@@ -423,7 +423,7 @@ const Data = ({ match, history, loading, error }) => {
 
     setClinicID('');
     setPartnership([]);
-    setPartnership([{ id: "", id_klinik: "", id_asuransi: "", id_asuransi_kelas: "", tipe: "" }]);
+    setPartnership([{ id: "", id_klinik: "", id_asuransi: "", id_asuransi_kelas: "", tipe: "", besar_klaim: "" }]);
 
     // console.log(partnership);
 
@@ -495,12 +495,12 @@ const Data = ({ match, history, loading, error }) => {
       if(data) {
         data.map((data, index) => {
           setPartnership((current) => [
-            ...current, { id: data.id, id_klinik: data.id_klinik, id_asuransi: data.id_asuransi, id_asuransi_kelas: data.id_asuransi_kelas, tipe: data.tipe }
+            ...current, { id: data.id, id_klinik: data.id_klinik, id_asuransi: data.id_asuransi, id_asuransi_kelas: data.id_asuransi_kelas, tipe: data.tipe, besar_klaim: data.besar_klaim }
           ]);
           changeKelasAsuransi(index, data.id_asuransi, data.id_asuransi_kelas);
 
           setTempPartnership((current) => [
-            ...current, { id: data.id, id_klinik: data.id_klinik, id_asuransi: data.id_asuransi, id_asuransi_kelas: data.id_asuransi_kelas, tipe: data.tipe }
+            ...current, { id: data.id, id_klinik: data.id_klinik, id_asuransi: data.id_asuransi, id_asuransi_kelas: data.id_asuransi_kelas, tipe: data.tipe, besar_klaim: data.besar_klaim }
           ]);
         })
 
@@ -525,8 +525,8 @@ const Data = ({ match, history, loading, error }) => {
     } catch (e) {
       console.log(e);
 
-      setPartnership([{ id: '', id_klinik: '', id_asuransi: '', id_asuransi_kelas: '', tipe: '' }]);
-      setTempPartnership([{ id: '', id_klinik: '', id_asuransi: '', id_asuransi_kelas: '', tipe: '' }]);
+      setPartnership([{ id: '', id_klinik: '', id_asuransi: '', id_asuransi_kelas: '', tipe: '', besar_klaim: '' }]);
+      setTempPartnership([{ id: '', id_klinik: '', id_asuransi: '', id_asuransi_kelas: '', tipe: '', besar_klaim: '' }]);
 
       setDataStatusInsurance("add");
     }
@@ -836,7 +836,7 @@ const Data = ({ match, history, loading, error }) => {
                 </Row>
               </CardTitle>
               <FormGroup row style={{ margin: '0px', width: '100%' }}>
-              <Colxx sm="12" md="6" style={{ paddingLeft: '0px' }}>
+                <Colxx sm="12" md="6" style={{ paddingLeft: '0px' }}>
                   <Label for="klinik">
                     Klinik
                   </Label>
@@ -1011,7 +1011,7 @@ const Data = ({ match, history, loading, error }) => {
                   <Colxx sm={12}>
                     <FormGroup className="partnership-form">
                       <Row>
-                        <Colxx sm={4}>
+                        <Colxx sm={3}>
                           <Label>Asuransi
                             <span
                               className="required text-danger"
@@ -1022,7 +1022,7 @@ const Data = ({ match, history, loading, error }) => {
                             </span>
                           </Label>
                         </Colxx>
-                        <Colxx sm={4}>
+                        <Colxx sm={3}>
                           <Label>Kelas (pilih asuransi dahulu)
                             <span
                               className="required text-danger"
@@ -1033,7 +1033,7 @@ const Data = ({ match, history, loading, error }) => {
                             </span>
                           </Label>
                         </Colxx>
-                        <Colxx sm={4}>
+                        <Colxx sm={3}>
                           <Label>Tipe
                             <span
                               className="required text-danger"
@@ -1044,11 +1044,22 @@ const Data = ({ match, history, loading, error }) => {
                             </span>
                           </Label>
                         </Colxx>
+                        <Colxx sm={3}>
+                          <Label>Besar Klaim (Rp)
+                            {/* <span
+                              className="required text-danger"
+                              aria-required="true"
+                            >
+                              {" "}
+                              *
+                            </span> */}
+                          </Label>
+                        </Colxx>
                       </Row>
                       {partnership.map((input, index) => {
                         return (
                           <Row key={index} className="partnership-row">
-                            <Colxx sm={4}>
+                            <Colxx sm={3}>
                               <FormGroup>
                                 <Select
                                   components={{ Input: CustomSelectInput }}
@@ -1069,7 +1080,7 @@ const Data = ({ match, history, loading, error }) => {
                                 )}
                               </FormGroup>
                             </Colxx>
-                            <Colxx sm={4}>
+                            <Colxx sm={3}>
                               <FormGroup>
                                 <Select
                                   components={{ Input: CustomSelectInput }}
@@ -1094,11 +1105,11 @@ const Data = ({ match, history, loading, error }) => {
                                 )}
                               </FormGroup>
                             </Colxx>
-                            <Colxx sm={4}>
-                              <React.Fragment>
+                            <Colxx sm={3}>
+                              <FormGroup>
                                 <Select
                                   components={{ Input: CustomSelectInput }}
-                                  className="react-select select-partnership"
+                                  className="react-select"
                                   classNamePrefix="react-select"
                                   name="tipe"
                                   value={selectType.find(item => item.value === partnership[index].tipe) || { label: "Pilih Tipe", value: "", key: 0, name: 'tipe' }}
@@ -1114,6 +1125,22 @@ const Data = ({ match, history, loading, error }) => {
                                     {errors.tipe_kerjasama}
                                   </div>
                                 )}
+                              </FormGroup>
+                            </Colxx>
+                            <Colxx sm={3}>
+                              <InputGroup className="input-group-partnership">
+                                <Input
+                                  type="number"
+                                  name="besar_klaim"
+                                  id="besar_klaim"
+                                  placeholder="Besar Klaim"
+                                  value={partnership[index].besar_klaim}
+                                  pattern="[0-9]*"
+                                  onChange={(event) =>
+                                    handlePartnershipChange(index, event)
+                                  }
+                                  // required={true}
+                                />
                                 {index > 0 && (
                                   <Button
                                     color="danger"
@@ -1126,7 +1153,7 @@ const Data = ({ match, history, loading, error }) => {
                                     <i className="simple-icon-trash"></i>
                                   </Button>
                                 )}
-                              </React.Fragment>
+                              </InputGroup>
                             </Colxx>
                           </Row>
                         );

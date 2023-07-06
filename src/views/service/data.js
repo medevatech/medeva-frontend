@@ -40,8 +40,6 @@ import Pagination from "components/common/Pagination";
 import CustomSelectInput from "components/common/CustomSelectInput";
 
 import serviceAPI from "api/service/list";
-import servicePriceAPI from "api/service/price";
-import clinicAPI from "api/clinic";
 import Swal from "sweetalert2";
 
 import loader from '../../assets/img/loading.gif';
@@ -72,7 +70,8 @@ const Data = ({ match, history, loading, error }) => {
   const [serviceStatus, setServiceStatus] = useState(0);
 
   const [service, setService] = useState({
-    nama: ''
+    nama: '',
+    tipe: 'Layanan'
   });
 
   const onChange = (e) => {
@@ -135,7 +134,7 @@ const Data = ({ match, history, loading, error }) => {
   
         console.log(e);
       } finally {
-        getService("");
+        !userData.roles.includes('isDev') ? getService(`?searchTipe=Layanan&searchKlinik=${userData.id_klinik}`) : getService("?searchTipe=Layanan");
       }
     } else if (dataStatus === 'update') {
       try {
@@ -176,7 +175,7 @@ const Data = ({ match, history, loading, error }) => {
   
         console.log(e);
       } finally {
-        getService("");
+        !userData.roles.includes('isDev') ? getService(`?searchTipe=Layanan&searchKlinik=${userData.id_klinik}`) : getService("?searchTipe=Layanan");
       }
     } else {
       console.log('dataStatus undefined')
@@ -209,6 +208,7 @@ const Data = ({ match, history, loading, error }) => {
 
     setService({
       nama: '',
+      tipe: 'Layanan'
     });
 
     setDataStatus("add");
@@ -263,6 +263,7 @@ const Data = ({ match, history, loading, error }) => {
       setServiceID(data.id);
       setService({
         nama: data.nama,
+        tipe: data.tipe
       });
       setServiceStatus(data.is_active);
 
@@ -426,7 +427,7 @@ const Data = ({ match, history, loading, error }) => {
 
       console.log(e);
     } finally {
-      getService("");
+      !userData.roles.includes('isDev') ? getService(`?searchTipe=Layanan&searchKlinik=${userData.id_klinik}`) : getService("?searchTipe=Layanan");
       getServiceById("", serviceID);
     }
   };
@@ -488,17 +489,17 @@ const Data = ({ match, history, loading, error }) => {
 
       console.log(e);
     } finally {
-      getService("");
+      !userData.roles.includes('isDev') ? getService(`?searchTipe=Layanan&searchKlinik=${userData.id_klinik}`) : getService("?searchTipe=Layanan");
     }
   };
 
-  const [searchDaftarLayanan, setSearchName] = useState("");
+  const [searchName, setSearchName] = useState("");
   const [searchStatus, setSearchStatus] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [ limit, searchDaftarLayanan, searchStatus, sortBy, sortOrder ]);
+  }, [ limit, searchName, searchStatus, sortBy, sortOrder ]);
 
   useEffect(() => {
     let params = "";
@@ -508,8 +509,11 @@ const Data = ({ match, history, loading, error }) => {
     } else {
       params = `${params}?limit=10`;
     }
-    if (searchDaftarLayanan !== "") {
-      params = `${params}&searchDaftarLayanan=${searchDaftarLayanan}`;
+    if (searchName !== "") {
+      params = `${params}&searchDaftarLayanan=${searchName}`;
+    }
+    if (!userData.roles.includes('isDev')) {
+      params = `${params}&searchKlinik=${userData.id_klinik}`;
     }
     if (searchStatus !== "") {
       params = `${params}&searchStatus=${searchStatus}`;
@@ -517,10 +521,12 @@ const Data = ({ match, history, loading, error }) => {
     if (currentPage !== 1) {
       params = `${params}&page=${currentPage}`;
     }
+
+    params = `${params}&searchTipe=Layanan`;
     
     setRowSelected(false);
     getService(params);
-  }, [limit, searchDaftarLayanan, searchStatus, sortBy, sortOrder, currentPage ]);
+  }, [limit, searchName, searchStatus, sortBy, sortOrder, currentPage ]);
 
   let startNumber = 1;
 

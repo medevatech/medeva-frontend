@@ -40,6 +40,8 @@ import Pagination from "components/common/Pagination";
 import CustomSelectInput from "components/common/CustomSelectInput";
 
 import employeeAPI from "api/employee";
+import clinicAPI from "api/clinic";
+import contractAPI from "api/employee/contract";
 import Swal from "sweetalert2";
 
 import loader from '../../assets/img/loading.gif';
@@ -55,6 +57,7 @@ const selectRole = [
   { label: "Dokter", value: "Dokter", key: 5, name: "peran" },
   { label: "Manajemen", value: "Manajemen", key: 6, name: "peran" },
   { label: "Finance", value: "Finance", key: 7, name: "peran" },
+  { label: "Kasir", value: "Kasir", key: 8, name: "peran" },
 ];
 
 const selectType = [
@@ -66,6 +69,7 @@ const selectType = [
   { label: "Dokter", value: "Dokter", key: 5, name: "tipe" },
   { label: "Manajemen", value: "Manajemen", key: 6, name: "tipe" },
   { label: "Finance", value: "Finance", key: 7, name: "tipe" },
+  { label: "Kasir", value: "Kasir", key: 8, name: "tipe" },
 ];
 
 const selectTypeF = [
@@ -77,6 +81,7 @@ const selectTypeF = [
   { label: "Dokter", value: "Dokter", key: 5, name: "tipe" },
   { label: "Manajemen", value: "Manajemen", key: 6, name: "tipe" },
   { label: "Finance", value: "Finance", key: 7, name: "tipe" },
+  { label: "Kasir", value: "Kasir", key: 8, name: "tipe" },
 ];
 
 const selectStatusF = [
@@ -213,7 +218,9 @@ const Data = ({ match, history, loading, error }) => {
   const [tableClass, setTableClass] = useState('');
   const [dataStatus, setDataStatus] = useState("");
   const [rowSelected, setRowSelected] = useState(null);
-
+  
+  const [selectedKlinik, setSelectedKlinik] = useState([{ label: "Pilih Klinik", value: "", key: 0, name: 'id_klinik' }]);
+  const [selectedKlinikF, setSelectedKlinikF] = useState([{ label: "Semua Klinik", value: "", key: 0, name: 'id_klinik' }]);
   const [selectedTypeF, setSelectedTypeF] = useState({ label: "Semua Tipe", value: "", key: 0, name: "tipe" },);
   const [selectedSpecialistF, setSelectedSpecialistF] = useState({ label: "Semua Spesialisasi", value: "", key: 0, name: "spesialis" },);
 
@@ -242,6 +249,9 @@ const Data = ({ match, history, loading, error }) => {
   const [modalDelete, setModalDelete] = useState(false);
   const [employeeID, setEmployeeID] = useState('');
   const [employeeStatus, setEmployeeStatus] = useState(0);
+  const [employeeSubmit, setEmployeeSubmit] = useState('');
+  const [clinicID, setClinicID] = useState(!userData.roles.includes('isDev') ? userData.id_klinik : '');
+  const [contracID, setContractID] = useState('');
 
   const [employee, setEmployee] = useState({
     username: '',
@@ -256,6 +266,7 @@ const Data = ({ match, history, loading, error }) => {
     is_dokter: 0,
     is_manajemen: 0,
     is_finance: 0,
+    is_cashier: 0,
     jenis_kelamin: '',
     nomor_kitas: '',
     tipe_izin: '',
@@ -281,6 +292,42 @@ const Data = ({ match, history, loading, error }) => {
     nama_kecamatan: '',
     nama_kelurahan: ''
   });
+
+  const [contract, setContract] = useState({
+    id_karyawan: employeeID,
+    id_klinik: clinicID,
+  });
+
+  const onLoadKlinik = async () => {
+    try {
+      const response = await clinicAPI.get("?limit=1000");
+      // console.log(response);
+
+      setSelectedKlinik([{ label: "Pilih Klinik", value: "", key: 0, name: 'id_klinik' }]);
+      setSelectedKlinikF([{ label: "Semua Klinik", value: "", key: 0, name: 'id_klinik' }]);
+
+      if (response.status === 200) {
+        let data = response.data.data;
+        // console.log(data);
+      
+        for (var i = 0; i < data.length; i++) {
+          setSelectedKlinik((current) => [
+            ...current,
+            { label: data[i].nama_klinik, value: data[i].id, key: data[i].id, name: 'id_klinik' },
+          ]);
+          
+          setSelectedKlinikF((current) => [
+            ...current,
+            { label: data[i].nama_klinik, value: data[i].id, key: data[i].id, name: 'id_klinik' },
+          ]);
+        }
+      } else {
+        throw Error(`Error status: ${response.status}`);
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  };
 
   const onLoadProvinsi = async () => {
     try {
@@ -460,14 +507,28 @@ const Data = ({ match, history, loading, error }) => {
 
           validate(e, 'peran', 1);
         } 
+        
+        if (e[i].value === "Kasir") {
+          setEmployee(current => {
+              return { ...current, is_cashier: 1 }
+          })
+
+          validate(e, 'peran', 1);
+        } 
       }
     } else if (e.length <= 0) {
       setEmployee(current => {
-          return { ...current, is_dev: 0, is_manager: 0, is_admin: 0, is_resepsionis: 0, is_perawat: 0, is_dokter: 0, is_manajemen: 0, is_finance: 0 }
+          return { ...current, is_dev: 0, is_manager: 0, is_admin: 0, is_resepsionis: 0, is_perawat: 0, is_dokter: 0, is_manajemen: 0, is_finance: 0, is_cashier: 0 }
       })
 
       setSelectedRole(Array.isArray(e) ? e.map(x => x.value) : []);
       validate(e, 'peran', '');
+    } else if (e.name === 'id_klinik') {
+      setContract(current => {
+          return { ...current, id_klinik: e ? e.value : ''}
+      })
+
+      setClinicID(e.value);
     } else if (e.name === 'provinsi') {
         setEmployee(current => {
             // return { ...current, provinsi: e.value }
@@ -598,10 +659,22 @@ const Data = ({ match, history, loading, error }) => {
 
   const onEmployeeSubmit = async (e) => {
     e.preventDefault();
+    setEmployeeSubmit("process");
+      
+    setContract(current => {
+        return { ...current, id_klinik: clinicID }
+    })
 
     let isError = false;
 
-    let isDev, isManager, isAdmin, isResepsionis, isPerawat, isDokter, isManajemen, isFinance = false;
+    let isDev, isManager, isAdmin, isResepsionis, isPerawat, isDokter, isManajemen, isFinance, isCashier = false;
+
+    for(let [key, value] of Object.entries(contract)) {
+      if((key === 'id_klinik' && value === '')){
+        validate(e, key, value);
+        isError = true;
+      }
+    }
 
     for(let [key, value] of Object.entries(employee)) {
       if((key === 'username' && value === '') || (key === 'no_kitas' && value === '')  ||
@@ -626,6 +699,7 @@ const Data = ({ match, history, loading, error }) => {
       key === 'is_dokter' && value === 0 ? isDokter = false : isDokter = true
       key === 'is_manajemen' && value === 0 ? isManajemen = false : isManajemen = true
       key === 'is_finance' && value === 0 ? isFinance = false : isFinance = true
+      key === 'is_cashier' && value === 0 ? isCashier = false : isCashier = true
 
       if((key === 'tipe' && value !== '') && (key === 'spesialis' && value === '')){
         validate(e, 'spesialis', value);
@@ -638,7 +712,7 @@ const Data = ({ match, history, loading, error }) => {
       isError = true;
     }
 
-    isDev == false && isManager == false && isAdmin == false && isResepsionis == false && isPerawat == false && isDokter == false && isManajemen == false && isFinance == false && noPeran()
+    isDev == false && isManager == false && isAdmin == false && isResepsionis == false && isPerawat == false && isDokter == false && isManajemen == false && isFinance == false && isCashier == false && noPeran()
 
     // console.log('dataStatus', dataStatus);
     // console.log('isError', isError);
@@ -664,7 +738,8 @@ const Data = ({ match, history, loading, error }) => {
             confirmButtonColor: "#008ecc",
           });
   
-          resetForm(e);
+          setEmployeeID(data.id);
+          // resetForm(e);
         } else {
           Swal.fire({
             title: "Gagal!",
@@ -686,8 +761,6 @@ const Data = ({ match, history, loading, error }) => {
         });
   
         console.log(e);
-      } finally {
-        getEmployee("");
       }
     } else if (dataStatus === 'update') {
       try {
@@ -704,8 +777,12 @@ const Data = ({ match, history, loading, error }) => {
             icon: "success",
             confirmButtonColor: "#008ecc",
           });
+            
+          setContract(current => {
+              return { ...current, id_karyawan: data.id}
+          })
   
-          resetForm(e);
+          // resetForm(e);
         } else {
           Swal.fire({
             title: "Gagal!",
@@ -727,8 +804,100 @@ const Data = ({ match, history, loading, error }) => {
         });
   
         console.log(e);
+      }
+    } else {
+      console.log('dataStatus undefined')
+    }
+    
+    setEmployeeSubmit("done");
+  };
+
+  const onContractSubmit = async (e, id) => {
+    e && e.preventDefault();
+      
+    contract.id_karyawan = employeeID;
+
+    if(dataStatus === 'add') {
+      try {
+        const response = await contractAPI.add(contract);
+        // console.log(response);
+  
+        if (response.status == 200) {
+          let data = await response.data.data;
+          // console.log(data);
+  
+          Swal.fire({
+            title: "Sukses!",
+            html: `Tambah kontrak sukses`,
+            icon: "success",
+            confirmButtonColor: "#008ecc",
+          });
+  
+          resetForm(e);
+        } else {
+          Swal.fire({
+            title: "Gagal!",
+            html: `Tambah kontrak gagal: ${response.message}`,
+            icon: "error",
+            confirmButtonColor: "#008ecc",
+            confirmButtonText: "Coba lagi",
+          });
+  
+          throw Error(`Error status: ${response.status}`);
+        }
+      } catch (e) {
+        Swal.fire({
+          title: "Gagal!",
+          html: e.response.data.message,
+          icon: "error",
+          confirmButtonColor: "#008ecc",
+          confirmButtonText: "Coba lagi",
+        });
+  
+        console.log(e);
       } finally {
-        getEmployee("");
+        !userData.roles.includes('isDev') ? getEmployee(`?searchKlinik=${userData.id_klinik}`) : getEmployee("");
+      }
+    } else if (dataStatus === 'update') {
+      try {
+        const response = await contractAPI.update(contract, contract.id);
+        // console.log(response);
+  
+        if (response.status == 200) {
+          let data = await response.data.data;
+          // console.log(data);
+  
+          Swal.fire({
+            title: "Sukses!",
+            html: `Ubah kontrak sukses`,
+            icon: "success",
+            confirmButtonColor: "#008ecc",
+          });
+  
+          resetForm(e);
+        } else {
+          Swal.fire({
+            title: "Gagal!",
+            html: `Ubah kontrak gagal: ${response.message}`,
+            icon: "error",
+            confirmButtonColor: "#008ecc",
+            confirmButtonText: "Coba lagi",
+          });
+  
+          throw Error(`Error status: ${response.status}`);
+        }
+      } catch (e) {
+        Swal.fire({
+          title: "Gagal!",
+          html: e.response.data.message,
+          icon: "error",
+          confirmButtonColor: "#008ecc",
+          confirmButtonText: "Coba lagi",
+        });
+  
+        console.log(e);
+      } finally {
+        !userData.roles.includes('isDev') ? getEmployee(`?searchKlinik=${userData.id_klinik}`) : getEmployee("");
       }
     } else {
       console.log('dataStatus undefined')
@@ -773,6 +942,7 @@ const Data = ({ match, history, loading, error }) => {
       is_dokter: 0,
       is_manajemen: 0,
       is_finance: 0,
+      is_cashier: 0,
       jenis_kelamin: '',
       nomor_kitas: '',
       tipe_izin: '',
@@ -820,6 +990,7 @@ const Data = ({ match, history, loading, error }) => {
     setOpenPassword('block');
 
     setDataStatus("add");
+    onLoadKlinik();
     onLoadProvinsi();
   };
 
@@ -887,6 +1058,7 @@ const Data = ({ match, history, loading, error }) => {
         is_dokter: data.is_dokter,
         is_manajemen: data.is_manajemen,
         is_finance: data.is_finance,
+        is_cashier: data.is_cashier,
         jenis_kelamin: data.jenis_kelamin,
         nomor_kitas: data.nomor_kitas,
         tipe_izin: data.tipe_izin,
@@ -960,6 +1132,12 @@ const Data = ({ match, history, loading, error }) => {
           ...current, 'Finance'
         ]);
       }
+      
+      if (data.is_cashier === 1) {
+        setSelectedRole((current) => [
+          ...current, 'Kasir'
+        ]);
+      }
 
       // console.log('selectedRole', selectedRole);
       setSelectedWP({tipe_izin: data.tipe_izin ? e.value : ''});
@@ -970,7 +1148,7 @@ const Data = ({ match, history, loading, error }) => {
       setSelectedSpecialist({spesialis: data.spesialis ? e.value : ''});
       setSelectedGender(data.jenis_kelamin);
       // setSelectedMaritalStatus(data.status_menikah);
-      setSelectedMaritalStatus({spesialis: data.status_menikah ? e.value : ''});
+      setSelectedMaritalStatus({status_menikah: data.status_menikah ? e.value : ''});
 
       setSelectProvince({provinsi: data.provinsi ? e.value : ''});
       setSelectCity({kota: data.kota ? e.value : ''});
@@ -996,6 +1174,33 @@ const Data = ({ match, history, loading, error }) => {
       // let id_kecamatan = selectedSubdistrict.find(item => item.value === data.kecamatan).key || '';
       // console.log('id_kecamatan ', id_kecamatan);
       // changeKelurahan(id_kecamatan);
+        
+      getContractByEmployeeId(data.id);
+    } catch (e) {
+      console.log(e);
+    }
+
+    // console.log(dataStatus);
+  };
+
+  const getContractByEmployeeId = async (id) => {
+    // e && e.preventDefault();
+    // e && resetForm(e);
+
+    try {
+      const res = await contractAPI.getByEmployee(`/${id}`);
+      let data = res.data.data[0];
+
+      // console.log(data);
+
+      setContractID(data.id);
+      setContract({
+        id: data.id,
+        id_klinik: data.id_klinik,
+        id_karyawan: data.id_karyawan
+      });
+      setClinicID(data.id_klinik);
+
     } catch (e) {
       console.log(e);
     }
@@ -1232,7 +1437,7 @@ const Data = ({ match, history, loading, error }) => {
 
       console.log(e);
     } finally {
-      getEmployee("");
+      !userData.roles.includes('isDev') ? getEmployee(`?searchKlinik=${userData.id_klinik}`) : getEmployee("");
       getEmployeeById("", employeeID);
     }
   };
@@ -1294,7 +1499,7 @@ const Data = ({ match, history, loading, error }) => {
 
       console.log(e);
     } finally {
-      getEmployee("");
+      !userData.roles.includes('isDev') ? getEmployee(`?searchKlinik=${userData.id_klinik}`) : getEmployee("");
     }
   };
 
@@ -1302,11 +1507,12 @@ const Data = ({ match, history, loading, error }) => {
   const [searchTipe, setSearchTipe] = useState("");
   const [searchSpesialis, setSearchSpesialis] = useState("");
   const [searchStatus, setSearchStatus] = useState("");
+  const [searchKlinik, setSearchKlinik] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [ limit, searchName, searchTipe, searchSpesialis, searchStatus, sortBy, sortOrder ]);
+  }, [ limit, searchName, searchTipe, searchSpesialis, searchStatus, searchKlinik, sortBy, sortOrder ]);
 
   useEffect(() => {
     let params = "";
@@ -1328,6 +1534,12 @@ const Data = ({ match, history, loading, error }) => {
     if (searchStatus !== "") {
       params = `${params}&searchStatus=${searchStatus}`;
     }
+    if (searchKlinik !== "") {
+      params = `${params}&searchKlinik=${searchKlinik}`;
+    }
+    if (!userData.roles.includes('isDev')) {
+      params = `${params}&searchKlinik=${userData.id_klinik}`;
+    }
     if (currentPage !== 1) {
       params = `${params}&page=${currentPage}`;
     }
@@ -1335,6 +1547,7 @@ const Data = ({ match, history, loading, error }) => {
     setRowSelected(false);
     getEmployee(params);
 
+    onLoadKlinik();
     onLoadProvinsi();
 
     // if(selectedCity.length > 0 && editAddress.status === 2) {
@@ -1400,6 +1613,12 @@ const Data = ({ match, history, loading, error }) => {
     //     if (!selectedRole.includes('Finance')) {
     //       setEmployee(current => {
     //         return { ...current, is_finance: 0 }
+    //       })
+    //     } 
+
+    //     if (!selectedRole.includes('Kasir')) {
+    //       setEmployee(current => {
+    //         return { ...current, is_cashier: 0 }
     //       })
     //     } 
     //   }
@@ -1469,11 +1688,19 @@ const Data = ({ match, history, loading, error }) => {
     //           return { ...current, is_finance: 0 }
     //       })
 
+    //     selectedRole.includes('Kasir') ?
+    //       setEmployee(current => {
+    //           return { ...current, is_cashier: 1 }
+    //       }) : 
+    //       setEmployee(current => {
+    //           return { ...current, is_cashier: 0 }
+    //       })
+
     //     // console.log('selectedRole onUpdate', selectedRole);
     //   }
     // }
   // }, [limit, searchName, searchTipe, searchSpesialis, searchStatus, sortBy, sortOrder, currentPage, editAddress, selectedRole ]);
-  }, [limit, searchName, searchTipe, searchSpesialis, searchStatus, sortBy, sortOrder, currentPage ]);
+  }, [limit, searchName, searchTipe, searchSpesialis, searchStatus, searchKlinik, sortBy, sortOrder, currentPage ]);
 
   useEffect(() => {
     if(selectedCity.length > 0 && editAddress.status === 2) {
@@ -1543,6 +1770,12 @@ const Data = ({ match, history, loading, error }) => {
             return { ...current, is_finance: 0 }
           })
         } 
+
+        if (!selectedRole.includes('Kasir')) {
+          setEmployee(current => {
+            return { ...current, is_cashier: 0 }
+          })
+        } 
       }
     } else if(dataStatus === "update") {
       if(selectedRole) {
@@ -1610,10 +1843,33 @@ const Data = ({ match, history, loading, error }) => {
               return { ...current, is_finance: 0 }
           })
 
+        selectedRole.includes('Kasir') ?
+          setEmployee(current => {
+              return { ...current, is_cashier: 1 }
+          }) : 
+          setEmployee(current => {
+              return { ...current, is_cashier: 0 }
+          })
+
         // console.log('selectedRole onUpdate', selectedRole);
       }
     }
   }, [ selectedRole ]);
+    
+  useEffect(() => {
+    if (employeeSubmit === "done") {
+      setTimeout(() => {
+
+        if(employee.username !== "" && employeeID) {
+          onContractSubmit("");
+        }
+
+        setTimeout(() => {
+          resetForm();
+        }, 2000)
+      }, 1000);
+    };
+  }, [ employeeSubmit ]);
 
   let startNumber = 1;
 
@@ -1649,6 +1905,22 @@ const Data = ({ match, history, loading, error }) => {
                 </Row>
               </CardTitle>
               <FormGroup row style={{ margin: '0px', width: '100%' }}>
+                { userData.roles.includes('isDev') &&
+                <Colxx sm="12" md="12" style={{ paddingLeft: '0px', paddingRight: '0px' }} className="mb-3">
+                  <Label for="klinik">
+                    Klinik
+                  </Label>
+                  <Select
+                    components={{ Input: CustomSelectInput }}
+                    className="react-select"
+                    classNamePrefix="react-select"
+                    name="klinik"
+                    onChange={(e) => setSearchKlinik(e.value)}
+                    options={selectedKlinikF}
+                    defaultValue={{ label: "Semua Klinik", value: "", key: 0, name: 'id_klinik' }}
+                  />
+                </Colxx>
+                }
                 <Colxx sm="12" md="6" style={{ paddingLeft: '0px' }}>
                   <Label for="tipe">
                     Tipe
@@ -1752,7 +2024,7 @@ const Data = ({ match, history, loading, error }) => {
                         </th>
                         <td>
                           <h6 style={{ fontWeight: 'bold' }} className="max-text">{data.nama}</h6>
-                          {data.tipe ? data.tipe : "-"}<br/>
+                          { userData.roles.includes('isDev') && data.klinik && data.klinik + ", "}{data.tipe ? data.tipe : "-"}<br/>
                           {data.is_active == 1 ? (
                             <Badge color="success" className="mt-2">Aktif</Badge>
                           ) : (
@@ -1850,6 +2122,37 @@ const Data = ({ match, history, loading, error }) => {
               </CardTitle>
               <Form className="av-tooltip tooltip-right-top" onSubmit={onEmployeeSubmit}>
                 <FormGroup row>
+                  { userData.roles.includes('isDev') &&
+                  <Colxx sm={12}>
+                    <FormGroup>
+                      <Label for="id_klinik">Klinik
+                        <span
+                          className="required text-danger"
+                          aria-required="true"
+                        >
+                          {" "}
+                          *
+                        </span>
+                      </Label>
+                      <Select
+                        components={{ Input: CustomSelectInput }}
+                        className="react-select"
+                        classNamePrefix="react-select"
+                        name="id_klinik"
+                        id="id_klinik"
+                        options={selectedKlinik}
+                        value={selectedKlinik.find(item => item.value === contract.id_klinik)}
+                        onChange={onChange}
+                        placeholder="Pilih Klinik"
+                      />
+                      {errors.id_klinik && (
+                        <div className="rounded invalid-feedback d-block">
+                          {errors.id_klinik}
+                        </div>
+                      )}
+                    </FormGroup>
+                  </Colxx>
+                  }
                   <Colxx sm={fieldColumn.username}>
                     <FormGroup>
                       <Label for="username">

@@ -5,8 +5,11 @@ import { connect } from 'react-redux';
 import AppLayout from 'layout/AppLayout';
 import { ProtectedRoute } from 'helpers/authHelper';
 
-const Main = React.lazy(() =>
-  import(/* webpackChunkName: "views-dashboard" */ './main')
+const Clinic = React.lazy(() =>
+  import(/* webpackChunkName: "views-medicine-clinic" */ './clinic')
+);
+const Data = React.lazy(() =>
+  import(/* webpackChunkName: "views-medicine-data" */ './data')
 );
 
 const App = ({ match }) => {
@@ -17,13 +20,18 @@ const App = ({ match }) => {
           <Switch>
             {/* <Redirect exact from={`${match.url}`} to={`${match.url}`} /> */}
             {/* <Route
-              path={`${match.url}/`}
-              render={(props) => <Main {...props} />}
+              path={`${match.url}/data`}
+              render={(props) => <Data {...props} />}
             /> */}
             <ProtectedRoute
+              path={`${match.url}/clinic`}
+              component={Clinic}
+              roles={[ "isDev", "isManager", "isAdmin" ]}
+            />
+            <ProtectedRoute
               path={`${match.url}`}
-              component={Main}
-              roles={[ "isDev", "isManager", "isAdmin", "isResepsionis", "isPerawat", "isDokter", "isManajemen", "isFinance", "isCashier" ]}
+              component={Data}
+              roles={[ "isDev", "isManager", "isAdmin" ]}
             />
             <Redirect to="/error" />
           </Switch>

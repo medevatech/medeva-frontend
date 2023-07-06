@@ -1192,7 +1192,7 @@ const Data = ({ match }) => {
       setPatientName(data.nama_lengkap);
       setPatientStatus(data.is_active);
 
-      setSelectedMaritalStatus({spesialis: data.status_menikah ? e.value : ''});
+      setSelectedMaritalStatus({status_menikah: data.status_menikah ? e.value : ''});
       setSelectedReligion({agama: data.agama ? e.value : ''});
       setSelectedNationality({kewarganegaraan: data.kewarganegaraan ? e.value : ''});
       setSelectedEmployment({pekerjaan: data.pekerjaan ? e.value : ''});

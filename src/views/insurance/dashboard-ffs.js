@@ -54,7 +54,7 @@ const Dashboard = ({ match, history, loading, error }) => {
   // const insuranceTotalPage = useSelector(state => state.insuranceTotalPage);
   const { errors, validate } = useForm();
 
-  const [insuranceMetrics, setInsuranceMetrics] = useState({ total_klaim: 0, total_klaim_ditolak: 0, jumlah_anggota: 0, biaya_layanan: { low: 0, medium: 0, high: 0 }, komponen_layanan: { bhp: 0, bnmhp: 0, jasa_medis: 0 }, status_klaim: { ditolak: 0, dipertimbangkan: 0, diterima: 0 }, alasan_penolakan: { berkas_tidak_lengkap: 0, diagnosa_tidak_tepat: 0, penanganan_tidak_tepat: 0, tidak_ditanggung: 0, lainnya: 0 }, layanan_terklaim: { tambal_gigi: 0, suntik_vitamin: 0, penanganan_luka: 0 } });
+  const [insuranceMetrics, setInsuranceMetrics] = useState({ total_klaim: 0, total_klaim_ditolak: 0, jumlah_anggota: 0, biaya_layanan: { biaya: 0, pendapatan: 0 }, komponen_layanan: { bhp: 0, bnmhp: 0, jasa_medis: 0 }, status_klaim: { ditolak: 0, dipertimbangkan: 0, diterima: 0 }, alasan_penolakan: { berkas_tidak_lengkap: 0, diagnosa_tidak_tepat: 0, penanganan_tidak_tepat: 0, tidak_ditanggung: 0, lainnya: 0 }, layanan_terklaim: { tambal_gigi: 0, suntik_vitamin: 0, penanganan_luka: 0 } });
   const [incomeMetrics, setIncomeMetrics] = useState({});
   const [visitationMetrics, setVisitationMetrics] = useState({});
   const [unitCostData, setUnitCostData] = useState([]);
@@ -385,19 +385,14 @@ const Dashboard = ({ match, history, loading, error }) => {
         type: 'pie',
         data: [
           {
-            value: insuranceMetrics.biaya_layanan.low,
-            name: 'Rendah',
+            value: insuranceMetrics.biaya_layanan.biaya,
+            name: 'Biaya',
             itemStyle: { color: '#006894' },
           },
           {
-            value: insuranceMetrics.biaya_layanan.medium,
-            name: 'Sedang',
+            value: insuranceMetrics.biaya_layanan.pendapatan,
+            name: 'Total Pendapatan',
             itemStyle: { color: '#007fb6' },
-          },
-          {
-            value: insuranceMetrics.biaya_layanan.high,
-            name: 'Tinggi',
-            itemStyle: { color: '#39addf' },
           }
         ],
         radius: ['50%', '70%'],
@@ -438,6 +433,87 @@ const Dashboard = ({ match, history, loading, error }) => {
     },
   }; 
 
+  const biayaLayananGauge = {
+    series: [
+      {
+        type: 'gauge',
+        startAngle: 90,
+        endAngle: -270,
+        pointer: {
+          show: false
+        },
+        progress: {
+          show: true,
+          overlap: false,
+          roundCap: true,
+          clip: false,
+          itemStyle: {
+            borderWidth: 0,
+            borderColor: '#ffffff'
+          }
+        },
+        axisLine: {
+          lineStyle: {
+            width: 20
+          }
+        },
+        splitLine: {
+          show: false,
+          distance: 0,
+          length: 10
+        },
+        axisTick: {
+          show: false
+        },
+        axisLabel: {
+          show: false,
+          distance: 50
+        },
+        data: [
+                {
+                  value: insuranceMetrics.biaya_layanan.pendapatan,
+                  name: 'Total Pendapatan',
+                  title: {
+                    offsetCenter: ['0%', '20%'],
+                    fontSize: 12
+                  },
+                  itemStyle: { color: '#006894' },
+                  detail: {
+                    valueAnimation: true,
+                    offsetCenter: ['0%', '50%'],
+                    fontSize: 12
+                  }
+                },{
+                  value: insuranceMetrics.biaya_layanan.biaya,
+                  name: 'Biaya',
+                  title: {
+                    offsetCenter: ['0%', '-50%'],
+                    fontSize: 12
+                  },
+                  itemStyle: { color: '#39addf' },
+                  detail: {
+                    valueAnimation: true,
+                    offsetCenter: ['0%', '-20%'],
+                    fontSize: 12
+                  }
+                },],
+        title: {
+          fontSize: 14
+        },
+        detail: {
+          width: 50,
+          height: 14,
+          fontSize: 14,
+          color: 'inherit',
+          borderColor: 'inherit',
+          borderRadius: 20,
+          borderWidth: 1,
+          formatter: '{value}%'
+        }
+      }
+    ]
+  };
+
   const komponenLayanan = {
     grid: { top: 8, right: 20, bottom: 24, left: '10%' },
     yAxis: {
@@ -453,6 +529,11 @@ const Dashboard = ({ match, history, loading, error }) => {
     },
     xAxis: {
       type: 'value',
+      axisLabel: {
+        formatter: (value) => {
+          return currencyFormat(value);
+        }
+      },
     },
     series: [
       {
@@ -472,7 +553,10 @@ const Dashboard = ({ match, history, loading, error }) => {
           // position: 'top',
           textStyle: {
             fontSize: 12, color: '#ffffff'
-          }
+          },
+          formatter: (data) => {
+            return currencyFormat(data.value);
+          },
         }
       },
       // {
@@ -502,6 +586,7 @@ const Dashboard = ({ match, history, loading, error }) => {
     ],
     tooltip: {
       trigger: 'axis',
+      valueFormatter: (value) => currencyFormat(value)
     },
   }; 
 
@@ -522,7 +607,7 @@ const Dashboard = ({ match, history, loading, error }) => {
   }, [ ]);
 
   const getInsuranceByInsuranceIdAndInsuranceClassIdFFSP = async (insuranceID, insuranceClassID) => {
-    setInsuranceMetrics({ total_klaim: 0, total_klaim_ditolak: 0, jumlah_anggota: 0, biaya_layanan: { low: 0, medium: 0, high: 0 }, komponen_layanan: { bhp: 0, bnmhp: 0, jasa_medis: 0 }, status_klaim: { ditolak: 0, dipertimbangkan: 0, diterima: 0 }, alasan_penolakan: { berkas_tidak_lengkap: 0, diagnosa_tidak_tepat: 0, penanganan_tidak_tepat: 0, tidak_ditanggung: 0, lainnya: 0 }, layanan_terklaim: { tambal_gigi: 0, suntik_vitamin: 0, penanganan_luka: 0 } });
+    setInsuranceMetrics({ total_klaim: 0, total_klaim_ditolak: 0, jumlah_anggota: 0, biaya_layanan: { biaya: 0, pendapatan: 0 }, komponen_layanan: { bhp: 0, bnmhp: 0, jasa_medis: 0 }, status_klaim: { ditolak: 0, dipertimbangkan: 0, diterima: 0 }, alasan_penolakan: { berkas_tidak_lengkap: 0, diagnosa_tidak_tepat: 0, penanganan_tidak_tepat: 0, tidak_ditanggung: 0, lainnya: 0 }, layanan_terklaim: { tambal_gigi: 0, suntik_vitamin: 0, penanganan_luka: 0 } });
     setIncomeMetrics({});
     setVisitationMetrics({});
     setUnitCostData([]);
@@ -535,7 +620,7 @@ const Dashboard = ({ match, history, loading, error }) => {
       // console.log(data);
 
       if(data){
-        setInsuranceMetrics({ total_klaim: data.total_klaim, total_klaim_ditolak: data.total_klaim_ditolak, jumlah_anggota: data.jumlah_anggota, biaya_layanan: { low: data.biaya_layanan.low, medium: data.biaya_layanan.medium, high: data.biaya_layanan.high }, komponen_layanan: { bhp: data.komponen_layanan.bhp, bnmhp: data.komponen_layanan.bnmhp, jasa_medis: data.komponen_layanan.jasa_medis }, status_klaim: { ditolak: data.status_klaim.ditolak, dipertimbangkan: data.status_klaim.dipertimbangkan, diterima: data.status_klaim.diterima }, alasan_penolakan: { berkas_tidak_lengkap: data.alasan_penolakan.berkas_tidak_lengkap, diagnosa_tidak_tepat: data.alasan_penolakan.diagnosa_tidak_tepat, penanganan_tidak_tepat: data.alasan_penolakan.penanganan_tidak_tepat, tidak_ditanggung: data.alasan_penolakan.tidak_ditanggung, lainnya: data.alasan_penolakan.lainnya }, layanan_terklaim: { tambal_gigi: data.layanan_terklaim.tambal_gigi, suntik_vitamin: data.layanan_terklaim.suntik_vitamin, penanganan_luka: data.layanan_terklaim.penanganan_luka } });
+        setInsuranceMetrics({ total_klaim: data.total_klaim, total_klaim_ditolak: data.total_klaim_ditolak, jumlah_anggota: data.jumlah_anggota, biaya_layanan: { biaya: data.biaya_layanan.biaya, pendapatan: data.biaya_layanan.pendapatan }, komponen_layanan: { bhp: data.komponen_layanan.bhp, bnmhp: data.komponen_layanan.bnmhp, jasa_medis: data.komponen_layanan.jasa_medis }, status_klaim: { ditolak: data.status_klaim.ditolak, dipertimbangkan: data.status_klaim.dipertimbangkan, diterima: data.status_klaim.diterima }, alasan_penolakan: { berkas_tidak_lengkap: data.alasan_penolakan.berkas_tidak_lengkap, diagnosa_tidak_tepat: data.alasan_penolakan.diagnosa_tidak_tepat, penanganan_tidak_tepat: data.alasan_penolakan.penanganan_tidak_tepat, tidak_ditanggung: data.alasan_penolakan.tidak_ditanggung, lainnya: data.alasan_penolakan.lainnya }, layanan_terklaim: { tambal_gigi: data.layanan_terklaim.tambal_gigi, suntik_vitamin: data.layanan_terklaim.suntik_vitamin, penanganan_luka: data.layanan_terklaim.penanganan_luka } });
         setIncomeMetrics(data.total_pendapatan);
         setVisitationMetrics(data.total_kunjungan);
         setUnitCostData(data.analisa_unit_cost);
@@ -561,7 +646,7 @@ const Dashboard = ({ match, history, loading, error }) => {
   }
 
   const getInsuranceByInsuranceIdAndInsuranceClassIdFFSNP = async (insuranceID, insuranceClassID) => {
-    setInsuranceMetrics({ total_klaim: 0, total_klaim_ditolak: 0, jumlah_anggota: 0, biaya_layanan: { low: 0, medium: 0, high: 0 }, komponen_layanan: { bhp: 0, bnmhp: 0, jasa_medis: 0 }, status_klaim: { ditolak: 0, dipertimbangkan: 0, diterima: 0 }, alasan_penolakan: { berkas_tidak_lengkap: 0, diagnosa_tidak_tepat: 0, penanganan_tidak_tepat: 0, tidak_ditanggung: 0, lainnya: 0 }, layanan_terklaim: { tambal_gigi: 0, suntik_vitamin: 0, penanganan_luka: 0 } });
+    setInsuranceMetrics({ total_klaim: 0, total_klaim_ditolak: 0, jumlah_anggota: 0, biaya_layanan: { biaya: 0, pendapatan: 0 }, komponen_layanan: { bhp: 0, bnmhp: 0, jasa_medis: 0 }, status_klaim: { ditolak: 0, dipertimbangkan: 0, diterima: 0 }, alasan_penolakan: { berkas_tidak_lengkap: 0, diagnosa_tidak_tepat: 0, penanganan_tidak_tepat: 0, tidak_ditanggung: 0, lainnya: 0 }, layanan_terklaim: { tambal_gigi: 0, suntik_vitamin: 0, penanganan_luka: 0 } });
     setIncomeMetrics({});
     setVisitationMetrics({});
     setUnitCostData([]);
@@ -574,7 +659,7 @@ const Dashboard = ({ match, history, loading, error }) => {
       // console.log(data);
 
       if(data){
-        setInsuranceMetrics({ total_klaim: data.total_klaim, total_klaim_ditolak: data.total_klaim_ditolak, jumlah_anggota: data.jumlah_anggota, biaya_layanan: { low: data.biaya_layanan.low, medium: data.biaya_layanan.medium, high: data.biaya_layanan.high }, komponen_layanan: { bhp: data.komponen_layanan.bhp, bnmhp: data.komponen_layanan.bnmhp, jasa_medis: data.komponen_layanan.jasa_medis }, status_klaim: { ditolak: data.status_klaim.ditolak, dipertimbangkan: data.status_klaim.dipertimbangkan, diterima: data.status_klaim.diterima }, alasan_penolakan: { berkas_tidak_lengkap: data.alasan_penolakan.berkas_tidak_lengkap, diagnosa_tidak_tepat: data.alasan_penolakan.diagnosa_tidak_tepat, penanganan_tidak_tepat: data.alasan_penolakan.penanganan_tidak_tepat, tidak_ditanggung: data.alasan_penolakan.tidak_ditanggung, lainnya: data.alasan_penolakan.lainnya }, layanan_terklaim: { tambal_gigi: data.layanan_terklaim.tambal_gigi, suntik_vitamin: data.layanan_terklaim.suntik_vitamin, penanganan_luka: data.layanan_terklaim.penanganan_luka } });
+        setInsuranceMetrics({ total_klaim: data.total_klaim, total_klaim_ditolak: data.total_klaim_ditolak, jumlah_anggota: data.jumlah_anggota, biaya_layanan: { biaya: data.biaya_layanan.biaya, pendapatan: data.biaya_layanan.pendapatan }, komponen_layanan: { bhp: data.komponen_layanan.bhp, bnmhp: data.komponen_layanan.bnmhp, jasa_medis: data.komponen_layanan.jasa_medis }, status_klaim: { ditolak: data.status_klaim.ditolak, dipertimbangkan: data.status_klaim.dipertimbangkan, diterima: data.status_klaim.diterima }, alasan_penolakan: { berkas_tidak_lengkap: data.alasan_penolakan.berkas_tidak_lengkap, diagnosa_tidak_tepat: data.alasan_penolakan.diagnosa_tidak_tepat, penanganan_tidak_tepat: data.alasan_penolakan.penanganan_tidak_tepat, tidak_ditanggung: data.alasan_penolakan.tidak_ditanggung, lainnya: data.alasan_penolakan.lainnya }, layanan_terklaim: { tambal_gigi: data.layanan_terklaim.tambal_gigi, suntik_vitamin: data.layanan_terklaim.suntik_vitamin, penanganan_luka: data.layanan_terklaim.penanganan_luka } });
         setIncomeMetrics(data.total_pendapatan);
         setVisitationMetrics(data.total_kunjungan);
         setUnitCostData(data.analisa_unit_cost);
@@ -839,7 +924,7 @@ const Dashboard = ({ match, history, loading, error }) => {
                 Biaya { insuranceType === "FFSP" ? 'Paket' : 'Layanan' }
               </CardTitle>
               <ReactEcharts
-                option={biayaLayanan}
+                option={biayaLayananGauge}
                 style={{ paddingBottom: '1.5rem' }}
               />
             </CardBody>

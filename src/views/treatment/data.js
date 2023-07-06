@@ -39,9 +39,7 @@ import Pagination from "components/common/Pagination";
 
 import CustomSelectInput from "components/common/CustomSelectInput";
 
-import treatmentAPI from "api/treatment/list";
-import treatmentPriceAPI from "api/treatment/price";
-import clinicAPI from "api/clinic";
+import serviceAPI from "api/service/list";
 import Swal from "sweetalert2";
 
 import loader from '../../assets/img/loading.gif';
@@ -72,7 +70,8 @@ const Data = ({ match, history, loading, error }) => {
   const [treatmentStatus, setTreatmentStatus] = useState(0);
 
   const [treatment, setTreatment] = useState({
-    nama: ''
+    nama: '',
+    tipe: 'Tindakan'
   });
 
   const onChange = (e) => {
@@ -98,7 +97,7 @@ const Data = ({ match, history, loading, error }) => {
 
     if(dataStatus === 'add') {
       try {
-        const response = await treatmentAPI.add(treatment);
+        const response = await serviceAPI.add(treatment);
         // console.log(response);
   
         if (response.status == 200) {
@@ -135,11 +134,11 @@ const Data = ({ match, history, loading, error }) => {
   
         console.log(e);
       } finally {
-        getTreatment("");
+        !userData.roles.includes('isDev') ? getTreatment(`?searchTipe=Tindakan&searchKlinik=${userData.id_klinik}`) : getTreatment("?searchTipe=Tindakan");
       }
     } else if (dataStatus === 'update') {
       try {
-        const response = await treatmentAPI.update(treatment, treatmentID);
+        const response = await serviceAPI.update(treatment, treatmentID);
         // console.log(response);
   
         if (response.status == 200) {
@@ -176,7 +175,7 @@ const Data = ({ match, history, loading, error }) => {
   
         console.log(e);
       } finally {
-        getTreatment("");
+        !userData.roles.includes('isDev') ? getTreatment(`?searchTipe=Tindakan&searchKlinik=${userData.id_klinik}`) : getTreatment("?searchTipe=Tindakan");
       }
     } else {
       console.log('dataStatus undefined')
@@ -209,6 +208,7 @@ const Data = ({ match, history, loading, error }) => {
 
     setTreatment({
       nama: '',
+      tipe: 'Tindakan'
     });
 
     setDataStatus("add");
@@ -219,7 +219,7 @@ const Data = ({ match, history, loading, error }) => {
   const getTreatment = async (params) => {
     try {
       setIsLoading(true);
-      const res = await treatmentAPI.get(params);
+      const res = await serviceAPI.get(params);
       dispatch({type: "GET_TREATMENT_LIST", payload: res.data.data});
       dispatch({type: "GET_TOTAL_PAGE_TREATMENT_LIST", payload: res.data.pagination.totalPage});
 
@@ -255,7 +255,7 @@ const Data = ({ match, history, loading, error }) => {
     }
 
     try {
-      const res = await treatmentAPI.get(`/${id}`);
+      const res = await serviceAPI.get(`/${id}`);
       let data = res.data.data[0];
 
       // console.log(data);
@@ -263,6 +263,7 @@ const Data = ({ match, history, loading, error }) => {
       setTreatmentID(data.id);
       setTreatment({
         nama: data.nama,
+        tipe: data.tipe
       });
       setTreatmentStatus(data.is_active);
 
@@ -378,7 +379,7 @@ const Data = ({ match, history, loading, error }) => {
 
     setModalArchive(true);
     try {
-      const res = await treatmentAPI.get(`/${id}`);
+      const res = await serviceAPI.get(`/${id}`);
       let data = res.data.data[0];
 
       setTreatmentID(data.id);
@@ -394,7 +395,7 @@ const Data = ({ match, history, loading, error }) => {
 
     try {
       if (treatmentStatus == 1) {
-        const response = await treatmentAPI.archive("", treatmentID);
+        const response = await serviceAPI.archive("", treatmentID);
 
         if (response.status == 200) {
           let data = await response.data.data;
@@ -420,7 +421,7 @@ const Data = ({ match, history, loading, error }) => {
           throw Error(`Error status: ${response.status}`);
         }
       } else {
-        const response = await treatmentAPI.activate("", treatmentID);
+        const response = await serviceAPI.activate("", treatmentID);
 
         if (response.status == 200) {
           let data = await response.data.data;
@@ -458,7 +459,7 @@ const Data = ({ match, history, loading, error }) => {
 
       console.log(e);
     } finally {
-      getTreatment("");
+      !userData.roles.includes('isDev') ? getTreatment(`?searchTipe=Tindakan&searchKlinik=${userData.id_klinik}`) : getTreatment("?searchTipe=Tindakan");
       getTreatmentById("", treatmentID);
     }
   };
@@ -468,7 +469,7 @@ const Data = ({ match, history, loading, error }) => {
 
     setModalDelete(true);
     try {
-      const res = await treatmentAPI.get(`/${id}`);
+      const res = await serviceAPI.get(`/${id}`);
       let data = res.data.data[0];
 
       setTreatmentID(data.id);
@@ -482,7 +483,7 @@ const Data = ({ match, history, loading, error }) => {
     e.preventDefault();
 
     try {
-      const response = await treatmentAPI.delete(treatmentID);
+      const response = await serviceAPI.delete(treatmentID);
 
       if (response.status == 200) {
         let data = await response.data.data;
@@ -520,17 +521,17 @@ const Data = ({ match, history, loading, error }) => {
 
       console.log(e);
     } finally {
-      getTreatment("");
+      !userData.roles.includes('isDev') ? getTreatment(`?searchTipe=Tindakan&searchKlinik=${userData.id_klinik}`) : getTreatment("?searchTipe=Tindakan");
     }
   };
 
-  const [searchDaftarTindakan, setSearchName] = useState("");
+  const [searchName, setSearchName] = useState("");
   const [searchStatus, setSearchStatus] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [ limit, searchDaftarTindakan, searchStatus, sortBy, sortOrder ]);
+  }, [ limit, searchName, searchStatus, sortBy, sortOrder ]);
 
   useEffect(() => {
     let params = "";
@@ -540,8 +541,11 @@ const Data = ({ match, history, loading, error }) => {
     } else {
       params = `${params}?limit=10`;
     }
-    if (searchDaftarTindakan !== "") {
-      params = `${params}&searchDaftarTindakan=${searchDaftarTindakan}`;
+    if (searchName !== "") {
+      params = `${params}&searchDaftarTindakan=${searchName}`;
+    }
+    if (!userData.roles.includes('isDev')) {
+      params = `${params}&searchKlinik=${userData.id_klinik}`;
     }
     if (searchStatus !== "") {
       params = `${params}&searchStatus=${searchStatus}`;
@@ -550,9 +554,11 @@ const Data = ({ match, history, loading, error }) => {
       params = `${params}&page=${currentPage}`;
     }
 
+    params = `${params}&searchTipe=Tindakan`;
+
     setRowSelected(false);
     getTreatment(params);
-  }, [limit, searchDaftarTindakan, searchStatus, sortBy, sortOrder, currentPage ]);
+  }, [limit, searchName, searchStatus, sortBy, sortOrder, currentPage ]);
 
   let startNumber = 1;
 

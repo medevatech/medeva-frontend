@@ -70,10 +70,11 @@ const Data = ({ match, history, loading, error }) => {
   const [modalDelete, setModalDelete] = useState(false);
   const [divisionID, setDivisionID] = useState('');
   const [divisionStatus, setDivisionStatus] = useState(0);
+  const [clinicID, setClinicID] = useState(!userData.roles.includes('isDev') ? userData.id_klinik : '');
 
   const [division, setDivision] = useState({
     tipe: '',
-    id_klinik: ''
+    id_klinik: clinicID
   });
 
   const onLoadKlinik = async () => {
@@ -181,7 +182,7 @@ const Data = ({ match, history, loading, error }) => {
   
         console.log(e);
       } finally {
-        getDivision("");
+        !userData.roles.includes('isDev') ? getDivision(`?searchKlinik=${userData.id_klinik}`) : getDivision("");
       }
     } else if (dataStatus === 'update') {
       try {
@@ -222,7 +223,7 @@ const Data = ({ match, history, loading, error }) => {
   
         console.log(e);
       } finally {
-        getDivision("");
+        !userData.roles.includes('isDev') ? getDivision(`?searchKlinik=${userData.id_klinik}`) : getDivision("");
       }
     } else {
       console.log('dataStatus undefined')
@@ -255,7 +256,7 @@ const Data = ({ match, history, loading, error }) => {
 
     setDivision({
       tipe: '',
-      id_klinik: ''
+      id_klinik: clinicID
     });
     
     setSelectedKlinik([]);
@@ -478,7 +479,7 @@ const Data = ({ match, history, loading, error }) => {
 
       console.log(e);
     } finally {
-      getDivision("");
+      !userData.roles.includes('isDev') ? getDivision(`?searchKlinik=${userData.id_klinik}`) : getDivision("");
       getDivisionById("", divisionID);
     }
   };
@@ -540,7 +541,7 @@ const Data = ({ match, history, loading, error }) => {
 
       console.log(e);
     } finally {
-      getDivision("");
+      !userData.roles.includes('isDev') ? getDivision(`?searchKlinik=${userData.id_klinik}`) : getDivision("");
     }
   };
 
@@ -569,6 +570,9 @@ const Data = ({ match, history, loading, error }) => {
     }
     if (searchStatus !== "") {
       params = `${params}&searchStatus=${searchStatus}`;
+    }
+    if (!userData.roles.includes('isDev')) {
+      params = `${params}&searchKlinik=${userData.id_klinik}`;
     }
     if (currentPage !== 1) {
       params = `${params}&page=${currentPage}`;
@@ -614,35 +618,54 @@ const Data = ({ match, history, loading, error }) => {
                 </Row>
               </CardTitle>
               <FormGroup row style={{ margin: '0px', width: '100%' }}>
-                <Colxx sm="12" md="6" style={{ paddingLeft: '0px' }}>
-                  <Label for="klinik">
-                    Klinik
-                  </Label>
-                  <Select
-                    components={{ Input: CustomSelectInput }}
-                    className="react-select"
-                    classNamePrefix="react-select"
-                    name="klinik"
-                    onChange={(e) => setSearchKlinik(e.value)}
-                    options={selectedKlinikF}
-                    defaultValue={{ label: "Semua Klinik", value: "", key: 0, name: 'id_klinik' }}
-                  />
-                </Colxx>
-                <Colxx sm="12" md="6" style={{ paddingRight: '0px' }}>
-                  <Label for="status">
-                      Status
-                    </Label>
-                    <Select
-                      components={{ Input: CustomSelectInput }}
-                      className="react-select"
-                      classNamePrefix="react-select"
-                      name="status"
-                      onChange={(e) => setSearchStatus(e.value)}
-                      options={selectStatusF}
-                      isSearchable={false}
-                      defaultValue={{ label: "Semua Status", value: "", key: 0, name: 'status' }}
-                    />
-                </Colxx>
+                { !userData.roles.includes('isDev') ?
+                    <Colxx sm="12" md="12" style={{ paddingLeft: '0px', paddingRight: '0px' }}>
+                      <Label for="status">
+                          Status
+                        </Label>
+                        <Select
+                          components={{ Input: CustomSelectInput }}
+                          className="react-select"
+                          classNamePrefix="react-select"
+                          name="status"
+                          onChange={(e) => setSearchStatus(e.value)}
+                          options={selectStatusF}
+                          isSearchable={false}
+                          defaultValue={{ label: "Semua Status", value: "", key: 0, name: 'status' }}
+                        />
+                    </Colxx> :
+                <>
+                    <Colxx sm="12" md="6" style={{ paddingLeft: '0px' }}>
+                      <Label for="klinik">
+                        Klinik
+                      </Label>
+                      <Select
+                        components={{ Input: CustomSelectInput }}
+                        className="react-select"
+                        classNamePrefix="react-select"
+                        name="klinik"
+                        onChange={(e) => setSearchKlinik(e.value)}
+                        options={selectedKlinikF}
+                        defaultValue={{ label: "Semua Klinik", value: "", key: 0, name: 'id_klinik' }}
+                      />
+                    </Colxx>
+                    <Colxx sm="12" md="6" style={{ paddingRight: '0px' }}>
+                      <Label for="status">
+                          Status
+                        </Label>
+                        <Select
+                          components={{ Input: CustomSelectInput }}
+                          className="react-select"
+                          classNamePrefix="react-select"
+                          name="status"
+                          onChange={(e) => setSearchStatus(e.value)}
+                          options={selectStatusF}
+                          isSearchable={false}
+                          defaultValue={{ label: "Semua Status", value: "", key: 0, name: 'status' }}
+                        />
+                    </Colxx>
+                </>
+                }
               </FormGroup>
               <InputGroup className="my-4">
                 <Input
@@ -684,7 +707,7 @@ const Data = ({ match, history, loading, error }) => {
                         </th>
                         <td>
                           <h6 style={{ fontWeight: 'bold' }} className="max-text">{data.tipe}</h6>
-                          {data.nama_klinik ? data.nama_klinik : "-"}<br/>
+                          {/* {data.nama_klinik ? data.nama_klinik : "-"}<br/> */}
                           {data.is_active == 1 ? (
                             <Badge color="success" className="mt-2">Aktif</Badge>
                           ) : (
@@ -765,66 +788,99 @@ const Data = ({ match, history, loading, error }) => {
               </CardTitle>
               <Form className="av-tooltip tooltip-right-top" onSubmit={onDivisionSubmit}>
                 <FormGroup row>
-                  <Colxx sm={6}>
-                    <FormGroup>
-                      <Label for="id_klinik">Klinik
-                        <span
-                          className="required text-danger"
-                          aria-required="true"
-                        >
-                          {" "}
-                          *
-                        </span>
-                      </Label>
-                      <Select
-                        components={{ Input: CustomSelectInput }}
-                        className="react-select"
-                        classNamePrefix="react-select"
-                        name="id_klinik"
-                        id="id_klinik"
-                        options={selectedKlinik}
-                        value={selectedKlinik.find(item => item.value === division.id_klinik) || 
-                          { label: "Pilih Klinik", value: "", key: 0, name: "id_klinik" }}
-                        // value={division.id_klinik}
-                        onChange={onChange}
-                        // required
-                      />
-                      {errors.id_klinik && (
-                        <div className="rounded invalid-feedback d-block">
-                          {errors.id_klinik}
-                        </div>
-                      )}
-                    </FormGroup>
-                  </Colxx>
+                  { !userData.roles.includes('isDev') ?
+                      <Colxx sm={12}>
+                        <FormGroup>
+                          <Label for="tipe">
+                            Nama
+                            <span
+                              className="required text-danger"
+                              aria-required="true"
+                            >
+                              {" "}
+                              *
+                            </span>
+                          </Label>
+                          <Input
+                            type="text"
+                            name="tipe"
+                            id="tipe"
+                            placeholder="Nama"
+                            value={division.tipe}
+                            onChange={onChange}
+                            // required={true}
+                          />
+                          {errors.tipe && (
+                            <div className="rounded invalid-feedback d-block">
+                              {errors.tipe}
+                            </div>
+                          )}
+                        </FormGroup>
+                      </Colxx>
+                    : 
+                      <>
+                          <Colxx sm={6}>
+                            <FormGroup>
+                              <Label for="id_klinik">Klinik
+                                <span
+                                  className="required text-danger"
+                                  aria-required="true"
+                                >
+                                  {" "}
+                                  *
+                                </span>
+                              </Label>
+                              <Select
+                                components={{ Input: CustomSelectInput }}
+                                className="react-select"
+                                classNamePrefix="react-select"
+                                name="id_klinik"
+                                id="id_klinik"
+                                options={selectedKlinik}
+                                value={selectedKlinik.find(item => item.value === division.id_klinik) || 
+                                  { label: "Pilih Klinik", value: "", key: 0, name: "id_klinik" }}
+                                // value={division.id_klinik}
+                                onChange={onChange}
+                                // required
+                              />
+                              {errors.id_klinik && (
+                                <div className="rounded invalid-feedback d-block">
+                                  {errors.id_klinik}
+                                </div>
+                              )}
+                            </FormGroup>
+                          </Colxx>
 
-                  <Colxx sm={6}>
-                    <FormGroup>
-                      <Label for="tipe">
-                        Nama
-                        <span
-                          className="required text-danger"
-                          aria-required="true"
-                        >
-                          {" "}
-                          *
-                        </span>
-                      </Label>
-                      <Input
-                        type="text"
-                        name="tipe"
-                        id="tipe"
-                        placeholder="Nama"
-                        value={division.tipe}
-                        onChange={onChange}
-                        // required={true}
-                      />
-                      {errors.tipe && (
-                        <div className="rounded invalid-feedback d-block">
-                          {errors.tipe}
-                        </div>
-                      )}
-                    </FormGroup>
-                  </Colxx>
+                          <Colxx sm={6}>
+                            <FormGroup>
+                              <Label for="tipe">
+                                Nama
+                                <span
+                                  className="required text-danger"
+                                  aria-required="true"
+                                >
+                                  {" "}
+                                  *
+                                </span>
+                              </Label>
+                              <Input
+                                type="text"
+                                name="tipe"
+                                id="tipe"
+                                placeholder="Nama"
+                                value={division.tipe}
+                                onChange={onChange}
+                                // required={true}
+                              />
+                              {errors.tipe && (
+                                <div className="rounded invalid-feedback d-block">
+                                  {errors.tipe}
+                                </div>
+                              )}
+                            </FormGroup>
+                          </Colxx>
+                      </>
+                    }
                 </FormGroup>
 
                 <Row>

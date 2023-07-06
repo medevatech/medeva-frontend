@@ -80,6 +80,13 @@ const Data = ({ match }) => {
   const [selectedEmployee, setSelectedEmployee] = useState([
     { label: "Pilih Karyawan", value: "", key: 0, name: "id_doctor" },
   ]);
+  const [selectedRecurring, setSelectedRecurring] = useState([
+    { label: "Pilih Perulangan", value: "", key: 0, name: "interval" },
+    { label: "Setiap Hari", value: 1, key: 1, name: "interval" },
+    { label: "Setiap 2 Hari", value: 2, key: 2, name: "interval" },
+    { label: "Setiap 1 Minggu", value: 3, key: 3, name: "interval" },
+    { label: "Setiap 1 Bulan", value: 4, key: 4, name: "interval" },
+  ]);
   const [isLoading, setIsLoading] = useState(false);
   const [searchDivision, setSearchDivision] = useState("");
 
@@ -90,38 +97,7 @@ const Data = ({ match }) => {
   const [modalDate, setModalDate] = useState(false);
   const [modalArchive, setModalArchive] = useState(false);
   const [modalDelete, setModalDelete] = useState(false);
-
-  // const [eventCalendar, setEventCalendar] = useState([
-  // {
-  //   id: "",
-  //   id_doctor: "",
-  //   tanggal: "",
-  //   waktu_mulai: "",
-  //   waktu_selesai: "",
-  // },
-  // {
-  //   id: 1,
-  //   title: "Balap",
-  //   rrule: {
-  //     freq: "daily",
-  //     interval: 2,
-  //     // byweekday: ["mo", "fr"],
-  //     dtstart: "2023-07-01T07:00:00Z", // will also accept '20120201T103000'
-  //     until: "2023-09-01",
-  //   },
-  //   duration: "04:00",
-  //   //   // start: "2023-06-14T10:00:00Z",
-  //   //   // end: "2023-06-14T20:00:00Z",
-  //   //   // title: "my recurring event",
-  //   //   // rrule: {
-  //   //   //   freq: "daily",
-  //   //   //   dtstart: "2023-06-07T10:30:00",
-  //   //   //   until: "2023-07-01T10:30:00",
-  //   //   // },
-  // },
-  // ]);
-
-  // const [rrule, setRrule] = useState({});
+  const [modalRecurring, setModalRecurring] = useState(false);
 
   const [eventCalendar, setEventCalendar] = useState({
     id: "",
@@ -133,13 +109,22 @@ const Data = ({ match }) => {
     end_time: "",
   });
 
+  const [eventRecurringCalendar, setEventRecurringCalendar] = useState({
+    id: "",
+    id_clinic: clinicId,
+    id_division: divisionId,
+    id_doctor: "",
+    date: "",
+    date_end: "",
+    start_time: "",
+    end_time: "",
+    interval: "",
+  });
+
   const [dataCalendar, setDataCalendar] = useState([]);
 
   const handleSelectCalendar = (selectInfo) => {
     setModalCalendar(true);
-    // let calendarApi = selectInfo.view.calendar;
-    // calendarApi.unselect();
-    // console.log(calendarApi);
     let day = selectInfo.startStr;
     let timeSt = new Date();
     console.log(day);
@@ -148,34 +133,20 @@ const Data = ({ match }) => {
       date: day,
       start_time: moment(timeSt).format("HH:mm"),
     });
-    // let todayStr = new Date().toISOString().replace(/T.*$/, "");
-    // console.log(todayStr);
   };
 
-  // const combineDateAndTimeToUTC = (date, time) => {
-  //   // check if date valid
-  //   if (isNaN(Date.parse(date))) {
-  //     return null;
-  //   }
-
-  //   // check if time valid
-  //   if (!time.match(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/)) {
-  //     return null;
-  //   }
-
-  //   const dateObject = new Date(`${date} ${time}`);
-  //   return dateObject.toISOString();
-  // };
+  const handleAddRecurring = () => {
+    setModalRecurring(true);
+    let tempDay = new Date();
+    const day = moment(tempDay).format("yyyy-MM-DD");
+    let timeSt = new Date();
+    setEventRecurringCalendar({
+      date: day,
+      start_time: moment(timeSt).format("HH:mm"),
+    });
+  };
 
   const handleInputCalendar = (e, val = null) => {
-    // e.preventDefault();
-    console.log(e);
-    // setEventCalendar((prevData) => ({
-    //   ...prevData,
-    //   [e.target.name]: e.target.value,
-    // }));
-    // console.log(e.name);
-    // console.log(e.value);
     let dataInputCalendar = { ...eventCalendar };
     dataInputCalendar["id_clinic"] = clinicId;
     dataInputCalendar["id_division"] = divisionId;
@@ -193,11 +164,32 @@ const Data = ({ match }) => {
     setEventCalendar(dataInputCalendar);
   };
 
+  const handleInputRecurringCalendar = (e, val = null) => {
+    let dataInputRecurringCalendar = { ...eventRecurringCalendar };
+    dataInputRecurringCalendar["id_clinic"] = clinicId;
+    dataInputRecurringCalendar["id_division"] = divisionId;
+    if (e.name === "id_doctor") {
+      dataInputRecurringCalendar["id_doctor"] = e.value;
+    } else if (e.name === "interval") {
+      dataInputRecurringCalendar["interval"] = e.value;
+    } else if (e.target.name === "date") {
+      dataInputRecurringCalendar["date"] = e.target.value;
+    } else if (e.target.name === "date_end") {
+      dataInputRecurringCalendar["date_end"] = e.target.value;
+    } else if (e.target.name === "start_time") {
+      dataInputRecurringCalendar["start_time"] = e.target.value;
+    } else if (e.target.name === "end_time") {
+      dataInputRecurringCalendar["end_time"] = e.target.value;
+    } else {
+      console.log("p");
+    }
+    setEventRecurringCalendar(dataInputRecurringCalendar);
+  };
+
   const onCalendarSubmit = async (e) => {
     e.preventDefault();
     try {
       const response = await doctorScheduleAPI.add(eventCalendar);
-      // console.log("shift add", response);
       if (response.status === 200) {
         let data = await response.data.data;
         console.log("add", data);
@@ -243,6 +235,56 @@ const Data = ({ match }) => {
     }
   };
 
+  const onCalendarRecurringSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await doctorScheduleAPI.add(eventRecurringCalendar);
+      if (response.status === 200) {
+        let data = await response.data.data;
+        console.log("add", data);
+        Swal.fire({
+          title: "Sukses!",
+          html: `Tambah jadwal berulang sukses`,
+          icon: "success",
+          confirmButtonColor: "#008ecc",
+        });
+      } else {
+        Swal.fire({
+          title: "Gagal!",
+          html: `Tambah jadwal berulang gagal: ${response.message}`,
+          icon: "error",
+          confirmButtonColor: "#008ecc",
+          confirmButtonText: "Coba lagi",
+        });
+
+        throw Error(`Error status: ${response.status}`);
+      }
+    } catch (e) {
+      Swal.fire({
+        title: "Gagal!",
+        html: e.response.data.message,
+        icon: "error",
+        confirmButtonColor: "#008ecc",
+        confirmButtonText: "Coba lagi",
+      });
+
+      console.log(e);
+    } finally {
+      setEventRecurringCalendar({
+        id: "",
+        id_clinic: clinicId,
+        id_division: divisionId,
+        id_doctor: "",
+        date: "",
+        start_time: "",
+        end_time: "",
+        interval: "",
+      });
+      setModalRecurring(false);
+      getCalendar(params);
+    }
+  };
+
   const handleSelectPracticeSchedule = (clickInfo) => {
     let id = clickInfo.event.id;
     console.log(id);
@@ -264,10 +306,8 @@ const Data = ({ match }) => {
     e.preventDefault();
     try {
       const response = await doctorScheduleAPI.update(eventCalendar, `/${id}`);
-      // console.log("shift add", response);
       if (response.status === 200) {
         let data = await response.data.data;
-        // console.log("add", data);
         Swal.fire({
           title: "Sukses!",
           html: `Edit jadwal sukses`,
@@ -323,10 +363,8 @@ const Data = ({ match }) => {
     };
     try {
       const response = await doctorScheduleAPI.archive(data, `/${id}`);
-      // console.log("shift add", response);
       if (response.status === 200) {
         let data = await response.data.data;
-        // console.log("add", data);
         Swal.fire({
           title: "Sukses!",
           html: `Arsip jadwal sukses`,
@@ -370,10 +408,8 @@ const Data = ({ match }) => {
     e.preventDefault();
     try {
       const response = await doctorScheduleAPI.delete(data, `/${id}`);
-      // console.log("shift add", response);
       if (response.status === 200) {
         let data = await response.data.data;
-        // console.log("add", data);
         Swal.fire({
           title: "Sukses!",
           html: `Hapus jadwal sukses`,
@@ -437,24 +473,14 @@ const Data = ({ match }) => {
     setRowSelected(idDivision);
     setClinicId(idClinic);
     setDivisionId(idDivision);
-    // setShift([]);
-    // setTempShift([]);
-    // getScheduleByDivisionId(idDivision);
   };
 
   const [currentPage, setCurrentPage] = useState(1);
   const [searchName, setSearchName] = useState("");
   const [searchDivisi, setSearchDivisi] = useState("");
   const [searchDivisionF, setSearchDivisionF] = useState("");
-  // const [searchDivisionName, setSearchDivisionName] = useState("");
   const [searchClinicF, setSearchClinicF] = useState("");
   const [limit, setLimit] = useState(10);
-  // const [sortBy, setSortBy] = useState("");
-  // const [sortOrder, setSortOrder] = useState("");
-  // const [divisionData, setDivisionData] = useState([]);
-  // const [shiftData, setShiftData] = useState([]);
-  // const [disableClinic, setDsableClinic] = useState(true);
-  // const [disableDivision, setDisableDivision] = useState(true);
 
   const [practiceScheduleData, setPracticeScheduleData] = useState([]);
   const [idPracticeSchedule, setIdPracticeSchedule] = useState("");
@@ -462,7 +488,6 @@ const Data = ({ match }) => {
   const getCalendar = async (params) => {
     try {
       const res = await doctorScheduleAPI.get(params);
-      // console.log(res.data.data);
       let temp = [];
       console.log(res.data.data);
       res.data.data.forEach((item) => {
@@ -499,7 +524,6 @@ const Data = ({ match }) => {
       const res = await doctorScheduleAPI.get(`/${id}`);
       const data = res.data.data[0];
       console.log(data);
-      // setPracticeScheduleData(res.data.data[0]);
       setEventCalendar({
         id: data.id,
         id_clinic: data.id_klinik,
@@ -527,7 +551,6 @@ const Data = ({ match }) => {
         type: "GET_TOTAL_PAGE_DIVISION",
         payload: res.data.pagination.totalPage,
       });
-      // setDivisionData(res.data.data);
     } catch (e) {
       console.log(e);
     } finally {
@@ -539,7 +562,6 @@ const Data = ({ match }) => {
     try {
       setIsLoading(true);
       const res = await divisionAPI.get("", `/${id}`);
-      // console.log("data divisi id", res.data.data[0]);
       let data = res.data.data[0];
       setDivisionId(data.id);
     } catch (e) {
@@ -557,7 +579,6 @@ const Data = ({ match }) => {
       ]);
       if (response.status === 200) {
         let data = response.data.data;
-        // console.log("shift klinik data", data);
         for (var i = 0; i < data.length; i++) {
           setSelectedClinic((current) => [
             ...current,
@@ -580,13 +601,11 @@ const Data = ({ match }) => {
   const onLoadDivision = async () => {
     try {
       const response = await divisionAPI.get("", "?limit=1000");
-      // console.log("shift divisi", response);
       setSelectedDivision([
         { label: "Semua", value: "", key: 0, name: "id_divisi" },
       ]);
       if (response.status === 200) {
         let data = response.data.data;
-        // console.log("shift divisi data", data);
         for (var i = 0; i < data.length; i++) {
           setSelectedDivision((current) => [
             ...current,
@@ -609,7 +628,6 @@ const Data = ({ match }) => {
   const onLoadEmployee = async () => {
     try {
       const response = await employeeAPI.get("", "?limit=1000");
-      // console.log("shift employee", response);
       setSelectedEmployee([
         {
           label: "Pilih Dokter",
@@ -620,7 +638,6 @@ const Data = ({ match }) => {
       ]);
       if (response.status === 200) {
         let data = response.data.data;
-        // console.log("shift employee data", data);
         for (var i = 0; i < data.length; i++) {
           setSelectedEmployee((current) => [
             ...current,
@@ -678,11 +695,6 @@ const Data = ({ match }) => {
   if (currentPage !== 1) {
     startNumber = (currentPage - 1) * 10 + 1;
   }
-
-  console.log(clinicId);
-  console.log(divisionId);
-
-  console.log(dataCalendar);
 
   return (
     <>
@@ -779,10 +791,6 @@ const Data = ({ match }) => {
                             color="secondary"
                             size="xs"
                             className="button-xs"
-                            // onClick={() => setSearchDivisi(data.id)}
-                            // onClick={() =>
-                            //   handleChangeId(data.id_klinik, data.id)
-                            // }
                           >
                             <i className="simple-icon-arrow-right-circle"></i>
                           </Button>{" "}
@@ -821,7 +829,6 @@ const Data = ({ match }) => {
                       listPlugin,
                       bootstrap5Plugin,
                     ]}
-                    // themeSystem="bootstrap5"
                     initialView="dayGridMonth"
                     editable
                     navLinks
@@ -831,31 +838,26 @@ const Data = ({ match }) => {
                     allDayContent={false}
                     allDaySlot={false}
                     events={dataCalendar}
-                    // eventColor="#39addf"
-                    // eventColor={
-                    //   dataCalendar.is_active === 1
-                    //     ? "#73c2fb"
-                    //     : dataCalendar.is_active === 0
-                    //     ? "yellow"
-                    //     : "gray"
-                    // }
-                    // eventTextColor=""
                     nowIndicator={true}
                     locale={idLocale}
                     select={handleSelectCalendar}
+                    customButtons={{
+                      buttonAdd: {
+                        text: "Tambah",
+                        click: () => handleAddRecurring(),
+                      },
+                    }}
                     headerToolbar={{
                       left: "title",
-                      // center: "title",
                       right:
                         "multiMonthYear,dayGridMonth,timeGridWeek,timeGridDay,listWeek",
                     }}
                     footerToolbar={{
-                      center: "prev,next today",
+                      center: "prev,next today buttonAdd",
                     }}
                     displayEventTime
                     displayEventEnd
                     eventInteractive
-                    // eventContent={(info) => <EventItem info={info} />}
                     eventClick={handleSelectPracticeSchedule}
                   />
                 </FormGroup>
@@ -895,14 +897,6 @@ const Data = ({ match }) => {
                       <i className="iconsminds-arrow-right-2"></i>
                       &nbsp;Arsipkan Jadwal
                     </DropdownItem>
-                    {/* {<IsActiveDropdown />} */}
-                    {/* <>
-                      <DropdownItem divider />
-                      <DropdownItem onClick={handleSelectDeleteSchedule}>
-                        <i className="simple-icon-trash"></i>
-                        &nbsp; Hapus Jadwal
-                      </DropdownItem>
-                    </> */}
                   </DropdownMenu>
                 </UncontrolledDropdown>
               </Colxx>
@@ -910,26 +904,6 @@ const Data = ({ match }) => {
           </ModalHeader>
 
           <ModalBody>
-            <Row lg={12}>
-              {/* <Colxx lg={6}>
-                <FormGroup>
-                  <Label for="id_recurring">Pengulangan </Label>
-                  <Select
-                    components={{ Input: CustomSelectInput }}
-                    className="react-select"
-                    classNamePrefix="react-select"
-                    name="id_recurring"
-                    id="id_recurring"
-                    required
-                    // options={selectedPatient}
-                    // value={selectedPatient.find(
-                    //   (item) => item.value === queue.id_recurring
-                    // )}
-                    // onChange={onChange}
-                  />
-                </FormGroup>
-              </Colxx> */}
-            </Row>
             <Row lg={12}>
               <Colxx lg={12}>
                 <FormGroup>
@@ -951,39 +925,8 @@ const Data = ({ match }) => {
                     value={eventCalendar.date}
                     onChange={(e) => handleInputCalendar(e)}
                   />
-                  {/* <Select
-                    components={{ Input: CustomSelectInput }}
-                    className="react-select"
-                    classNamePrefix="react-select"
-                    name="date"
-                    id="date"
-                    value={eventCalendar.date}
-                    required
-                    // options={selectedPatient}
-                    // value={selectedPatient.find(
-                    //   (item) => item.value === queue.tanggal_mulai
-                    // )}
-                    onChange={handleInputCalendar}
-                  /> */}
                 </FormGroup>
               </Colxx>
-              {/* <Colxx lg={6}>
-                <FormGroup>
-                  <Label for="tanggal_selesai">Tanggal Selesai</Label>
-                  <Select
-                    components={{ Input: CustomSelectInput }}
-                    className="react-select"
-                    classNamePrefix="react-select"
-                    name="tanggal_selesai"
-                    id="tanggal_selesai"
-                    // options={selectedPatient}
-                    // value={selectedPatient.find(
-                    //   (item) => item.value === queue.tanggal_selesai
-                    // )}
-                    // onChange={onChange}
-                  />
-                </FormGroup>
-              </Colxx> */}
             </Row>
             <Row lg={12}>
               <Colxx lg={6}>
@@ -1013,20 +956,6 @@ const Data = ({ match }) => {
                     defaultValue={eventCalendar.start_time}
                     onChange={(e) => handleInputCalendar(e)}
                   />
-                  {/* <Select
-                    components={{ Input: CustomSelectInput }}
-                    className="react-select"
-                    classNamePrefix="react-select"
-                    name="start_time"
-                    id="start_time"
-                    value={eventCalendar.start_time}
-                    required
-                    // options={selectedPatient}
-                    // value={selectedPatient.find(
-                    //   (item) => item.value === queue.waktu_mulai
-                    // )}
-                    onChange={handleInputCalendar}
-                  /> */}
                 </FormGroup>
               </Colxx>
               <Colxx lg={6}>
@@ -1056,20 +985,6 @@ const Data = ({ match }) => {
                     defaultValue={eventCalendar.end_time}
                     onChange={(e) => handleInputCalendar(e)}
                   />
-                  {/* <Select
-                    components={{ Input: CustomSelectInput }}
-                    className="react-select"
-                    classNamePrefix="react-select"
-                    name="end_time"
-                    id="end_time"
-                    value={eventCalendar.end_time}
-                    required
-                    // options={selectedPatient}
-                    // value={selectedPatient.find(
-                    //   (item) => item.value === queue.waktu_selesai
-                    // )}
-                    onChange={handleInputCalendar}
-                  /> */}
                 </FormGroup>
               </Colxx>
               <Colxx lg={12}>
@@ -1087,11 +1002,9 @@ const Data = ({ match }) => {
                     classNamePrefix="react-select"
                     name="id_doctor"
                     id="id_doctor"
-                    // value={eventCalendar.id_doctor}
                     required
                     placeholderText="Pilih Dokter"
                     options={selectedEmployee}
-                    // defaultValue={eventCalendar.id_doctor}
                     value={selectedEmployee.find(
                       (item) => item.value === eventCalendar.id_doctor
                     )}
@@ -1126,26 +1039,6 @@ const Data = ({ match }) => {
           <ModalHeader>Tambah Jadwal Tenaga Kesehatan</ModalHeader>
           <ModalBody>
             <Row lg={12}>
-              {/* <Colxx lg={6}>
-                <FormGroup>
-                  <Label for="id_recurring">Pengulangan </Label>
-                  <Select
-                    components={{ Input: CustomSelectInput }}
-                    className="react-select"
-                    classNamePrefix="react-select"
-                    name="id_recurring"
-                    id="id_recurring"
-                    required
-                    // options={selectedPatient}
-                    // value={selectedPatient.find(
-                    //   (item) => item.value === queue.id_recurring
-                    // )}
-                    // onChange={onChange}
-                  />
-                </FormGroup>
-              </Colxx> */}
-            </Row>
-            <Row lg={12}>
               <Colxx lg={12}>
                 <FormGroup>
                   <Label for="date">
@@ -1166,39 +1059,8 @@ const Data = ({ match }) => {
                     value={eventCalendar.date}
                     onChange={(e) => handleInputCalendar(e)}
                   />
-                  {/* <Select
-                    components={{ Input: CustomSelectInput }}
-                    className="react-select"
-                    classNamePrefix="react-select"
-                    name="date"
-                    id="date"
-                    value={eventCalendar.date}
-                    required
-                    // options={selectedPatient}
-                    // value={selectedPatient.find(
-                    //   (item) => item.value === queue.tanggal_mulai
-                    // )}
-                    onChange={handleInputCalendar}
-                  /> */}
                 </FormGroup>
               </Colxx>
-              {/* <Colxx lg={6}>
-                <FormGroup>
-                  <Label for="tanggal_selesai">Tanggal Selesai</Label>
-                  <Select
-                    components={{ Input: CustomSelectInput }}
-                    className="react-select"
-                    classNamePrefix="react-select"
-                    name="tanggal_selesai"
-                    id="tanggal_selesai"
-                    // options={selectedPatient}
-                    // value={selectedPatient.find(
-                    //   (item) => item.value === queue.tanggal_selesai
-                    // )}
-                    // onChange={onChange}
-                  />
-                </FormGroup>
-              </Colxx> */}
             </Row>
             <Row lg={12}>
               <Colxx lg={6}>
@@ -1228,20 +1090,6 @@ const Data = ({ match }) => {
                     selected={eventCalendar.start_time}
                     onChange={(e) => handleInputCalendar(e)}
                   />
-                  {/* <Select
-                    components={{ Input: CustomSelectInput }}
-                    className="react-select"
-                    classNamePrefix="react-select"
-                    name="start_time"
-                    id="start_time"
-                    value={eventCalendar.start_time}
-                    required
-                    // options={selectedPatient}
-                    // value={selectedPatient.find(
-                    //   (item) => item.value === queue.waktu_mulai
-                    // )}
-                    onChange={handleInputCalendar}
-                  /> */}
                 </FormGroup>
               </Colxx>
               <Colxx lg={6}>
@@ -1270,20 +1118,6 @@ const Data = ({ match }) => {
                     selected={eventCalendar.end_time}
                     onChange={(e) => handleInputCalendar(e)}
                   />
-                  {/* <Select
-                    components={{ Input: CustomSelectInput }}
-                    className="react-select"
-                    classNamePrefix="react-select"
-                    name="end_time"
-                    id="end_time"
-                    value={eventCalendar.end_time}
-                    required
-                    // options={selectedPatient}
-                    // value={selectedPatient.find(
-                    //   (item) => item.value === queue.waktu_selesai
-                    // )}
-                    onChange={handleInputCalendar}
-                  /> */}
                 </FormGroup>
               </Colxx>
               <Colxx lg={12}>
@@ -1301,7 +1135,6 @@ const Data = ({ match }) => {
                     classNamePrefix="react-select"
                     name="id_doctor"
                     id="id_doctor"
-                    // value={eventCalendar.id_doctor}
                     required
                     placeholderText="Pilih Dokter"
                     options={selectedEmployee}
@@ -1355,6 +1188,185 @@ const Data = ({ match }) => {
               color="primary"
               onClick={(e) => onArchivePracticeSchedule(e, idPracticeSchedule)}
             >
+              Simpan
+            </Button>{" "}
+          </ModalFooter>
+        </Modal>
+
+        <Modal
+          isOpen={modalRecurring}
+          toggle={() => setModalRecurring(!modalRecurring)}
+        >
+          <ModalHeader>Tambah Jadwal Berulang Tenaga Kesehatan</ModalHeader>
+          <ModalBody>
+            <Row lg={12}>
+              <Colxx lg={6}>
+                <FormGroup>
+                  <Label for="date">
+                    Tanggal{" "}
+                    <span className="required text-danger" aria-required="true">
+                      {" "}
+                      *
+                    </span>
+                  </Label>
+                  <Input
+                    type="date"
+                    name="date"
+                    id="date"
+                    placeholderText="Pilih Tanggal"
+                    dateFormat="yyyy-MM-dd"
+                    autoComplete="off"
+                    required
+                    value={eventRecurringCalendar.date}
+                    onChange={(e) => handleInputRecurringCalendar(e)}
+                  />
+                </FormGroup>
+              </Colxx>
+              <Colxx lg={6}>
+                <FormGroup>
+                  <Label for="tanggal_selesai">
+                    Tanggal Selesai{" "}
+                    <span className="required text-danger" aria-required="true">
+                      {" "}
+                      *
+                    </span>
+                  </Label>
+                  <Input
+                    type="date"
+                    name="date_end"
+                    id="date_end"
+                    placeholderText="Pilih Tanggal"
+                    dateFormat="yyyy-MM-dd"
+                    autoComplete="off"
+                    required
+                    value={eventRecurringCalendar.date_end}
+                    onChange={(e) => handleInputRecurringCalendar(e)}
+                  />
+                </FormGroup>
+              </Colxx>
+            </Row>
+            <Row lg={12}>
+              <Colxx lg={12}>
+                <FormGroup>
+                  <Label for="recurring">
+                    Pengulangan{" "}
+                    <span className="required text-danger" aria-required="true">
+                      {" "}
+                      *
+                    </span>
+                  </Label>
+                  <Select
+                    components={{ Input: CustomSelectInput }}
+                    className="react-select"
+                    classNamePrefix="react-select"
+                    name="interval"
+                    id="interval"
+                    required
+                    placeholderText="Pilih Pengulangan"
+                    options={selectedRecurring}
+                    value={selectedRecurring.find(
+                      (item) => item.value === eventRecurringCalendar.interval
+                    )}
+                    onChange={(e) => handleInputRecurringCalendar(e)}
+                  />
+                </FormGroup>
+              </Colxx>
+            </Row>
+            <Row lg={12}>
+              <Colxx lg={6}>
+                <FormGroup>
+                  <Label for="start_time">
+                    Waktu Mulai{" "}
+                    <span className="required text-danger" aria-required="true">
+                      {" "}
+                      *
+                    </span>
+                  </Label>
+                  <Input
+                    type="time"
+                    name="start_time"
+                    id="start_time"
+                    placeholderText="Pilih Waktu Mulai"
+                    showTimeInput
+                    showTimeSelectOnly
+                    timeFormat="HH:mm"
+                    timeIntervals={5}
+                    dateFormat="HH:mm"
+                    autoComplete="off"
+                    timeCaption="Waktu"
+                    timeInputLabel=""
+                    required
+                    defaultValue={eventRecurringCalendar.start_time}
+                    selected={eventRecurringCalendar.start_time}
+                    onChange={(e) => handleInputRecurringCalendar(e)}
+                  />
+                </FormGroup>
+              </Colxx>
+              <Colxx lg={6}>
+                <FormGroup>
+                  <Label for="end_time">
+                    Waktu Selesai
+                    <span className="required text-danger" aria-required="true">
+                      {" "}
+                      *
+                    </span>
+                  </Label>
+                  <Input
+                    type="time"
+                    name="end_time"
+                    id="end_time"
+                    placeholderText="Pilih Waktu Selesai"
+                    showTimeInput
+                    showTimeSelectOnly
+                    timeFormat="HH:mm"
+                    timeIntervals={5}
+                    dateFormat="HH:mm"
+                    autoComplete="off"
+                    timeCaption="Waktu"
+                    timeInputLabel=""
+                    required
+                    selected={eventRecurringCalendar.end_time}
+                    onChange={(e) => handleInputRecurringCalendar(e)}
+                  />
+                </FormGroup>
+              </Colxx>
+              <Colxx lg={12}>
+                <FormGroup>
+                  <Label for="id_doctor">
+                    Dokter{" "}
+                    <span className="required text-danger" aria-required="true">
+                      {" "}
+                      *
+                    </span>
+                  </Label>
+                  <Select
+                    components={{ Input: CustomSelectInput }}
+                    className="react-select"
+                    classNamePrefix="react-select"
+                    name="id_doctor"
+                    id="id_doctor"
+                    required
+                    placeholderText="Pilih Dokter"
+                    options={selectedEmployee}
+                    value={selectedEmployee.find(
+                      (item) => item.value === eventRecurringCalendar.id_doctor
+                    )}
+                    onChange={(e) => handleInputRecurringCalendar(e)}
+                  />
+                </FormGroup>
+              </Colxx>
+            </Row>
+          </ModalBody>
+          <ModalFooter>
+            <Button
+              type="button"
+              outline
+              color="danger"
+              onClick={() => setModalRecurring(false)}
+            >
+              Batal
+            </Button>
+            <Button color="primary" onClick={onCalendarRecurringSubmit}>
               Simpan
             </Button>{" "}
           </ModalFooter>

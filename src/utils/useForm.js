@@ -39,6 +39,8 @@ const useForm = (callback) => {
                 (name === 'nomor_izin' && value === '') ||
                 (name === 'kadaluarsa_izin' && value === '') ||
                 (name === 'harga' && value === '') ||
+                (name === 'harga_jasa' && value === '') ||
+                (name === 'harga_jual' && value === '') ||
                 (name === 'temperatur' && value === '') ||
                 (name === 'tinggi_badan' && value === '') ||
                 (name === 'berat_badan' && value === '') ||
@@ -48,7 +50,10 @@ const useForm = (callback) => {
                 (name === 'respiratory_rate' && value === '') ||
                 (name === 'heart_rate' && value === '') ||
                 (name === 'nama_kelas' && value === '') ||
-                (name === 'nomor_asuransi' && value === '')) {
+                (name === 'nomor_asuransi' && value === '') ||
+                (name === 'dosis' && value === '') ||
+                (name === 'deskripsi' && value === '') ||
+                (name === 'indikasi' && value === '')) {
                 
                 setErrors(errors => ({
                     ...errors,
@@ -63,6 +68,8 @@ const useForm = (callback) => {
                 (name === 'nomor_izin' && value !== '') ||
                 (name === 'kadaluarsa_izin' && value !== '') ||
                 (name === 'harga' && value !== '') ||
+                (name === 'harga_jasa' && value !== '') ||
+                (name === 'harga_jual' && value !== '') ||
                 (name === 'temperatur' && value !== '') ||
                 (name === 'tinggi_badan' && value !== '') ||
                 (name === 'berat_badan' && value !== '') ||
@@ -72,7 +79,10 @@ const useForm = (callback) => {
                 (name === 'respiratory_rate' && value !== '') ||
                 (name === 'heart_rate' && value !== '') ||
                 (name === 'nama_kelas' && value !== '') ||
-                (name === 'nomor_asuransi' && value !== '')) {
+                (name === 'nomor_asuransi' && value !== '') ||
+                (name === 'dosis' && value !== '') ||
+                (name === 'deskripsi' && value !== '') ||
+                (name === 'indikasi' && value !== '')) {
                 
                 let newObj = omit(errors, name);
                 setErrors(newObj);
@@ -92,7 +102,12 @@ const useForm = (callback) => {
                 (name === 'id_asuransi' && value === '') ||
                 (name === 'id_alergi' && value === '') ||
                 (name === 'id_asuransi_kelas' && value === '') ||
-                (name === 'tipe_kerjasama' && value === '')) {
+                (name === 'tipe_kerjasama' && value === '') ||
+                (name === 'golongan' && value === '') ||
+                (name === 'kategori' && value === '') ||
+                (name === 'satuan_dosis' && value === '') ||
+                (name === 'jual_per' && value === '') ||
+                (name === 'produsen' && value === '')) {
 
                 setErrors(errors => ({
                     ...errors,
@@ -112,7 +127,12 @@ const useForm = (callback) => {
                 (name === 'id_asuransi' && value !== '') ||
                 (name === 'id_alergi' && value !== '') ||
                 (name === 'id_asuransi_kelas' && value !== '') ||
-                (name === 'tipe_kerjasama' && value !== '')) {
+                (name === 'tipe_kerjasama' && value !== '') ||
+                (name === 'golongan' && value !== '') ||
+                (name === 'kategori' && value !== '') ||
+                (name === 'satuan_dosis' && value !== '') ||
+                (name === 'jual_per' && value !== '') ||
+                (name === 'produsen' && value !== '')) {
 
                 let newObj = omit(errors, name);
                 setErrors(newObj);

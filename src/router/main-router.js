@@ -54,8 +54,14 @@ const Treatment = React.lazy(() =>
 const Service = React.lazy(() =>
   import(/* webpackChunkName: "views-service" */ '../views/service')
 );
+const Medicine = React.lazy(() =>
+  import(/* webpackChunkName: "views-medicine" */ '../views/medicine')
+);
 const Schedule = React.lazy(() =>
   import(/* webpackChunkName: "views-schedule" */ '../views/schedule')
+);
+const MasterData = React.lazy(() =>
+  import(/* webpackChunkName: "views-master-data" */ '../views/master-data')
 );
 
 const userData = JSON.parse(localStorage.getItem('user_data'));
@@ -122,13 +128,13 @@ const MainRouter = ( ) => {
                 // <Route
                     path="/dashboard"
                     component={Dashboard}
-                    roles={[ "isDev", "isManager", "isAdmin", "isResepsionis", "isPerawat", "isDokter", "isManajemen" ]}
+                    roles={[ "isDev", "isManager", "isAdmin", "isResepsionis", "isPerawat", "isDokter", "isManajemen", "isFinance", "isCashier" ]}
                 />
                 <ProtectedRoute
                 // <Route
                     path="/profile"
                     component={Profile}
-                    roles={[ "isDev", "isManager", "isAdmin", "isResepsionis", "isPerawat", "isDokter", "isManajemen" ]}
+                    roles={[ "isDev", "isManager", "isAdmin", "isResepsionis", "isPerawat", "isDokter", "isManajemen", "isFinance", "isCashier" ]}
                 />
                 <ProtectedRoute
                 // <Route
@@ -180,6 +186,12 @@ const MainRouter = ( ) => {
                 />
                 <ProtectedRoute
                 // <Route
+                    path="/medicine"
+                    component={Medicine}
+                    roles={[ "isDev", "isManager", "isAdmin" ]}
+                />
+                <ProtectedRoute
+                // <Route
                     path="/schedule"
                     component={Schedule}
                     roles={[ "isDev", "isManager", "isAdmin", "isResepsionis", "isPerawat", "isDokter" ]}
@@ -189,6 +201,12 @@ const MainRouter = ( ) => {
                     path="/individual-schedule"
                     component={individualSchedule}
                     roles={[ "isDev", "isManager", "isAdmin", "isResepsionis", "isPerawat", "isDokter" ]}
+                />
+                <ProtectedRoute
+                // <Route
+                    path="/master-data"
+                    component={MasterData}
+                    roles={[ "isDev", "isManager", "isAdmin" ]}
                 />
                 <Route
                     path="/error"

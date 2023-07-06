@@ -13,7 +13,8 @@ import { employee, employeeTotalPage } from "store/employee";
 import { division, divisionTotalPage } from "store/division";
 import { queue, queueTotalPage } from "store/queue";
 import { disease, diseaseTotalPage } from 'store/disease';
-import { medicine, medicineTotalPage } from 'store/medicine';
+import { medicine, medicineTotalPage, medicineList, medicineListTotalPage, medicineClinic, medicineClinicTotalPage } from 'store/medicine';
+import { consumables, consumablesTotalPage, consumablesClinic, consumablesClinicTotalPage, consumablesService, consumablesServiceTotalPage } from 'store/consumables';
 import { lab, labTotalPage } from 'store/lab';
 import { inspect, inspectTotalPage } from 'store/inspect';
 import { treatment, treatmentTotalPage, treatmentList, treatmentListTotalPage, treatmentPrice, treatmentPriceTotalPage } from 'store/treatment';
@@ -55,6 +56,16 @@ const reducers = combineReducers({
   diseaseTotalPage,
   medicine,
   medicineTotalPage,
+  medicineList,
+  medicineListTotalPage,
+  medicineClinic,
+  medicineClinicTotalPage,
+  consumables,
+  consumablesTotalPage,
+  consumablesClinic,
+  consumablesClinicTotalPage,
+  consumablesService,
+  consumablesServiceTotalPage,
   lab,
   labTotalPage,
   inspect,
