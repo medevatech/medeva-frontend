@@ -53,7 +53,8 @@ const useForm = (callback) => {
                 (name === 'nomor_asuransi' && value === '') ||
                 (name === 'dosis' && value === '') ||
                 (name === 'deskripsi' && value === '') ||
-                (name === 'indikasi' && value === '')) {
+                (name === 'indikasi' && value === '') ||
+                (name === 'merk' && value === '')) {
                 
                 setErrors(errors => ({
                     ...errors,
@@ -82,7 +83,8 @@ const useForm = (callback) => {
                 (name === 'nomor_asuransi' && value !== '') ||
                 (name === 'dosis' && value !== '') ||
                 (name === 'deskripsi' && value !== '') ||
-                (name === 'indikasi' && value !== '')) {
+                (name === 'indikasi' && value !== '') ||
+                (name === 'merk' && value !== '')) {
                 
                 let newObj = omit(errors, name);
                 setErrors(newObj);
@@ -106,8 +108,10 @@ const useForm = (callback) => {
                 (name === 'golongan' && value === '') ||
                 (name === 'kategori' && value === '') ||
                 (name === 'satuan_dosis' && value === '') ||
+                (name === 'satuan' && value === '') ||
                 (name === 'jual_per' && value === '') ||
-                (name === 'produsen' && value === '')) {
+                (name === 'produsen' && value === '') ||
+                (name === 'tipe_bhp' && value === '')) {
 
                 setErrors(errors => ({
                     ...errors,
@@ -131,8 +135,10 @@ const useForm = (callback) => {
                 (name === 'golongan' && value !== '') ||
                 (name === 'kategori' && value !== '') ||
                 (name === 'satuan_dosis' && value !== '') ||
+                (name === 'satuan' && value !== '') ||
                 (name === 'jual_per' && value !== '') ||
-                (name === 'produsen' && value !== '')) {
+                (name === 'produsen' && value !== '') ||
+                (name === 'tipe_bhp' && value !== '')) {
 
                 let newObj = omit(errors, name);
                 setErrors(newObj);

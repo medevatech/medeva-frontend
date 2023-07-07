@@ -176,6 +176,7 @@ const Data = ({ match, history, loading, error }) => {
         console.log(e);
       } finally {
         !userData.roles.includes('isDev') ? getService(`?searchTipe=Layanan&searchKlinik=${userData.id_klinik}`) : getService("?searchTipe=Layanan");
+        getServiceById("", serviceID);
       }
     } else {
       console.log('dataStatus undefined')
@@ -493,13 +494,13 @@ const Data = ({ match, history, loading, error }) => {
     }
   };
 
-  const [searchName, setSearchName] = useState("");
+  const [search, setSearch] = useState("");
   const [searchStatus, setSearchStatus] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [ limit, searchName, searchStatus, sortBy, sortOrder ]);
+  }, [ limit, search, searchStatus, sortBy, sortOrder ]);
 
   useEffect(() => {
     let params = "";
@@ -509,8 +510,8 @@ const Data = ({ match, history, loading, error }) => {
     } else {
       params = `${params}?limit=10`;
     }
-    if (searchName !== "") {
-      params = `${params}&searchDaftarLayanan=${searchName}`;
+    if (search !== "") {
+      params = `${params}&search=${search}`;
     }
     if (!userData.roles.includes('isDev')) {
       params = `${params}&searchKlinik=${userData.id_klinik}`;
@@ -526,7 +527,7 @@ const Data = ({ match, history, loading, error }) => {
     
     setRowSelected(false);
     getService(params);
-  }, [limit, searchName, searchStatus, sortBy, sortOrder, currentPage ]);
+  }, [limit, search, searchStatus, sortBy, sortOrder, currentPage ]);
 
   let startNumber = 1;
 
@@ -584,7 +585,7 @@ const Data = ({ match, history, loading, error }) => {
                   name="search"
                   id="search"
                   placeholder="Pencarian"
-                  onChange={(e) => setSearchName(e.target.value)}
+                  onChange={(e) => setSearch(e.target.value)}
                 />
                 <InputGroupAddon addonType="append">
                   <Button outline color="theme-3" className="button-search">

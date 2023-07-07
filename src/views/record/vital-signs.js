@@ -43,6 +43,7 @@ import CustomSelectInput from 'components/common/CustomSelectInput';
 
 import patientAPI from "api/patient";
 import queueAPI from "api/queue";
+import clinicAPI from "api/clinic";
 import vitalSignsAPI from "api/vital-signs";
 import divisionAPI from "api/division";
 import Swal from "sweetalert2";
@@ -87,8 +88,10 @@ const VitalSigns = ({ match }) => {
   const [dataStatus, setDataStatus] = useState("");
   const [rowSelected, setRowSelected] = useState(null);
 
+  const [selectedKlinik, setSelectedKlinik] = useState([{ label: "Pilih Klinik", value: "", key: 0, name: 'id_klinik' }]);
+  const [selectedKlinikF, setSelectedKlinikF] = useState([{ label: "Semua Klinik", value: "", key: 0, name: 'id_klinik' }]);
   // const [selectDivision, setSelectDivision] = useState([]);
-  const [selectedDivisionF, setSelectedDivisionF] = useState([{ label: "Semua Poli / Divisi", value: "", key: 0, name: 'id_klinik' }]);
+  const [selectedDivisionF, setSelectedDivisionF] = useState([{ label: "Semua Poli / Divisi", value: "", key: 0, name: 'id_divisi' }]);
   const [selectedDivision, setSelectedDivision] = useState('');
   const [selectedAwareness, setSelectedAwareness] = useState('');
 
@@ -102,6 +105,7 @@ const VitalSigns = ({ match }) => {
   const [patientID, setPatientID] = useState('');
   const [patientData, setPatientData] = useState('');
   const [vitalSignsID, setVitalSignsID] = useState('');
+  const [clinicID, setClinicID] = useState(!userData.roles.includes('isDev') ? userData.id_klinik : '');
 
   const [ vitalSigns, setVitalSigns ] = useState({
     id_pasien: patientID,
@@ -308,7 +312,7 @@ const VitalSigns = ({ match }) => {
 
         console.log(e);
       } finally {
-        getAllVitalSignsByPatientId(e, patientID);
+        getAllVitalSignsByPatientId("", patientID);
       }
     } else {
       console.log('dataStatus undefined')
@@ -363,10 +367,46 @@ const VitalSigns = ({ match }) => {
 
     setDataStatus("add");
   };
+    
+  const onLoadKlinik = async () => {
+    try {
+      const response = await clinicAPI.get("?limit=1000");
+      // console.log(response);
+
+      setSelectedKlinik([{ label: "Pilih Klinik", value: "", key: 0, name: 'id_klinik' }]);
+      setSelectedKlinikF([{ label: "Semua Klinik", value: "", key: 0, name: 'id_klinik' }]);
+
+      if (response.status === 200) {
+        let data = response.data.data;
+        // console.log(data);
+      
+        for (var i = 0; i < data.length; i++) {
+          setSelectedKlinik((current) => [
+            ...current,
+            { label: data[i].nama_klinik, value: data[i].id, key: data[i].id, name: 'id_klinik' },
+          ]);
+          
+          setSelectedKlinikF((current) => [
+            ...current,
+            { label: data[i].nama_klinik, value: data[i].id, key: data[i].id, name: 'id_klinik' },
+          ]);
+        }
+      } else {
+        throw Error(`Error status: ${response.status}`);
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  };
+    
+  const changeKlinik = async (id) => {
+    setClinicID(id);
+    onLoadDivisi();
+  };
 
   const onLoadDivisi = async () => {
     try {
-      const response = await divisionAPI.get("?limit=1000");
+      const response = await divisionAPI.get(`?limit=1000&searchKlinik=${clinicID}`);
       // console.log(response);
 
       setSelectedDivisionF([{ label: "Semua Poli / Divisi", value: "", key: 0, name: 'id_divisi' }]);
@@ -639,13 +679,14 @@ const VitalSigns = ({ match }) => {
   // };
 
   const [currentPage, setCurrentPage] = useState(1);
-  const [searchName, setSearchName] = useState("");
+  const [search, setSearch] = useState("");
   const [searchDivisi, setSearchDivisi] = useState("");
   const [searchDate, setSearchDate] = useState(new Date().toISOString().substr(0, 10));
+  const [searchKlinik, setSearchKlinik] = useState(clinicID);
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [ limit, searchName, searchDivisi, searchDate, sortBy, sortOrder ]);
+  }, [ limit, search, searchDivisi, searchDate, searchKlinik, sortBy, sortOrder ]);
 
   useEffect(() => {
     let params = "";
@@ -654,14 +695,17 @@ const VitalSigns = ({ match }) => {
     } else {
       params = `${params}?limit=10`;
     }
-    if (searchName !== "") {
-      params = `${params}&searchName=${searchName}`;
+    if (search !== "") {
+      params = `${params}&search=${search}`;
     }
     if (searchDivisi !== "") {
       params = `${params}&searchDivisi=${searchDivisi}`;
     }
     if (searchDate !== "") {
       params = `${params}&date=${moment(searchDate).format("YYYY-MM-DD")}`;
+    }
+    if (searchKlinik !== "") {
+      params = `${params}&searchKlinik=${searchKlinik}`;
     }
     if (!userData.roles.includes('isDev') && userData.roles.includes('isPerawat') && userData.roles.includes('isDokter')) {
       params = `${params}&searchJaga=${userData.id}`;
@@ -674,8 +718,9 @@ const VitalSigns = ({ match }) => {
     setRowSelected(false);
     getQueue(params);
 
+    userData.roles.includes('isDev') && onLoadKlinik();
     onLoadDivisi();
-  }, [limit, searchName, searchDivisi, searchDate, sortBy, sortOrder, currentPage]);
+  }, [limit, search, searchDivisi, searchDate, searchKlinik, sortBy, sortOrder, currentPage]);
 
   useEffect(() => {
     if(dataStatus === "add") {
@@ -730,17 +775,33 @@ const VitalSigns = ({ match }) => {
                   </Row>
                 </CardTitle>
                 <FormGroup row style={{ margin: '0px', width: '100%' }}>
+                  { userData.roles.includes('isDev') &&
+                  <Colxx sm="12" md="12" style={{ paddingLeft: '0px', paddingRight: '0px' }} className="mb-3">
+                    <Label for="klinik">
+                      Klinik
+                    </Label>
+                    <Select
+                      components={{ Input: CustomSelectInput }}
+                      className="react-select"
+                      classNamePrefix="react-select"
+                      name="klinik"
+                      onChange={(e) => { setSearchKlinik(e.value); changeKlinik(e.value); }}
+                      options={selectedKlinikF}
+                      defaultValue={{ label: "Semua Klinik", value: "", key: 0, name: 'id_klinik' }}
+                    />
+                  </Colxx>
+                  }
                   <Colxx sm="12" md="6" style={{ paddingLeft: '0px' }}>
                     <Label for="tanggal">
-                          Tanggal
-                        </Label>
-                        <Input
-                          type="date"
-                          name="tanggal"
-                          placeholder="Tanggal"
-                          onChange={(e) => setSearchDate(e.target.value)}
-                          value={searchDate}
-                        />
+                      Tanggal
+                    </Label>
+                    <Input
+                      type="date"
+                      name="tanggal"
+                      placeholder="Tanggal"
+                      onChange={(e) => setSearchDate(e.target.value)}
+                      value={searchDate}
+                    />
                   </Colxx>
                   <Colxx sm="12" md="6" style={{ paddingRight: '0px' }}>
                     <Label for="divisi">
@@ -753,7 +814,7 @@ const VitalSigns = ({ match }) => {
                       name="divisi"
                       onChange={(e) => setSearchDivisi(e.value)}
                       // onChange={setSelectedDivision}
-                      defaultValue={{ label: "Semua Poli / Divisi", value: "", key: 0, name: 'id_klinik' }}
+                      defaultValue={{ label: "Semua Poli / Divisi", value: "", key: 0, name: 'id_divisi' }}
                       options={selectedDivisionF}
                     />
                   </Colxx>
@@ -764,7 +825,7 @@ const VitalSigns = ({ match }) => {
                     name="search"
                     id="search"
                     placeholder="Pencarian"
-                    onChange={(e) => setSearchName(e.target.value)}
+                    onChange={(e) => setSearch(e.target.value)}
                   />
                   <InputGroupAddon addonType="append">
                     <Button outline color="theme-3" className="button-search">

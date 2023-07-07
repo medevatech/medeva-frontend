@@ -32,14 +32,14 @@ import "react-rater/lib/react-rater.css";
 
 import useForm from 'utils/useForm';
 
+import moment from "moment";
 import Select from "react-select";
 import { Colxx, Separator } from "components/common/CustomBootstrap";
 import Pagination from "components/common/Pagination";
 
 import CustomSelectInput from "components/common/CustomSelectInput";
 
-import insuranceAPI from "api/insurance";
-import insuranceClassAPI from "api/insurance/class";
+import vendorAPI from "api/vendor/";
 import Swal from "sweetalert2";
 
 import loader from '../../assets/img/loading.gif';
@@ -54,83 +54,60 @@ const selectStatusF = [
 
 const Data = ({ match, history, loading, error }) => {
   const dispatch = useDispatch();
-  const insuranceData = useSelector(state => state.insurance);
-  const insuranceTotalPage = useSelector(state => state.insuranceTotalPage);
+  const vendorData = useSelector(state => state.vendor);
+  const vendorTotalPage = useSelector(state => state.vendorTotalPage);
   const { errors, validate } = useForm();
 
   const [tableClass, setTableClass] = useState('');
   const [dataStatus, setDataStatus] = useState("");
-  const [dataStatusInsuranceClass, setDataStatusInsuranceClass] = useState("add");
   const [rowSelected, setRowSelected] = useState(null);
   
   const [modalArchive, setModalArchive] = useState(false);
   const [modalDelete, setModalDelete] = useState(false);
-  const [insuranceID, setInsuranceID] = useState('');
-  const [insuranceName, setInsuranceName] = useState('');
-  const [insuranceStatus, setInsuranceStatus] = useState(0);
-  const [insuranceSubmit, setInsuranceSubmit] = useState('');
+  const [vendorID, setVendorID] = useState('');
+  const [vendorStatus, setVendorStatus] = useState(0);
 
-  const [insurance, setInsurance] = useState({
-    nama: ''
+  const [vendor, setVendor] = useState({
+    nama: '',
+    alamat: '',
+    telepon: '',
+    whatsapp: '',
+    email: '',
+    website: '',
+    instagram: '',
+    facebook: ''
   });
 
   const onChange = (e) => {
     // console.log('e', e);
 
-    setInsurance(current => {
+    setVendor(current => {
         return { ...current, [e.target.name]: e.target.value }
     })
 
-    validate(e, e.name !== undefined ? e.name : e.target.name ? e.target.name : '', e.value !== undefined ? e.value : e.target.value ? e.target.value : '');
-    // console.log('insurance', insurance);
+    if(e.target.name === "nama") {
+        validate(e, e.name !== undefined ? e.name : e.target.name ? e.target.name : '', e.value !== undefined ? e.value : e.target.value ? e.target.value : '');
+    }
+    // console.log('vendor', vendor);
   }
 
-  const onInsuranceSubmit = async (e) => {
+  const onVendorSubmit = async (e) => {
     e.preventDefault();
-    setInsuranceSubmit("process");
 
-    // console.log('insurance', insurance);
-
-    let isError = false;
-
-    for(let [key, value] of Object.entries(insurance)) {
-      // console.log(key, value);
-
+    for(let [key, value] of Object.entries(vendor)) {
       if((key === 'nama' && value === '')){
         validate(e, key, value);
-        isError = true;
-        // console.log('errors', errors);
-        // return;
+        return;
       }
     }
 
-    for (var i = 0; i < insuranceClass.length; i++) {
-      for(let [key, value] of Object.entries(insuranceClass[i])) {
-        if((key === 'nama_kelas' && value === '')){
-          validate(e, key, value);
-          isError = true;
-          // console.log('errors', errors);
-          // return;
-        }
-      }
-    }
-
-    if(isError === true) {
-      return;
-    }
-
-    for (var i = 0; i < insuranceClass.length; i++) {
-      for(let [key, value] of Object.entries(insuranceClass[i])) {
-        if((key === 'nama_kelas' && value === '')){
-          validate(e, key, value);
-          return;
-        }
-      }
-    }
+    setVendor(current => {
+        return { ...current, instagram: `@${vendor.instagram}`, facebook: `https://facebook.com/${vendor.facebook}` }
+    })
 
     if(dataStatus === 'add') {
       try {
-        const response = await insuranceAPI.add(insurance);
+        const response = await vendorAPI.add(vendor);
         // console.log(response);
   
         if (response.status == 200) {
@@ -139,16 +116,16 @@ const Data = ({ match, history, loading, error }) => {
   
           Swal.fire({
             title: "Sukses!",
-            html: `Tambah asuransi sukses`,
+            html: `Tambah vendor sukses`,
             icon: "success",
             confirmButtonColor: "#008ecc",
           });
-
-          setInsuranceID(data.id);
+  
+          resetForm(e);
         } else {
           Swal.fire({
             title: "Gagal!",
-            html: `Tambah asuransi gagal: ${response.message}`,
+            html: `Tambah vendor gagal: ${response.message}`,
             icon: "error",
             confirmButtonColor: "#008ecc",
             confirmButtonText: "Coba lagi",
@@ -166,10 +143,12 @@ const Data = ({ match, history, loading, error }) => {
         });
   
         console.log(e);
+      } finally {
+        getVendor("");
       }
     } else if (dataStatus === 'update') {
       try {
-        const response = await insuranceAPI.update(insurance, insuranceID);
+        const response = await vendorAPI.update(vendor, vendorID);
         // console.log(response);
   
         if (response.status == 200) {
@@ -178,16 +157,16 @@ const Data = ({ match, history, loading, error }) => {
   
           Swal.fire({
             title: "Sukses!",
-            html: `Ubah asuransi sukses`,
+            html: `Ubah vendor sukses`,
             icon: "success",
             confirmButtonColor: "#008ecc",
           });
-
-          setInsuranceID(insuranceID);
+  
+          resetForm(e);
         } else {
           Swal.fire({
             title: "Gagal!",
-            html: `Ubah asuransi gagal: ${response.message}`,
+            html: `Ubah vendor gagal: ${response.message}`,
             icon: "error",
             confirmButtonColor: "#008ecc",
             confirmButtonText: "Coba lagi",
@@ -205,175 +184,21 @@ const Data = ({ match, history, loading, error }) => {
         });
   
         console.log(e);
+      } finally {
+        getVendor("");
+        getVendorById("", vendorID);
       }
     } else {
       console.log('dataStatus undefined')
     }
-
-    setInsuranceSubmit("done");
   };
-
-  const [insuranceClass, setInsuranceClass] = useState([{
-      id: "",
-      id_asuransi: insuranceID,
-      nama_kelas: "",
-  }]);
-
-  const [tempInsuranceClass, setTempInsuranceClass] = useState([{
-    id: "",
-    id_asuransi: insuranceID,
-    nama_kelas: "",
-  }]);
-
-  const addInsuranceClassFields = () => {
-    let newfieldInsuranceClass = { id: "", id_asuransi: insuranceID, nama_kelas: "" };
-    setInsuranceClass([...insuranceClass, newfieldInsuranceClass]);
-  };
-
-  const removeInsuranceClassFields = (id, index) => {
-    let dataInsuranceClass = [...insuranceClass];
-
-    dataInsuranceClass.splice(index, 1);
-
-    setInsuranceClass(dataInsuranceClass);
-
-    if(dataStatusInsuranceClass === "update"){
-      setTempInsuranceClass(dataInsuranceClass);
-      onDeleteInsuranceClass(id);
-    }
-  };
-
-  const handleInsuranceClassChange = (index, event) => {
-    let dataInsuranceClass = [...insuranceClass];
-
-    dataInsuranceClass[index][event.target.name] = event.target.value;
-    validate(event, event.name !== undefined ? event.name : event.target.name ? event.target.name : '', event.value !== undefined ? event.value : event.target.value ? event.target.value : '');
-
-    setInsuranceClass(dataInsuranceClass);
-  };
-
-  const onInsuranceClassSubmit = async (e) => {
-    e && e.preventDefault();
-
-    let isError = false;
-
-    for (var i = 0; i < insuranceClass.length; i++) {
-      for(let [key, value] of Object.entries(insuranceClass[i])) {
-        if((key === 'nama_kelas' && value === '')){
-          validate(e, key, value);
-  
-          // console.log('errors', errors);
-          return;
-        }
-      }
-    }
-
-    if(isError === true) {
-      return;
-    }
-
-    for (var i = 0; i < insuranceClass.length; i++) {
-      insuranceClass[i].id_asuransi = insuranceID;
-
-      if(insuranceClass[i].id !== '' && (insuranceClass[i].nama_kelas !== tempInsuranceClass[i].nama_kelas)) {
-        onInsuranceClassEdit(insuranceClass[i]);
-      } else if(insuranceClass[i].id === '') {
-        onInsuranceClassAdd(insuranceClass[i]);
-      }
-    }
-    
-    getInsurance("");
-    if(insuranceID){
-      getInsuranceById("", insuranceID);
-    } else {
-      resetForm();
-    }
-  }
-
-  const onInsuranceClassAdd = async (insuranceClass) => {
-    try {
-      const response = await insuranceClassAPI.add(insuranceClass);
-      // console.log(response);
-
-      if (response.status == 200) {
-        let data = await response.data.data;
-        // console.log(data);
-
-        Swal.fire({
-          title: "Sukses!",
-          html: `Tambah kelas asuransi sukses`,
-          icon: "success",
-          confirmButtonColor: "#008ecc",
-        });
-      } else {
-        Swal.fire({
-          title: "Gagal!",
-          html: `Tambah kelas asuransi gagal: ${response.message}`,
-          icon: "error",
-          confirmButtonColor: "#008ecc",
-          confirmButtonText: "Coba lagi",
-        });
-
-        throw Error(`Error status: ${response.status}`);
-      }
-    } catch (e) {
-      Swal.fire({
-        title: "Gagal!",
-        html: e.response.data.message,
-        icon: "error",
-        confirmButtonColor: "#008ecc",
-        confirmButtonText: "Coba lagi",
-      });
-
-      console.log(e);
-    }
-  } 
-
-  const onInsuranceClassEdit = async (insuranceClass) => {
-    try {
-      const response = await insuranceClassAPI.update(insuranceClass, insuranceClass.id);
-      // console.log(response);
-
-      if (response.status == 200) {
-        let data = await response.data.data;
-        // console.log(data);
-
-        Swal.fire({
-          title: "Sukses!",
-          html: `Ubah kelas asuransi sukses`,
-          icon: "success",
-          confirmButtonColor: "#008ecc",
-        });
-      } else {
-        Swal.fire({
-          title: "Gagal!",
-          html: `Ubah kelas asuransi gagal`,
-          icon: "error",
-          confirmButtonColor: "#008ecc",
-          confirmButtonText: "Coba lagi",
-        });
-
-        throw Error(`Error status: ${response.status}`);
-      }
-    } catch (e) {
-      Swal.fire({
-        title: "Gagal!",
-        html: e.response.data.message,
-        icon: "error",
-        confirmButtonColor: "#008ecc",
-        confirmButtonText: "Coba lagi",
-      });
-
-      console.log(e);
-    }
-  }
 
   const resetForm = (e, scroll = false) => {
     e && e.preventDefault();
 
-    setInsuranceID('');
-    setInsuranceName('');
-    setInsuranceStatus(0);
+    setVendorID('');
+    setVendorName('');
+    setVendorStatus(0);
 
     if(scroll) {
       if(window.innerWidth < 1280){
@@ -392,28 +217,28 @@ const Data = ({ match, history, loading, error }) => {
       }
     }
 
-    setInsuranceStatus(0);
-    setInsuranceName('');
-    setInsuranceID('');
-
-    setInsurance({
+    setVendor({
       nama: '',
+      alamat: '',
+      telepon: '',
+      whatsapp: '',
+      email: '',
+      website: '',
+      instagram: '',
+      facebook: ''
     });
 
-    setInsuranceClass([{ id: "", id_asuransi: insuranceID, nama_kelas: "" }]);
-
     setDataStatus("add");
-    setDataStatusInsuranceClass("add");
   };
 
   const [isLoading, setIsLoading] = useState(false);
 
-  const getInsurance = async (params) => {
+  const getVendor = async (params) => {
     try {
       setIsLoading(true);
-      const res = await insuranceAPI.get(params);
-      dispatch({type: "GET_INSURANCE", payload: res.data.data});
-      dispatch({type: "GET_TOTAL_PAGE_INSURANCE", payload: res.data.pagination.totalPage});
+      const res = await vendorAPI.get(params);
+      dispatch({type: "GET_VENDOR", payload: res.data.data});
+      dispatch({type: "GET_TOTAL_PAGE_VENDOR", payload: res.data.pagination.totalPage});
 
       if(res.data.data.length > 0) {
         setTableClass('table-hover');
@@ -425,7 +250,7 @@ const Data = ({ match, history, loading, error }) => {
     }
   };
 
-  const getInsuranceById = async (e, id) => {
+  const getVendorById = async (e, id) => {
     e && e.preventDefault();
     e && resetForm(e);
     setDataStatus("update");
@@ -447,64 +272,36 @@ const Data = ({ match, history, loading, error }) => {
     }
 
     try {
-      const res = await insuranceAPI.get(`/${id}`);
+      const res = await vendorAPI.get(`/${id}`);
       let data = res.data.data[0];
 
       // console.log(data);
 
-      setInsuranceID(data.id);
-      setInsurance({
+      setVendorID(data.id);
+      setVendor({
         nama: data.nama,
+        alamat: data.alamat,
+        telepon: data.telepon,
+        whatsapp: data.whatsapp,
+        email: data.email,
+        website: data.website,
+        instagram: data.instagram.replace('@',''),
+        facebook: data.facebook.replace('https://facebook.com','')
       });
-      setInsuranceStatus(data.is_active);
+      setVendorStatus(data.is_active);
 
-      // console.log(insurance);
+      // console.log(vendor);
 
     } catch (e) {
       console.log(e);
-    } finally {
-      getInsuranceClassByInsuranceId(id);
     }
 
     // console.log(dataStatus);
   };
 
-  const getInsuranceClassByInsuranceId = async (id) => {
-    setInsuranceClass([]);
-    setTempInsuranceClass([]);
-
-    try {
-      const res = await insuranceClassAPI.getByInsurance(`/${id}`);
-      let data = res.data.data;
-      // console.log('data', data);
-
-      if(data) {
-        data.map((data, index) => {
-
-          setInsuranceClass((current) => [
-            ...current, { id: data.id, id_asuransi: data.id_asuransi, nama_kelas: data.nama_kelas }
-          ]);
-
-          setTempInsuranceClass((current) => [
-            ...current, { id: data.id, id_asuransi: data.id_asuransi, nama_kelas: data.nama_kelas }
-          ]);
-        })
-      }
-
-      setDataStatusInsuranceClass("update");
-    } catch (e) {
-      console.log(e);
-
-      setInsuranceClass([{ id: '', id_asuransi: insuranceID, nama_kelas: "" }]);
-      setTempInsuranceClass([{ id: '', id_asuransi: insuranceID, nama_kelas: "" }]);
-
-      setDataStatusInsuranceClass("add");
-    }
-  };
-
   function ActiveDropdown() {
     return <>
-      <DropdownItem onClick={(e) => statusById(e, insuranceID)}>
+      <DropdownItem onClick={(e) => statusById(e, vendorID)}>
         <i className="simple-icon-drawer"></i>&nbsp;Aktifkan
       </DropdownItem>
     </>;
@@ -512,19 +309,20 @@ const Data = ({ match, history, loading, error }) => {
 
   function ArchiveDropdown() {
     return <>
-      <DropdownItem onClick={(e) => statusById(e, insuranceID)}>
+      <DropdownItem onClick={(e) => statusById(e, vendorID)}>
         <i className="simple-icon-drawer"></i>&nbsp;Arsipkan
       </DropdownItem>
     </>;
   }
 
   function IsActiveDropdown() {
+    console.log(vendorID, vendorStatus);
     if(userData.roles.includes('isDev') ||
       userData.roles.includes('isManager') ||
       userData.roles.includes('isAdmin')) {
-      if (insuranceID && insuranceStatus == 1) {
+      if (vendorID && vendorStatus == 1) {
         return <ArchiveDropdown/>;
-      } else if (insuranceID && insuranceStatus == 0) {
+      } else if (vendorID && vendorStatus == 0) {
         return <ActiveDropdown/>;
       } else {
         return null;
@@ -534,17 +332,19 @@ const Data = ({ match, history, loading, error }) => {
     }
   }
 
+  const [vendorName, setVendorName] = useState('');
+
   const statusById = async (e, id) => {
     e.preventDefault();
 
     setModalArchive(true);
     try {
-      const res = await insuranceAPI.get(`/${id}`);
+      const res = await vendorAPI.get(`/${id}`);
       let data = res.data.data[0];
 
-      setInsuranceID(data.id);
-      setInsuranceStatus(data.is_active);
-      setInsuranceName(data.nama);
+      setVendorID(data.id);
+      setVendorStatus(data.is_active);
+      setVendorName(data.nama);
     } catch (e) {
       console.log(e);
     }
@@ -554,8 +354,8 @@ const Data = ({ match, history, loading, error }) => {
     e.preventDefault();
 
     try {
-      if (insuranceStatus == 1) {
-        const response = await insuranceAPI.archive("", insuranceID);
+      if (vendorStatus == 1) {
+        const response = await vendorAPI.archive("", vendorID);
 
         if (response.status == 200) {
           let data = await response.data.data;
@@ -563,7 +363,7 @@ const Data = ({ match, history, loading, error }) => {
 
           Swal.fire({
             title: "Sukses!",
-            html: `Arsip asuransi sukses`,
+            html: `Arsip vendor sukses`,
             icon: "success",
             confirmButtonColor: "#008ecc",
           });
@@ -572,7 +372,7 @@ const Data = ({ match, history, loading, error }) => {
         } else {
           Swal.fire({
             title: "Gagal!",
-            html: `Arsip asuransi gagal: ${response.message}`,
+            html: `Arsip vendor gagal: ${response.message}`,
             icon: "error",
             confirmButtonColor: "#008ecc",
             confirmButtonText: "Coba lagi",
@@ -581,7 +381,7 @@ const Data = ({ match, history, loading, error }) => {
           throw Error(`Error status: ${response.status}`);
         }
       } else {
-        const response = await insuranceAPI.activate("", insuranceID);
+        const response = await vendorAPI.activate("", vendorID);
 
         if (response.status == 200) {
           let data = await response.data.data;
@@ -589,7 +389,7 @@ const Data = ({ match, history, loading, error }) => {
 
           Swal.fire({
             title: "Sukses!",
-            html: `Aktivasi asuransi sukses`,
+            html: `Aktivasi vendor sukses`,
             icon: "success",
             confirmButtonColor: "#008ecc",
           });
@@ -598,7 +398,7 @@ const Data = ({ match, history, loading, error }) => {
         } else {
           Swal.fire({
             title: "Gagal!",
-            html: `Aktivasi asuransi gagal: ${response.message}`,
+            html: `Aktivasi vendor gagal: ${response.message}`,
             icon: "error",
             confirmButtonColor: "#008ecc",
             confirmButtonText: "Coba lagi",
@@ -619,8 +419,8 @@ const Data = ({ match, history, loading, error }) => {
 
       console.log(e);
     } finally {
-      getInsurance("");
-      getInsuranceById("", insuranceID);
+      getVendor("");
+      getVendorById("", vendorID);
     }
   };
 
@@ -629,11 +429,11 @@ const Data = ({ match, history, loading, error }) => {
 
     setModalDelete(true);
     try {
-      const res = await insuranceAPI.get(`/${id}`);
+      const res = await vendorAPI.get(`/${id}`);
       let data = res.data.data[0];
 
-      setInsuranceID(data.id);
-      setInsuranceName(data.nama);
+      setVendorID(data.id);
+      setVendorName(data.nama);
     } catch (e) {
       console.log(e);
     }
@@ -643,7 +443,7 @@ const Data = ({ match, history, loading, error }) => {
     e.preventDefault();
 
     try {
-      const response = await insuranceAPI.delete(insuranceID);
+      const response = await vendorAPI.delete(vendorID);
 
       if (response.status == 200) {
         let data = await response.data.data;
@@ -651,7 +451,7 @@ const Data = ({ match, history, loading, error }) => {
 
         Swal.fire({
           title: "Sukses!",
-          html: `Hapus asuransi sukses`,
+          html: `Hapus vendor sukses`,
           icon: "success",
           confirmButtonColor: "#008ecc",
         });
@@ -660,7 +460,7 @@ const Data = ({ match, history, loading, error }) => {
       } else {
         Swal.fire({
           title: "Gagal!",
-          html: `Hapus asuransi gagal: ${response.message}`,
+          html: `Hapus vendor gagal: ${response.message}`,
           icon: "error",
           confirmButtonColor: "#008ecc",
           confirmButtonText: "Coba lagi",
@@ -681,47 +481,7 @@ const Data = ({ match, history, loading, error }) => {
 
       console.log(e);
     } finally {
-      getInsurance("");
-    }
-  };
-
-  const onDeleteInsuranceClass = async (id) => {
-    try {
-      const response = await insuranceClassAPI.delete(id);
-
-      if (response.status == 200) {
-        let data = await response.data.data;
-        // console.log(data);
-
-        Swal.fire({
-          title: "Sukses!",
-          html: `Hapus kelas asuransi sukses`,
-          icon: "success",
-          confirmButtonColor: "#008ecc",
-        });
-      } else {
-        Swal.fire({
-          title: "Gagal!",
-          html: `Hapus kelas asuransi gagal: ${response.message}`,
-          icon: "error",
-          confirmButtonColor: "#008ecc",
-          confirmButtonText: "Coba lagi",
-        });
-
-        throw Error(`Error status: ${response.status}`);
-      }
-
-      // console.log(response);
-    } catch (e) {
-      Swal.fire({
-        title: "Gagal!",
-        html: e.response.data.message,
-        icon: "error",
-        confirmButtonColor: "#008ecc",
-        confirmButtonText: "Coba lagi",
-      });
-
-      console.log(e);
+      getVendor("");
     }
   };
 
@@ -752,23 +512,8 @@ const Data = ({ match, history, loading, error }) => {
     }
     
     setRowSelected(false);
-    getInsurance(params);
+    getVendor(params);
   }, [limit, search, searchStatus, sortBy, sortOrder, currentPage ]);
-
-  useEffect(() => {
-    if (insuranceSubmit === "done") {
-      setTimeout(() => {
-        
-        if(insuranceClass.length > 0 && insuranceClass[0].nama_kelas !== "") {
-          onInsuranceClassSubmit("");
-        }
-
-        setTimeout(() => {
-          // resetForm();
-        }, 2000)
-      }, 1000);
-    };
-  }, [ insuranceSubmit ]);
 
   let startNumber = 1;
 
@@ -789,7 +534,7 @@ const Data = ({ match, history, loading, error }) => {
               <CardTitle>
                 <Row>
                   <Colxx sm="8" md="8" xl="8" className="col-sm-8-mobile">
-                    Data Asuransi
+                    Data Vendor
                   </Colxx>
                   <Colxx sm="4" md="4" xl="4" className="col-sm-4-mobile">
                     <Button
@@ -838,7 +583,7 @@ const Data = ({ match, history, loading, error }) => {
                 <thead>
                   <tr>
                     <th className="center-xy" style={{ width: '40px' }}>#</th>
-                    <th>Asuransi</th>
+                    <th>Vendor</th>
                     <th className="center-xy" style={{ width: '55px' }}>&nbsp;</th>
                   </tr>
                 </thead>
@@ -852,9 +597,9 @@ const Data = ({ match, history, loading, error }) => {
                     <td>&nbsp;</td>
                   </tr>
                   ) : 
-                  insuranceData.length > 0 ? (
-                    insuranceData.map((data) => (
-                      <tr key={data.id} onClick={(e) => getInsuranceById(e, data.id)} style={{ cursor: 'pointer'}} className={`${rowSelected == data.id && 'row-selected'}`}>
+                  vendorData.length > 0 ? (
+                    vendorData.map((data) => (
+                      <tr key={data.id} onClick={(e) => getVendorById(e, data.id)} style={{ cursor: 'pointer'}} className={`${rowSelected == data.id && 'row-selected'}`}>
                         <th scope="row" style={{ textAlign: "center", verticalAlign: 'middle' }}>
                           {startNumber++}
                         </th>
@@ -868,7 +613,7 @@ const Data = ({ match, history, loading, error }) => {
                         </td>
                         <td style={{ textAlign: "center", verticalAlign: 'middle' }}>
                           <Button color="secondary" size="xs" className="button-xs"
-                            onClick={(e) => getInsuranceById(e, data.id)}
+                            onClick={(e) => getVendorById(e, data.id)}
                             >
                             <i className="simple-icon-arrow-right-circle"></i>
                           </Button>
@@ -889,9 +634,9 @@ const Data = ({ match, history, loading, error }) => {
               </Table>
               <Pagination
                 currentPage={currentPage}
-                totalPage={insuranceTotalPage}
+                totalPage={vendorTotalPage}
                 onChangePage={(i) => setCurrentPage(i)}
-                numberLimit={insuranceTotalPage < 4 ? insuranceTotalPage : 3}
+                numberLimit={vendorTotalPage < 4 ? vendorTotalPage : 3}
               />
             </CardBody>
           </Card>
@@ -903,9 +648,19 @@ const Data = ({ match, history, loading, error }) => {
               <CardTitle>
                 <Row>
                   <Colxx sm="10" className="card-title-mobile">
-                    { dataStatus && dataStatus === "add" ? 'Form Tambah Asuransi' : 'Form Ubah Asuransi' }
+                    { dataStatus && dataStatus === "add" ? 'Form Tambah Vendor' : 'Form Ubah Vendor' }
+                    {/* Form Manajemen Vendor */}
                   </Colxx>
                   <Colxx sm="2" className="three-dots-menu">
+                    {/* {<IsActive/>}
+                    {(userData.roles.includes('isDev') ||
+                    userData.roles.includes('isManager')) && vendorID &&
+                      <Button color="danger" size="xs"
+                        onClick={(e) => deleteById(e, vendorID)}
+                        >
+                        <i className="simple-icon-trash"></i>&nbsp;Hapus
+                      </Button>
+                    } */}
                     { dataStatus === "update" && 
                       <UncontrolledDropdown>
                         <DropdownToggle color="default">
@@ -914,10 +669,10 @@ const Data = ({ match, history, loading, error }) => {
                         <DropdownMenu right>
                           {<IsActiveDropdown/>}
                           {(userData.roles.includes('isDev') ||
-                          userData.roles.includes('isManager')) && insuranceID &&
+                          userData.roles.includes('isManager')) && vendorID &&
                             <>
                               <DropdownItem divider />
-                              <DropdownItem onClick={(e) => deleteById(e, insuranceID)}>
+                              <DropdownItem onClick={(e) => deleteById(e, vendorID)}>
                                 <i className="simple-icon-trash"></i>&nbsp;Hapus
                               </DropdownItem>
                             </>
@@ -928,9 +683,9 @@ const Data = ({ match, history, loading, error }) => {
                   </Colxx>
                 </Row>
               </CardTitle>
-              <Form className="av-tooltip tooltip-right-top" onSubmit={onInsuranceSubmit}>
+              <Form className="av-tooltip tooltip-right-top" onSubmit={onVendorSubmit}>
                 <FormGroup row>
-                  <Colxx sm={12}>
+                  <Colxx sm={6}>
                     <FormGroup>
                       <Label for="nama">
                         Nama
@@ -947,7 +702,7 @@ const Data = ({ match, history, loading, error }) => {
                         name="nama"
                         id="nama"
                         placeholder="Nama"
-                        value={insurance.nama}
+                        value={vendor.nama}
                         onChange={onChange}
                         // required
                       />
@@ -959,64 +714,137 @@ const Data = ({ match, history, loading, error }) => {
                     </FormGroup>
                   </Colxx>
 
-                  <Colxx sm={12}>
+                <Colxx sm={6}>
                     <FormGroup>
-                      <Row>
-                        <Colxx sm={6}>
-                          <Label>Kelas Asuransi
-                            <span
-                              className="required text-danger"
-                              aria-required="true"
-                            >
-                              {" "}
-                              *
-                            </span>
-                          </Label>
-                        </Colxx>
-                      </Row>
-                      {insuranceClass.map((input, index) => {
-                        return (
-                          <Row key={index}>
-                            <Colxx sm={12}>
-                              <InputGroup className="input-group-insurance">
-                                <Input
-                                  name="nama_kelas"
-                                  placeholder="Kelas Asuransi"
-                                  value={insuranceClass[index].nama_kelas}
-                                  onChange={(event) =>
-                                    handleInsuranceClassChange(index, event)
-                                  }
-                                />
-                                {errors.nama_kelas && (
-                                  <div className="rounded invalid-feedback d-block">
-                                    {errors.nama_kelas}
-                                  </div>
-                                )}
-                                {index > 0 && (
-                                  <Button
-                                    color="danger"
-                                    style={{ float: "right" }}
-                                    onClick={() =>
-                                      removeInsuranceClassFields(input.id, index)
-                                    }
-                                    className="remove-insurance"
-                                  >
-                                    <i className="simple-icon-trash"></i>
-                                  </Button>
-                                )}
-                              </InputGroup>
-                            </Colxx>
-                          </Row>
-                        );
-                      })}
-                      <Button
-                        color="primary"
-                        // style={{ float: "right" }}
-                        className="mb-2"
-                        onClick={addInsuranceClassFields}
-                      >
-                        Tambah
-                      </Button>
+                        <Label for="alamat">
+                            Alamat
+                        </Label>
+                        <Input
+                            type="text"
+                            name="alamat"
+                            id="alamat"
+                            placeholder="Alamat"
+                            value={vendor.alamat}
+                            onChange={onChange}
+                        />
+                    </FormGroup>
+                </Colxx>
+                  
+                  <Colxx sm={6}>
+                    <FormGroup>
+                        <Label for="telepon">
+                            No. Telepon
+                            {/* <span
+                                className="required text-danger"
+                                aria-required="true"
+                                >
+                                {" "}
+                                *
+                            </span> */}
+                        </Label>
+                        <Input
+                            type="number"
+                            name="telepon"
+                            id="telepon"
+                            placeholder="No. Telepon"
+                            value={vendor.telepon}
+                            pattern="[0-9]*"
+                            onChange={onChange}
+                        />
+                    </FormGroup>
+                  </Colxx>
+                  
+                  <Colxx sm={6}>
+                    <FormGroup>
+                        <Label for="whatsapp">
+                            No. WhatsApp
+                            {/* <span
+                                className="required text-danger"
+                                aria-required="true"
+                                >
+                                {" "}
+                                *
+                            </span> */}
+                        </Label>
+                        <Input
+                            type="number"
+                            name="whatsapp"
+                            id="whatsapp"
+                            placeholder="No. WhatsApp"
+                            value={vendor.whatsapp}
+                            pattern="[0-9]*"
+                            onChange={onChange}
+                        />
+                    </FormGroup>
+                  </Colxx>
+
+                <Colxx sm={6}>
+                    <FormGroup>
+                        <Label for="email">
+                            Email
+                        </Label>
+                        <Input
+                            type="text"
+                            name="email"
+                            id="email"
+                            placeholder="Email"
+                            value={vendor.email}
+                            onChange={onChange}
+                        />
+                    </FormGroup>
+                </Colxx>
+
+                  <Colxx sm={6}>
+                    <FormGroup>
+                      <Label for="website">
+                        Website
+                      </Label>
+                      <Input
+                        type="text"
+                        name="website"
+                        id="website"
+                        placeholder="Website"
+                        value={vendor.website}
+                        onChange={onChange}
+                      />
+                    </FormGroup>
+                  </Colxx>
+
+                  <Colxx sm={6}>
+                    <FormGroup>
+                      <Label for="instagram">
+                        Instagram
+                      </Label>
+                      <InputGroup>
+                        <InputGroupAddon addonType="prepend">@</InputGroupAddon>
+                        <Input
+                            type="text"
+                            name="instagram"
+                            id="instagram"
+                            placeholder="Instagram"
+                            value={vendor.instagram}
+                            onChange={onChange}
+                        />
+                      </InputGroup>
+                    </FormGroup>
+                  </Colxx>
+
+                  <Colxx sm={6}>
+                    <FormGroup>
+                      <Label for="facebook">
+                        Facebook
+                      </Label>
+                      <InputGroup>
+                        <InputGroupAddon addonType="prepend">https://facebook.com/</InputGroupAddon>
+                        <Input
+                            type="text"
+                            name="facebook"
+                            id="facebook"
+                            placeholder="Facebook"
+                            value={vendor.facebook}
+                            onChange={onChange}
+                        />
+                      </InputGroup>
                     </FormGroup>
                   </Colxx>
                 </FormGroup>
@@ -1037,7 +865,7 @@ const Data = ({ match, history, loading, error }) => {
                     &nbsp;&nbsp;
                     <Button
                       color="primary"
-                      // onClick={(e) => onInsuranceSubmit(e)}
+                      // onClick={(e) => onVendorSubmit(e)}
                     >
                       Simpan
                     </Button>
@@ -1047,8 +875,8 @@ const Data = ({ match, history, loading, error }) => {
             </CardBody>
             : <CardBody style={{ textAlign: 'center', verticalAlign: 'middle'}}>
                 <img src="/assets/empty.svg" width={150} className="mt-5 mb-3"/>
-                <p className="mb-5">Silahkan memilih asuransi untuk melihat, mengubah, menghapus, mengarsipkan, dan mengaktifkan data asuransi.
-                  Silahkan klik tombol tambah untuk menambahkan asuransi baru.</p>
+                <p className="mb-5">Silahkan memilih vendor untuk melihat, mengubah, menghapus, mengarsipkan, dan mengaktifkan data vendor.
+                  Silahkan klik tombol tambah untuk menambahkan vendor baru.</p>
             </CardBody> }
           </Card>
         </Colxx>
@@ -1057,9 +885,9 @@ const Data = ({ match, history, loading, error }) => {
           isOpen={modalArchive}
           toggle={() => setModalArchive(!modalArchive)}
         >
-          <ModalHeader>Arsip Asuransi</ModalHeader>
+          <ModalHeader>Arsip Vendor</ModalHeader>
           <ModalBody>
-            <h5>Apakah Anda ingin {insuranceStatus == 1 ?  'mengarsipkan'  : 'aktivasi' } <b>{insuranceName}</b>?</h5>
+            <h5>Apakah Anda ingin {vendorStatus == 1 ?  'mengarsipkan'  : 'aktivasi' } <b>{vendorName}</b>?</h5>
           </ModalBody>
           <ModalFooter>
             <Button
@@ -1080,9 +908,9 @@ const Data = ({ match, history, loading, error }) => {
           isOpen={modalDelete}
           toggle={() => setModalDelete(!modalDelete)}
         >
-          <ModalHeader>Hapus Asuransi</ModalHeader>
+          <ModalHeader>Hapus Vendor</ModalHeader>
           <ModalBody>
-            <h5>Apakah Anda ingin menghapus <b>{insuranceName}</b>?</h5>
+            <h5>Apakah Anda ingin menghapus <b>{vendorName}</b>?</h5>
           </ModalBody>
           <ModalFooter>
             <Button
@@ -1106,7 +934,7 @@ const Data = ({ match, history, loading, error }) => {
         className="float-btn"
         onClick={(e) => resetForm(e, true)}
       >
-        <i className="iconsminds-library"></i> Tambah Asuransi
+        <i className="iconsminds-library"></i> Tambah Vendor
       </Button> */}
     </>
   );

@@ -40,6 +40,8 @@ import Pagination from "components/common/Pagination";
 import CustomSelectInput from "components/common/CustomSelectInput";
 
 import patientAPI from "api/patient";
+import clinicAPI from "api/clinic";
+import memberAPI from "api/patient/clinic";
 import insuranceAPI from "api/insurance";
 import insuranceClassAPI from "api/insurance/class";
 import allergyAPI from "api/allergy";
@@ -224,6 +226,8 @@ const Data = ({ match }) => {
   const [dataStatusInsurance, setDataStatusInsurance] = useState("add");
   const [rowSelected, setRowSelected] = useState(null);
 
+  const [selectedKlinik, setSelectedKlinik] = useState([{ label: "Pilih Klinik", value: "", key: 0, name: 'id_klinik' }]);
+  const [selectedKlinikF, setSelectedKlinikF] = useState([{ label: "Semua Klinik", value: "", key: 0, name: 'id_klinik' }]);
   const [selectedKITAS, setSelectedKITAS] = useState("");
   const [selectedNationality, setSelectedNationality] = useState("");
   const [selectedReligion, setSelectedReligion] = useState("");
@@ -258,10 +262,11 @@ const Data = ({ match }) => {
   const [modalClinicalRules, setModalClinicalRules] = useState(false);
   const [patientStatus, setPatientStatus] = useState(0);
   const [recordStatus, setRecordStatus] = useState(0);
+  const [patientID, setPatientID] = useState('');
   const [patientName, setPatientName] = useState('');
   const [patientSubmit, setPatientSubmit] = useState('');
-
-  const [patientID, setPatientID] = useState('');
+  const [clinicID, setClinicID] = useState(!userData.roles.includes('isDev') ? userData.id_klinik : '');
+  const [memberID, setMemberID] = useState('');
 
   const [insurance, setInsurance] = useState([
     { id: '', id_pasien: patientID, id_asuransi: "", id_asuransi_kelas: "", nomor_asuransi: "" }
@@ -385,6 +390,42 @@ const Data = ({ match }) => {
     nama_kecamatan: '',
     nama_kelurahan: ''
   });
+
+  const [member, setMember] = useState({
+    id_pasien: patientID,
+    id_klinik: clinicID,
+  });
+
+  const onLoadKlinik = async () => {
+    try {
+      const response = await clinicAPI.get("?limit=1000");
+      // console.log(response);
+
+      setSelectedKlinik([{ label: "Pilih Klinik", value: "", key: 0, name: 'id_klinik' }]);
+      setSelectedKlinikF([{ label: "Semua Klinik", value: "", key: 0, name: 'id_klinik' }]);
+
+      if (response.status === 200) {
+        let data = response.data.data;
+        // console.log(data);
+      
+        for (var i = 0; i < data.length; i++) {
+          setSelectedKlinik((current) => [
+            ...current,
+            { label: data[i].nama_klinik, value: data[i].id, key: data[i].id, name: 'id_klinik' },
+          ]);
+          
+          setSelectedKlinikF((current) => [
+            ...current,
+            { label: data[i].nama_klinik, value: data[i].id, key: data[i].id, name: 'id_klinik' },
+          ]);
+        }
+      } else {
+        throw Error(`Error status: ${response.status}`);
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  };
 
   const onLoadProvinsi = async () => {
     try {
@@ -658,7 +699,13 @@ const Data = ({ match }) => {
   const onChange = (e) => {
     // console.log('e', e);
 
-    if (e.name === 'provinsi') {
+    if (e.name === 'id_klinik') {
+      setMember(current => {
+          return { ...current, id_klinik: e ? e.value : ''}
+      })
+
+      setClinicID(e.value);
+    } else if (e.name === 'provinsi') {
       setPatient(current => {
           return { ...current, provinsi: e ? e.value : ''}
       })
@@ -733,7 +780,18 @@ const Data = ({ match }) => {
     e.preventDefault();
     setPatientSubmit("process");
 
+    setMember(current => {
+        return { ...current, id_klinik: clinicID}
+    })
+
     let isError = false;
+
+    for(let [key, value] of Object.entries(member)) {
+      if((key === 'id_klinik' && value === '')){
+        validate(e, key, value);
+        isError = true;
+      }
+    }
 
     for(let [key, value] of Object.entries(patient)) {
       if((key === 'nama_lengkap' && value === '') || (key === 'nomor_kitas' && value === '')){
@@ -785,8 +843,6 @@ const Data = ({ match }) => {
         });
 
         console.log(e);
-      } finally {
-        getPatient("");
       }
     } else if (dataStatusPatient === 'update') {
       try {
@@ -826,15 +882,100 @@ const Data = ({ match }) => {
         });
   
         console.log(e);
-      } finally {
-        getPatient("");
-        getPatientById(patientID);
       }
     } else {
       console.log('dataStatusPatient undefined')
     }
 
     setPatientSubmit("done");
+  };
+
+  const onMemberSubmit = async (e) => {
+    e && e.preventDefault();
+      
+    member.id_pasien = patientID;
+
+    if(dataStatusPatient === 'add') {
+      try {
+        const response = await memberAPI.add(member);
+        // console.log(response);
+  
+        if (response.status == 200) {
+          let data = await response.data.data;
+          // console.log(data);
+  
+          Swal.fire({
+            title: "Sukses!",
+            html: `Tambah klinik pasien sukses`,
+            icon: "success",
+            confirmButtonColor: "#008ecc",
+          });
+  
+          resetForm(e);
+        } else {
+          Swal.fire({
+            title: "Gagal!",
+            html: `Tambah klinik pasien gagal: ${response.message}`,
+            icon: "error",
+            confirmButtonColor: "#008ecc",
+            confirmButtonText: "Coba lagi",
+          });
+  
+          throw Error(`Error status: ${response.status}`);
+        }
+      } catch (e) {
+        Swal.fire({
+          title: "Gagal!",
+          html: e.response.data.message,
+          icon: "error",
+          confirmButtonColor: "#008ecc",
+          confirmButtonText: "Coba lagi",
+        });
+  
+        console.log(e);
+      }
+    } else if (dataStatusPatient === 'update') {
+      try {
+        const response = await memberAPI.update(member, member.id);
+        // console.log(response);
+  
+        if (response.status == 200) {
+          let data = await response.data.data;
+          // console.log(data);
+  
+          Swal.fire({
+            title: "Sukses!",
+            html: `Ubah klinik pasien sukses`,
+            icon: "success",
+            confirmButtonColor: "#008ecc",
+          });
+  
+          resetForm(e);
+        } else {
+          Swal.fire({
+            title: "Gagal!",
+            html: `Ubah klinik pasien gagal: ${response.message}`,
+            icon: "error",
+            confirmButtonColor: "#008ecc",
+            confirmButtonText: "Coba lagi",
+          });
+  
+          throw Error(`Error status: ${response.status}`);
+        }
+      } catch (e) {
+        Swal.fire({
+          title: "Gagal!",
+          html: e.response.data.message,
+          icon: "error",
+          confirmButtonColor: "#008ecc",
+          confirmButtonText: "Coba lagi",
+        });
+  
+        console.log(e);
+      }
+    } else {
+      console.log('dataStatus undefined')
+    }
   };
 
   const onAllergySubmit = async (e) => {
@@ -1114,6 +1255,7 @@ const Data = ({ match }) => {
     setDataStatusPatient("add");
     setDataStatusAllergy("add");
     setDataStatusInsurance("add");
+    onLoadKlinik();
     onLoadProvinsi();
     onLoadAlergi();
     onLoadAsuransi();
@@ -1218,6 +1360,8 @@ const Data = ({ match }) => {
         let id_provinsi = selectedProvince.find(item => item.value === data.provinsi).key || '';
         changeKota(id_provinsi, editAddress);
       }
+        
+      getMemberByPatientId(data.id);
     } catch (e) {
       console.log(e);
     } finally {
@@ -1226,6 +1370,31 @@ const Data = ({ match }) => {
     }
 
     // console.log(dataStatusPatient);
+  };
+
+  const getMemberByPatientId = async (id) => {
+    // e && e.preventDefault();
+    // e && resetForm(e);
+
+    try {
+      const res = await memberAPI.getClinicByPatient(`/${id}`);
+      let data = res.data.data[0];
+
+      // console.log(data);
+
+      setMemberID(data.id);
+      setContract({
+        id: data.id,
+        id_klinik: data.id_klinik,
+        id_pasien: data.id_pasien
+      });
+      setClinicID(data.id_klinik);
+
+    } catch (e) {
+      console.log(e);
+    }
+
+    // console.log(dataStatus);
   };
 
   const getAllergyByPatientId = async (id) => {
@@ -1441,7 +1610,7 @@ const Data = ({ match }) => {
 
       console.log(e);
     } finally {
-      getPatient("");
+      !userData.roles.includes('isDev') ? getPatient(`?searchKlinik=${userData.id_klinik}`) : getPatient("");
       getPatientById("", patientID);
     }
   };
@@ -1503,7 +1672,7 @@ const Data = ({ match }) => {
 
       console.log(e);
     } finally {
-      getPatient("");
+      !userData.roles.includes('isDev') ? getPatient(`?searchKlinik=${userData.id_klinik}`) : getPatient("");
     }
   };
 
@@ -1678,13 +1847,14 @@ const Data = ({ match }) => {
   //   }
   // };
 
-  const [currentPage, setCurrentPage] = useState(1);
-  const [searchName, setSearchName] = useState("");
+  const [search, setSearch] = useState("");
   const [searchStatus, setSearchStatus] = useState("");
+  const [searchKlinik, setSearchKlinik] = useState(clinicID);
+  const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [ limit, searchName, searchStatus, sortBy, sortOrder ]);
+  }, [ limit, search, searchStatus, searchKlinik, sortBy, sortOrder ]);
 
   useEffect(() => {
     let params = "";
@@ -1694,11 +1864,14 @@ const Data = ({ match }) => {
     } else {
       params = `${params}?limit=10`;
     }
-    if (searchName !== "") {
-      params = `${params}&search=${searchName}`;
+    if (search !== "") {
+      params = `${params}&search=${search}`;
     }
     if (searchStatus !== "") {
       params = `${params}&searchStatus=${searchStatus}`;
+    }
+    if (searchKlinik !== "") {
+      params = `${params}&searchKlinik=${searchKlinik}`;
     }
     if (currentPage !== 1) {
       params = `${params}&page=${currentPage}`;
@@ -1706,9 +1879,10 @@ const Data = ({ match }) => {
 
     setRowSelected(false);
     getPatient(params);
-  }, [limit, searchName, searchStatus, sortBy, sortOrder, currentPage]);
+  }, [limit, search, searchStatus, searchKlinik, sortBy, sortOrder, currentPage]);
 
   useEffect(() => {
+    onLoadKlinik();
     onLoadProvinsi();
     onLoadAlergi();
     onLoadAsuransi();
@@ -1730,6 +1904,10 @@ const Data = ({ match }) => {
     if (patientSubmit === "done") {
       setTimeout(() => {
 
+        if(patient.nama_lengkap !== "" > 0 && patientID) {
+          onMemberSubmit("");
+        }
+
         if(allergy.length > 0 && allergy[0].id_alergi !== "" && patientID) {
           onAllergySubmit("");
         }
@@ -1740,6 +1918,7 @@ const Data = ({ match }) => {
 
         setTimeout(() => {
           resetForm();
+          !userData.roles.includes('isDev') ? getPatient(`?searchKlinik=${userData.id_klinik}`) : getPatient("");
         }, 2000)
       }, 1000);
     };
@@ -1805,6 +1984,39 @@ const Data = ({ match }) => {
                 </Row>
               </CardTitle>
               <FormGroup row style={{ margin: '0px', width: '100%' }}>
+                { userData.roles.includes('isDev') ?
+                <>
+                  <Colxx sm="6" md="6" style={{ paddingLeft: '0px' }} className="mb-3">
+                    <Label for="klinik">
+                      Klinik
+                    </Label>
+                    <Select
+                      components={{ Input: CustomSelectInput }}
+                      className="react-select"
+                      classNamePrefix="react-select"
+                      name="klinik"
+                      onChange={(e) => setSearchKlinik(e.value)}
+                      options={selectedKlinikF}
+                      defaultValue={{ label: "Semua Klinik", value: "", key: 0, name: 'id_klinik' }}
+                    />
+                  </Colxx>
+                  <Colxx sm="6" md="6" style={{ paddingRight: '0px' }}>
+                    <Label for="status">
+                      Status
+                    </Label>
+                    <Select
+                      components={{ Input: CustomSelectInput }}
+                      className="react-select"
+                      classNamePrefix="react-select"
+                      name="status"
+                      onChange={(e) => setSearchStatus(e.value)}
+                      options={selectStatusF}
+                      defaultValue={{ label: "Semua Status", value: "", key: 0, name: "status" }}
+                      isSearchable={false}
+                    />
+                  </Colxx>
+                </>
+                :
                 <Colxx sm="12" md="12" style={{ paddingLeft: '0px', paddingRight: '0px' }}>
                   <Label for="status">
                     Status
@@ -1820,6 +2032,7 @@ const Data = ({ match }) => {
                     isSearchable={false}
                   />
                 </Colxx>
+                }
               </FormGroup>
               <InputGroup className="my-4">
                 <Input
@@ -1827,7 +2040,7 @@ const Data = ({ match }) => {
                   name="search"
                   id="search"
                   placeholder="Pencarian"
-                  onChange={(e) => setSearchName(e.target.value)}
+                  onChange={(e) => setSearch(e.target.value)}
                 />
                 <InputGroupAddon addonType="append">
                   <Button outline color="theme-3" className="button-search">
@@ -1931,6 +2144,37 @@ const Data = ({ match }) => {
               </CardTitle>
               <Form className="av-tooltip tooltip-right-top" onSubmit={onPatientSubmit}>
                 <FormGroup row>
+                  { userData.roles.includes('isDev') &&
+                  <Colxx sm={12}>
+                    <FormGroup>
+                      <Label for="id_klinik">Klinik
+                        <span
+                          className="required text-danger"
+                          aria-required="true"
+                        >
+                          {" "}
+                          *
+                        </span>
+                      </Label>
+                      <Select
+                        components={{ Input: CustomSelectInput }}
+                        className="react-select"
+                        classNamePrefix="react-select"
+                        name="id_klinik"
+                        id="id_klinik"
+                        options={selectedKlinik}
+                        value={selectedKlinik.find(item => item.value === member.id_klinik)}
+                        onChange={onChange}
+                        placeholder="Pilih Klinik"
+                      />
+                      {errors.id_klinik && (
+                        <div className="rounded invalid-feedback d-block">
+                          {errors.id_klinik}
+                        </div>
+                      )}
+                    </FormGroup>
+                  </Colxx>
+                  }
                   <Colxx sm={6}>
                     <FormGroup>
                       <Label for="nomor_kitas">

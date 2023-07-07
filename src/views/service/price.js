@@ -289,7 +289,7 @@ const Data = ({ match, history, loading, error }) => {
   
         console.log(e);
       } finally {
-        !userData.roles.includes('isDev') ? getServicePrice(`?searchTipeDaftarLayanan=Layanan&searchKlinik=${userData.id_klinik}`) : getServicePrice("?searchTipeDaftarLayanan=Layanan");
+        !userData.roles.includes('isDev') ? getServicePrice(`?searchTipe=Layanan&searchKlinik=${userData.id_klinik}`) : getServicePrice("?searchTipe=Layanan");
       }
     } else if (dataStatus === 'update') {
       try {
@@ -330,7 +330,8 @@ const Data = ({ match, history, loading, error }) => {
   
         console.log(e);
       } finally {
-        !userData.roles.includes('isDev') ? getServicePrice(`?searchTipeDaftarLayanan=Layanan&searchKlinik=${userData.id_klinik}`) : getServicePrice("?searchTipeDaftarLayanan=Layanan");
+        !userData.roles.includes('isDev') ? getServicePrice(`?searchTipe=Layanan&searchKlinik=${userData.id_klinik}`) : getServicePrice("?searchTipe=Layanan");
+        getServicePriceById("", serviceID);
       }
     } else {
       console.log('dataStatus undefined')
@@ -563,7 +564,7 @@ const Data = ({ match, history, loading, error }) => {
 
       console.log(e);
     } finally {
-      !userData.roles.includes('isDev') ? getServicePrice(`?searchTipeDaftarLayanan=Layanan&searchKlinik=${userData.id_klinik}`) : getServicePrice("?searchTipeDaftarLayanan=Layanan");
+      !userData.roles.includes('isDev') ? getServicePrice(`?searchTipe=Layanan&searchKlinik=${userData.id_klinik}`) : getServicePrice("?searchTipe=Layanan");
       getServicePriceById("", serviceID);
     }
   };
@@ -625,18 +626,18 @@ const Data = ({ match, history, loading, error }) => {
 
       console.log(e);
     } finally {
-      !userData.roles.includes('isDev') ? getServicePrice(`?searchTipeDaftarLayanan=Layanan&searchKlinik=${userData.id_klinik}`) : getServicePrice("?searchTipeDaftarLayanan=Layanan");
+      !userData.roles.includes('isDev') ? getServicePrice(`?searchTipe=Layanan&searchKlinik=${userData.id_klinik}`) : getServicePrice("?searchTipe=Layanan");
     }
   };
 
-  const [searchDaftarLayanan, setSearchName] = useState("");
-  const [searchKlinik, setSearchKlinik] = useState("");
+  const [search, setSearch] = useState("");
+  const [searchKlinik, setSearchKlinik] = useState(clinicID);
   const [searchStatus, setSearchStatus] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [ limit, searchDaftarLayanan, searchKlinik, searchStatus, sortBy, sortOrder ]);
+  }, [ limit, search, searchKlinik, searchStatus, sortBy, sortOrder ]);
 
   useEffect(() => {
     let params = "";
@@ -646,8 +647,8 @@ const Data = ({ match, history, loading, error }) => {
     } else {
       params = `${params}?limit=10`;
     }
-    if (searchDaftarLayanan !== "") {
-      params = `${params}&searchDaftarLayanan=${searchDaftarLayanan}`;
+    if (search !== "") {
+      params = `${params}&search=${search}`;
     }
     if (searchKlinik !== "") {
       params = `${params}&searchKlinik=${searchKlinik}`;
@@ -662,14 +663,14 @@ const Data = ({ match, history, loading, error }) => {
       params = `${params}&page=${currentPage}`;
     }
 
-    params = `${params}&searchTipeDaftarLayanan=Layanan`;
+    params = `${params}&searchTipe=Layanan`;
 
     setRowSelected(false);
     getServicePrice(params);
 
     onLoadKlinik();
     onLoadDaftarLayanan();
-  }, [limit, searchDaftarLayanan, searchKlinik, searchStatus, sortBy, sortOrder, currentPage ]);
+  }, [limit, search, searchKlinik, searchStatus, sortBy, sortOrder, currentPage ]);
 
   let startNumber = 1;
 
@@ -761,7 +762,7 @@ const Data = ({ match, history, loading, error }) => {
                   name="search"
                   id="search"
                   placeholder="Pencarian"
-                  onChange={(e) => setSearchName(e.target.value)}
+                  onChange={(e) => setSearch(e.target.value)}
                 />
                 <InputGroupAddon addonType="append">
                   <Button outline color="theme-3" className="button-search">
@@ -795,7 +796,7 @@ const Data = ({ match, history, loading, error }) => {
                         </th>
                         <td>
                           <h6 style={{ fontWeight: 'bold' }} className="max-text">{data.nama_daftar_layanan}</h6>
-                          Jasa: {data.harga_jasa ? currencyFormat(data.harga_jasa) : "-"}, Jual: {data.harga_jual ? currencyFormat(data.harga_jual) : "-"}<br/>
+                          Jasa: {data.harga_jasa ? currencyFormat(data.harga_jasa) : "Rp0"}, Jual: {data.harga_jual ? currencyFormat(data.harga_jual) : "Rp0"}<br/>
                           {data.is_active == 1 ? (
                             <Badge color="success" className="mt-2">Aktif</Badge>
                           ) : (
@@ -967,21 +968,24 @@ const Data = ({ match, history, loading, error }) => {
                           *
                         </span>
                       </Label>
-                      <Input
-                        type="number"
-                        name="harga_jasa"
-                        id="harga_jasa"
-                        placeholder="Harga Jasa"
-                        value={servicePrice.harga_jasa}
-                        pattern="[0-9]*"
-                        onChange={onChange}
-                        // required={true}
-                      />
-                      {errors.harga_jasa && (
-                        <div className="rounded invalid-feedback d-block">
-                          {errors.harga_jasa}
-                        </div>
-                      )}
+                      <InputGroup>
+                        <InputGroupAddon addonType="prepend">Rp</InputGroupAddon>
+                          <Input
+                            type="number"
+                            name="harga_jasa"
+                            id="harga_jasa"
+                            placeholder="Harga Jasa"
+                            value={servicePrice.harga_jasa}
+                            pattern="[0-9]*"
+                            onChange={onChange}
+                            // required={true}
+                          />
+                        </InputGroup>
+                        {errors.harga_jasa && (
+                            <div className="rounded invalid-feedback d-block">
+                                {errors.harga_jasa}
+                            </div>
+                        )}
                     </FormGroup>
                   </Colxx>
 
@@ -997,16 +1001,19 @@ const Data = ({ match, history, loading, error }) => {
                           *
                         </span>
                       </Label>
-                      <Input
-                        type="number"
-                        name="harga_jual"
-                        id="harga_jual"
-                        placeholder="Harga Jual"
-                        value={servicePrice.harga_jual}
-                        pattern="[0-9]*"
-                        onChange={onChange}
-                        // required={true}
-                      />
+                      <InputGroup>
+                        <InputGroupAddon addonType="prepend">Rp</InputGroupAddon>
+                        <Input
+                            type="number"
+                            name="harga_jual"
+                            id="harga_jual"
+                            placeholder="Harga Jual"
+                            value={servicePrice.harga_jual}
+                            pattern="[0-9]*"
+                            onChange={onChange}
+                            // required={true}
+                        />
+                      </InputGroup>
                       {errors.harga_jual && (
                         <div className="rounded invalid-feedback d-block">
                           {errors.harga_jual}

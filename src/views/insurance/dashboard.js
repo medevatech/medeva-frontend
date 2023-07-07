@@ -253,12 +253,12 @@ const Dashboard = ({ match, history, loading, error }) => {
   }
 
   const [currentPage, setCurrentPage] = useState(1);
-  const [searchName, setSearchName] = useState("");
+  const [search, setSearch] = useState("");
   const [searchStatus, setSearchStatus] = useState("");
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [ limit, searchName, searchStatus, sortBy, sortOrder ]);
+  }, [ limit, search, searchStatus, sortBy, sortOrder ]);
 
   useEffect(() => {
     let params = "";
@@ -268,8 +268,8 @@ const Dashboard = ({ match, history, loading, error }) => {
     } else {
       params = `${params}?limit=10`;
     }
-    if (searchName !== "") {
-      params = `${params}&search=${searchName}`;
+    if (search !== "") {
+      params = `${params}&search=${search}`;
     }
     if (searchStatus !== "") {
       params = `${params}&searchStatus=${searchStatus}`;
@@ -280,7 +280,7 @@ const Dashboard = ({ match, history, loading, error }) => {
 
     setRowSelected(false);
     onLoadInsuranceDashboard(params);
-  }, [limit, searchName, searchStatus, sortBy, sortOrder, currentPage]);
+  }, [limit, search, searchStatus, sortBy, sortOrder, currentPage]);
 
   let startNumber = 1;
 

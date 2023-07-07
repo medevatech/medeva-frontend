@@ -125,7 +125,7 @@ if(userData.roles.includes('isDev') === true){
         {
           icon: 'iconsminds-test-tube',
           label: 'BHP',
-          to: `/bhp/clinic`,
+          to: `/consumables/clinic`,
         },
         {
           icon: 'iconsminds-doctor',
@@ -209,6 +209,11 @@ if(userData.roles.includes('isDev') === true){
           icon: 'iconsminds-library',
           label: 'Daftar Obat',
           to: `/master-data/medicine`,
+        },
+        {
+          icon: 'iconsminds-library',
+          label: 'Daftar Vendor',
+          to: `/master-data/vendor`,
         },
       ]
     },

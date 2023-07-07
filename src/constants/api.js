@@ -50,7 +50,12 @@ const api = {
     all: '/pasien',
     archive: '/pasien/archive',
     activate: '/pasien/activate',
-    clinicalRules: '/tata-laksana'
+    clinicalRules: '/tata-laksana',
+    clinic: '/klinik-pasien',
+    clinicByClinic: '/klinik-pasien/klinik',
+    clinicByPatient: '/klinik-pasien/pasien',
+    clinicArchive: '/klinik-pasien/archive',
+    clinicActivate: '/klinik-pasien/activate'
   },
   insurance: {
     all: '/asuransi',
@@ -169,6 +174,11 @@ const api = {
     treatment: '/pemeriksaan/layanan-lab', // GET LAB BY TREATMENT
     support: '/pemeriksaan-penunjang', // JOIN TABLE ID RECORD TO ID LAB TO ID INSPECT
     supportByRecord: 'pemeriksaan-penunjang/kunjungan'
+  },
+  vendor: {
+    all: '/vendor',
+    archive: '/vendor/archive',
+    activate: '/vendor/activate',
   }
 }
 

@@ -57,11 +57,17 @@ const Service = React.lazy(() =>
 const Medicine = React.lazy(() =>
   import(/* webpackChunkName: "views-medicine" */ '../views/medicine')
 );
+const Consumables = React.lazy(() =>
+  import(/* webpackChunkName: "views-consumables" */ '../views/consumables')
+);
 const Schedule = React.lazy(() =>
   import(/* webpackChunkName: "views-schedule" */ '../views/schedule')
 );
 const MasterData = React.lazy(() =>
   import(/* webpackChunkName: "views-master-data" */ '../views/master-data')
+);
+const Vendor = React.lazy(() =>
+  import(/* webpackChunkName: "views-master-data" */ '../views/vendor')
 );
 
 const userData = JSON.parse(localStorage.getItem('user_data'));
@@ -192,6 +198,12 @@ const MainRouter = ( ) => {
                 />
                 <ProtectedRoute
                 // <Route
+                    path="/consumables"
+                    component={Consumables}
+                    roles={[ "isDev", "isManager", "isAdmin" ]}
+                />
+                <ProtectedRoute
+                // <Route
                     path="/schedule"
                     component={Schedule}
                     roles={[ "isDev", "isManager", "isAdmin", "isResepsionis", "isPerawat", "isDokter" ]}
@@ -206,6 +218,12 @@ const MainRouter = ( ) => {
                 // <Route
                     path="/master-data"
                     component={MasterData}
+                    roles={[ "isDev", "isManager", "isAdmin" ]}
+                />
+                <ProtectedRoute
+                // <Route
+                    path="/vendor"
+                    component={Vendor}
                     roles={[ "isDev", "isManager", "isAdmin" ]}
                 />
                 <Route

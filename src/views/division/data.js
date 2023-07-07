@@ -224,6 +224,7 @@ const Data = ({ match, history, loading, error }) => {
         console.log(e);
       } finally {
         !userData.roles.includes('isDev') ? getDivision(`?searchKlinik=${userData.id_klinik}`) : getDivision("");
+        getDivision("", divisionID);
       }
     } else {
       console.log('dataStatus undefined')
@@ -545,14 +546,14 @@ const Data = ({ match, history, loading, error }) => {
     }
   };
 
-  const [searchName, setSearchName] = useState("");
-  const [searchKlinik, setSearchKlinik] = useState("");
+  const [search, setSearch] = useState("");
+  const [searchKlinik, setSearchKlinik] = useState(clinicID);
   const [searchStatus, setSearchStatus] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [ limit, searchName, searchKlinik, searchStatus, sortBy, sortOrder ]);
+  }, [ limit, search, searchKlinik, searchStatus, sortBy, sortOrder ]);
 
   useEffect(() => {
     let params = "";
@@ -562,8 +563,8 @@ const Data = ({ match, history, loading, error }) => {
     } else {
       params = `${params}?limit=10`;
     }
-    if (searchName !== "") {
-      params = `${params}&searchName=${searchName}`;
+    if (search !== "") {
+      params = `${params}&search=${search}`;
     }
     if (searchKlinik !== "") {
       params = `${params}&searchKlinik=${searchKlinik}`;
@@ -582,7 +583,7 @@ const Data = ({ match, history, loading, error }) => {
     getDivision(params);
     
     onLoadKlinik();
-  }, [limit, searchName, searchKlinik, searchStatus, sortBy, sortOrder, currentPage ]);
+  }, [limit, search, searchKlinik, searchStatus, sortBy, sortOrder, currentPage ]);
 
   let startNumber = 1;
 
@@ -673,7 +674,7 @@ const Data = ({ match, history, loading, error }) => {
                   name="search"
                   id="search"
                   placeholder="Pencarian"
-                  onChange={(e) => setSearchName(e.target.value)}
+                  onChange={(e) => setSearch(e.target.value)}
                 />
                 <InputGroupAddon addonType="append">
                   <Button outline color="theme-3" className="button-search">

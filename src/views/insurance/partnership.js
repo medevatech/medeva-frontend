@@ -768,7 +768,7 @@ const Data = ({ match, history, loading, error }) => {
     }
   };
 
-  const [searchKlinik, setSearchKlinik] = useState("");
+  const [searchKlinik, setSearchKlinik] = useState(clinicID);
   const [searchStatus, setSearchStatus] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
 

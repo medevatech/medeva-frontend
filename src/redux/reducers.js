@@ -21,6 +21,7 @@ import { treatment, treatmentTotalPage, treatmentList, treatmentListTotalPage, t
 import { service, serviceTotalPage, serviceList, serviceListTotalPage, servicePrice, servicePriceTotalPage } from 'store/service';
 import { diagnoseReference, diagnoseReferenceTotalPage, divisionReference, divisionReferenceTotalPage, hospitalReference, hospitalReferenceTotalPage } from 'store/reference';
 import { action, actionTotalPage } from 'store/action';
+import { vendor, vendorTotalPage } from 'store/vendor';
 
 import { province, city, subdistrict, ward } from 'store/address';
 
@@ -82,14 +83,16 @@ const reducers = combineReducers({
   divisionReferenceTotalPage,
   hospitalReference,
   hospitalReferenceTotalPage,
-  action,
-  actionTotalPage,
   service,
   serviceTotalPage,
   serviceList,
   serviceListTotalPage,
   servicePrice,
   servicePriceTotalPage,
+  action,
+  actionTotalPage,
+  vendor,
+  vendorTotalPage,
 
   province,
   city, 

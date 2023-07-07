@@ -54,6 +54,22 @@ const selectStatusF = [
   { label: "Non-Aktif", value: "0", key: 2, name: "status" }
 ];
 
+const selectPcs = [
+  { label: 'Pilih Satuan', value: '', key: 0, name: 'satuan' },
+  { label: 'Kapsul', value: 'Kapsul', key: 1, name: 'satuan' },
+  { label: 'Tablet', value: 'Tablet', key: 2, name: 'satuan' },
+  { label: 'Kaplet', value: 'Kaplet', key: 3, name: 'satuan' },
+  { label: 'Puyer', value: 'Puyer', key: 4, name: 'satuan' },
+  { label: 'mL (mililiter)', value: 'mL', key: 5, name: 'satuan' },
+  { label: 'Sendok Makan', value: 'Sendok Makan', key: 6, name: 'satuan' },
+];
+
+const selectType = [
+  { label: 'Pilih Tipe', value: '', key: 0, name: 'tipe' },
+  { label: 'BHP (Bahan Habis Pakai)', value: 'BHP', key: 1, name: 'tipe' },
+  { label: 'BNMHP (Bahan Non-Medis Habis Pakai)', value: 'BNMHP', key: 2, name: 'tipe' },
+];
+
 const Data = ({ match, history, loading, error }) => {
   const dispatch = useDispatch();
   const consumablesData = useSelector(state => state.consumablesClinic);
@@ -69,13 +85,17 @@ const Data = ({ match, history, loading, error }) => {
 
   const [modalArchive, setModalArchive] = useState(false);
   const [modalDelete, setModalDelete] = useState(false);
-  const [modalAddList, setModalAddList] = useState(false);
   const [consumablesID, setConsumablesID] = useState('');
   const [consumablesStatus, setConsumablesStatus] = useState(0);
+  const [clinicID, setClinicID] = useState(!userData.roles.includes('isDev') ? userData.id_klinik : '');
 
   const [consumablesClinic, setConsumablesClinic] = useState({
-    id_klinik: '',
+    id_klinik: clinicID,
+    nama: '',
+    merk: '',
+    satuan: '',
     harga_jual: '',
+    tipe: '',
   });
 
   const onLoadKlinik = async () => {
@@ -109,10 +129,6 @@ const Data = ({ match, history, loading, error }) => {
     }
   };
 
-  const [consumables, setConsumables] = useState({
-    nama: ''
-  });
-
   const onChange = (e) => {
     // console.log('e', e);
 
@@ -131,25 +147,21 @@ const Data = ({ match, history, loading, error }) => {
     // console.log('consumablesClinic', consumablesClinic);
   }
 
-  const onChangeList = (e) => {
-    // console.log('e', e);
-
-    setConsumables(current => {
-        return { ...current, [e.target.name]: e.target.value }
-    })
-    validate(e, e.name !== undefined ? e.name : e.target.name ? e.target.name : '', e.value !== undefined ? e.value : e.target.value ? e.target.value : '');
-
-    // console.log('consumables', consumables);
-  }
-
   const onConsumablesSubmit = async (e) => {
     e.preventDefault();
 
     let isError = false;
 
     for(let [key, value] of Object.entries(consumablesClinic)) {
-      if((key === 'id_klinik' && value === '') || (key === 'harga_jual' && value === '')){
+      if((key === 'id_klinik' && value === '') || (key === 'nama' && value === '') || (key === 'merk' && value === '') || (key === 'satuan' && value === '') ||
+          (key === 'harga_jual' && value === '')){
         validate(e, key, value);
+        isError = true;
+      //   return;
+      }
+
+      if((key === 'tipe' && value === '')){
+        validate(e, 'tipe_bhp', value);
         isError = true;
       //   return;
       }
@@ -240,6 +252,7 @@ const Data = ({ match, history, loading, error }) => {
         console.log(e);
       } finally {
         getConsumablesClinic("");
+        getConsumablesClinicById("", consumablesID);
       }
     } else {
       console.log('dataStatus undefined')
@@ -252,7 +265,6 @@ const Data = ({ match, history, loading, error }) => {
     setConsumablesID('');
     setConsumablesName('');
     setConsumablesStatus(0);
-    setConsumables({nama: ''});
 
     if(scroll) {
       if(window.innerWidth < 1280){
@@ -272,8 +284,12 @@ const Data = ({ match, history, loading, error }) => {
     }
 
     setConsumablesClinic({
-      id_klinik: '',
+      id_klinik: clinicID,
+      nama: '',
+      merk: '',
+      satuan: '',
       harga_jual: '',
+      tipe: '',
     });
     
     setSelectedKlinik([{ label: "Pilih Klinik", value: "", key: 0, name: 'id_klinik' }]);
@@ -331,7 +347,11 @@ const Data = ({ match, history, loading, error }) => {
       setConsumablesID(data.id);
       setConsumablesClinic({
         id_klinik: data.id_klinik,
-        harga_jual: data.harga_jual
+        nama: data.nama,
+        merk: data.merk,
+        satuan: data.satuan,
+        harga_jual: data.harga_jual,
+        tipe: data.tipe,
       });
       setConsumablesStatus(data.is_active);
 
@@ -561,14 +581,14 @@ const Data = ({ match, history, loading, error }) => {
     }
   };
 
-  const [searchName, setSearchName] = useState("");
-  const [searchKlinik, setSearchKlinik] = useState("");
+  const [search, setSearch] = useState("");
+  const [searchKlinik, setSearchKlinik] = useState(clinicID);
   const [searchStatus, setSearchStatus] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [ limit, searchName, searchKlinik, searchStatus, sortBy, sortOrder ]);
+  }, [ limit, search, searchKlinik, searchStatus, sortBy, sortOrder ]);
 
   useEffect(() => {
     let params = "";
@@ -578,8 +598,8 @@ const Data = ({ match, history, loading, error }) => {
     } else {
       params = `${params}?limit=10`;
     }
-    if (searchName !== "") {
-      params = `${params}&searchName=${searchName}`;
+    if (search !== "") {
+      params = `${params}&search=${search}`;
     }
     if (searchKlinik !== "") {
       params = `${params}&searchKlinik=${searchKlinik}`;
@@ -595,7 +615,7 @@ const Data = ({ match, history, loading, error }) => {
     getConsumablesClinic(params);
 
     onLoadKlinik();
-  }, [limit, searchName, searchKlinik, searchStatus, sortBy, sortOrder, currentPage ]);
+  }, [limit, search, searchKlinik, searchStatus, sortBy, sortOrder, currentPage ]);
 
   let startNumber = 1;
 
@@ -667,7 +687,7 @@ const Data = ({ match, history, loading, error }) => {
                   name="search"
                   id="search"
                   placeholder="Pencarian"
-                  onChange={(e) => setSearchName(e.target.value)}
+                  onChange={(e) => setSearch(e.target.value)}
                 />
                 <InputGroupAddon addonType="append">
                   <Button outline color="theme-3" className="button-search">
@@ -701,7 +721,7 @@ const Data = ({ match, history, loading, error }) => {
                         </th>
                         <td>
                           <h6 style={{ fontWeight: 'bold' }} className="max-text">{data.nama}</h6>
-                          Jual: {data.harga_jual ? currencyFormat(data.harga_jual) : "-"}<br/>
+                          {data.merk ? data.merk : "-"}, {data.harga_jual ? currencyFormat(data.harga_jual) : "Rp0"} / { data.satuan ? data.satuan : "-" }<br/>
                           {data.is_active == 1 ? (
                             <Badge color="success" className="mt-2">Aktif</Badge>
                           ) : (
@@ -782,7 +802,8 @@ const Data = ({ match, history, loading, error }) => {
               </CardTitle>
               <Form className="av-tooltip tooltip-right-top" onSubmit={onConsumablesSubmit}>
                 <FormGroup row>
-                  <Colxx lg={4} className="col-tp-4">
+                  { userData.roles.includes('isDev') &&
+                  <Colxx lg={12}>
                     <FormGroup>
                       <Label for="id_klinik">Klinik
                         <span
@@ -811,8 +832,9 @@ const Data = ({ match, history, loading, error }) => {
                       )}
                     </FormGroup>
                   </Colxx>
+                  }
 
-                  <Colxx sm={4}>
+                  <Colxx sm={6}>
                     <FormGroup>
                       <Label for="nama">
                         Nama
@@ -841,7 +863,76 @@ const Data = ({ match, history, loading, error }) => {
                     </FormGroup>
                   </Colxx>
 
-                  <Colxx lg={4} className="col-tp-4">
+                  <Colxx sm={6}>
+                    <FormGroup>
+                      <Label for="merk">
+                        Merk
+                        <span
+                          className="required text-danger"
+                          aria-required="true"
+                        >
+                          {" "}
+                          *
+                        </span>
+                      </Label>
+                      <Input
+                        type="text"
+                        name="merk"
+                        id="merk"
+                        placeholder="Merk"
+                        value={consumablesClinic.merk}
+                        onChange={onChange}
+                        // required
+                      />
+                      {errors.merk && (
+                        <div className="rounded invalid-feedback d-block">
+                          {errors.merk}
+                        </div>
+                      )}
+                    </FormGroup>
+                  </Colxx>
+
+                  <Colxx sm={4}>
+                    <FormGroup>
+                      <Label for="satuan">
+                        Satuan
+                        <span
+                          className="required text-danger"
+                          aria-required="true"
+                        >
+                          {" "}
+                          *
+                        </span>
+                      </Label>
+                      {/* <Input
+                        type="number"
+                        name="satuan"
+                        id="satuan"
+                        placeholder="Satuan"
+                        value={consumablesClinic.satuan}
+                        onChange={onChange}
+                        pattern="[0-9]*"
+                        // required
+                      /> */}
+                      <Select
+                        addonType="prepend"
+                        components={{ Input: CustomSelectInput }}
+                        className="react-select"
+                        classNamePrefix="react-select"
+                        name="satuan"
+                        value={selectPcs.find(item => item.value === consumablesClinic.satuan) || { label: "Pilih Satuan", value: "", key: 0, name: 'satuan' }}
+                        options={selectPcs}
+                        onChange={onChange}
+                      />
+                      {errors.satuan && (
+                        <div className="rounded invalid-feedback d-block">
+                          {errors.satuan}
+                        </div>
+                      )}
+                    </FormGroup>
+                  </Colxx>
+
+                  <Colxx lg={4}>
                     <FormGroup>
                       <Label for="harga_jual">
                         Harga Jual (Rp)
@@ -853,19 +944,53 @@ const Data = ({ match, history, loading, error }) => {
                           *
                         </span>
                       </Label>
-                      <Input
-                        type="number"
-                        name="harga_jual"
-                        id="harga_jual"
-                        placeholder="Harga Jual"
-                        value={consumablesClinic.harga_jual}
-                        pattern="[0-9]*"
-                        onChange={onChange}
-                        // required={true}
-                      />
+                        
+                      <InputGroup>
+                        <InputGroupAddon addonType="prepend">Rp</InputGroupAddon>
+                        <Input
+                            type="number"
+                            name="harga_jual"
+                            id="harga_jual"
+                            placeholder="Harga Jual"
+                            value={consumablesClinic.harga_jual}
+                            onChange={onChange}
+                            pattern="[0-9]*"
+                            // required={true}
+                        />
+                      </InputGroup>
                       {errors.harga_jual && (
                         <div className="rounded invalid-feedback d-block">
                           {errors.harga_jual}
+                        </div>
+                      )}
+                    </FormGroup>
+                  </Colxx>
+
+                  <Colxx sm={4}>
+                    <FormGroup>
+                      <Label for="tipe">
+                        Tipe
+                        <span
+                          className="required text-danger"
+                          aria-required="true"
+                        >
+                          {" "}
+                          *
+                        </span>
+                      </Label>
+                      <Select
+                        addonType="prepend"
+                        components={{ Input: CustomSelectInput }}
+                        className="react-select"
+                        classNamePrefix="react-select"
+                        name="tipe"
+                        value={selectType.find(item => item.value === consumablesClinic.tipe) || { label: "Pilih Tipe", value: "", key: 0, name: 'tipe' }}
+                        options={selectType}
+                        onChange={onChange}
+                      />
+                      {errors.tipe_bhp && (
+                        <div className="rounded invalid-feedback d-block">
+                          {errors.tipe_bhp}
                         </div>
                       )}
                     </FormGroup>
@@ -948,64 +1073,6 @@ const Data = ({ match, history, loading, error }) => {
               Ya
             </Button>{" "}
           </ModalFooter>
-        </Modal>
-
-        <Modal
-          isOpen={modalAddList}
-          toggle={() => setModalAddList(!modalAddList)}
-        >
-          <Form className="av-tooltip tooltip-right-top" onSubmit={onConsumablesListSubmit}>
-          <ModalHeader>Tambah Bahan</ModalHeader>
-          <ModalBody>
-            <FormGroup>
-              <Label for="nama">
-                Nama
-                <span
-                  className="required text-danger"
-                  aria-required="true"
-                >
-                  {" "}
-                  *
-                </span>
-              </Label>
-              <Input
-                type="text"
-                name="nama"
-                id="nama"
-                placeholder="Nama"
-                value={consumables.nama}
-                onChange={onChangeList}
-                // required={true}
-              />
-              {errors.nama && (
-                <div className="rounded invalid-feedback d-block">
-                  {errors.nama}
-                </div>
-              )}
-            </FormGroup>
-          </ModalBody>
-          <ModalFooter>
-            <Colxx sm={6} className="responsive-modal-button">
-              <Label className="text-left">* ) Wajib diisi</Label>
-            </Colxx>
-            <Colxx sm={6} className="responsive-modal-button text-right">
-              <Button
-                type="button"
-                outline
-                color="danger"
-                onClick={() => setModalAddList(false)}
-              >
-                Batal
-              </Button>
-              &nbsp;&nbsp;
-              <Button color="primary"
-                // onClick={(e) => onConsumablesListSubmit(e)}
-              >
-                Simpan
-              </Button>
-            </Colxx>
-          </ModalFooter>
-          </Form>
         </Modal>
           
       </Row>

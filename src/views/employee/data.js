@@ -251,7 +251,7 @@ const Data = ({ match, history, loading, error }) => {
   const [employeeStatus, setEmployeeStatus] = useState(0);
   const [employeeSubmit, setEmployeeSubmit] = useState('');
   const [clinicID, setClinicID] = useState(!userData.roles.includes('isDev') ? userData.id_klinik : '');
-  const [contracID, setContractID] = useState('');
+  const [contractID, setContractID] = useState('');
 
   const [employee, setEmployee] = useState({
     username: '',
@@ -812,7 +812,7 @@ const Data = ({ match, history, loading, error }) => {
     setEmployeeSubmit("done");
   };
 
-  const onContractSubmit = async (e, id) => {
+  const onContractSubmit = async (e) => {
     e && e.preventDefault();
       
     contract.id_karyawan = employeeID;
@@ -898,6 +898,7 @@ const Data = ({ match, history, loading, error }) => {
         console.log(e);
       } finally {
         !userData.roles.includes('isDev') ? getEmployee(`?searchKlinik=${userData.id_klinik}`) : getEmployee("");
+        getEmployeeById("", employeeID);
       }
     } else {
       console.log('dataStatus undefined')
@@ -1503,16 +1504,16 @@ const Data = ({ match, history, loading, error }) => {
     }
   };
 
-  const [searchName, setSearchName] = useState("");
+  const [search, setSearch] = useState("");
   const [searchTipe, setSearchTipe] = useState("");
   const [searchSpesialis, setSearchSpesialis] = useState("");
   const [searchStatus, setSearchStatus] = useState("");
-  const [searchKlinik, setSearchKlinik] = useState("");
+  const [searchKlinik, setSearchKlinik] = useState(clinicID);
   const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [ limit, searchName, searchTipe, searchSpesialis, searchStatus, searchKlinik, sortBy, sortOrder ]);
+  }, [ limit, search, searchTipe, searchSpesialis, searchStatus, searchKlinik, sortBy, sortOrder ]);
 
   useEffect(() => {
     let params = "";
@@ -1522,8 +1523,8 @@ const Data = ({ match, history, loading, error }) => {
     } else {
       params = `${params}?limit=10`;
     }
-    if (searchName !== "") {
-      params = `${params}&searchName=${searchName}`;
+    if (search !== "") {
+      params = `${params}&search=${search}`;
     }
     if (searchTipe !== "") {
       params = `${params}&searchTipe=${searchTipe}`;
@@ -1699,8 +1700,8 @@ const Data = ({ match, history, loading, error }) => {
     //     // console.log('selectedRole onUpdate', selectedRole);
     //   }
     // }
-  // }, [limit, searchName, searchTipe, searchSpesialis, searchStatus, sortBy, sortOrder, currentPage, editAddress, selectedRole ]);
-  }, [limit, searchName, searchTipe, searchSpesialis, searchStatus, searchKlinik, sortBy, sortOrder, currentPage ]);
+  // }, [limit, search, searchTipe, searchSpesialis, searchStatus, sortBy, sortOrder, currentPage, editAddress, selectedRole ]);
+  }, [limit, search, searchTipe, searchSpesialis, searchStatus, searchKlinik, sortBy, sortOrder, currentPage ]);
 
   useEffect(() => {
     if(selectedCity.length > 0 && editAddress.status === 2) {
@@ -1990,7 +1991,7 @@ const Data = ({ match, history, loading, error }) => {
                   name="search"
                   id="search"
                   placeholder="Pencarian"
-                  onChange={(e) => setSearchName(e.target.value)}
+                  onChange={(e) => setSearch(e.target.value)}
                 />
                 <InputGroupAddon addonType="append">
                   <Button outline color="theme-3" className="button-search">

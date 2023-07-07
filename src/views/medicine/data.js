@@ -76,7 +76,7 @@ const selectCategory = [
   { label: "Obat Herbal", value: "Obat Herbal", key: 7, name: 'kategori' },
 ];
 
-const selectPcs = [
+const selectDose = [
   { label: 'Pilih Satuan', value: '', key: 0, name: 'satuan_dosis' },
   { label: 'Kapsul', value: 'Kapsul', key: 1, name: 'satuan_dosis' },
   { label: 'Tablet', value: 'Tablet', key: 2, name: 'satuan_dosis' },
@@ -84,6 +84,16 @@ const selectPcs = [
   { label: 'Puyer', value: 'Puyer', key: 4, name: 'satuan_dosis' },
   { label: 'mL (mililiter)', value: 'mL', key: 5, name: 'satuan_dosis' },
   { label: 'Sendok Makan', value: 'Sendok Makan', key: 6, name: 'satuan_dosis' },
+];
+
+const selectPcs = [
+  { label: 'Pilih Satuan', value: '', key: 0, name: 'satuan' },
+  { label: 'Kapsul', value: 'Kapsul', key: 1, name: 'satuan' },
+  { label: 'Tablet', value: 'Tablet', key: 2, name: 'satuan' },
+  { label: 'Kaplet', value: 'Kaplet', key: 3, name: 'satuan' },
+  { label: 'Puyer', value: 'Puyer', key: 4, name: 'satuan' },
+  { label: 'mL (mililiter)', value: 'mL', key: 5, name: 'satuan' },
+  { label: 'Sendok Makan', value: 'Sendok Makan', key: 6, name: 'satuan' },
 ];
 
 const selectSell = [
@@ -157,7 +167,7 @@ const Data = ({ match, history, loading, error }) => {
 
     for(let [key, value] of Object.entries(medicine)) {
       if((key === 'nama' && value === '') || (key === 'golongan' && value === '') || (key === 'kategori' && value === '') || (key === 'dosis' && value === '') ||
-          (key === 'satuan_dosis' && value === '') || (key === 'jual_per' && value === '') || (key === 'deskripsi' && value === '') || (key === 'indikasi' && value === '')){
+          (key === 'satuan_dosis' && value === '') || (key === 'satuan' && value === '') || (key === 'jual_per' && value === '') || (key === 'deskripsi' && value === '') || (key === 'indikasi' && value === '')){
         validate(e, key, value);
         isError = true;
         // return;
@@ -249,6 +259,7 @@ const Data = ({ match, history, loading, error }) => {
         console.log(e);
       } finally {
         getMedicine("");
+        getMedicineById("", medicineID);
       }
     } else {
       console.log('dataStatus undefined')
@@ -582,13 +593,13 @@ const Data = ({ match, history, loading, error }) => {
     }
   };
 
-  const [searchName, setSearchName] = useState("");
+  const [search, setSearch] = useState("");
   const [searchStatus, setSearchStatus] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [ limit, searchName, searchStatus, sortBy, sortOrder ]);
+  }, [ limit, search, searchStatus, sortBy, sortOrder ]);
 
   useEffect(() => {
     let params = "";
@@ -598,8 +609,8 @@ const Data = ({ match, history, loading, error }) => {
     } else {
       params = `${params}?limit=10`;
     }
-    if (searchName !== "") {
-      params = `${params}&searchName=${searchName}`;
+    if (search !== "") {
+      params = `${params}&search=${search}`;
     }
     if (searchStatus !== "") {
       params = `${params}&searchStatus=${searchStatus}`;
@@ -610,7 +621,7 @@ const Data = ({ match, history, loading, error }) => {
     
     setRowSelected(false);
     getMedicine(params);
-  }, [limit, searchName, searchStatus, sortBy, sortOrder, currentPage ]);
+  }, [limit, search, searchStatus, sortBy, sortOrder, currentPage ]);
 
   let startNumber = 1;
 
@@ -668,7 +679,7 @@ const Data = ({ match, history, loading, error }) => {
                   name="search"
                   id="search"
                   placeholder="Pencarian"
-                  onChange={(e) => setSearchName(e.target.value)}
+                  onChange={(e) => setSearch(e.target.value)}
                 />
                 <InputGroupAddon addonType="append">
                   <Button outline color="theme-3" className="button-search">
@@ -782,7 +793,7 @@ const Data = ({ match, history, loading, error }) => {
               </CardTitle>
               <Form className="av-tooltip tooltip-right-top" onSubmit={onMedicineSubmit}>
                 <FormGroup row>
-                  <Colxx sm={4}>
+                  <Colxx sm={6}>
                     <FormGroup>
                       <Label for="nama">
                         Nama
@@ -811,7 +822,7 @@ const Data = ({ match, history, loading, error }) => {
                     </FormGroup>
                   </Colxx>
 
-                  <Colxx sm={4}>
+                  <Colxx sm={6}>
                     <FormGroup>
                       <Label for="golongan">
                         Golongan
@@ -842,7 +853,7 @@ const Data = ({ match, history, loading, error }) => {
                     </FormGroup>
                   </Colxx>
 
-                  <Colxx sm={4}>
+                  <Colxx sm={6}>
                     <FormGroup>
                       <Label for="kategori">
                         Kategori
@@ -873,7 +884,7 @@ const Data = ({ match, history, loading, error }) => {
                     </FormGroup>
                   </Colxx>
 
-                  <Colxx sm={4}>
+                  <Colxx sm={6}>
                     <FormGroup>
                       <Label for="dosis">
                         Dosis
@@ -902,14 +913,54 @@ const Data = ({ match, history, loading, error }) => {
                             className="react-select select-pcs"
                             classNamePrefix="react-select"
                             name="satuan_dosis"
-                            value={selectPcs.find(item => item.value === medicine.satuan_dosis) || { label: "Pilih Satuan", value: "", key: 0, name: 'satuan_dosis' }}
-                            options={selectPcs}
+                            value={selectDose.find(item => item.value === medicine.satuan_dosis) || { label: "Pilih Satuan", value: "", key: 0, name: 'satuan_dosis' }}
+                            options={selectDose}
                             onChange={onChange}
                         />
                       </InputGroup>
                       {errors.dosis || errors.satuan_dosis && (
                         <div className="rounded invalid-feedback d-block">
                           {errors.dosis || errors.satuan_dosis}
+                        </div>
+                      )}
+                    </FormGroup>
+                  </Colxx>
+
+                  <Colxx sm={4}>
+                    <FormGroup>
+                      <Label for="satuan">
+                        Satuan
+                        <span
+                          className="required text-danger"
+                          aria-required="true"
+                        >
+                          {" "}
+                          *
+                        </span>
+                      </Label>
+                      {/* <Input
+                        type="number"
+                        name="satuan"
+                        id="satuan"
+                        placeholder="Satuan"
+                        value={medicine.satuan}
+                        onChange={onChange}
+                        pattern="[0-9]*"
+                        // required
+                      /> */}
+                      <Select
+                        addonType="prepend"
+                        components={{ Input: CustomSelectInput }}
+                        className="react-select"
+                        classNamePrefix="react-select"
+                        name="satuan"
+                        value={selectPcs.find(item => item.value === medicine.satuan) || { label: "Pilih Satuan", value: "", key: 0, name: 'satuan' }}
+                        options={selectPcs}
+                        onChange={onChange}
+                      />
+                      {errors.satuan && (
+                        <div className="rounded invalid-feedback d-block">
+                          {errors.satuan}
                         </div>
                       )}
                     </FormGroup>
@@ -962,7 +1013,7 @@ const Data = ({ match, history, loading, error }) => {
                           components={{ Input: CustomSelectInput }}
                           className="react-select"
                           classNamePrefix="react-select"
-                          name="satuan"
+                          name="produsen"
                           value={selectProducer.find(item => item.value === medicine.produsen) || { label: "Pilih Produsen", value: "", key: 0, name: 'produsen' }}
                           options={selectProducer}
                           onChange={onChange}
