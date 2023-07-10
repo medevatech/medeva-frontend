@@ -36,6 +36,8 @@ import "react-rater/lib/react-rater.css";
 import Select from "react-select";
 import { Colxx, Separator } from "components/common/CustomBootstrap";
 
+import Pagination from "components/common/Pagination";
+
 import CustomSelectInput from "components/common/CustomSelectInput";
 
 import FullCalendar from "@fullcalendar/react";
@@ -48,25 +50,24 @@ import rrulePlugin from "@fullcalendar/rrule";
 import idLocale from "@fullcalendar/core/locales/id";
 import bootstrap5Plugin from "@fullcalendar/bootstrap5";
 
-import Pagination from "reactstrap/es/Pagination";
-
 import shiftAPI from "api/shift";
 import divisionAPI from "api/division";
 import clinicAPI from "api/clinic";
 import employeeAPI from "api/employee";
 import scheduleAPI from "api/schedule";
-import doctorScheduleAPI from "api/schedule/doctor";
 
 import Swal from "sweetalert2";
 import moment from "moment";
 
 import loader from "../../assets/img/loading.gif";
 import { useDispatch, useSelector } from "react-redux";
-import data from "data/profileStatuses";
+// import data from "data/profileStatuses";
 
 const Data = ({ match }) => {
   const dispatch = useDispatch();
   const divisionAll = useSelector((state) => state.division);
+  const [divisionTotalPage, setDivisionTotalPage] = useState([]);
+  // const divisionTotalPage = useSelector((state) => state.divisionTotalPage);
   const clinicAll = useSelector((state) => state.clinic);
   const shiftAll = useSelector((state) => state.shift);
   const [dataStatus, setDataStatus] = useState("add");
@@ -77,27 +78,35 @@ const Data = ({ match }) => {
   const [selectedClinic, setSelectedClinic] = useState([
     { label: "Semua", value: "", key: 0, name: "id_klinik" },
   ]);
+  const [selectedDoctor, setSelectedDoctor] = useState([
+    { label: "Pilih Dokter", value: "", key: 0, name: "id_doctor" },
+  ]);
   const [selectedEmployee, setSelectedEmployee] = useState([
-    { label: "Pilih Karyawan", value: "", key: 0, name: "id_doctor" },
+    { label: "Pilih Karyawan", value: "", key: 0, name: "id_subtitute" },
   ]);
   const [selectedRecurring, setSelectedRecurring] = useState([
     { label: "Pilih Perulangan", value: "", key: 0, name: "interval" },
     { label: "Setiap Hari", value: 1, key: 1, name: "interval" },
     { label: "Setiap 2 Hari", value: 2, key: 2, name: "interval" },
-    { label: "Setiap 1 Minggu", value: 3, key: 3, name: "interval" },
-    { label: "Setiap 1 Bulan", value: 4, key: 4, name: "interval" },
+    { label: "Setiap 1 Minggu", value: 7, key: 3, name: "interval" },
   ]);
   const [isLoading, setIsLoading] = useState(false);
   const [searchDivision, setSearchDivision] = useState("");
 
   const [clinicId, setClinicId] = useState("");
   const [divisionId, setDivisionId] = useState("");
+  const [employeeName, setEmployeeName] = useState("");
+  const [isActiveSchedule, setIsActiveSchedule] = useState("");
 
   const [modalCalendar, setModalCalendar] = useState(false);
   const [modalDate, setModalDate] = useState(false);
   const [modalArchive, setModalArchive] = useState(false);
+  const [modalActivate, setModalActivate] = useState(false);
   const [modalDelete, setModalDelete] = useState(false);
   const [modalRecurring, setModalRecurring] = useState(false);
+
+  const [calendarSubmit, setCalendarSubmit] = useState("");
+  const [recurringCalendarSubmit, setRecurringCalendarSubmit] = useState("");
 
   const [eventCalendar, setEventCalendar] = useState({
     id: "",
@@ -107,6 +116,13 @@ const Data = ({ match }) => {
     date: "",
     start_time: "",
     end_time: "",
+    id_subtitute: "",
+  });
+
+  const [tempShift, setTempShift] = useState({
+    id: "",
+    id_doctor_schedule: "",
+    id_employee: "",
   });
 
   const [eventRecurringCalendar, setEventRecurringCalendar] = useState({
@@ -121,14 +137,31 @@ const Data = ({ match }) => {
     interval: "",
   });
 
+  const [tempRecurringCalendar, setTempRecurringCalendar] = useState([
+    {
+      id: "",
+      id_doctor_schedule: "",
+      id_employee: "",
+    },
+  ]);
+
   const [dataCalendar, setDataCalendar] = useState([]);
 
   const handleSelectCalendar = (selectInfo) => {
+    setEventCalendar({
+      id: "",
+      id_clinic: clinicId,
+      id_division: divisionId,
+      id_doctor: "",
+      date: "",
+      start_time: "",
+      end_time: "",
+      id_subtitute: "",
+    });
     setModalCalendar(true);
     let day = selectInfo.startStr;
     let timeSt = new Date();
-    console.log(day);
-    console.log(timeSt);
+    console.log(selectInfo);
     setEventCalendar({
       date: day,
       start_time: moment(timeSt).format("HH:mm"),
@@ -136,6 +169,16 @@ const Data = ({ match }) => {
   };
 
   const handleAddRecurring = () => {
+    setEventRecurringCalendar({
+      id: "",
+      id_clinic: clinicId,
+      id_division: divisionId,
+      id_doctor: "",
+      date: "",
+      start_time: "",
+      end_time: "",
+      interval: "",
+    });
     setModalRecurring(true);
     let tempDay = new Date();
     const day = moment(tempDay).format("yyyy-MM-DD");
@@ -147,11 +190,14 @@ const Data = ({ match }) => {
   };
 
   const handleInputCalendar = (e, val = null) => {
+    console.log(e);
     let dataInputCalendar = { ...eventCalendar };
     dataInputCalendar["id_clinic"] = clinicId;
     dataInputCalendar["id_division"] = divisionId;
     if (e.name === "id_doctor") {
       dataInputCalendar["id_doctor"] = e.value;
+    } else if (e.name === "id_subtitute") {
+      dataInputCalendar["id_subtitute"] = e.value;
     } else if (e.target.name === "date") {
       dataInputCalendar["date"] = e.target.value;
     } else if (e.target.name === "start_time") {
@@ -189,10 +235,15 @@ const Data = ({ match }) => {
   const onCalendarSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await doctorScheduleAPI.add(eventCalendar);
-      if (response.status === 200) {
-        let data = await response.data.data;
+      const responseOne = await scheduleAPI.add(eventCalendar);
+      if (responseOne.status === 200) {
+        let data = await responseOne.data.data;
         console.log("add", data);
+        setTempShift({
+          id: "",
+          id_doctor_schedule: data.id,
+          id_employee: data.id_doctor,
+        });
         Swal.fire({
           title: "Sukses!",
           html: `Tambah jadwal sukses`,
@@ -202,7 +253,57 @@ const Data = ({ match }) => {
       } else {
         Swal.fire({
           title: "Gagal!",
-          html: `Tambah jadwal gagal: ${response.message}`,
+          html: `Tambah jadwal gagal: ${responseOne.message}`,
+          icon: "error",
+          confirmButtonColor: "#008ecc",
+          confirmButtonText: "Coba lagi",
+        });
+
+        throw Error(`Error status: ${responseOne.status}`);
+      }
+    } catch (e) {
+      console.log(e);
+      Swal.fire({
+        title: "Gagal!",
+        html: e.response.data.message,
+        icon: "error",
+        confirmButtonColor: "#008ecc",
+        confirmButtonText: "Coba lagi",
+      });
+    } finally {
+      // onShiftSubmit(eventShift);
+      setCalendarSubmit("done");
+      setModalCalendar(false);
+      setEventCalendar({
+        id: "",
+        id_clinic: clinicId,
+        id_division: divisionId,
+        id_doctor: "",
+        date: "",
+        start_time: "",
+        end_time: "",
+      });
+      getCalendarByDivision(divisionId);
+    }
+  };
+
+  const onShiftSubmit = async () => {
+    // e.preventDefault();
+    try {
+      const response = await shiftAPI.add(tempShift);
+      if (response.status === 200) {
+        let data = await response.data.data;
+        console.log("shift", data);
+        Swal.fire({
+          title: "Sukses!",
+          html: `Tambah jadwal shift sukses`,
+          icon: "success",
+          confirmButtonColor: "#008ecc",
+        });
+      } else {
+        Swal.fire({
+          title: "Gagal!",
+          html: `Tambah jadwal shift gagal: ${response.message}`,
           icon: "error",
           confirmButtonColor: "#008ecc",
           confirmButtonText: "Coba lagi",
@@ -221,24 +322,15 @@ const Data = ({ match }) => {
 
       console.log(e);
     } finally {
-      setEventCalendar({
-        id: "",
-        id_clinic: clinicId,
-        id_division: divisionId,
-        id_doctor: "",
-        date: "",
-        start_time: "",
-        end_time: "",
-      });
-      setModalCalendar(false);
-      getCalendar(params);
+      setCalendarSubmit("");
+      getCalendarByDivision(divisionId);
     }
   };
 
   const onCalendarRecurringSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await doctorScheduleAPI.add(eventRecurringCalendar);
+      const response = await scheduleAPI.add(eventRecurringCalendar);
       if (response.status === 200) {
         let data = await response.data.data;
         console.log("add", data);
@@ -281,7 +373,7 @@ const Data = ({ match }) => {
         interval: "",
       });
       setModalRecurring(false);
-      getCalendar(params);
+      getCalendarByDivision(divisionId);
     }
   };
 
@@ -298,6 +390,7 @@ const Data = ({ match }) => {
       date: "",
       start_time: "",
       end_time: "",
+      id_subtitute: "",
     });
     setModalDate(true);
   };
@@ -305,7 +398,7 @@ const Data = ({ match }) => {
   const onCalendarUpdate = async (e, id) => {
     e.preventDefault();
     try {
-      const response = await doctorScheduleAPI.update(eventCalendar, `/${id}`);
+      const response = await scheduleAPI.update(eventCalendar, `/${id}`);
       if (response.status === 200) {
         let data = await response.data.data;
         Swal.fire({
@@ -344,14 +437,15 @@ const Data = ({ match }) => {
         date: "",
         start_time: "",
         end_time: "",
+        id_subtitute: "",
       });
       setModalDate(false);
-      getCalendar(params);
+      getCalendarByDivision(divisionId);
     }
   };
 
-  const handleSelectArchiveSchedule = () => {
-    getPracticeScheduleById(idPracticeSchedule);
+  const handleSelectArchiveSchedule = (id) => {
+    getPracticeScheduleById(id);
     setModalDate(false);
     setModalArchive(true);
   };
@@ -362,7 +456,7 @@ const Data = ({ match }) => {
       is_active: 0,
     };
     try {
-      const response = await doctorScheduleAPI.archive(data, `/${id}`);
+      const response = await scheduleAPI.archive(data, `/${id}`);
       if (response.status === 200) {
         let data = await response.data.data;
         Swal.fire({
@@ -394,32 +488,35 @@ const Data = ({ match }) => {
       console.log(e);
     } finally {
       setModalArchive(false);
-      getCalendar(params);
+      getCalendarByDivision(divisionId);
     }
   };
 
-  const handleSelectDeleteSchedule = () => {
-    getPracticeScheduleById(idPracticeSchedule);
+  const handleSelectActivateSchedule = (id) => {
+    getPracticeScheduleById(id);
     setModalDate(false);
-    setModalDelete(true);
+    setModalActivate(true);
   };
 
-  const onDeletePracticeSchedule = async (e, id) => {
+  const onActivatePracticeSchedule = async (e, id) => {
     e.preventDefault();
+    const data = {
+      is_active: 0,
+    };
     try {
-      const response = await doctorScheduleAPI.delete(data, `/${id}`);
+      const response = await scheduleAPI.activate(data, `/${id}`);
       if (response.status === 200) {
         let data = await response.data.data;
         Swal.fire({
           title: "Sukses!",
-          html: `Hapus jadwal sukses`,
+          html: `Aktivasi jadwal sukses`,
           icon: "success",
           confirmButtonColor: "#008ecc",
         });
       } else {
         Swal.fire({
           title: "Gagal!",
-          html: `Hapus jadwal gagal: ${response.message}`,
+          html: `Aktivasi jadwal gagal: ${response.message}`,
           icon: "error",
           confirmButtonColor: "#008ecc",
           confirmButtonText: "Coba lagi",
@@ -438,10 +535,55 @@ const Data = ({ match }) => {
 
       console.log(e);
     } finally {
-      setModalDelete(false);
-      getCalendar(params);
+      setModalActivate(false);
+      getCalendarByDivision(divisionId);
     }
   };
+
+  const handleSelectDeleteSchedule = () => {
+    getPracticeScheduleById(idPracticeSchedule);
+    setModalDate(false);
+    setModalDelete(true);
+  };
+
+  // const onDeletePracticeSchedule = async (e, id) => {
+  //   e.preventDefault();
+  //   try {
+  //     const response = await scheduleAPI.delete(data, `/${id}`);
+  //     if (response.status === 200) {
+  //       let data = await response.data.data;
+  //       Swal.fire({
+  //         title: "Sukses!",
+  //         html: `Hapus jadwal sukses`,
+  //         icon: "success",
+  //         confirmButtonColor: "#008ecc",
+  //       });
+  //     } else {
+  //       Swal.fire({
+  //         title: "Gagal!",
+  //         html: `Hapus jadwal gagal: ${response.message}`,
+  //         icon: "error",
+  //         confirmButtonColor: "#008ecc",
+  //         confirmButtonText: "Coba lagi",
+  //       });
+
+  //       throw Error(`Error status: ${response.status}`);
+  //     }
+  //   } catch (e) {
+  //     Swal.fire({
+  //       title: "Gagal!",
+  //       html: e.response.data.message,
+  //       icon: "error",
+  //       confirmButtonColor: "#008ecc",
+  //       confirmButtonText: "Coba lagi",
+  //     });
+
+  //     console.log(e);
+  //   } finally {
+  //     setModalDelete(false);
+  //     getCalendarByDivision(divisionId);
+  //   }
+  // };
 
   const handleCancelAddPracticeSchedule = () => {
     setModalCalendar(false);
@@ -466,6 +608,21 @@ const Data = ({ match }) => {
       date: "",
       start_time: "",
       end_time: "",
+      id_subtitute: "",
+    });
+  };
+
+  const handleCancelAddRecurringPracticeSchedule = () => {
+    setModalRecurring(false);
+    setEventRecurringCalendar({
+      id: "",
+      id_clinic: clinicId,
+      id_division: divisionId,
+      id_doctor: "",
+      date: "",
+      start_time: "",
+      end_time: "",
+      interval: "",
     });
   };
 
@@ -476,7 +633,7 @@ const Data = ({ match }) => {
   };
 
   const [currentPage, setCurrentPage] = useState(1);
-  const [searchName, setSearchName] = useState("");
+  const [search, setSearch] = useState("");
   const [searchDivisi, setSearchDivisi] = useState("");
   const [searchDivisionF, setSearchDivisionF] = useState("");
   const [searchClinicF, setSearchClinicF] = useState("");
@@ -485,9 +642,9 @@ const Data = ({ match }) => {
   const [practiceScheduleData, setPracticeScheduleData] = useState([]);
   const [idPracticeSchedule, setIdPracticeSchedule] = useState("");
 
-  const getCalendar = async (params) => {
+  const getCalendarByDivision = async (id) => {
     try {
-      const res = await doctorScheduleAPI.get(params);
+      const res = await scheduleAPI.getByDivision(`/${id}`);
       let temp = [];
       console.log(res.data.data);
       res.data.data.forEach((item) => {
@@ -496,15 +653,22 @@ const Data = ({ match }) => {
           id_klinik: item.id_klinik,
           id_divisi: item.id_divisi,
           id_dokter: item.id_dokter,
-          title: item.title,
+          title:
+            item.id_pengganti != null
+              ? item.nama_karyawan + ", pengganti: " + item.id_pengganti
+              : item.nama_karyawan,
           date: item.tanggal,
           start: item.start,
           end: item.end,
+          is_active: item.is_active,
+          id_pengganti: item.id_pengganti,
           color:
-            item.is_active === 1
-              ? "#39addf"
+            item.is_active === 1 && item.id_pengganti != null
+              ? "#FFDE00"
               : item.is_active === 0
               ? "#909090"
+              : item.is_active === 1
+              ? "#39addf"
               : "",
         });
       });
@@ -516,12 +680,12 @@ const Data = ({ match }) => {
 
   let params = "";
   useEffect(() => {
-    getCalendar(params);
-  }, []);
+    getCalendarByDivision(divisionId);
+  }, [divisionId]);
 
   const getPracticeScheduleById = async (id) => {
     try {
-      const res = await doctorScheduleAPI.get(`/${id}`);
+      const res = await scheduleAPI.get(`/${id}`);
       const data = res.data.data[0];
       console.log(data);
       setEventCalendar({
@@ -532,7 +696,11 @@ const Data = ({ match }) => {
         date: moment(data.tanggal).format("yyyy-MM-DD"),
         start_time: moment(data.waktu_mulai).format("HH:mm"),
         end_time: moment(data.waktu_selesai).format("HH:mm"),
+        id_subtitute: data.id_pengganti,
+        is_active: data.is_active,
       });
+      setIsActiveSchedule(data.is_active);
+      setEmployeeName(data.nama);
     } catch (err) {
       console.log(err);
     }
@@ -551,6 +719,7 @@ const Data = ({ match }) => {
         type: "GET_TOTAL_PAGE_DIVISION",
         payload: res.data.pagination.totalPage,
       });
+      setDivisionTotalPage(res.data.pagination.totalPage);
     } catch (e) {
       console.log(e);
     } finally {
@@ -563,7 +732,7 @@ const Data = ({ match }) => {
       setIsLoading(true);
       const res = await divisionAPI.get("", `/${id}`);
       let data = res.data.data[0];
-      setDivisionId(data.id);
+      // setDivisionId(data.id);
     } catch (e) {
       console.log(e);
     } finally {
@@ -625,10 +794,10 @@ const Data = ({ match }) => {
     }
   };
 
-  const onLoadEmployee = async () => {
+  const onLoadDoctor = async () => {
     try {
       const response = await employeeAPI.get("", "?limit=1000");
-      setSelectedEmployee([
+      setSelectedDoctor([
         {
           label: "Pilih Dokter",
           value: "",
@@ -639,7 +808,7 @@ const Data = ({ match }) => {
       if (response.status === 200) {
         let data = response.data.data;
         for (var i = 0; i < data.length; i++) {
-          setSelectedEmployee((current) => [
+          setSelectedDoctor((current) => [
             ...current,
             {
               label: data[i].nama,
@@ -657,6 +826,40 @@ const Data = ({ match }) => {
     }
   };
 
+  const onLoadEmployee = async () => {
+    try {
+      const response = await employeeAPI.get("", "?limit=1000");
+      setSelectedEmployee([
+        {
+          label: "Pilih Karyawan",
+          value: "",
+          key: 0,
+          name: "id_subtitute",
+        },
+      ]);
+      if (response.status === 200) {
+        let data = response.data.data;
+        for (var i = 0; i < data.length; i++) {
+          setSelectedEmployee((current) => [
+            ...current,
+            {
+              label: data[i].nama,
+              value: data[i].id,
+              key: data[i].id,
+              name: "id_subtitute",
+            },
+          ]);
+        }
+      } else {
+        throw Error(`Error status: ${response.status}`);
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  useEffect(() => {}, [isActiveSchedule]);
+
   useEffect(() => {
     let params = "";
     if (limit !== "10") {
@@ -673,22 +876,39 @@ const Data = ({ match }) => {
     if (searchDivisionF !== "") {
       params = `${params}&searchDivisi=${searchDivisionF}`;
     }
-    if (searchName !== "") {
-      params = `${params}&searchName=${searchName}`;
+    if (search !== "") {
+      params = `${params}&search=${search}`;
     }
     getDivision(params);
     onLoadClinic();
     onLoadDivision();
+    onLoadDoctor();
     onLoadEmployee();
     getDivisionId(searchDivisi);
   }, [
     limit,
-    searchName,
+    search,
     searchDivision,
     searchClinicF,
     currentPage,
     searchDivisionF,
   ]);
+
+  useEffect(() => {
+    if (calendarSubmit === "done") {
+      setTimeout(() => {
+        if (
+          tempShift.id_doctor_schedule !== "" &&
+          tempShift.id_employee !== ""
+        ) {
+          onShiftSubmit();
+        }
+        setTimeout(() => {
+          setCalendarSubmit("");
+        }, 2000);
+      }, 1000);
+    }
+  }, [calendarSubmit]);
 
   let startNumber = 1;
 
@@ -731,7 +951,7 @@ const Data = ({ match }) => {
                   name="search"
                   id="search"
                   placeholder="Pencarian"
-                  onChange={(e) => setSearchName(e.target.value)}
+                  onChange={(e) => setSearch(e.target.value)}
                 />
                 <InputGroupAddon addonType="append">
                   <Button outline color="theme-3" className="button-search">
@@ -810,6 +1030,12 @@ const Data = ({ match }) => {
                   )}
                 </tbody>
               </Table>
+              <Pagination
+                currentPage={currentPage}
+                totalPage={divisionTotalPage}
+                onChangePage={(i) => setCurrentPage(i)}
+                numberLimit={divisionTotalPage < 4 ? divisionTotalPage : 3}
+              />
             </CardBody>
           </Card>
         </Colxx>
@@ -848,12 +1074,13 @@ const Data = ({ match }) => {
                       },
                     }}
                     headerToolbar={{
-                      left: "title",
+                      left: "prev,next today",
+                      center: "title",
                       right:
                         "multiMonthYear,dayGridMonth,timeGridWeek,timeGridDay,listWeek",
                     }}
                     footerToolbar={{
-                      center: "prev,next today buttonAdd",
+                      center: "buttonAdd",
                     }}
                     displayEventTime
                     displayEventEnd
@@ -893,10 +1120,27 @@ const Data = ({ match }) => {
                     <i className="simple-icon-options-vertical"></i>
                   </DropdownToggle>
                   <DropdownMenu right>
-                    <DropdownItem onClick={handleSelectArchiveSchedule}>
-                      <i className="iconsminds-arrow-right-2"></i>
-                      &nbsp;Arsipkan Jadwal
-                    </DropdownItem>
+                    {isActiveSchedule === 1 ? (
+                      <DropdownItem
+                        onClick={() =>
+                          handleSelectArchiveSchedule(idPracticeSchedule)
+                        }
+                      >
+                        <i className="iconsminds-arrow-right-2"></i>
+                        &nbsp;Arsipkan Jadwal
+                      </DropdownItem>
+                    ) : isActiveSchedule === 0 ? (
+                      <DropdownItem
+                        onClick={() =>
+                          handleSelectActivateSchedule(idPracticeSchedule)
+                        }
+                      >
+                        <i className="iconsminds-arrow-right-2"></i>
+                        &nbsp;Aktifkan Jadwal
+                      </DropdownItem>
+                    ) : (
+                      <></>
+                    )}
                   </DropdownMenu>
                 </UncontrolledDropdown>
               </Colxx>
@@ -1004,9 +1248,34 @@ const Data = ({ match }) => {
                     id="id_doctor"
                     required
                     placeholderText="Pilih Dokter"
+                    options={selectedDoctor}
+                    value={selectedDoctor.find(
+                      (item) => item.value === eventCalendar.id_doctor
+                    )}
+                    onChange={(e) => handleInputCalendar(e)}
+                  />
+                </FormGroup>
+              </Colxx>
+              <Colxx lg={12}>
+                <FormGroup>
+                  <Label for="id_subtitute">
+                    Pengganti{" "}
+                    <span className="required text-danger" aria-required="true">
+                      {" "}
+                      *
+                    </span>
+                  </Label>
+                  <Select
+                    components={{ Input: CustomSelectInput }}
+                    className="react-select"
+                    classNamePrefix="react-select"
+                    name="id_subtitute"
+                    id="id_subtitute"
+                    required
+                    placeholderText="Pilih Pengganti"
                     options={selectedEmployee}
                     value={selectedEmployee.find(
-                      (item) => item.value === eventCalendar.id_doctor
+                      (item) => item.value === eventCalendar.id_subtitute
                     )}
                     onChange={(e) => handleInputCalendar(e)}
                   />
@@ -1137,8 +1406,8 @@ const Data = ({ match }) => {
                     id="id_doctor"
                     required
                     placeholderText="Pilih Dokter"
-                    options={selectedEmployee}
-                    value={selectedEmployee.find(
+                    options={selectedDoctor}
+                    value={selectedDoctor.find(
                       (item) => item.value === eventCalendar.id_doctor
                     )}
                     onChange={(e) => handleInputCalendar(e)}
@@ -1171,7 +1440,7 @@ const Data = ({ match }) => {
             <FormGroup>
               <h5>
                 Apakah anda ingin mengarsipkan jadwal dengan nama tenaga
-                kesehatan <b>{idPracticeSchedule}</b> ?
+                kesehatan <b>{employeeName}</b> ?
               </h5>
             </FormGroup>
           </ModalBody>
@@ -1347,8 +1616,8 @@ const Data = ({ match }) => {
                     id="id_doctor"
                     required
                     placeholderText="Pilih Dokter"
-                    options={selectedEmployee}
-                    value={selectedEmployee.find(
+                    options={selectedDoctor}
+                    value={selectedDoctor.find(
                       (item) => item.value === eventRecurringCalendar.id_doctor
                     )}
                     onChange={(e) => handleInputRecurringCalendar(e)}
@@ -1362,11 +1631,42 @@ const Data = ({ match }) => {
               type="button"
               outline
               color="danger"
-              onClick={() => setModalRecurring(false)}
+              onClick={handleCancelAddRecurringPracticeSchedule}
             >
               Batal
             </Button>
             <Button color="primary" onClick={onCalendarRecurringSubmit}>
+              Simpan
+            </Button>{" "}
+          </ModalFooter>
+        </Modal>
+
+        <Modal
+          isOpen={modalActivate}
+          toggle={() => setModalActivate(!modalActivate)}
+        >
+          <ModalHeader>Aktivasi Jadwal Tenaga Kesehatan</ModalHeader>
+          <ModalBody>
+            <FormGroup>
+              <h5>
+                Apakah anda ingin mengaktifkan jadwal dengan nama tenaga
+                kesehatan <b>{employeeName}</b> ?
+              </h5>
+            </FormGroup>
+          </ModalBody>
+          <ModalFooter>
+            <Button
+              type="button"
+              outline
+              color="danger"
+              onClick={() => setModalActivate(false)}
+            >
+              Batal
+            </Button>
+            <Button
+              color="primary"
+              onClick={(e) => onActivatePracticeSchedule(e, idPracticeSchedule)}
+            >
               Simpan
             </Button>{" "}
           </ModalFooter>

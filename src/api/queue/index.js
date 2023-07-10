@@ -8,7 +8,7 @@ const queue = {
     return baseApi.get(url, { headers: getAuthHeader() });
   },
   getByScheduleId: (options) => {
-    const url = api.queue.sdiv + options;
+    const url = api.queue.byDivision + options;
     return baseApi.get(url, { headers: getAuthHeader() });
   },
   add: (payloads) => {

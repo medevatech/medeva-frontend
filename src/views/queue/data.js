@@ -49,6 +49,7 @@ import participantAPI from "api/participant";
 // import vitalSignsAPI from "api/vital-signs";
 import divisionAPI from "api/division";
 import scheduleAPI from "api/schedule";
+import clinicAPI from "api/clinic";
 import Swal from "sweetalert2";
 
 import loader from "../../assets/img/loading.gif";
@@ -60,6 +61,10 @@ const Data = ({ match }) => {
   const dispatch = useDispatch();
   const queueAll = useSelector((state) => state.queue);
   const queueTotalPage = useSelector((state) => state.queueTotalPage);
+
+  const [clinicID, setClinicID] = useState(
+    !userData.roles.includes("isDev") ? userData.id_klinik : ""
+  );
 
   const [tableClass, setTableClass] = useState("");
   const [dataStatus, setDataStatus] = useState("add");
@@ -81,6 +86,10 @@ const Data = ({ match }) => {
     { label: "Semua", value: "", key: 0, name: "id_klinik" },
   ]);
 
+  const [selectedClinic, setSelectedClinic] = useState([
+    { label: "Semua Klinik", value: "", key: 0, name: "id_klinik" },
+  ]);
+
   const [selectedSchedule, setSelectedSchedule] = useState([]);
   const [selectedPatient, setSelectedPatient] = useState([]);
   const [selectedQueue, setSelectedQueue] = useState([]);
@@ -89,8 +98,8 @@ const Data = ({ match }) => {
   const [startDateTime, setStartDateTime] = useState(new Date());
 
   const [patientID, setPatientID] = useState("");
-  console.log(patientID);
   const [patientData, setPatientData] = useState("");
+  const [idDoctor, setIdDoctor] = useState("");
 
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingQueue, setIsLoadingQueue] = useState(false);
@@ -164,11 +173,11 @@ const Data = ({ match }) => {
   };
 
   const [currentPage, setCurrentPage] = useState(1);
-  const [searchName, setSearchName] = useState("");
+  const [search, setSearch] = useState("");
   const [searchDivisi, setSearchDivisi] = useState("");
   const [searchDivisiF, setSearchDivisiF] = useState("");
-  const [searchDivisiName, setSearchDivisiName] = useState("");
   const [searchEmployee, setSearchEmployee] = useState("");
+  const [searchClinic, setSearchClinic] = useState(clinicID);
 
   useEffect(() => {
     let params = "";
@@ -180,20 +189,23 @@ const Data = ({ match }) => {
     if (currentPage !== "1") {
       params = `${params}&page=${currentPage}`;
     }
+    if (searchClinic !== "") {
+      params = `${params}&searchKlinik=${searchClinic}`;
+    }
     if (searchDivisiF !== "") {
       params = `${params}&searchDivisi=${searchDivisiF}`;
     }
-    if (searchDivisiName !== "") {
-      params = `${params}&searchDivisiName=${searchDivisiName}`;
+    if (search !== "") {
+      params = `${params}&search=${search}`;
     }
     getSchedule(params);
     // onLoadDivisi();
     // onLoadQueueByDivisi();
   }, [
     limit,
-    searchName,
+    search,
     searchDivisiF,
-    searchDivisiName,
+    searchClinic,
     sortBy,
     sortOrder,
     currentPage,
@@ -228,7 +240,7 @@ const Data = ({ match }) => {
 
   const onLoadSchedule = async (id, today) => {
     try {
-      const response = await scheduleAPI.getToday(`/${id}?searchDay=${today}`);
+      const response = await scheduleAPI.getToday(`/${id}?day=${today}`);
       // console.log("rak", response);
 
       setSelectedSchedule([
@@ -257,9 +269,41 @@ const Data = ({ match }) => {
                 moment(data[i].waktu_selesai).format("HH:mm") +
                 " ) ",
               value: data[i].id,
-              id_employee: data[i].id_karyawan,
+              id_employee: data[i].id_dokter,
               key: data[i].id,
               name: "id_jaga",
+            },
+          ]);
+        }
+      } else {
+        throw Error(`Error status: ${response.status}`);
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  const onLoadClinic = async () => {
+    try {
+      const response = await clinicAPI.get("?limit=1000");
+      // console.log(response);
+
+      setSelectedClinic([
+        { label: "Semua Klinik", value: "", key: 0, name: "id_klinik" },
+      ]);
+
+      if (response.status === 200) {
+        let data = response.data.data;
+        // console.log(data);
+
+        for (var i = 0; i < data.length; i++) {
+          setSelectedClinic((current) => [
+            ...current,
+            {
+              label: data[i].nama_klinik,
+              value: data[i].id,
+              key: data[i].id,
+              name: "id_klinik",
             },
           ]);
         }
@@ -377,17 +421,19 @@ const Data = ({ match }) => {
     return today;
   };
 
+  const initialToday = new Date();
+  const dateNow = moment(initialToday).format("yyyy-M-DD");
+
   const onChangeId = (idDivisi, idKaryawan) => {
     setRowSelected(idKaryawan);
     setSearchDivisi(idDivisi);
     setSearchEmployee(idKaryawan);
-    onLoadSchedule(idDivisi, today);
+    onLoadSchedule(idDivisi, dateNow);
   };
-
-  const [idDoctor, setIdDoctor] = useState("");
 
   useEffect(() => {
     onLoadSchedule();
+    onLoadClinic();
     onLoadPatient();
   }, []);
 
@@ -654,6 +700,9 @@ const Data = ({ match }) => {
     }
   };
 
+  // console.log(searchDivisi);
+  console.log(clinicID);
+
   return (
     <>
       <Row>
@@ -667,13 +716,34 @@ const Data = ({ match }) => {
                   </Colxx>
                 </Row>
               </CardTitle>
+              <Colxx
+                sm="12"
+                md="12"
+                style={{ marginTop: "20px", paddingLeft: 0, paddingRight: 0 }}
+              >
+                <Label for="id_klinik">Klinik</Label>
+                <Select
+                  components={{ Input: CustomSelectInput }}
+                  className="react-select"
+                  classNamePrefix="react-select"
+                  name="id_klinik"
+                  onChange={(e) => setSearchClinic(e.value)}
+                  options={selectedClinic}
+                  defaultValue={{
+                    label: "Semua Klinik",
+                    value: "",
+                    key: 0,
+                    name: "id_klinik",
+                  }}
+                />
+              </Colxx>
               <InputGroup className="my-4">
                 <Input
                   type="text"
                   name="search"
                   id="search"
                   placeholder="Pencarian"
-                  onChange={(e) => setSearchDivisiName(e.target.value)}
+                  onChange={(e) => setSearch(e.target.value)}
                 />
                 <InputGroupAddon addonType="append">
                   <Button outline color="theme-3" className="button-search">
@@ -729,7 +799,7 @@ const Data = ({ match }) => {
                               marginBottom: 0,
                             }}
                           >
-                            {data.tipe}
+                            {data.nama_divisi}
                           </h6>
                         </td>
                         <td
@@ -742,7 +812,7 @@ const Data = ({ match }) => {
                             color="secondary"
                             size="xs"
                             className="button-xs"
-                            // onClick={() => onChangeId(data.id_divisi, data.id)}
+                            onClick={() => onChangeId(data.id_divisi, data.id)}
                           >
                             <i className="simple-icon-arrow-right-circle"></i>
                           </Button>{" "}

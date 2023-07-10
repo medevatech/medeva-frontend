@@ -4,16 +4,32 @@ import baseApi from 'service/api-general'
 
 const division = {
   get: (options) => {
-    const url = api.reference.division + options
-    return baseApi.get(url, { headers: getAuthHeader() })
+    const url = api.division.all + options;
+    return baseApi.get(url, { headers: getAuthHeader() });
+  },
+  getDistinct: (options) => {
+    const url = api.division.distinct + options;
+    return baseApi.get(url, { headers: getAuthHeader() });
   },
   add: (payloads) => {
-    const url = api.reference.division
-    return baseApi.post(url, payloads, { headers: getAuthHeader() })
+    const url = api.division.all;
+    return baseApi.post(url, payloads, { headers: getAuthHeader() });
   },
   update: (payloads, id) => {
-    const url = api.reference.division + `/${id}`
-    return baseApi.put(url, payloads, { headers: getAuthHeader() })
+    const url = api.division.all + `/${id}`;
+    return baseApi.put(url, payloads, { headers: getAuthHeader() });
   },
-}
-export default division
+  archive: (payloads, id) => {
+    const url = api.division.archive + `/${id}`;
+    return baseApi.put(url, payloads, { headers: getAuthHeader() });
+  },
+  activate: (payloads, id) => {
+    const url = api.division.activate + `/${id}`;
+    return baseApi.put(url, payloads, { headers: getAuthHeader() });
+  },
+  delete: (id) => {
+    const url = api.division.all + `/${id}`;
+    return baseApi.delete(url, { headers: getAuthHeader() });
+  },
+};
+export default division;

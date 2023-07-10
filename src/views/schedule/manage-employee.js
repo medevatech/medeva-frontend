@@ -17,8 +17,13 @@ import {
   ModalHeader,
   ModalBody,
   ModalFooter,
+  UncontrolledDropdown,
+  DropdownToggle,
+  DropdownMenu,
+  DropdownItem,
 } from "reactstrap";
-
+// import "bootstrap/dist/css/bootstrap.css";
+// import "bootstrap-icons/font/bootstrap-icons.css";
 import DatePicker from "react-datepicker";
 
 import "react-tagsinput/react-tagsinput.css";
@@ -32,7 +37,17 @@ import { Colxx, Separator } from "components/common/CustomBootstrap";
 
 import CustomSelectInput from "components/common/CustomSelectInput";
 
-import Pagination from "reactstrap/es/Pagination";
+import FullCalendar from "@fullcalendar/react";
+import dayGridPlugin from "@fullcalendar/daygrid";
+import multiMonthPlugin from "@fullcalendar/multimonth";
+import timeGridPlugin from "@fullcalendar/timegrid";
+import interactionPlugin from "@fullcalendar/interaction";
+import listPlugin from "@fullcalendar/list";
+import rrulePlugin from "@fullcalendar/rrule";
+import idLocale from "@fullcalendar/core/locales/id";
+import bootstrap5Plugin from "@fullcalendar/bootstrap5";
+
+import Pagination from "components/common/Pagination";
 
 import shiftAPI from "api/shift";
 import divisionAPI from "api/division";
@@ -46,34 +61,12 @@ import moment from "moment";
 import loader from "../../assets/img/loading.gif";
 import { useDispatch, useSelector } from "react-redux";
 import data from "data/profileStatuses";
-
-const selectDivision = [
-  { label: "Poli Umum", value: "umum", key: 0 },
-  { label: "Poli Gigi", value: "gigi", key: 1 },
-];
-
-const selectEmployee = [
-  { label: "John Doe", value: "john", key: 0 },
-  { label: "Jane Doe", value: "jane", key: 1 },
-  { label: "Josh Doe", value: "josh", key: 2 },
-  { label: "Jack Doe", value: "jack", key: 3 },
-  { label: "Janet Doe", value: "janet", key: 4 },
-];
-
-const selectDays = [
-  { label: "Pilih Hari", value: 0, key: 0, name: "hari" },
-  { label: "Senin", value: 1, key: 1, name: "hari" },
-  { label: "Selasa", value: 2, key: 2, name: "hari" },
-  { label: "Rabu", value: 3, key: 3, name: "hari" },
-  { label: "Kamis", value: 4, key: 4, name: "hari" },
-  { label: "Jumat", value: 5, key: 5, name: "hari" },
-  { label: "Sabtu", value: 6, key: 6, name: "hari" },
-  { label: "Minggu", value: 7, key: 7, name: "hari" },
-];
+import { useTable } from "react-table";
 
 const Data = ({ match }) => {
   const dispatch = useDispatch();
   const divisionAll = useSelector((state) => state.division);
+  const [divisionTotalPage, setDivisionTotalPage] = useState([]);
   const clinicAll = useSelector((state) => state.clinic);
   const shiftAll = useSelector((state) => state.shift);
   const [dataStatus, setDataStatus] = useState("add");
@@ -84,142 +77,95 @@ const Data = ({ match }) => {
   const [selectedClinic, setSelectedClinic] = useState([
     { label: "Semua", value: "", key: 0, name: "id_klinik" },
   ]);
+  const [selectedDoctor, setSelectedDoctor] = useState([
+    { label: "Pilih Dokter", value: "", key: 0, name: "id_doctor" },
+  ]);
   const [selectedEmployee, setSelectedEmployee] = useState([
-    { label: "Pilih Karyawan", value: "", key: 0, name: "id_karyawan" },
+    { label: "Pilih Karyawan", value: "", key: 0, name: "id_employee" },
   ]);
   const [isLoading, setIsLoading] = useState(false);
   const [searchDivision, setSearchDivision] = useState("");
 
   const [clinicId, setClinicId] = useState("");
   const [divisionId, setDivisionId] = useState("");
+  const [scheduleId, setScheduleId] = useState("");
+  const [shiftId, setShiftId] = useState("");
 
-  const [shift, setShift] = useState([
-    {
-      id: "",
-      id_karyawan: "",
-      id_klinik: clinicId,
-      id_divisi: divisionId,
-      hari: "",
-      tanggal: "",
-      waktu_mulai: "",
-      waktu_selesai: "",
-    },
-  ]);
+  const [modalShift, setModalShift] = useState(false);
+  const [modalCalendar, setModalCalendar] = useState(false);
+  const [modalUpdate, setModalUpdate] = useState(false);
+  const [modalArchive, setModalArchive] = useState(false);
+  const [modalActivate, setModalActivate] = useState(false);
 
-  const [tempShift, setTempShift] = useState([
-    {
-      id: "",
-      id_karyawan: "",
-      id_klinik: clinicId,
-      id_divisi: divisionId,
-      hari: "",
-      tanggal: "",
-      waktu_mulai: "",
-      waktu_selesai: "",
-    },
-  ]);
+  const [eventShift, setEventShift] = useState({
+    id: "",
+    id_doctor_schedule: "",
+    id_employee: "",
+  });
 
-  const addShiftFields = () => {
-    let newFieldShift = {
-      id: "",
-      id_karyawan: "",
-      id_klinik: clinicId,
-      id_divisi: divisionId,
-      hari: "",
-      tanggal: "",
-      waktu_mulai: "",
-      waktu_selesai: "",
-    };
-    setShift([...shift, newFieldShift]);
+  const [dataSchedule, setDataSchedule] = useState([]);
+  const [dataShift, setDataShift] = useState([]);
+  const [employeeName, setEmployeeName] = useState("");
+
+  const [openTable, setOpenTable] = useState(false);
+  const [currentTablePage, setCurrentTablePage] = useState(1);
+
+  // const handleInputCalendar = (e, val = null) => {
+  //   let dataInputCalendar = { ...eventCalendar };
+  //   dataInputCalendar["id_clinic"] = clinicId;
+  //   dataInputCalendar["id_division"] = divisionId;
+  //   if (e.name === "id_doctor") {
+  //     dataInputCalendar["id_doctor"] = e.value;
+  //   } else if (e.name === "id_subtitute") {
+  //     dataInputCalendar["id_subtitute"] = e.value;
+  //   } else if (e.target.name === "date") {
+  //     dataInputCalendar["date"] = e.target.value;
+  //   } else if (e.target.name === "start_time") {
+  //     dataInputCalendar["start_time"] = e.target.value;
+  //   } else if (e.target.name === "end_time") {
+  //     dataInputCalendar["end_time"] = e.target.value;
+  //   } else {
+  //     console.log("p");
+  //   }
+  //   setEventCalendar(dataInputCalendar);
+  // };
+
+  const handleSelectSchedule = (clickInfo) => {
+    let id = clickInfo.event.id;
+    console.log(id);
+    setScheduleId(id);
+    getShiftBySchedule(id);
+    setOpenTable(true);
   };
 
-  const removeShiftFields = (id, index) => {
-    let dataShift = [...shift];
-    dataShift.splice(index, 1);
-    setShift(dataShift);
-    if (dataStatus === "update") {
-      if (id) {
-        setTempShift(dataShift);
-        onArchiveShift(id);
-      }
-    }
+  const handleAddShift = () => {
+    setEventShift({
+      id: "",
+      id_doctor_schedule: scheduleId,
+      id_employee: "",
+    });
+    setModalShift(true);
   };
 
-  const handleShiftChange = (index, event, waktu = null) => {
-    // console.log(event);
-    let dataShift = [...shift];
-    if (waktu === "tanggal") {
-      dataShift[index]["tanggal"] = event;
-    } else if (waktu === "waktu_mulai") {
-      event
-        ? (dataShift[index]["waktu_mulai"] = event)
-        : (dataShift[index]["waktu_mulai"] = "");
-    } else if (waktu === "waktu_selesai") {
-      event
-        ? (dataShift[index]["waktu_selesai"] = event)
-        : (dataShift[index]["waktu_selesai"] = "");
-    } else if (event.name === "id_karyawan") {
-      dataShift[index][event.name] = event.value;
-    } else if (event.name === "hari") {
-      dataShift[index][event.name] = event.value;
+  const handleInputShift = (e) => {
+    console.log(e);
+    let dataInputShift = { ...eventShift };
+    dataInputShift["id_doctor_schedule"] = scheduleId;
+    if (e.name === "id_employee") {
+      dataInputShift["id_employee"] = e.value;
     } else {
-      dataShift[index][event.target.name] = event.target.value;
+      console.log("pooh");
     }
-
-    // console.log(dataShift);
-    setShift(dataShift);
-  };
-
-  const handleChangeId = (idClinic, idDivision) => {
-    setRowSelected(idDivision);
-    setClinicId(idClinic);
-    setDivisionId(idDivision);
-    setShift([]);
-    setTempShift([]);
-    getScheduleByDivisionId(idDivision);
-    // if (dataStatus === "update") {
-    //   getScheduleByDivisionId(idDivision);
-    // }
+    setEventShift(dataInputShift);
   };
 
   const onShiftSubmit = async (e) => {
     e.preventDefault();
-    // console.log(shift);
-    for (var i = 0; i < shift.length; i++) {
-      shift[i].id_klinik = clinicId;
-      shift[i].id_divisi = divisionId;
-      const tmp = {
-        id: shift[i].id,
-        id_karyawan: shift[i].id_karyawan,
-        id_klinik: shift[i].id_klinik,
-        id_divisi: shift[i].id_divisi,
-        hari: shift[i].hari,
-        tanggal: shift[i].tanggal,
-        waktu_mulai: shift[i].waktu_mulai,
-        waktu_selesai: shift[i].waktu_selesai,
-      };
-      if (
-        tmp.id !== "" &&
-        (tmp.id_karyawan !== tempShift[i].id_karyawan ||
-          tmp.tanggal !== tempShift[i].tanggal ||
-          tmp.hari !== tempShift[i].hari ||
-          tmp.waktu_mulai !== tempShift[i].waktu_mulai ||
-          tmp.waktu_selesai !== tempShift[i].waktu_selesai)
-      ) {
-        onShiftEdit(shift[i]);
-      } else if (tmp.id === "") {
-        onShiftAdd(tmp, tmp.id_karyawan);
-      }
-    }
-  };
-
-  const onShiftAdd = async (shift, idKaryawan) => {
     try {
-      const response = await scheduleAPI.add(shift);
-      // console.log("shift add", response);
+      const response = await shiftAPI.add(eventShift);
       if (response.status === 200) {
         let data = await response.data.data;
-        // console.log("shift add", data);
+        console.log("add", data);
         Swal.fire({
           title: "Sukses!",
           html: `Tambah shift sukses`,
@@ -247,128 +193,257 @@ const Data = ({ match }) => {
       });
 
       console.log(e);
-    }
-  };
-
-  const onShiftEdit = async (shift) => {
-    try {
-      const response = await scheduleAPI.update(shift, shift.id);
-      // console.log("shift edit", response);
-      if (response.status === 200) {
-        let data = await response.data.data;
-        // console.log("shift edit", data);
-
-        Swal.fire({
-          title: "Sukses!",
-          html: `Ubah shift sukses`,
-          icon: "success",
-          confirmButtonColor: "#008ecc",
-        });
-
-        // setShiftId(shift.id);
-      } else {
-        Swal.fire({
-          title: "Gagal!",
-          html: `Ubah shift gagal: ${response.message}`,
-          icon: "error",
-          confirmButtonColor: "#008ecc",
-          confirmButtonText: "Coba lagi",
-        });
-
-        throw Error(`Error status: ${response.status}`);
-      }
-    } catch (e) {
-      Swal.fire({
-        title: "Gagal!",
-        html: e.response.data.message,
-        icon: "error",
-        confirmButtonColor: "#008ecc",
-        confirmButtonText: "Coba lagi",
-      });
-
-      console.log(e);
-    }
-  };
-
-  const onArchiveShift = async (id) => {
-    try {
-      const response = await scheduleAPI.archive("", id);
-      // console.log("shift delete", response);
-      if (response.status === 200) {
-        let data = await response.data.data;
-        // console.log("shift delete", data);
-
-        Swal.fire({
-          title: "Sukses!",
-          html: `Arsip jadwal jaga sukses`,
-          icon: "success",
-          confirmButtonColor: "#008ecc",
-        });
-
-        // setShiftId(shift.id);
-      } else {
-        Swal.fire({
-          title: "Gagal!",
-          html: `Arsip jadwal jaga gagal: ${response.message}`,
-          icon: "error",
-          confirmButtonColor: "#008ecc",
-          confirmButtonText: "Coba lagi",
-        });
-
-        throw Error(`Error status: ${response.status}`);
-      }
-    } catch (e) {
-      Swal.fire({
-        title: "Gagal!",
-        html: e.response.data.message,
-        icon: "error",
-        confirmButtonColor: "#008ecc",
-        confirmButtonText: "Coba lagi",
-      });
-
-      console.log(e);
-    }
-  };
-
-  const handleCancelInput = () => {
-    setShift([
-      {
+    } finally {
+      setEventShift({
         id: "",
-        id_karyawan: "",
-        id_klinik: "",
-        id_divisi: "",
-        hari: "",
-        tanggal: "",
-        waktu_mulai: "",
-        waktu_selesai: "",
-      },
-    ]);
+        id_doctor_schedule: "",
+        id_employee: "",
+      });
+      setModalShift(false);
+      getShiftBySchedule(scheduleId);
+    }
+  };
+
+  const handleEditShift = (id) => {
+    setShiftId(id);
+    getShiftById(id);
+    setModalUpdate(true);
+  };
+
+  const onShiftUpdate = async (e, id) => {
+    e.preventDefault();
+    try {
+      const response = await shiftAPI.update(eventShift, `/${id}`);
+      if (response.status === 200) {
+        let data = await response.data.data;
+        Swal.fire({
+          title: "Sukses!",
+          html: `Edit shift sukses`,
+          icon: "success",
+          confirmButtonColor: "#008ecc",
+        });
+      } else {
+        Swal.fire({
+          title: "Gagal!",
+          html: `Edit shift gagal: ${response.message}`,
+          icon: "error",
+          confirmButtonColor: "#008ecc",
+          confirmButtonText: "Coba lagi",
+        });
+
+        throw Error(`Error status: ${response.status}`);
+      }
+    } catch (e) {
+      Swal.fire({
+        title: "Gagal!",
+        html: e.response.data.message,
+        icon: "error",
+        confirmButtonColor: "#008ecc",
+        confirmButtonText: "Coba lagi",
+      });
+
+      console.log(e);
+    } finally {
+      setModalUpdate(false);
+      getShiftBySchedule(scheduleId);
+    }
+  };
+
+  const handleArchiveShift = (id) => {
+    setShiftId(id);
+    getShiftById(id);
+    setModalArchive(true);
+  };
+
+  const onShiftArchive = async (e, id) => {
+    e.preventDefault();
+    try {
+      const response = await shiftAPI.archive(`/${id}`);
+      if (response.status === 200) {
+        let data = await response.data.data;
+        Swal.fire({
+          title: "Sukses!",
+          html: `Arsip shift sukses`,
+          icon: "success",
+          confirmButtonColor: "#008ecc",
+        });
+      } else {
+        Swal.fire({
+          title: "Gagal!",
+          html: `Arsip shift gagal: ${response.message}`,
+          icon: "error",
+          confirmButtonColor: "#008ecc",
+          confirmButtonText: "Coba lagi",
+        });
+
+        throw Error(`Error status: ${response.status}`);
+      }
+    } catch (e) {
+      Swal.fire({
+        title: "Gagal!",
+        html: e.response.data.message,
+        icon: "error",
+        confirmButtonColor: "#008ecc",
+        confirmButtonText: "Coba lagi",
+      });
+
+      console.log(e);
+    } finally {
+      setModalArchive(false);
+      getShiftBySchedule(scheduleId);
+    }
+  };
+
+  const handleActivateShift = (id) => {
+    setShiftId(id);
+    getShiftById(id);
+    setModalActivate(true);
+  };
+
+  const onShiftActivate = async (e, id) => {
+    e.preventDefault();
+    try {
+      const response = await shiftAPI.activate(`/${id}`);
+      if (response.status === 200) {
+        let data = await response.data.data;
+        Swal.fire({
+          title: "Sukses!",
+          html: `Aktivasi shift sukses`,
+          icon: "success",
+          confirmButtonColor: "#008ecc",
+        });
+      } else {
+        Swal.fire({
+          title: "Gagal!",
+          html: `Aktivasi shift gagal: ${response.message}`,
+          icon: "error",
+          confirmButtonColor: "#008ecc",
+          confirmButtonText: "Coba lagi",
+        });
+
+        throw Error(`Error status: ${response.status}`);
+      }
+    } catch (e) {
+      Swal.fire({
+        title: "Gagal!",
+        html: e.response.data.message,
+        icon: "error",
+        confirmButtonColor: "#008ecc",
+        confirmButtonText: "Coba lagi",
+      });
+
+      console.log(e);
+    } finally {
+      setModalActivate(false);
+      getShiftBySchedule(scheduleId);
+    }
+  };
+
+  const handleChangeId = (idClinic, idDivision) => {
+    setRowSelected(idDivision);
+    setClinicId(idClinic);
+    setDivisionId(idDivision);
   };
 
   const [currentPage, setCurrentPage] = useState(1);
-  const [searchName, setSearchName] = useState("");
+  const [search, setSearch] = useState("");
   const [searchDivisi, setSearchDivisi] = useState("");
   const [searchDivisionF, setSearchDivisionF] = useState("");
-  const [searchDivisionName, setSearchDivisionName] = useState("");
   const [searchClinicF, setSearchClinicF] = useState("");
   const [limit, setLimit] = useState(10);
-  const [sortBy, setSortBy] = useState("");
-  const [sortOrder, setSortOrder] = useState("");
-  const [divisionData, setDivisionData] = useState([]);
-  const [shiftData, setShiftData] = useState([]);
-  const [disableClinic, setDsableClinic] = useState(true);
-  const [disableDivision, setDisableDivision] = useState(true);
+
+  const [practiceScheduleData, setPracticeScheduleData] = useState([]);
+  const [idPracticeSchedule, setIdPracticeSchedule] = useState("");
+
+  const getScheduleByDivision = async (id) => {
+    try {
+      const res = await scheduleAPI.getByDivision(`/${id}`);
+      let temp = [];
+      console.log(res.data.data);
+      res.data.data.forEach((data) => {
+        temp.push({
+          id: data.id,
+          id_klinik: data.id_klinik,
+          id_divisi: data.id_divisi,
+          id_dokter: data.id_dokter,
+          title: data.nama_karyawan,
+          date: data.tanggal,
+          start: data.start,
+          end: data.end,
+          id_pengganti: data.id_pengganti,
+          color:
+            data.is_active === 1 && data.id_pengganti != null
+              ? "#FFDE00"
+              : data.is_active === 0
+              ? "#909090"
+              : data.is_active === 1
+              ? "#39addf"
+              : "",
+        });
+      });
+      setDataSchedule(temp);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const getShiftBySchedule = async (id) => {
+    try {
+      const res = await shiftAPI.getByIdSchedule(`/${id}`);
+      let temp = [];
+      console.log("puririn", res.data.data);
+      res.data.data.forEach((data) => {
+        temp.push({
+          id: data.id,
+          id_divisi: data.id_divisi,
+          id_karyawan: data.id_karyawan,
+          title: data.nama,
+          date: moment(data.tanggal).format("yyyy-MM-DD"),
+          start: moment(data.start).format("HH:mm"),
+          end: moment(data.end).format("HH:mm"),
+          color: data.is_active === 1 ? "green" : "#909090",
+          is_active: data.is_active,
+        });
+      });
+      setDataShift(temp);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const getShiftById = async (id) => {
+    try {
+      const res = await shiftAPI.get(`/${id}`);
+      const data = res.data.data[0];
+      console.log(data);
+      setEventShift({
+        id: data.id,
+        id_doctor_schedule: data.id_jadwal_dokter,
+        id_employee: data.id_karyawan,
+      });
+      setEmployeeName(data.nama);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  let params = "";
+  useEffect(() => {
+    getScheduleByDivision(divisionId);
+    getShiftBySchedule(scheduleId);
+    getShiftById(shiftId);
+  }, [divisionId, scheduleId, shiftId]);
 
   const getDivision = async (params) => {
     try {
       setIsLoading(true);
-      const res = await divisionAPI.getDistinct("", params);
+      const res = await divisionAPI.getDistinct(params);
       dispatch({ type: "GET_DIVISION", payload: res.data.data });
       dispatch({
         type: "GET_TOTAL_PAGE_DIVISION",
         payload: res.data.pagination.totalPage,
       });
-      // setDivisionData(res.data.data);
+      setDivisionTotalPage(res.data.pagination.totalPage);
     } catch (e) {
       console.log(e);
     } finally {
@@ -380,13 +455,8 @@ const Data = ({ match }) => {
     try {
       setIsLoading(true);
       const res = await divisionAPI.get("", `/${id}`);
-      // console.log("data divisi id", res.data.data[0]);
       let data = res.data.data[0];
       setDivisionId(data.id);
-      setShift({
-        id_klinik: data.id_klinik,
-        id_divisi: data.id,
-      });
     } catch (e) {
       console.log(e);
     } finally {
@@ -402,7 +472,6 @@ const Data = ({ match }) => {
       ]);
       if (response.status === 200) {
         let data = response.data.data;
-        // console.log("shift klinik data", data);
         for (var i = 0; i < data.length; i++) {
           setSelectedClinic((current) => [
             ...current,
@@ -425,13 +494,11 @@ const Data = ({ match }) => {
   const onLoadDivision = async () => {
     try {
       const response = await divisionAPI.get("", "?limit=1000");
-      // console.log("shift divisi", response);
       setSelectedDivision([
         { label: "Semua", value: "", key: 0, name: "id_divisi" },
       ]);
       if (response.status === 200) {
         let data = response.data.data;
-        // console.log("shift divisi data", data);
         for (var i = 0; i < data.length; i++) {
           setSelectedDivision((current) => [
             ...current,
@@ -454,11 +521,16 @@ const Data = ({ match }) => {
   const onLoadEmployee = async () => {
     try {
       const response = await employeeAPI.get("", "?limit=1000");
-      // console.log("shift employee", response);
-      setSelectedEmployee([]);
+      setSelectedEmployee([
+        {
+          label: "Pilih Karyawan",
+          value: "",
+          key: 0,
+          name: "id_employee",
+        },
+      ]);
       if (response.status === 200) {
         let data = response.data.data;
-        // console.log("shift employee data", data);
         for (var i = 0; i < data.length; i++) {
           setSelectedEmployee((current) => [
             ...current,
@@ -466,7 +538,7 @@ const Data = ({ match }) => {
               label: data[i].nama,
               value: data[i].id,
               key: data[i].id,
-              name: "id_karyawan",
+              name: "id_employee",
             },
           ]);
         }
@@ -475,75 +547,6 @@ const Data = ({ match }) => {
       }
     } catch (e) {
       console.log(e);
-    }
-  };
-
-  const getScheduleByDivisionId = async (id) => {
-    try {
-      const res = await scheduleAPI.getByDivision(`/${id}?searchStatus=1`);
-      let data = res.data.data;
-      // console.log("databy", data);
-      if (data) {
-        data.map((data) => {
-          const tmpDate = new Date(data.tanggal);
-          const tmpStart = new Date(data.waktu_mulai);
-          const tmpEnd = new Date(data.waktu_selesai);
-          setShift((current) => [
-            ...current,
-            {
-              id: data.id,
-              id_klinik: data.id_klinik,
-              id_divisi: data.id_divisi,
-              id_karyawan: data.id_karyawan,
-              hari: data.hari,
-              tanggal: new Date(tmpDate),
-              waktu_mulai: new Date(tmpStart),
-              waktu_selesai: new Date(tmpEnd),
-            },
-          ]);
-          setTempShift((current) => [
-            ...current,
-            {
-              id: data.id,
-              id_klinik: data.id_klinik,
-              id_divisi: data.id_divisi,
-              id_karyawan: data.id_karyawan,
-              hari: data.hari,
-              tanggal: new Date(tmpDate),
-              waktu_mulai: new Date(tmpStart),
-              waktu_selesai: new Date(tmpEnd),
-            },
-          ]);
-        });
-      }
-      setDataStatus("update");
-    } catch (e) {
-      console.log(e);
-      setShift([
-        {
-          id: "",
-          id_karyawan: "",
-          id_klinik: "",
-          id_divisi: "",
-          hari: "",
-          tanggal: "",
-          waktu_mulai: "",
-          waktu_selesai: "",
-        },
-      ]);
-      setTempShift([
-        {
-          id: "",
-          id_karyawan: "",
-          id_klinik: "",
-          id_divisi: "",
-          hari: "",
-          tanggal: "",
-          waktu_mulai: "",
-          waktu_selesai: "",
-        },
-      ]);
-      setDataStatus("add");
     }
   };
 
@@ -563,17 +566,18 @@ const Data = ({ match }) => {
     if (searchDivisionF !== "") {
       params = `${params}&searchDivisi=${searchDivisionF}`;
     }
-    if (searchName !== "") {
-      params = `${params}&searchName=${searchName}`;
+    if (search !== "") {
+      params = `${params}&search=${search}`;
     }
     getDivision(params);
     onLoadClinic();
     onLoadDivision();
+    // onLoadDoctor();
     onLoadEmployee();
     getDivisionId(searchDivisi);
   }, [
     limit,
-    searchName,
+    search,
     searchDivision,
     searchClinicF,
     currentPage,
@@ -586,12 +590,17 @@ const Data = ({ match }) => {
     startNumber = (currentPage - 1) * 10 + 1;
   }
 
-  // console.log(shift);
-  // console.log(searchClinicF);
-  // console.log(searchDivisionF);
-  // console.log(divisionId);
-  // console.log(clinicId);
-  // console.log("pago", divisionData);
+  let tableNumber = 1;
+
+  if (currentTablePage !== 1) {
+    tableNumber = (currentTablePage - 1) * 10 + 1;
+  }
+
+  // console.log(dataSchedule);
+  console.log(dataShift);
+  // console.log(openTable);
+  console.log(divisionId);
+  console.log(scheduleId);
 
   return (
     <>
@@ -628,7 +637,7 @@ const Data = ({ match }) => {
                   name="search"
                   id="search"
                   placeholder="Pencarian"
-                  onChange={(e) => setSearchName(e.target.value)}
+                  onChange={(e) => setSearch(e.target.value)}
                 />
                 <InputGroupAddon addonType="append">
                   <Button outline color="theme-3" className="button-search">
@@ -688,10 +697,6 @@ const Data = ({ match }) => {
                             color="secondary"
                             size="xs"
                             className="button-xs"
-                            // onClick={() => setSearchDivisi(data.id)}
-                            // onClick={() =>
-                            //   handleChangeId(data.id_klinik, data.id)
-                            // }
                           >
                             <i className="simple-icon-arrow-right-circle"></i>
                           </Button>{" "}
@@ -711,234 +716,494 @@ const Data = ({ match }) => {
                   )}
                 </tbody>
               </Table>
+              <Pagination
+                currentPage={currentPage}
+                totalPage={divisionTotalPage}
+                onChangePage={(i) => setCurrentPage(i)}
+                numberLimit={divisionTotalPage < 4 ? divisionTotalPage : 3}
+              />
             </CardBody>
           </Card>
         </Colxx>
         <Colxx sm="12" md="12" xl="8" className="mb-4">
           <Card className="mb-8">
-            <CardBody>
-              <CardTitle>Form Manajemen Jadwal Jaga</CardTitle>
-              <FormGroup>
-                {shift?.length ? (
-                  shift.map((input, index) => {
-                    return (
-                      <Row key={index}>
-                        <Colxx sm={3}>
-                          <FormGroup>
-                            <Label for="id_karyawan">
-                              Karyawan
-                              <span
-                                className="required text-danger"
-                                aria-required="true"
-                              >
-                                {" "}
-                                *
-                              </span>
-                            </Label>
-                            <Select
-                              components={{ Input: CustomSelectInput }}
-                              className="react-select"
-                              classNamePrefix="react-select"
-                              name="id_karyawan"
-                              id="id_karyawan"
-                              placeholderText="Pilih Karyawan"
-                              value={selectedEmployee.find(
-                                (item) =>
-                                  item.value === shift[index].id_karyawan || ""
-                              )}
-                              options={selectedEmployee}
-                              // isDisabled={disableDivision}
-                              onChange={(event) =>
-                                handleShiftChange(index, event)
-                              }
-                            />
-                          </FormGroup>
-                        </Colxx>
-
-                        <Colxx sm={2}>
-                          <FormGroup>
-                            <Label for="hari">
-                              Hari
-                              <span
-                                className="required text-danger"
-                                aria-required="true"
-                              >
-                                {" "}
-                                **
-                              </span>
-                            </Label>
-                            <Select
-                              components={{ Input: CustomSelectInput }}
-                              className="react-select"
-                              classNamePrefix="react-select"
-                              name="hari"
-                              id="hari"
-                              // placeholderText="Pilih hari"
-                              value={selectDays.find(
-                                (item) => item.value === shift[index].hari || ""
-                              )}
-                              options={selectDays}
-                              onChange={(event) =>
-                                handleShiftChange(index, event)
-                              }
-                              required
-                            />
-                          </FormGroup>
-                        </Colxx>
-
-                        <Colxx sm={2}>
-                          <FormGroup>
-                            <Label for="tanggal">
-                              Tanggal
-                              <span
-                                className="required text-danger"
-                                aria-required="true"
-                              >
-                                {" "}
-                                **
-                              </span>
-                            </Label>
-                            <DatePicker
-                              name="tanggal"
-                              id="tanggal"
-                              selected={shift[index].tanggal}
-                              onChange={(event) => {
-                                handleShiftChange(index, event, "tanggal");
-                              }}
-                              placeholderText="Pilih Tanggal"
-                              dateFormat="yyyy-MM-dd"
-                              autoComplete="off"
-                              required
-                            />
-                          </FormGroup>
-                        </Colxx>
-
-                        <Colxx sm={2}>
-                          <FormGroup>
-                            <Label for="waktu_mulai">
-                              Mulai
-                              <span
-                                className="required text-danger"
-                                aria-required="true"
-                              >
-                                {" "}
-                                *
-                              </span>
-                            </Label>
-                            <DatePicker
-                              name="waktu_mulai"
-                              id="waktu_mulai"
-                              selected={shift[index].waktu_mulai}
-                              onChange={(event) =>
-                                handleShiftChange(index, event, "waktu_mulai")
-                              }
-                              placeholderText="Pilih Waktu Mulai"
-                              showTimeInput
-                              // showTimeSelect
-                              showTimeSelectOnly
-                              timeFormat="HH:mm"
-                              timeIntervals={5}
-                              dateFormat="HH:mm"
-                              autoComplete="off"
-                              timeCaption="Waktu"
-                              timeInputLabel=""
-                              required
-                            />
-                          </FormGroup>
-                        </Colxx>
-
-                        <Colxx sm={2}>
-                          <FormGroup>
-                            <Label for="waktu_selesai">
-                              Selesai
-                              <span
-                                className="required text-danger"
-                                aria-required="true"
-                              >
-                                {" "}
-                                *
-                              </span>
-                            </Label>
-                            <DatePicker
-                              name="waktu_selesai"
-                              id="waktu_selesai"
-                              placeholderText="Pilih Waktu Selesai"
-                              selected={shift[index].waktu_selesai}
-                              onChange={(event) =>
-                                handleShiftChange(index, event, "waktu_selesai")
-                              }
-                              showTimeInput
-                              // showTimeSelect
-                              showTimeSelectOnly
-                              timeFormat="HH:mm"
-                              timeIntervals={5}
-                              dateFormat="HH:mm"
-                              timeCaption="Waktu"
-                              timeInputLabel=""
-                              autoComplete="off"
-                              required
-                            />
-                          </FormGroup>
-                        </Colxx>
-                        {index > 0 && (
-                          <Colxx sm={1}>
-                            <Label>&nbsp;</Label>
-                            <br />
-                            <Button
-                              color="danger"
-                              style={{ float: "right" }}
-                              onClick={() => removeShiftFields(input.id, index)}
-                              className="remove-schedule"
-                            >
-                              <i className="simple-icon-trash"></i>
-                            </Button>
-                          </Colxx>
-                        )}
-                      </Row>
-                    );
-                  })
+            {clinicId ? (
+              <>
+                <CardBody>
+                  <CardTitle>Form Manajemen Jadwal JShift</CardTitle>
+                  <FormGroup>
+                    <FullCalendar
+                      plugins={[
+                        dayGridPlugin,
+                        timeGridPlugin,
+                        multiMonthPlugin,
+                        interactionPlugin,
+                        rrulePlugin,
+                        listPlugin,
+                        bootstrap5Plugin,
+                      ]}
+                      initialView="dayGridMonth"
+                      editable
+                      navLinks
+                      selectable
+                      selectMirror
+                      dayMaxEvents
+                      allDayContent={false}
+                      allDaySlot={false}
+                      // events={dataSchedule}
+                      events={[...dataSchedule]}
+                      nowIndicator={true}
+                      locale={idLocale}
+                      // select={handleSelectCalendar}
+                      // customButtons={{
+                      //   buttonAdd: {
+                      //     text: "Tambah",
+                      //     click: () => handleAddRecurring(),
+                      //   },
+                      // }}
+                      headerToolbar={{
+                        left: "prev,next today",
+                        center: "title",
+                        right:
+                          "multiMonthYear,dayGridMonth,timeGridWeek,timeGridDay,listWeek",
+                      }}
+                      // footerToolbar={{
+                      //   center: "buttonAdd",
+                      // }}
+                      displayEventTime
+                      displayEventEnd
+                      eventInteractive
+                      eventClick={handleSelectSchedule}
+                    />
+                  </FormGroup>
+                </CardBody>
+                {scheduleId ? (
+                  <></>
                 ) : (
-                  <>Data kosong</>
-                )}
-
-                <FormGroup>
-                  <Button
-                    color="primary"
-                    // style={{ float: "right" }}
-                    className="mb-2"
-                    onClick={addShiftFields}
+                  <CardBody
+                    colSpan={3}
+                    style={{
+                      textAlign: "center",
+                      verticalAlign: "middle",
+                    }}
                   >
-                    Tambah
-                  </Button>
-                </FormGroup>
-
-                <Row>
-                  <Colxx sm={6}>
-                    <Label>* ) Wajib diisi</Label>
-                    <br />
-                    <Label>
-                      ** ) Boleh diisi salah satu namun tidak boleh kosong
-                      keduanya
-                    </Label>
-                  </Colxx>
-                  <Colxx sm={6} className="text-right">
-                    <Button outline color="danger" onClick={handleCancelInput}>
-                      Batal
-                    </Button>
-                    &nbsp;&nbsp;
-                    <Button
-                      color="primary"
-                      type="submit"
-                      onClick={onShiftSubmit}
-                    >
-                      Simpan
-                    </Button>
-                  </Colxx>
-                </Row>
-              </FormGroup>
-            </CardBody>
+                    <img
+                      src="/assets/empty.svg"
+                      width={150}
+                      className="mt-5 mb-3"
+                    />
+                    <p className="mb-3">
+                      Silahkan memilih salah satu jadwal jaga dengan melakukan
+                      klik pada jadwal jaga yang telah tersedia di kalender
+                      untuk melihat tabel jadwal shift.
+                    </p>
+                  </CardBody>
+                )}
+              </>
+            ) : (
+              <CardBody
+                style={{ textAlign: "center", verticalAlign: "middle" }}
+              >
+                <img
+                  src="/assets/empty.svg"
+                  width={150}
+                  className="mt-5 mb-3"
+                />
+                <p className="mb-3">
+                  Silahkan memilih poli / divisi untuk melihat jadwal.
+                </p>
+              </CardBody>
+            )}
+            {openTable === true ? (
+              <CardBody>
+                <Table hover responsive>
+                  <thead>
+                    <tr>
+                      <th>
+                        <Button color="primary" onClick={handleAddShift}>
+                          Tambah
+                        </Button>
+                      </th>
+                    </tr>
+                  </thead>
+                  {dataShift?.length > 0 ? (
+                    <thead>
+                      <tr>
+                        <th className="center-xy" style={{ width: "40px" }}>
+                          #
+                        </th>
+                        <th
+                          style={{
+                            textAlign: "left",
+                            verticalAlign: "middle",
+                          }}
+                        >
+                          Nama Karyawan
+                        </th>
+                        <th
+                          style={{
+                            textAlign: "center",
+                            verticalAlign: "middle",
+                          }}
+                        >
+                          Waktu Mulai
+                        </th>
+                        <th
+                          style={{
+                            textAlign: "center",
+                            verticalAlign: "middle",
+                          }}
+                        >
+                          Waktu Selesai
+                        </th>
+                        <th
+                          style={{
+                            textAlign: "center",
+                            verticalAlign: "middle",
+                          }}
+                        >
+                          Status
+                        </th>
+                        <th
+                          style={{
+                            textAlign: "center",
+                            verticalAlign: "middle",
+                            width: "5%",
+                          }}
+                        ></th>
+                      </tr>
+                    </thead>
+                  ) : (
+                    <></>
+                  )}
+                  <tbody>
+                    {dataShift.length > 0 ? (
+                      dataShift.map((data) => (
+                        <tr key={data.id}>
+                          <td
+                            scope="row"
+                            style={{
+                              textAlign: "center",
+                              verticalAlign: "middle",
+                            }}
+                          >
+                            {tableNumber++}
+                          </td>
+                          <td
+                            scope="row"
+                            style={{
+                              textAlign: "left",
+                              verticalAlign: "middle",
+                            }}
+                          >
+                            {data.title}
+                          </td>
+                          <td
+                            scope="row"
+                            style={{
+                              textAlign: "center",
+                              verticalAlign: "middle",
+                            }}
+                          >
+                            {data.start}
+                          </td>
+                          <td
+                            scope="row"
+                            style={{
+                              textAlign: "center",
+                              verticalAlign: "middle",
+                            }}
+                          >
+                            {data.end}
+                          </td>
+                          <td
+                            scope="row"
+                            style={{
+                              textAlign: "center",
+                              verticalAlign: "middle",
+                            }}
+                          >
+                            {data.is_active === 0
+                              ? "Tidak Aktif"
+                              : data.is_active === 1
+                              ? "Aktif"
+                              : ""}
+                          </td>
+                          <td
+                            style={{
+                              textAlign: "center",
+                              verticalAlign: "middle",
+                            }}
+                            className="mt-2"
+                          >
+                            <UncontrolledDropdown>
+                              <DropdownToggle color="default">
+                                <i className="simple-icon-options-vertical"></i>
+                              </DropdownToggle>
+                              <DropdownMenu right>
+                                <DropdownItem
+                                  onClick={() => handleEditShift(data.id)}
+                                >
+                                  <i className="iconsminds-arrow-right-2"></i>
+                                  &nbsp;Edit Shift
+                                </DropdownItem>
+                                {data.is_active === 1 ? (
+                                  <>
+                                    <DropdownItem divider />
+                                    <DropdownItem
+                                      onClick={() =>
+                                        handleArchiveShift(data.id)
+                                      }
+                                    >
+                                      <i className="simple-icon-trash"></i>
+                                      &nbsp; Arsip Shift
+                                    </DropdownItem>
+                                  </>
+                                ) : data.is_active === 0 ? (
+                                  <>
+                                    <DropdownItem divider />
+                                    <DropdownItem
+                                      onClick={() =>
+                                        handleActivateShift(data.id)
+                                      }
+                                    >
+                                      <i className="simple-icon-trash"></i>
+                                      &nbsp; Activate Shift
+                                    </DropdownItem>
+                                  </>
+                                ) : (
+                                  <></>
+                                )}
+                              </DropdownMenu>
+                            </UncontrolledDropdown>
+                          </td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td align="center" colSpan={3}>
+                          <CardBody
+                            colSpan={3}
+                            style={{
+                              textAlign: "center",
+                              verticalAlign: "middle",
+                            }}
+                          >
+                            <img
+                              src="/assets/empty.svg"
+                              width={150}
+                              className="mt-5 mb-3"
+                            />
+                            <p className="mb-3">
+                              Jadwal shift dari jadwal jaga yang dipilih kosong,
+                              silahkan menambahkan jadwal shift.
+                            </p>
+                          </CardBody>
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </Table>
+              </CardBody>
+            ) : openTable === false ? (
+              <></>
+            ) : (
+              <></>
+            )}
           </Card>
         </Colxx>
+
+        <Modal isOpen={modalShift} toggle={() => setModalShift(!modalShift)}>
+          <ModalHeader
+            style={{
+              display: "block",
+            }}
+          >
+            <Row lg={12}>
+              <Colxx lg={10}>Tambah Jadwal Shift</Colxx>
+            </Row>
+          </ModalHeader>
+          <ModalBody>
+            <Row lg={12}>
+              {/* <Colxx lg={12}>
+                <FormGroup>
+                  <Label for="id_doctor">
+                    Dokter{" "}
+                    <span className="required text-danger" aria-required="true">
+                      {" "}
+                      *
+                    </span>
+                  </Label>
+                  <Select
+                    components={{ Input: CustomSelectInput }}
+                    className="react-select"
+                    classNamePrefix="react-select"
+                    name="id_doctor"
+                    id="id_doctor"
+                    required
+                    placeholderText="Pilih Dokter"
+                    // options={selectedEmployee}
+                    // value={selectedEmployee.find(
+                    //   (item) => item.value === eventCalendar.id_doctor
+                    // )}
+                    // onChange={(e) => handleInputCalendar(e)}
+                  />
+                </FormGroup>
+              </Colxx> */}
+              <Colxx lg={12}>
+                <FormGroup>
+                  <Label for="id_employee">
+                    Karyawan{" "}
+                    <span className="required text-danger" aria-required="true">
+                      {" "}
+                      *
+                    </span>
+                  </Label>
+                  <Select
+                    components={{ Input: CustomSelectInput }}
+                    className="react-select"
+                    classNamePrefix="react-select"
+                    name="id_employee"
+                    id="id_employee"
+                    required
+                    placeholderText="Pilih Karyawan"
+                    options={selectedEmployee}
+                    value={selectedEmployee.find(
+                      (item) => item.value === eventShift.id_employee
+                    )}
+                    onChange={(e) => handleInputShift(e)}
+                  />
+                </FormGroup>
+              </Colxx>
+            </Row>
+          </ModalBody>
+          <ModalFooter>
+            <Button
+              type="button"
+              outline
+              color="danger"
+              // onClick={handleCancelUpdatePracticeSchedule}
+            >
+              Batal
+            </Button>
+            <Button color="primary" onClick={(e) => onShiftSubmit(e)}>
+              Simpan
+            </Button>{" "}
+          </ModalFooter>
+        </Modal>
+
+        <Modal isOpen={modalUpdate} toggle={() => setModalUpdate(!modalUpdate)}>
+          <ModalHeader
+            style={{
+              display: "block",
+            }}
+          >
+            <Row lg={12}>
+              <Colxx lg={10}>Edit Jadwal Shift</Colxx>
+            </Row>
+          </ModalHeader>
+          <ModalBody>
+            <Row lg={12}>
+              <Colxx lg={12}>
+                <FormGroup>
+                  <Label for="id_employee">
+                    Karyawan{" "}
+                    <span className="required text-danger" aria-required="true">
+                      {" "}
+                      *
+                    </span>
+                  </Label>
+                  <Select
+                    components={{ Input: CustomSelectInput }}
+                    className="react-select"
+                    classNamePrefix="react-select"
+                    name="id_employee"
+                    id="id_employee"
+                    required
+                    placeholderText="Pilih Karyawan"
+                    options={selectedEmployee}
+                    value={selectedEmployee.find(
+                      (item) => item.value === eventShift.id_employee
+                    )}
+                    onChange={(e) => handleInputShift(e)}
+                  />
+                </FormGroup>
+              </Colxx>
+            </Row>
+          </ModalBody>
+          <ModalFooter>
+            <Button
+              type="button"
+              outline
+              color="danger"
+              // onClick={handleCancelUpdatePracticeSchedule}
+            >
+              Batal
+            </Button>
+            <Button color="primary" onClick={(e) => onShiftUpdate(e, shiftId)}>
+              Simpan
+            </Button>{" "}
+          </ModalFooter>
+        </Modal>
+
+        <Modal
+          isOpen={modalArchive}
+          toggle={() => setModalArchive(!modalArchive)}
+        >
+          <ModalHeader>Arsip Jadwal Shift Tenaga Kesehatan</ModalHeader>
+          <ModalBody>
+            <FormGroup>
+              <h5>
+                Apakah anda ingin mengarsipkan jadwal shift dengan nama tenaga
+                kesehatan <b>{employeeName}</b> ?
+              </h5>
+            </FormGroup>
+          </ModalBody>
+          <ModalFooter>
+            <Button
+              type="button"
+              outline
+              color="danger"
+              onClick={() => setModalArchive(false)}
+            >
+              Batal
+            </Button>
+            <Button color="primary" onClick={(e) => onShiftArchive(e, shiftId)}>
+              Simpan
+            </Button>{" "}
+          </ModalFooter>
+        </Modal>
+
+        <Modal
+          isOpen={modalActivate}
+          toggle={() => setModalActivate(!modalActivate)}
+        >
+          <ModalHeader>Aktivasi Jadwal Shift Tenaga Kesehatan</ModalHeader>
+          <ModalBody>
+            <FormGroup>
+              <h5>
+                Apakah anda ingin mengaktivasi jadwal shift dengan nama tenaga
+                kesehatan <b>{employeeName}</b> ?
+              </h5>
+            </FormGroup>
+          </ModalBody>
+          <ModalFooter>
+            <Button
+              type="button"
+              outline
+              color="danger"
+              onClick={() => setModalActivate(false)}
+            >
+              Batal
+            </Button>
+            <Button
+              color="primary"
+              onClick={(e) => onShiftActivate(e, shiftId)}
+            >
+              Simpan
+            </Button>{" "}
+          </ModalFooter>
+        </Modal>
       </Row>
     </>
   );

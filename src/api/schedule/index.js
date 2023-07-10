@@ -13,11 +13,11 @@ const schedule = {
     return baseApi.get(url, { headers: getAuthHeader() });
   },
   getByDivision: (options) => {
-    const url = api.schedule.ondvs + options;
+    const url = api.schedule.byDivision + options;
     return baseApi.get(url, { headers: getAuthHeader() });
   },
   getByEmployee: (options) => {
-    const url = api.schedule.onemployee + options;
+    const url = api.schedule.byEmployee + options;
     return baseApi.get(url, { headers: getAuthHeader() });
   },
   getDistinct: (options) => {
@@ -25,7 +25,7 @@ const schedule = {
     return baseApi.get(url, { headers: getAuthHeader() });
   },
   getToday: (options) => {
-    const url = api.schedule.bytoday + options;
+    const url = api.schedule.today + options;
     return baseApi.get(url, { headers: getAuthHeader() });
   },
   add: (payloads) => {
