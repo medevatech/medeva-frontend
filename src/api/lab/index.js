@@ -15,5 +15,17 @@ const lab = {
     const url = api.lab.all + `/${id}`
     return baseApi.put(url, payloads, { headers: getAuthHeader() })
   },
+  archive: (payloads, id) => {
+    const url = api.lab.archiveLab + `/${id}`
+    return baseApi.put(url, payloads, { headers: getAuthHeader() })
+  },
+  activate: (payloads, id) => {
+    const url = api.lab.activateLab + `/${id}`
+    return baseApi.put(url, payloads, { headers: getAuthHeader() })
+  },
+  delete: (id) => {
+    const url = api.lab.all + `/${id}`
+    return baseApi.delete(url, { headers: getAuthHeader() })
+  },
 }
 export default lab

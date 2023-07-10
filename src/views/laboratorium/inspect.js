@@ -32,14 +32,13 @@ import "react-rater/lib/react-rater.css";
 
 import useForm from 'utils/useForm';
 
-import moment from "moment";
 import Select from "react-select";
 import { Colxx, Separator } from "components/common/CustomBootstrap";
 import Pagination from "components/common/Pagination";
 
 import CustomSelectInput from "components/common/CustomSelectInput";
 
-import serviceAPI from "api/service/list";
+import inspectAPI from "api/inspect";
 import Swal from "sweetalert2";
 
 import loader from '../../assets/img/loading.gif';
@@ -54,141 +53,146 @@ const selectStatusF = [
 
 const Data = ({ match, history, loading, error }) => {
   const dispatch = useDispatch();
-  const serviceData = useSelector(state => state.serviceList);
-  const serviceTotalPage = useSelector(state => state.serviceListTotalPage);
+  const inspectData = useSelector(state => state.inspectList);
+  const inspectTotalPage = useSelector(state => state.inspectListTotalPage);
   const { errors, validate } = useForm();
 
   const [tableClass, setTableClass] = useState('');
   const [dataStatus, setDataStatus] = useState("");
   const [rowSelected, setRowSelected] = useState(null);
-
-  const [selectedKlinik, setSelectedKlinik] = useState([]);
   
   const [modalArchive, setModalArchive] = useState(false);
   const [modalDelete, setModalDelete] = useState(false);
-  const [serviceID, setServiceID] = useState('');
-  const [serviceStatus, setServiceStatus] = useState(0);
-
-  const [service, setService] = useState({
-    nama: '',
-    tipe: 'Layanan'
+  const [inspectID, setInspectID] = useState('');
+  const [inspectName, setInspectName] = useState('');
+  const [inspectStatus, setInspectStatus] = useState(0);
+  
+  const [inspect, setInspect] = useState({
+    nama: ''
   });
 
   const onChange = (e) => {
     // console.log('e', e);
 
-    setService(current => {
+    setInspect(current => {
         return { ...current, [e.target.name]: e.target.value }
     })
 
     validate(e, e.name !== undefined ? e.name : e.target.name ? e.target.name : '', e.value !== undefined ? e.value : e.target.value ? e.target.value : '');
-    // console.log('service', service);
+
+    // console.log('inspect', inspect);
   }
 
-  const onServiceSubmit = async (e) => {
-    e.preventDefault();
+  const onInspectSubmit = async (e) => {
+    e && e.preventDefault();
+    
+    // console.log('inspect', inspect);
 
-    for(let [key, value] of Object.entries(service)) {
+    for(let [key, value] of Object.entries(inspect)) {
       if((key === 'nama' && value === '')){
-        validate(e, key, value);
+        validate(e, 'nama_pemeriksaan', value);
+        // isError = true;
         return;
       }
+
+      // console.log(key, value);
     }
 
+    // console.log('errors', errors);
+
     if(dataStatus === 'add') {
-      try {
-        const response = await serviceAPI.add(service);
-        // console.log(response);
-  
-        if (response.status == 200) {
-          let data = await response.data.data;
-          // console.log(data);
-  
-          Swal.fire({
-            title: "Sukses!",
-            html: `Tambah layanan sukses`,
-            icon: "success",
-            confirmButtonColor: "#008ecc",
-          });
-  
-          resetForm(e);
-        } else {
+        try {
+          const response = await inspectAPI.add(inspect);
+          // console.log(response);
+    
+          if (response.status == 200) {
+            let data = await response.data.data;
+            // console.log(data);
+    
+            Swal.fire({
+              title: "Sukses!",
+              html: `Tambah pemeriksaan sukses`,
+              icon: "success",
+              confirmButtonColor: "#008ecc",
+            });
+    
+            setInspectID(data.id);
+          } else {
+            Swal.fire({
+              title: "Gagal!",
+              html: `Tambah pemeriksaan gagal: ${response.message}`,
+              icon: "error",
+              confirmButtonColor: "#008ecc",
+              confirmButtonText: "Coba lagi",
+            });
+    
+            throw Error(`Error status: ${response.status}`);
+          }
+        } catch (e) {
           Swal.fire({
             title: "Gagal!",
-            html: `Tambah layanan gagal: ${response.message}`,
+            html: e.response.data.message.response.data.message,
             icon: "error",
             confirmButtonColor: "#008ecc",
             confirmButtonText: "Coba lagi",
           });
-  
-          throw Error(`Error status: ${response.status}`);
+    
+          console.log(e);
+        } finally {
+          getInspect("");
         }
-      } catch (e) {
-        Swal.fire({
-          title: "Gagal!",
-          html: e.response.data.message,
-          icon: "error",
-          confirmButtonColor: "#008ecc",
-          confirmButtonText: "Coba lagi",
-        });
-  
-        console.log(e);
-      } finally {
-        !userData.roles.includes('isDev') ? getService(`?searchTipe=Layanan&searchKlinik=${userData.id_klinik}`) : getService("?searchTipe=Layanan");
-      }
-    } else if (dataStatus === 'update') {
-      try {
-        const response = await serviceAPI.update(service, serviceID);
-        // console.log(response);
-  
-        if (response.status == 200) {
-          let data = await response.data.data;
-          // console.log(data);
-  
-          Swal.fire({
-            title: "Sukses!",
-            html: `Ubah layanan sukses`,
-            icon: "success",
-            confirmButtonColor: "#008ecc",
-          });
-  
-          resetForm(e);
-        } else {
+      } else if (dataStatus === 'update') {
+        try {
+          const response = await inspectAPI.update(inspect, inspectID);
+          // console.log(response);
+    
+          if (response.status == 200) {
+            let data = await response.data.data;
+            // console.log(data);
+    
+            Swal.fire({
+              title: "Sukses!",
+              html: `Ubah pemeriksaan sukses`,
+              icon: "success",
+              confirmButtonColor: "#008ecc",
+            });
+    
+            resetForm(e);
+          } else {
+            Swal.fire({
+              title: "Gagal!",
+              html: `Ubah pemeriksaan gagal: ${response.message}`,
+              icon: "error",
+              confirmButtonColor: "#008ecc",
+              confirmButtonText: "Coba lagi",
+            });
+    
+            throw Error(`Error status: ${response.status}`);
+          }
+        } catch (e) {
           Swal.fire({
             title: "Gagal!",
-            html: `Ubah layanan gagal: ${response.message}`,
+            html: e.response.data.message,
             icon: "error",
             confirmButtonColor: "#008ecc",
             confirmButtonText: "Coba lagi",
           });
-  
-          throw Error(`Error status: ${response.status}`);
+    
+          console.log(e);
+        } finally {
+          getInspect("");
+          getInspectById("", inspectID);
         }
-      } catch (e) {
-        Swal.fire({
-          title: "Gagal!",
-          html: e.response.data.message,
-          icon: "error",
-          confirmButtonColor: "#008ecc",
-          confirmButtonText: "Coba lagi",
-        });
-  
-        console.log(e);
-      } finally {
-        !userData.roles.includes('isDev') ? getService(`?searchTipe=Layanan&searchKlinik=${userData.id_klinik}`) : getService("?searchTipe=Layanan");
-        getServiceById("", serviceID);
+      } else {
+        console.log('dataStatus undefined')
       }
-    } else {
-      console.log('dataStatus undefined')
-    }
-  };
+  }
 
   const resetForm = (e, scroll = false) => {
     e && e.preventDefault();
 
-    setServiceID('');
-    setServiceName('');
-    setServiceStatus(0);
+    setInspectID('');
+    setInspectStatus(0);
 
     if(scroll) {
       if(window.innerWidth < 1280){
@@ -207,22 +211,18 @@ const Data = ({ match, history, loading, error }) => {
       }
     }
 
-    setService({
-      nama: '',
-      tipe: 'Layanan'
-    });
-
+    setInspect({ nama: "" });
     setDataStatus("add");
   };
 
   const [isLoading, setIsLoading] = useState(false);
 
-  const getService = async (params) => {
+  const getInspect = async (params) => {
     try {
       setIsLoading(true);
-      const res = await serviceAPI.get(params);
-      dispatch({type: "GET_SERVICE_LIST", payload: res.data.data});
-      dispatch({type: "GET_TOTAL_PAGE_SERVICE_LIST", payload: res.data.pagination.totalPage});
+      const res = await inspectAPI.get(params);
+      dispatch({type: "GET_INSPECT_LIST", payload: res.data.data});
+      dispatch({type: "GET_TOTAL_PAGE_INSPECT_LIST", payload: res.data.pagination.totalPage});
 
       if(res.data.data.length > 0) {
         setTableClass('table-hover');
@@ -234,9 +234,10 @@ const Data = ({ match, history, loading, error }) => {
     }
   };
 
-  const getServiceById = async (e, id) => {
+  const getInspectById = async (e, id) => {
     e && e.preventDefault();
-    e && resetForm(e);
+    // e && resetForm(e);
+
     setDataStatus("update");
     setRowSelected(id);
 
@@ -256,62 +257,27 @@ const Data = ({ match, history, loading, error }) => {
     }
 
     try {
-      const res = await serviceAPI.get(`/${id}`);
+      const res = await inspectAPI.get(`/${id}`);
       let data = res.data.data[0];
-
       // console.log(data);
 
-      setServiceID(data.id);
-      setService({
+      setInspectID(data.id);
+      setInspect({
         nama: data.nama,
-        tipe: data.tipe
       });
-      setServiceStatus(data.is_active);
 
-      // console.log(service);
-
+      setInspectName(data.nama);
+      setInspectStatus(data.is_active);
     } catch (e) {
       console.log(e);
     }
 
     // console.log(dataStatus);
-  };
-
-  function ButtonActive() {
-    return <>
-    <Button color="success" size="xs" onClick={(e) => statusById(e, serviceID)}>
-      <i className="simple-icon-drawer"></i>&nbsp;Aktifkan
-    </Button><span>&nbsp;&nbsp;</span>
-    </>;
-  }
-
-  function ButtonArchive() {
-    return <>
-    <Button color="warning" size="xs" onClick={(e) => statusById(e, serviceID)}>
-      <i className="simple-icon-drawer"></i>&nbsp;Arsipkan
-    </Button><span>&nbsp;&nbsp;</span>
-    </>;
-  }
-
-  function IsActive() {
-    if(userData.roles.includes('isDev') ||
-      userData.roles.includes('isManager') ||
-      userData.roles.includes('isAdmin')) {
-      if (serviceID && serviceStatus == 1) {
-        return <ButtonArchive/>;
-      } else if (serviceID && serviceStatus == 0) {
-        return <ButtonActive/>;
-      } else {
-        return null;
-      }
-    } else {
-      return null;
-    }
   }
 
   function ActiveDropdown() {
     return <>
-      <DropdownItem onClick={(e) => statusById(e, serviceID)}>
+      <DropdownItem onClick={(e) => statusById(e, inspectID)}>
         <i className="simple-icon-drawer"></i>&nbsp;Aktifkan
       </DropdownItem>
     </>;
@@ -319,7 +285,7 @@ const Data = ({ match, history, loading, error }) => {
 
   function ArchiveDropdown() {
     return <>
-      <DropdownItem onClick={(e) => statusById(e, serviceID)}>
+      <DropdownItem onClick={(e) => statusById(e, inspectID)}>
         <i className="simple-icon-drawer"></i>&nbsp;Arsipkan
       </DropdownItem>
     </>;
@@ -329,9 +295,9 @@ const Data = ({ match, history, loading, error }) => {
     if(userData.roles.includes('isDev') ||
       userData.roles.includes('isManager') ||
       userData.roles.includes('isAdmin')) {
-      if (serviceID && serviceStatus == 1) {
+      if (inspectID && inspectStatus == 1) {
         return <ArchiveDropdown/>;
-      } else if (serviceID && serviceStatus == 0) {
+      } else if (inspectID && inspectStatus == 0) {
         return <ActiveDropdown/>;
       } else {
         return null;
@@ -341,19 +307,17 @@ const Data = ({ match, history, loading, error }) => {
     }
   }
 
-  const [serviceName, setServiceName] = useState('');
-
   const statusById = async (e, id) => {
     e.preventDefault();
 
     setModalArchive(true);
     try {
-      const res = await serviceAPI.get(`/${id}`);
+      const res = await inspectAPI.get(`/${id}`);
       let data = res.data.data[0];
 
-      setServiceID(data.id);
-      setServiceStatus(data.is_active);
-      setServiceName(data.nama);
+      setInspectID(data.id);
+      setInspectStatus(data.is_active);
+      setInspectName(data.nama);
     } catch (e) {
       console.log(e);
     }
@@ -363,8 +327,8 @@ const Data = ({ match, history, loading, error }) => {
     e.preventDefault();
 
     try {
-      if (serviceStatus == 1) {
-        const response = await serviceAPI.archive("", serviceID);
+      if (inspectStatus == 1) {
+        const response = await inspectAPI.archive("", inspectID);
 
         if (response.status == 200) {
           let data = await response.data.data;
@@ -372,7 +336,7 @@ const Data = ({ match, history, loading, error }) => {
 
           Swal.fire({
             title: "Sukses!",
-            html: `Arsip layanan sukses`,
+            html: `Arsip pemeriksaan sukses`,
             icon: "success",
             confirmButtonColor: "#008ecc",
           });
@@ -381,7 +345,7 @@ const Data = ({ match, history, loading, error }) => {
         } else {
           Swal.fire({
             title: "Gagal!",
-            html: `Arsip layanan gagal: ${response.message}`,
+            html: `Arsip pemeriksaan gagal: ${response.message}`,
             icon: "error",
             confirmButtonColor: "#008ecc",
             confirmButtonText: "Coba lagi",
@@ -390,7 +354,7 @@ const Data = ({ match, history, loading, error }) => {
           throw Error(`Error status: ${response.status}`);
         }
       } else {
-        const response = await serviceAPI.activate("", serviceID);
+        const response = await inspectAPI.activate("", inspectID);
 
         if (response.status == 200) {
           let data = await response.data.data;
@@ -398,7 +362,7 @@ const Data = ({ match, history, loading, error }) => {
 
           Swal.fire({
             title: "Sukses!",
-            html: `Aktivasi layanan sukses`,
+            html: `Aktivasi pemeriksaan sukses`,
             icon: "success",
             confirmButtonColor: "#008ecc",
           });
@@ -407,7 +371,7 @@ const Data = ({ match, history, loading, error }) => {
         } else {
           Swal.fire({
             title: "Gagal!",
-            html: `Aktivasi layanan gagal: ${response.message}`,
+            html: `Aktivasi pemeriksaan gagal: ${response.message}`,
             icon: "error",
             confirmButtonColor: "#008ecc",
             confirmButtonText: "Coba lagi",
@@ -428,8 +392,8 @@ const Data = ({ match, history, loading, error }) => {
 
       console.log(e);
     } finally {
-      !userData.roles.includes('isDev') ? getService(`?searchTipe=Layanan&searchKlinik=${userData.id_klinik}`) : getService("?searchTipe=Layanan");
-      getServiceById("", serviceID);
+      getInspect("");
+      getInspectById("", inspectID);
     }
   };
 
@@ -438,11 +402,11 @@ const Data = ({ match, history, loading, error }) => {
 
     setModalDelete(true);
     try {
-      const res = await serviceAPI.get(`/${id}`);
+      const res = await inspectAPI.get(`/${id}`);
       let data = res.data.data[0];
 
-      setServiceID(data.id);
-      setServiceName(data.nama);
+      setInspectID(data.id);
+      setInspectName(data.nama);
     } catch (e) {
       console.log(e);
     }
@@ -452,7 +416,7 @@ const Data = ({ match, history, loading, error }) => {
     e.preventDefault();
 
     try {
-      const response = await serviceAPI.delete(serviceID);
+      const response = await inspectAPI.delete(inspectID);
 
       if (response.status == 200) {
         let data = await response.data.data;
@@ -460,7 +424,7 @@ const Data = ({ match, history, loading, error }) => {
 
         Swal.fire({
           title: "Sukses!",
-          html: `Hapus layanan sukses`,
+          html: `Hapus pemeriksaan sukses`,
           icon: "success",
           confirmButtonColor: "#008ecc",
         });
@@ -469,7 +433,7 @@ const Data = ({ match, history, loading, error }) => {
       } else {
         Swal.fire({
           title: "Gagal!",
-          html: `Hapus layanan gagal: ${response.message}`,
+          html: `Hapus pemeriksaan gagal: ${response.message}`,
           icon: "error",
           confirmButtonColor: "#008ecc",
           confirmButtonText: "Coba lagi",
@@ -490,7 +454,8 @@ const Data = ({ match, history, loading, error }) => {
 
       console.log(e);
     } finally {
-      !userData.roles.includes('isDev') ? getService(`?searchTipe=Layanan&searchKlinik=${userData.id_klinik}`) : getService("?searchTipe=Layanan");
+      getInspect("");
+      resetForm();
     }
   };
 
@@ -513,20 +478,15 @@ const Data = ({ match, history, loading, error }) => {
     if (search !== "") {
       params = `${params}&search=${search}`;
     }
-    if (!userData.roles.includes('isDev')) {
-      params = `${params}&searchKlinik=${userData.id_klinik}`;
-    }
     if (searchStatus !== "") {
       params = `${params}&searchStatus=${searchStatus}`;
     }
     if (currentPage !== 1) {
       params = `${params}&page=${currentPage}`;
     }
-
-    params = `${params}&searchTipe=Layanan`;
     
     setRowSelected(false);
-    getService(params);
+    getInspect(params);
   }, [limit, search, searchStatus, sortBy, sortOrder, currentPage ]);
 
   let startNumber = 1;
@@ -548,7 +508,7 @@ const Data = ({ match, history, loading, error }) => {
               <CardTitle>
                 <Row>
                   <Colxx sm="8" md="8" xl="8" className="col-sm-8-mobile">
-                    Data Layanan
+                    Data Pemeriksaan
                   </Colxx>
                   <Colxx sm="4" md="4" xl="4" className="col-sm-4-mobile">
                     <Button
@@ -564,18 +524,18 @@ const Data = ({ match, history, loading, error }) => {
               </CardTitle>
               <FormGroup row style={{ margin: '0px', width: '100%' }}>
                 <Colxx sm="12" md="12" style={{ paddingLeft: '0px', paddingRight: '0px' }}>
-                  <Label for="status">
-                      Status
+                    <Label for="status">
+                        Status
                     </Label>
                     <Select
-                      components={{ Input: CustomSelectInput }}
-                      className="react-select"
-                      classNamePrefix="react-select"
-                      name="status"
-                      onChange={(e) => setSearchStatus(e.value)}
-                      options={selectStatusF}
-                      isSearchable={false}
-                      defaultValue={{ label: "Semua Status", value: "", key: 0, name: "status" }}
+                        components={{ Input: CustomSelectInput }}
+                        className="react-select"
+                        classNamePrefix="react-select"
+                        name="status"
+                        onChange={(e) => setSearchStatus(e.value)}
+                        options={selectStatusF}
+                        isSearchable={false}
+                        defaultValue={{ label: "Semua Status", value: "", key: 0, name: 'status' }}
                     />
                 </Colxx>
               </FormGroup>
@@ -597,7 +557,7 @@ const Data = ({ match, history, loading, error }) => {
                 <thead>
                   <tr>
                     <th className="center-xy" style={{ width: '40px' }}>#</th>
-                    <th>Layanan</th>
+                    <th>Pemeriksaan</th>
                     <th className="center-xy" style={{ width: '55px' }}>&nbsp;</th>
                   </tr>
                 </thead>
@@ -611,9 +571,9 @@ const Data = ({ match, history, loading, error }) => {
                     <td>&nbsp;</td>
                   </tr>
                   ) : 
-                  serviceData.length > 0 ? (
-                    serviceData.map((data) => (
-                      <tr key={data.id} onClick={(e) => getServiceById(e, data.id)} style={{ cursor: 'pointer'}} className={`${rowSelected == data.id && 'row-selected'}`}>
+                  inspectData.length > 0 ? (
+                    inspectData.map((data) => (
+                      <tr key={data.id} onClick={(e) => getInspectById(e, data.id)} style={{ cursor: 'pointer'}} className={`${rowSelected == data.id && 'row-selected'}`}>
                         <th scope="row" style={{ textAlign: "center", verticalAlign: 'middle' }}>
                           {startNumber++}
                         </th>
@@ -627,7 +587,7 @@ const Data = ({ match, history, loading, error }) => {
                         </td>
                         <td style={{ textAlign: "center", verticalAlign: 'middle' }}>
                           <Button color="secondary" size="xs" className="button-xs"
-                            // onClick={(e) => getServiceById(e, data.id)}
+                            // onClick={(e) => getInspectById(e, data.id)}
                             >
                             <i className="simple-icon-arrow-right-circle"></i>
                           </Button>
@@ -648,9 +608,9 @@ const Data = ({ match, history, loading, error }) => {
               </Table>
               <Pagination
                 currentPage={currentPage}
-                totalPage={serviceTotalPage}
+                totalPage={inspectTotalPage}
                 onChangePage={(i) => setCurrentPage(i)}
-                numberLimit={serviceTotalPage < 4 ? serviceTotalPage : 3}
+                numberLimit={inspectTotalPage < 4 ? inspectTotalPage : 3}
               />
             </CardBody>
           </Card>
@@ -662,19 +622,9 @@ const Data = ({ match, history, loading, error }) => {
               <CardTitle>
                 <Row>
                   <Colxx sm="10" className="card-title-mobile">
-                    { dataStatus && dataStatus === "add" ? 'Form Tambah Layanan' : 'Form Ubah Layanan' }
-                    {/* Form Manajemen Layanan */}
+                    { dataStatus && dataStatus === "add" ? 'Form Tambah Pemeriksaan' : 'Form Ubah Pemeriksaan' }
                   </Colxx>
                   <Colxx sm="2" className="three-dots-menu">
-                    {/* {<IsActive/>}
-                    {(userData.roles.includes('isDev') ||
-                    userData.roles.includes('isManager')) && serviceID &&
-                      <Button color="danger" size="xs"
-                        onClick={(e) => deleteById(e, serviceID)}
-                        >
-                        <i className="simple-icon-trash"></i>&nbsp;Hapus
-                      </Button>
-                    } */}
                     { dataStatus === "update" && 
                       <UncontrolledDropdown>
                         <DropdownToggle color="default">
@@ -683,10 +633,10 @@ const Data = ({ match, history, loading, error }) => {
                         <DropdownMenu right>
                           {<IsActiveDropdown/>}
                           {(userData.roles.includes('isDev') ||
-                          userData.roles.includes('isManager')) && serviceID &&
+                          userData.roles.includes('isManager')) && inspectID &&
                             <>
                               <DropdownItem divider />
-                              <DropdownItem onClick={(e) => deleteById(e, serviceID)}>
+                              <DropdownItem onClick={(e) => deleteById(e, inspectID)}>
                                 <i className="simple-icon-trash"></i>&nbsp;Hapus
                               </DropdownItem>
                             </>
@@ -697,33 +647,32 @@ const Data = ({ match, history, loading, error }) => {
                   </Colxx>
                 </Row>
               </CardTitle>
-              <Form className="av-tooltip tooltip-right-top" onSubmit={onServiceSubmit}>
+              <Form className="av-tooltip tooltip-right-top" onSubmit={onInspectSubmit}>
                 <FormGroup row>
                   <Colxx sm={12}>
                     <FormGroup>
                       <Label for="nama">
-                        Nama
-                        <span
+                          Nama
+                          <span
                           className="required text-danger"
                           aria-required="true"
-                        >
+                          >
                           {" "}
                           *
-                        </span>
+                          </span>
                       </Label>
                       <Input
-                        type="text"
-                        name="nama"
-                        id="nama"
-                        placeholder="Nama"
-                        value={service.nama}
-                        onChange={onChange}
-                        // required
+                          type="text"
+                          name="nama"
+                          id="nama"
+                          placeholder="Nama"
+                          value={inspect.nama}
+                          onChange={onChange}
                       />
                       {errors.nama && (
-                        <div className="rounded invalid-feedback d-block">
+                          <div className="rounded invalid-feedback d-block">
                           {errors.nama}
-                        </div>
+                          </div>
                       )}
                     </FormGroup>
                   </Colxx>
@@ -745,7 +694,7 @@ const Data = ({ match, history, loading, error }) => {
                     &nbsp;&nbsp;
                     <Button
                       color="primary"
-                      // onClick={(e) => onServiceSubmit(e)}
+                      // onClick={(e) => onInspectSubmit(e)}
                     >
                       Simpan
                     </Button>
@@ -755,8 +704,8 @@ const Data = ({ match, history, loading, error }) => {
             </CardBody>
             : <CardBody style={{ textAlign: 'center', verticalAlign: 'middle'}}>
                 <img src="/assets/empty.svg" width={150} className="mt-5 mb-3"/>
-                <p className="mb-5">Silahkan memilih layanan untuk melihat, mengubah, menghapus, mengarsipkan, dan mengaktifkan data layanan.
-                  Silahkan klik tombol tambah untuk menambahkan layanan baru.</p>
+                <p className="mb-5">Silahkan memilih pemeriksaan untuk melihat, mengubah, menghapus, mengarsipkan, dan mengaktifkan data pemeriksaan.
+                  Silahkan klik tombol tambah untuk menambahkan pemeriksaan baru.</p>
             </CardBody> }
           </Card>
         </Colxx>
@@ -765,9 +714,9 @@ const Data = ({ match, history, loading, error }) => {
           isOpen={modalArchive}
           toggle={() => setModalArchive(!modalArchive)}
         >
-          <ModalHeader>Arsip Layanan</ModalHeader>
+          <ModalHeader>Arsip Pemeriksaan</ModalHeader>
           <ModalBody>
-            <h5>Apakah Anda ingin {serviceStatus == 1 ?  'mengarsipkan'  : 'aktivasi' } <b>{serviceName}</b>?</h5>
+            <h5>Apakah Anda ingin {inspectStatus == 1 ?  'mengarsipkan'  : 'aktivasi' } <b>{inspectName}</b>?</h5>
           </ModalBody>
           <ModalFooter>
             <Button
@@ -788,9 +737,9 @@ const Data = ({ match, history, loading, error }) => {
           isOpen={modalDelete}
           toggle={() => setModalDelete(!modalDelete)}
         >
-          <ModalHeader>Hapus Layanan</ModalHeader>
+          <ModalHeader>Hapus Pemeriksaan</ModalHeader>
           <ModalBody>
-            <h5>Apakah Anda ingin menghapus <b>{serviceName}</b>?</h5>
+            <h5>Apakah Anda ingin menghapus <b>{inspectName}</b>?</h5>
           </ModalBody>
           <ModalFooter>
             <Button
@@ -814,7 +763,7 @@ const Data = ({ match, history, loading, error }) => {
         className="float-btn"
         onClick={(e) => resetForm(e, true)}
       >
-        <i className="iconsminds-library"></i> Tambah Layanan
+        <i className="iconsminds-library"></i> Tambah Pemeriksaan
       </Button> */}
     </>
   );

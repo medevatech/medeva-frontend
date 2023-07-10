@@ -17,6 +17,9 @@ const Treatment = React.lazy(() =>
 const Medicine = React.lazy(() =>
   import(/* webpackChunkName: "views-medicine" */ '../medicine/data')
 );
+const Inspect = React.lazy(() =>
+  import(/* webpackChunkName: "views-vendor" */ '../laboratorium/inspect')
+);
 const Vendor = React.lazy(() =>
   import(/* webpackChunkName: "views-vendor" */ '../vendor/data')
 );
@@ -35,27 +38,32 @@ const App = ({ match }) => {
             <ProtectedRoute
               path={`${match.url}/insurance`}
               component={Insurance}
-              roles={[ "isDev", "isManager", "isAdmin" ]}
+              roles={[ "isDev" ]}
             />
             <ProtectedRoute
               path={`${match.url}/service`}
               component={Service}
-              roles={[ "isDev", "isManager", "isAdmin" ]}
+              roles={[ "isDev" ]}
             />
             <ProtectedRoute
               path={`${match.url}/treatment`}
               component={Treatment}
-              roles={[ "isDev", "isManager", "isAdmin" ]}
+              roles={[ "isDev" ]}
             />
             <ProtectedRoute
               path={`${match.url}/medicine`}
               component={Medicine}
-              roles={[ "isDev", "isManager", "isAdmin" ]}
+              roles={[ "isDev" ]}
+            />
+            <ProtectedRoute
+              path={`${match.url}/inspect`}
+              component={Inspect}
+              roles={[ "isDev" ]}
             />
             <ProtectedRoute
               path={`${match.url}/vendor`}
               component={Vendor}
-              roles={[ "isDev", "isManager", "isAdmin" ]}
+              roles={[ "isDev" ]}
             />
             <Redirect to="/error" />
           </Switch>

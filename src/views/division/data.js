@@ -224,7 +224,7 @@ const Data = ({ match, history, loading, error }) => {
         console.log(e);
       } finally {
         !userData.roles.includes('isDev') ? getDivision(`?searchKlinik=${userData.id_klinik}`) : getDivision("");
-        getDivision("", divisionID);
+        getDivisionById("", divisionID);
       }
     } else {
       console.log('dataStatus undefined')
@@ -717,7 +717,7 @@ const Data = ({ match, history, loading, error }) => {
                         </td>
                         <td style={{ textAlign: "center", verticalAlign: 'middle' }}>
                           <Button color="secondary" size="xs" className="button-xs"
-                            onClick={(e) => getDivisionById(e, data.id)}
+                            // onClick={(e) => getDivisionById(e, data.id)}
                             >
                             <i className="simple-icon-arrow-right-circle"></i>
                           </Button>

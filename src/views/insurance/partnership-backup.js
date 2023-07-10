@@ -926,7 +926,7 @@ const Data = ({ match, history, loading, error }) => {
                         </td>
                         <td style={{ textAlign: "center", verticalAlign: 'middle' }}>
                           <Button color="secondary" size="xs" className="button-xs"
-                            onClick={(e) => getPartnershipByClinicId(e, data.id_klinik)}
+                            // onClick={(e) => getPartnershipByClinicId(e, data.id_klinik)}
                             >
                             <i className="simple-icon-arrow-right-circle"></i>
                           </Button>

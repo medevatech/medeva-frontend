@@ -54,7 +54,10 @@ const useForm = (callback) => {
                 (name === 'dosis' && value === '') ||
                 (name === 'deskripsi' && value === '') ||
                 (name === 'indikasi' && value === '') ||
-                (name === 'merk' && value === '')) {
+                (name === 'merk' && value === '') ||
+                (name === 'nomor_telepon' && value === '') ||
+                (name === 'alamat' && value === '') ||
+                (name === 'kategori_layanan_lab' && value === '')) {
                 
                 setErrors(errors => ({
                     ...errors,
@@ -84,7 +87,10 @@ const useForm = (callback) => {
                 (name === 'dosis' && value !== '') ||
                 (name === 'deskripsi' && value !== '') ||
                 (name === 'indikasi' && value !== '') ||
-                (name === 'merk' && value !== '')) {
+                (name === 'merk' && value !== '') ||
+                (name === 'nomor_telepon' && value !== '') ||
+                (name === 'alamat' && value !== '') ||
+                (name === 'kategori_layanan_lab' && value !== '')) {
                 
                 let newObj = omit(errors, name);
                 setErrors(newObj);
@@ -111,7 +117,8 @@ const useForm = (callback) => {
                 (name === 'satuan' && value === '') ||
                 (name === 'jual_per' && value === '') ||
                 (name === 'produsen' && value === '') ||
-                (name === 'tipe_bhp' && value === '')) {
+                (name === 'tipe_bhp' && value === '') ||
+                (name === 'id_pemeriksaan' && value === '')) {
 
                 setErrors(errors => ({
                     ...errors,
@@ -138,7 +145,8 @@ const useForm = (callback) => {
                 (name === 'satuan' && value !== '') ||
                 (name === 'jual_per' && value !== '') ||
                 (name === 'produsen' && value !== '') ||
-                (name === 'tipe_bhp' && value !== '')) {
+                (name === 'tipe_bhp' && value !== '') ||
+                (name === 'id_pemeriksaan' && value !== '')) {
 
                 let newObj = omit(errors, name);
                 setErrors(newObj);

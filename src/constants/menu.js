@@ -135,7 +135,7 @@ if(userData.roles.includes('isDev') === true){
         {
           icon: 'iconsminds-flask',
           label: 'Laboratorium',
-          to: `/lab/price`,
+          to: `/laboratorium`,
         },
       ]
     },
@@ -209,6 +209,11 @@ if(userData.roles.includes('isDev') === true){
           icon: 'iconsminds-library',
           label: 'Daftar Obat',
           to: `/master-data/medicine`,
+        },
+        {
+          icon: 'iconsminds-library',
+          label: 'Daftar Pemeriksaan',
+          to: `/master-data/inspect`,
         },
         {
           icon: 'iconsminds-library',

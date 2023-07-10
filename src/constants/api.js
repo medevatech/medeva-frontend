@@ -158,7 +158,10 @@ const api = {
   },
   lab: {
     all: '/laboratorium', // MASTER OF 'LABORATORIUM' FIELD
+    archiveLab: '/laboratorium/archive',
+    activateLab: '/laboratorium/activate',
     treatment: '/layanan-laboratorium', // JOIN TABLE ID LAB TO ID PEMERIKSAAN
+    servicesByLab: '/layanan-laboratorium/laboratorium', // JOIN TABLE ID LAB TO ID PEMERIKSAAN
   },
   reference: {
     all: '/rujukan',
@@ -170,7 +173,9 @@ const api = {
     diagnoseByReference: '/diagnosis-rujukan/rujukan'
   },
   inspect: {
-    all: '/pemeriksaan', // MASTER OF 'PEMERIKSAAN' FIELD
+    all: '/pemeriksaan', // MASTER OF 'PEMERIKSAAN' FIELD,
+    archiveInspect: '/pemeriksaan/archive',
+    activateInspect: '/pemeriksaan/activate',
     treatment: '/pemeriksaan/layanan-lab', // GET LAB BY TREATMENT
     support: '/pemeriksaan-penunjang', // JOIN TABLE ID RECORD TO ID LAB TO ID INSPECT
     supportByRecord: 'pemeriksaan-penunjang/kunjungan'

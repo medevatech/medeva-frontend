@@ -57,6 +57,9 @@ const Service = React.lazy(() =>
 const Medicine = React.lazy(() =>
   import(/* webpackChunkName: "views-medicine" */ '../views/medicine')
 );
+const Laboratorium = React.lazy(() =>
+  import(/* webpackChunkName: "views-laboratorium" */ '../views/laboratorium')
+);
 const Consumables = React.lazy(() =>
   import(/* webpackChunkName: "views-consumables" */ '../views/consumables')
 );
@@ -198,6 +201,12 @@ const MainRouter = ( ) => {
                 />
                 <ProtectedRoute
                 // <Route
+                    path="/laboratorium"
+                    component={Laboratorium}
+                    roles={[ "isDev", "isManager", "isAdmin" ]}
+                />
+                <ProtectedRoute
+                // <Route
                     path="/consumables"
                     component={Consumables}
                     roles={[ "isDev", "isManager", "isAdmin" ]}
@@ -218,7 +227,7 @@ const MainRouter = ( ) => {
                 // <Route
                     path="/master-data"
                     component={MasterData}
-                    roles={[ "isDev", "isManager", "isAdmin" ]}
+                    roles={[ "isDev"]}
                 />
                 <ProtectedRoute
                 // <Route

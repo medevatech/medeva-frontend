@@ -330,14 +330,14 @@ const Data = ({ match, history, loading, error }) => {
 
         Swal.fire({
           title: "Sukses!",
-          html: `Tambah kelas asuransi sukses`,
+          html: `Tambah kerjasama asuransi sukses`,
           icon: "success",
           confirmButtonColor: "#008ecc",
         });
       } else {
         Swal.fire({
           title: "Gagal!",
-          html: `Tambah kelas asuransi gagal: ${response.message}`,
+          html: `Tambah kerjasama asuransi gagal: ${response.message}`,
           icon: "error",
           confirmButtonColor: "#008ecc",
           confirmButtonText: "Coba lagi",
@@ -369,14 +369,14 @@ const Data = ({ match, history, loading, error }) => {
 
         Swal.fire({
           title: "Sukses!",
-          html: `Ubah kelas asuransi sukses`,
+          html: `Ubah kerjasama asuransi sukses`,
           icon: "success",
           confirmButtonColor: "#008ecc",
         });
       } else {
         Swal.fire({
           title: "Gagal!",
-          html: `Ubah kelas asuransi gagal`,
+          html: `Ubah kerjasama asuransi gagal`,
           icon: "error",
           confirmButtonColor: "#008ecc",
           confirmButtonText: "Coba lagi",
@@ -915,7 +915,7 @@ const Data = ({ match, history, loading, error }) => {
                         </td>
                         <td style={{ textAlign: "center", verticalAlign: 'middle' }}>
                           <Button color="secondary" size="xs" className="button-xs"
-                            onClick={(e) => getPartnershipByClinicId(e, data.id_klinik)}
+                            // onClick={(e) => getPartnershipByClinicId(e, data.id_klinik)}
                             >
                             <i className="simple-icon-arrow-right-circle"></i>
                           </Button>

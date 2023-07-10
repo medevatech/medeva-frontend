@@ -11,6 +11,10 @@ const treatment = {
     const url = api.lab.treatment + '/distinct' + options
     return baseApi.get(url, { headers: getAuthHeader() })
   },
+  getByLab: (options) => {
+    const url = api.lab.servicesByLab + options
+    return baseApi.get(url, { headers: getAuthHeader() })
+  },
   add: (payloads) => {
     const url = api.lab.treatment
     return baseApi.post(url, payloads, { headers: getAuthHeader() })
@@ -18,6 +22,10 @@ const treatment = {
   update: (payloads, id) => {
     const url = api.lab.treatment + `/${id}`
     return baseApi.put(url, payloads, { headers: getAuthHeader() })
+  },
+  delete: (id) => {
+    const url = api.lab.treatment + `/${id}`
+    return baseApi.delete(url, { headers: getAuthHeader() })
   },
 }
 export default treatment

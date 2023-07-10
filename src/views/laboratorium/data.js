@@ -38,8 +38,9 @@ import Pagination from "components/common/Pagination";
 
 import CustomSelectInput from "components/common/CustomSelectInput";
 
-import insuranceAPI from "api/insurance";
-import insuranceClassAPI from "api/insurance/class";
+import laboratoriumAPI from "api/lab";
+import laboratoriumServicesAPI from "api/lab/treatment";
+import inspectAPI from "api/inspect";
 import Swal from "sweetalert2";
 
 import loader from '../../assets/img/loading.gif';
@@ -54,245 +55,281 @@ const selectStatusF = [
 
 const Data = ({ match, history, loading, error }) => {
   const dispatch = useDispatch();
-  const insuranceData = useSelector(state => state.insurance);
-  const insuranceTotalPage = useSelector(state => state.insuranceTotalPage);
+  const laboratoriumData = useSelector(state => state.lab);
+  const laboratoriumTotalPage = useSelector(state => state.labTotalPage);
   const { errors, validate } = useForm();
 
   const [tableClass, setTableClass] = useState('');
   const [dataStatus, setDataStatus] = useState("");
-  const [dataStatusInsuranceClass, setDataStatusInsuranceClass] = useState("add");
+  const [dataStatusLabServices, setDataStatusLabServices] = useState("add");
   const [rowSelected, setRowSelected] = useState(null);
+
+  const [selectedPemeriksaan, setSelectedPemeriksaan] = useState([{ label: "Pilih Pemeriksaan", value: "", key: 0, name: 'id_pemeriksaan' }]);
   
   const [modalArchive, setModalArchive] = useState(false);
   const [modalDelete, setModalDelete] = useState(false);
-  const [insuranceID, setInsuranceID] = useState('');
-  const [insuranceName, setInsuranceName] = useState('');
-  const [insuranceStatus, setInsuranceStatus] = useState(0);
-  const [insuranceSubmit, setInsuranceSubmit] = useState('');
+  const [laboratoriumID, setLaboratoriumID] = useState('');
+  const [laboratoriumName, setLaboratoriumName] = useState('');
+  const [laboratoriumStatus, setLaboratoriumStatus] = useState(0);
+  const [laboratoriumSubmit, setLaboratoriumSubmit] = useState('');
 
-  const [insurance, setInsurance] = useState({
-    nama: ''
+  const [laboratorium, setLaboratorium] = useState({
+    nama: '', nomor_telepon: '', alamat: ''
   });
+  
+  const [labServices, setLabServices] = useState([{
+    id: '', id_lab: laboratoriumID, id_pemeriksaan: '', kategori: ''
+  }]);
+  
+  const [tempLabServices, setTempLabServices] = useState([{
+    id: '', id_lab: laboratoriumID, id_pemeriksaan: '', kategori: ''
+  }]);
+
+  const onLoadPemeriksaan = async () => {
+    try {
+      const response = await inspectAPI.get("?limit=1000");
+      // console.log(response);
+
+      setSelectedPemeriksaan([{ label: "Pilih Pemeriksaan", value: "", key: 0, name: 'id_pemeriksaan' }]);
+
+      if (response.status === 200) {
+        let data = response.data.data;
+        // console.log(data);
+      
+        for (var i = 0; i < data.length; i++) {
+            setSelectedPemeriksaan((current) => [
+                ...current, { label: data[i].nama, value: data[i].id, key: data[i].id, name: 'id_pemeriksaan' },
+            ]);
+        }
+      } else {
+        throw Error(`Error status: ${response.status}`);
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  };
 
   const onChange = (e) => {
     // console.log('e', e);
 
-    setInsurance(current => {
+    setLaboratorium(current => {
         return { ...current, [e.target.name]: e.target.value }
     })
 
     validate(e, e.name !== undefined ? e.name : e.target.name ? e.target.name : '', e.value !== undefined ? e.value : e.target.value ? e.target.value : '');
-    // console.log('insurance', insurance);
+
+    // console.log('laboratorium', laboratorium);
   }
 
-  const onInsuranceSubmit = async (e) => {
-    e.preventDefault();
-    setInsuranceSubmit("process");
+  const addLabServicesFields = () => {
+    let newfieldLabServices = { id: '', id_lab: laboratoriumID, id_pemeriksaan: '', kategori: '' };
+    setLabServices([...labServices, newfieldLabServices]);
+  };
 
-    // console.log('insurance', insurance);
+  const removeLabServicesFields = (id, index) => {
+    let dataLabServices = [...labServices];
+    dataLabServices.splice(index, 1);
+    setLabServices(dataLabServices);
+
+    if(dataStatusLabServices === "update"){
+      setTempLabServices(dataLabServices);
+      onDeleteLabServices(id);
+    }
+  };
+
+  const handleLabServicesChange = (index, event) => {
+    let dataLabServices = [...labServices];
+    // console.log('event', event);
+
+    if(event.name === "id_pemeriksaan"){
+        dataLabServices[index]['id_pemeriksaan'] = event.value;
+        validate(event, event.name, event.value);
+    } else if (event.target.name === "kategori") {
+        dataLabServices[index]['kategori'] = event.target.value;
+        validate(event, 'kategori_layanan_lab', event.target.value);
+    }
+
+    setLabServices(dataLabServices);
+  };
+
+  const onLaboratoriumSubmit = async (e) => {
+    e && e.preventDefault();
+    setLaboratoriumSubmit("process");
 
     let isError = false;
+    
+    // console.log('laboratorium', laboratorium);
+    // console.log('labServices', labServices);
 
-    for(let [key, value] of Object.entries(insurance)) {
-      // console.log(key, value);
-
-      if((key === 'nama' && value === '')){
-        validate(e, key, value);
-        isError = true;
-        // console.log('errors', errors);
-        // return;
-      }
-    }
-
-    for (var i = 0; i < insuranceClass.length; i++) {
-      for(let [key, value] of Object.entries(insuranceClass[i])) {
-        if((key === 'nama_kelas' && value === '')){
+    for(let [key, value] of Object.entries(laboratorium)) {
+        if((key === 'nama' && value === '') || (key === 'nomor_telepon' && value === '') || (key === 'alamat' && value === '')){
           validate(e, key, value);
           isError = true;
-          // console.log('errors', errors);
           // return;
         }
-      }
+
+        // console.log(key, value);
     }
+
+    for (var i = 0; i < labServices.length; i++) {
+        labServices[i].id_lab = laboratoriumID;
+  
+        for(let [key, value] of Object.entries(labServices[i])) {
+            if((key === 'id_pemeriksaan' && value === '')){
+                validate(e, key, value);
+                isError = true;
+                // return;
+            }
+
+            if((key === 'kategori' && value === '')){
+                validate(e, 'kategori_layanan_lab', value);
+                isError = true;
+                // return;
+            }
+    
+            // console.log(key, value);
+        }
+    }
+
+    // console.log('errors', errors);
 
     if(isError === true) {
       return;
     }
 
-    for (var i = 0; i < insuranceClass.length; i++) {
-      for(let [key, value] of Object.entries(insuranceClass[i])) {
-        if((key === 'nama_kelas' && value === '')){
-          validate(e, key, value);
-          return;
-        }
-      }
-    }
-
     if(dataStatus === 'add') {
-      try {
-        const response = await insuranceAPI.add(insurance);
-        // console.log(response);
-  
-        if (response.status == 200) {
-          let data = await response.data.data;
-          // console.log(data);
-  
-          Swal.fire({
-            title: "Sukses!",
-            html: `Tambah asuransi sukses`,
-            icon: "success",
-            confirmButtonColor: "#008ecc",
-          });
-
-          setInsuranceID(data.id);
-        } else {
+        try {
+          const response = await laboratoriumAPI.add(laboratorium);
+          // console.log(response);
+    
+          if (response.status == 200) {
+            let data = await response.data.data;
+            // console.log(data);
+    
+            Swal.fire({
+              title: "Sukses!",
+              html: `Tambah laboratorium sukses`,
+              icon: "success",
+              confirmButtonColor: "#008ecc",
+            });
+    
+            setLaboratoriumID(data.id);
+          } else {
+            Swal.fire({
+              title: "Gagal!",
+              html: `Tambah laboratorium gagal: ${response.message}`,
+              icon: "error",
+              confirmButtonColor: "#008ecc",
+              confirmButtonText: "Coba lagi",
+            });
+    
+            throw Error(`Error status: ${response.status}`);
+          }
+        } catch (e) {
           Swal.fire({
             title: "Gagal!",
-            html: `Tambah asuransi gagal: ${response.message}`,
+            html: e.response.data.message.response.data.message,
             icon: "error",
             confirmButtonColor: "#008ecc",
             confirmButtonText: "Coba lagi",
           });
-  
-          throw Error(`Error status: ${response.status}`);
+    
+          console.log(e);
         }
-      } catch (e) {
-        Swal.fire({
-          title: "Gagal!",
-          html: e.response.data.message,
-          icon: "error",
-          confirmButtonColor: "#008ecc",
-          confirmButtonText: "Coba lagi",
-        });
-  
-        console.log(e);
-      }
-    } else if (dataStatus === 'update') {
-      try {
-        const response = await insuranceAPI.update(insurance, insuranceID);
-        // console.log(response);
-  
-        if (response.status == 200) {
-          let data = await response.data.data;
-          // console.log(data);
-  
-          Swal.fire({
-            title: "Sukses!",
-            html: `Ubah asuransi sukses`,
-            icon: "success",
-            confirmButtonColor: "#008ecc",
-          });
-
-          setInsuranceID(insuranceID);
-        } else {
+      } else if (dataStatus === 'update') {
+        try {
+          const response = await laboratoriumAPI.update(laboratorium, laboratoriumID);
+          // console.log(response);
+    
+          if (response.status == 200) {
+            let data = await response.data.data;
+            // console.log(data);
+    
+            Swal.fire({
+              title: "Sukses!",
+              html: `Ubah laboratorium sukses`,
+              icon: "success",
+              confirmButtonColor: "#008ecc",
+            });
+    
+            // resetForm(e);
+          } else {
+            Swal.fire({
+              title: "Gagal!",
+              html: `Ubah laboratorium gagal: ${response.message}`,
+              icon: "error",
+              confirmButtonColor: "#008ecc",
+              confirmButtonText: "Coba lagi",
+            });
+    
+            throw Error(`Error status: ${response.status}`);
+          }
+        } catch (e) {
           Swal.fire({
             title: "Gagal!",
-            html: `Ubah asuransi gagal: ${response.message}`,
+            html: e.response.data.message,
             icon: "error",
             confirmButtonColor: "#008ecc",
             confirmButtonText: "Coba lagi",
           });
-  
-          throw Error(`Error status: ${response.status}`);
+    
+          console.log(e);
         }
-      } catch (e) {
-        Swal.fire({
-          title: "Gagal!",
-          html: e.response.data.message,
-          icon: "error",
-          confirmButtonColor: "#008ecc",
-          confirmButtonText: "Coba lagi",
-        });
-  
-        console.log(e);
+      } else {
+        console.log('dataStatus undefined')
       }
-    } else {
-      console.log('dataStatus undefined')
-    }
 
-    setInsuranceSubmit("done");
-  };
+    setLaboratoriumSubmit("done");
+  }
 
-  const [insuranceClass, setInsuranceClass] = useState([{
-      id: "",
-      id_asuransi: insuranceID,
-      nama_kelas: "",
-  }]);
-
-  const [tempInsuranceClass, setTempInsuranceClass] = useState([{
-    id: "",
-    id_asuransi: insuranceID,
-    nama_kelas: "",
-  }]);
-
-  const addInsuranceClassFields = () => {
-    let newfieldInsuranceClass = { id: "", id_asuransi: insuranceID, nama_kelas: "" };
-    setInsuranceClass([...insuranceClass, newfieldInsuranceClass]);
-  };
-
-  const removeInsuranceClassFields = (id, index) => {
-    let dataInsuranceClass = [...insuranceClass];
-
-    dataInsuranceClass.splice(index, 1);
-
-    setInsuranceClass(dataInsuranceClass);
-
-    if(dataStatusInsuranceClass === "update"){
-      setTempInsuranceClass(dataInsuranceClass);
-      onDeleteInsuranceClass(id);
-    }
-  };
-
-  const handleInsuranceClassChange = (index, event) => {
-    let dataInsuranceClass = [...insuranceClass];
-
-    dataInsuranceClass[index][event.target.name] = event.target.value;
-    validate(event, event.name !== undefined ? event.name : event.target.name ? event.target.name : '', event.value !== undefined ? event.value : event.target.value ? event.target.value : '');
-
-    setInsuranceClass(dataInsuranceClass);
-  };
-
-  const onInsuranceClassSubmit = async (e) => {
+  const onLabServicesSubmit = async (e) => {
     e && e.preventDefault();
 
     let isError = false;
 
-    for (var i = 0; i < insuranceClass.length; i++) {
-      for(let [key, value] of Object.entries(insuranceClass[i])) {
-        if((key === 'nama_kelas' && value === '')){
-          validate(e, key, value);
-  
-          // console.log('errors', errors);
-          return;
+    for (var i = 0; i < labServices.length; i++) {
+        for(let [key, value] of Object.entries(labServices[i])) {
+            if((key === 'id_pemeriksaan' && value === '')){
+                validate(e, key, value);
+                isError = true;
+                // return;
+            }
+
+            if((key === 'kategori' && value === '')){
+                validate(e, 'kategori_layanan_lab', value);
+                isError = true;
+                // return;
+            }
+    
+            // console.log(key, value);
         }
-      }
     }
 
     if(isError === true) {
       return;
     }
 
-    for (var i = 0; i < insuranceClass.length; i++) {
-      insuranceClass[i].id_asuransi = insuranceID;
+    console.log('labServices', labServices);
 
-      if(insuranceClass[i].id !== '' && (insuranceClass[i].nama_kelas !== tempInsuranceClass[i].nama_kelas)) {
-        onInsuranceClassEdit(insuranceClass[i]);
-      } else if(insuranceClass[i].id === '') {
-        onInsuranceClassAdd(insuranceClass[i]);
+    for (var i = 0; i < labServices.length; i++) {
+      labServices[i].id_lab = laboratoriumID;
+  
+      if(labServices[i].id !== '' && labServices[i].kategori !== tempLabServices[i].kategori) {
+        onLabServicesEdit(labServices[i]);
+      } else if(labServices[i].id === '') {
+        onLabServicesAdd(labServices[i]);
       }
     }
-    
-    getInsurance("");
-    if(insuranceID){
-      getInsuranceById("", insuranceID);
-    } else {
-      resetForm();
+
+    getLaboratorium("");
+    if(dataStatus === "update"){
+      getLaboratoriumById("", laboratoriumID);
     }
   }
 
-  const onInsuranceClassAdd = async (insuranceClass) => {
+  const onLabServicesAdd = async (labServices) => {
     try {
-      const response = await insuranceClassAPI.add(insuranceClass);
+      const response = await laboratoriumServicesAPI.add(labServices);
       // console.log(response);
 
       if (response.status == 200) {
@@ -301,14 +338,14 @@ const Data = ({ match, history, loading, error }) => {
 
         Swal.fire({
           title: "Sukses!",
-          html: `Tambah kelas asuransi sukses`,
+          html: `Tambah pelayanan laboratorium sukses`,
           icon: "success",
           confirmButtonColor: "#008ecc",
         });
       } else {
         Swal.fire({
           title: "Gagal!",
-          html: `Tambah kelas asuransi gagal: ${response.message}`,
+          html: `Tambah pelayanan laboratorium gagal: ${response.message}`,
           icon: "error",
           confirmButtonColor: "#008ecc",
           confirmButtonText: "Coba lagi",
@@ -329,9 +366,9 @@ const Data = ({ match, history, loading, error }) => {
     }
   } 
 
-  const onInsuranceClassEdit = async (insuranceClass) => {
+  const onLabServicesEdit = async (labServices) => {
     try {
-      const response = await insuranceClassAPI.update(insuranceClass, insuranceClass.id);
+      const response = await laboratoriumServicesAPI.update(labServices, labServices.id);
       // console.log(response);
 
       if (response.status == 200) {
@@ -340,14 +377,14 @@ const Data = ({ match, history, loading, error }) => {
 
         Swal.fire({
           title: "Sukses!",
-          html: `Ubah kelas asuransi sukses`,
+          html: `Ubah pelayanan laboratorium sukses`,
           icon: "success",
           confirmButtonColor: "#008ecc",
         });
       } else {
         Swal.fire({
           title: "Gagal!",
-          html: `Ubah kelas asuransi gagal`,
+          html: `Ubah pelayanan laboratorium gagal`,
           icon: "error",
           confirmButtonColor: "#008ecc",
           confirmButtonText: "Coba lagi",
@@ -371,9 +408,8 @@ const Data = ({ match, history, loading, error }) => {
   const resetForm = (e, scroll = false) => {
     e && e.preventDefault();
 
-    setInsuranceID('');
-    setInsuranceName('');
-    setInsuranceStatus(0);
+    setLaboratoriumID('');
+    setLaboratoriumStatus(0);
 
     if(scroll) {
       if(window.innerWidth < 1280){
@@ -392,28 +428,25 @@ const Data = ({ match, history, loading, error }) => {
       }
     }
 
-    setInsuranceStatus(0);
-    setInsuranceName('');
-    setInsuranceID('');
+    setLaboratorium({ nama: '', nomor_telepon: '', alamat: '' });
 
-    setInsurance({
-      nama: '',
-    });
-
-    setInsuranceClass([{ id: "", id_asuransi: insuranceID, nama_kelas: "" }]);
+    setLabServices([]);
+    setLabServices([{ id: "", id_lab: laboratoriumID, id_pemeriksaan: "", kategori: "" }]);
 
     setDataStatus("add");
-    setDataStatusInsuranceClass("add");
+    setDataStatusLabServices("add");
+
+    onLoadPemeriksaan();
   };
 
   const [isLoading, setIsLoading] = useState(false);
 
-  const getInsurance = async (params) => {
+  const getLaboratorium = async (params) => {
     try {
       setIsLoading(true);
-      const res = await insuranceAPI.get(params);
-      dispatch({type: "GET_INSURANCE", payload: res.data.data});
-      dispatch({type: "GET_TOTAL_PAGE_INSURANCE", payload: res.data.pagination.totalPage});
+      const res = await laboratoriumAPI.get(params);
+      dispatch({type: "GET_LAB", payload: res.data.data});
+      dispatch({type: "GET_TOTAL_PAGE_LAB", payload: res.data.pagination.totalPage});
 
       if(res.data.data.length > 0) {
         setTableClass('table-hover');
@@ -425,9 +458,10 @@ const Data = ({ match, history, loading, error }) => {
     }
   };
 
-  const getInsuranceById = async (e, id) => {
+  const getLaboratoriumById = async (e, id) => {
     e && e.preventDefault();
-    e && resetForm(e);
+    // e && resetForm(e);
+
     setDataStatus("update");
     setRowSelected(id);
 
@@ -447,64 +481,64 @@ const Data = ({ match, history, loading, error }) => {
     }
 
     try {
-      const res = await insuranceAPI.get(`/${id}`);
+      const res = await laboratoriumAPI.get(`/${id}`);
       let data = res.data.data[0];
-
       // console.log(data);
 
-      setInsuranceID(data.id);
-      setInsurance({
+      setLaboratoriumID(data.id);
+      setLaboratorium({
         nama: data.nama,
+        nomor_telepon: data.nomor_telepon,
+        alamat: data.alamat
       });
-      setInsuranceStatus(data.is_active);
 
-      // console.log(insurance);
-
+      setLaboratoriumName(data.nama);
+      setLaboratoriumStatus(data.is_active);
     } catch (e) {
       console.log(e);
     } finally {
-      getInsuranceClassByInsuranceId(id);
+      getLabServicesByLabId(id)
     }
 
-    // console.log(dataStatus);
+    // console.log(dataStatusLaboratorium);
   };
 
-  const getInsuranceClassByInsuranceId = async (id) => {
-    setInsuranceClass([]);
-    setTempInsuranceClass([]);
+  const getLabServicesByLabId = async (id) => {
+    setLabServices([]);
+    setTempLabServices([]);
 
     try {
-      const res = await insuranceClassAPI.getByInsurance(`/${id}`);
+      const res = await laboratoriumServicesAPI.getByLab(`/${id}`);
       let data = res.data.data;
       // console.log('data', data);
 
       if(data) {
         data.map((data, index) => {
 
-          setInsuranceClass((current) => [
-            ...current, { id: data.id, id_asuransi: data.id_asuransi, nama_kelas: data.nama_kelas }
+          setLabServices((current) => [
+            ...current, { id: data.id, id_lab: data.id_lab, id_pemeriksaan: data.id_pemeriksaan, kategori: data.kategori }
           ]);
 
-          setTempInsuranceClass((current) => [
-            ...current, { id: data.id, id_asuransi: data.id_asuransi, nama_kelas: data.nama_kelas }
+          setTempLabServices((current) => [
+            ...current, { id: data.id, id_lab: data.id_lab, id_pemeriksaan: data.id_pemeriksaan, kategori: data.kategori }
           ]);
         })
       }
 
-      setDataStatusInsuranceClass("update");
+      setDataStatusLabServices("update");
     } catch (e) {
       console.log(e);
 
-      setInsuranceClass([{ id: '', id_asuransi: insuranceID, nama_kelas: "" }]);
-      setTempInsuranceClass([{ id: '', id_asuransi: insuranceID, nama_kelas: "" }]);
+      setLabServices([{ id: '', id_lab: '', id_pemeriksaan: '', kategori: '' }]);
+      setTempLabServices([{ id: '', id_lab: '', id_pemeriksaan: '', kategori: '' }]);
 
-      setDataStatusInsuranceClass("add");
+      setDataStatusLabServices("add");
     }
   };
 
   function ActiveDropdown() {
     return <>
-      <DropdownItem onClick={(e) => statusById(e, insuranceID)}>
+      <DropdownItem onClick={(e) => statusById(e, laboratoriumID)}>
         <i className="simple-icon-drawer"></i>&nbsp;Aktifkan
       </DropdownItem>
     </>;
@@ -512,7 +546,7 @@ const Data = ({ match, history, loading, error }) => {
 
   function ArchiveDropdown() {
     return <>
-      <DropdownItem onClick={(e) => statusById(e, insuranceID)}>
+      <DropdownItem onClick={(e) => statusById(e, laboratoriumID)}>
         <i className="simple-icon-drawer"></i>&nbsp;Arsipkan
       </DropdownItem>
     </>;
@@ -522,9 +556,9 @@ const Data = ({ match, history, loading, error }) => {
     if(userData.roles.includes('isDev') ||
       userData.roles.includes('isManager') ||
       userData.roles.includes('isAdmin')) {
-      if (insuranceID && insuranceStatus == 1) {
+      if (laboratoriumID && laboratoriumStatus == 1) {
         return <ArchiveDropdown/>;
-      } else if (insuranceID && insuranceStatus == 0) {
+      } else if (laboratoriumID && laboratoriumStatus == 0) {
         return <ActiveDropdown/>;
       } else {
         return null;
@@ -539,12 +573,12 @@ const Data = ({ match, history, loading, error }) => {
 
     setModalArchive(true);
     try {
-      const res = await insuranceAPI.get(`/${id}`);
+      const res = await laboratoriumAPI.get(`/${id}`);
       let data = res.data.data[0];
 
-      setInsuranceID(data.id);
-      setInsuranceStatus(data.is_active);
-      setInsuranceName(data.nama);
+      setLaboratoriumID(data.id);
+      setLaboratoriumStatus(data.is_active);
+      setLaboratoriumName(data.nama);
     } catch (e) {
       console.log(e);
     }
@@ -554,8 +588,8 @@ const Data = ({ match, history, loading, error }) => {
     e.preventDefault();
 
     try {
-      if (insuranceStatus == 1) {
-        const response = await insuranceAPI.archive("", insuranceID);
+      if (laboratoriumStatus == 1) {
+        const response = await laboratoriumAPI.archive("", laboratoriumID);
 
         if (response.status == 200) {
           let data = await response.data.data;
@@ -563,7 +597,7 @@ const Data = ({ match, history, loading, error }) => {
 
           Swal.fire({
             title: "Sukses!",
-            html: `Arsip asuransi sukses`,
+            html: `Arsip laboratorium sukses`,
             icon: "success",
             confirmButtonColor: "#008ecc",
           });
@@ -572,7 +606,7 @@ const Data = ({ match, history, loading, error }) => {
         } else {
           Swal.fire({
             title: "Gagal!",
-            html: `Arsip asuransi gagal: ${response.message}`,
+            html: `Arsip laboratorium gagal: ${response.message}`,
             icon: "error",
             confirmButtonColor: "#008ecc",
             confirmButtonText: "Coba lagi",
@@ -581,7 +615,7 @@ const Data = ({ match, history, loading, error }) => {
           throw Error(`Error status: ${response.status}`);
         }
       } else {
-        const response = await insuranceAPI.activate("", insuranceID);
+        const response = await laboratoriumAPI.activate("", laboratoriumID);
 
         if (response.status == 200) {
           let data = await response.data.data;
@@ -589,7 +623,7 @@ const Data = ({ match, history, loading, error }) => {
 
           Swal.fire({
             title: "Sukses!",
-            html: `Aktivasi asuransi sukses`,
+            html: `Aktivasi laboratorium sukses`,
             icon: "success",
             confirmButtonColor: "#008ecc",
           });
@@ -598,7 +632,7 @@ const Data = ({ match, history, loading, error }) => {
         } else {
           Swal.fire({
             title: "Gagal!",
-            html: `Aktivasi asuransi gagal: ${response.message}`,
+            html: `Aktivasi laboratorium gagal: ${response.message}`,
             icon: "error",
             confirmButtonColor: "#008ecc",
             confirmButtonText: "Coba lagi",
@@ -619,8 +653,8 @@ const Data = ({ match, history, loading, error }) => {
 
       console.log(e);
     } finally {
-      getInsurance("");
-      getInsuranceById("", insuranceID);
+      getLaboratorium("");
+      getLaboratoriumById("", laboratoriumID);
     }
   };
 
@@ -629,11 +663,11 @@ const Data = ({ match, history, loading, error }) => {
 
     setModalDelete(true);
     try {
-      const res = await insuranceAPI.get(`/${id}`);
+      const res = await laboratoriumAPI.get(`/${id}`);
       let data = res.data.data[0];
 
-      setInsuranceID(data.id);
-      setInsuranceName(data.nama);
+      setLaboratoriumID(data.id);
+      setLaboratoriumName(data.nama);
     } catch (e) {
       console.log(e);
     }
@@ -643,7 +677,7 @@ const Data = ({ match, history, loading, error }) => {
     e.preventDefault();
 
     try {
-      const response = await insuranceAPI.delete(insuranceID);
+      const response = await laboratoriumAPI.delete(laboratoriumID);
 
       if (response.status == 200) {
         let data = await response.data.data;
@@ -651,7 +685,7 @@ const Data = ({ match, history, loading, error }) => {
 
         Swal.fire({
           title: "Sukses!",
-          html: `Hapus asuransi sukses`,
+          html: `Hapus laboratorium sukses`,
           icon: "success",
           confirmButtonColor: "#008ecc",
         });
@@ -660,7 +694,7 @@ const Data = ({ match, history, loading, error }) => {
       } else {
         Swal.fire({
           title: "Gagal!",
-          html: `Hapus asuransi gagal: ${response.message}`,
+          html: `Hapus laboratorium gagal: ${response.message}`,
           icon: "error",
           confirmButtonColor: "#008ecc",
           confirmButtonText: "Coba lagi",
@@ -681,13 +715,14 @@ const Data = ({ match, history, loading, error }) => {
 
       console.log(e);
     } finally {
-      getInsurance("");
+      getLaboratorium("");
+      resetForm();
     }
   };
 
-  const onDeleteInsuranceClass = async (id) => {
+  const onDeleteLabServices = async (id) => {
     try {
-      const response = await insuranceClassAPI.delete(id);
+      const response = await laboratoriumServicesAPI.delete(id);
 
       if (response.status == 200) {
         let data = await response.data.data;
@@ -695,14 +730,14 @@ const Data = ({ match, history, loading, error }) => {
 
         Swal.fire({
           title: "Sukses!",
-          html: `Hapus kelas asuransi sukses`,
+          html: `Hapus pelayanan laboratorium sukses`,
           icon: "success",
           confirmButtonColor: "#008ecc",
         });
       } else {
         Swal.fire({
           title: "Gagal!",
-          html: `Hapus kelas asuransi gagal: ${response.message}`,
+          html: `Hapus pelayanan laboratorium gagal: ${response.message}`,
           icon: "error",
           confirmButtonColor: "#008ecc",
           confirmButtonText: "Coba lagi",
@@ -752,23 +787,25 @@ const Data = ({ match, history, loading, error }) => {
     }
     
     setRowSelected(false);
-    getInsurance(params);
+    getLaboratorium(params);
+
+    onLoadPemeriksaan();
   }, [limit, search, searchStatus, sortBy, sortOrder, currentPage ]);
 
   useEffect(() => {
-    if (insuranceSubmit === "done") {
+    if (laboratoriumSubmit === "done") {
       setTimeout(() => {
-        
-        if(insuranceClass.length > 0 && insuranceClass[0].nama_kelas !== "") {
-          onInsuranceClassSubmit("");
+        if(labServices.length > 0 && labServices[0].kategori !== "" && laboratoriumID) {
+          onLabServicesSubmit("");
         }
-
+        
         setTimeout(() => {
-          // resetForm();
+        //   resetForm();
+        //   getLaboratorium("");
         }, 2000)
       }, 1000);
     };
-  }, [ insuranceSubmit ]);
+  }, [ laboratoriumSubmit ]);
 
   let startNumber = 1;
 
@@ -789,7 +826,7 @@ const Data = ({ match, history, loading, error }) => {
               <CardTitle>
                 <Row>
                   <Colxx sm="8" md="8" xl="8" className="col-sm-8-mobile">
-                    Data Asuransi
+                    Data Laboratorium
                   </Colxx>
                   <Colxx sm="4" md="4" xl="4" className="col-sm-4-mobile">
                     <Button
@@ -805,18 +842,18 @@ const Data = ({ match, history, loading, error }) => {
               </CardTitle>
               <FormGroup row style={{ margin: '0px', width: '100%' }}>
                 <Colxx sm="12" md="12" style={{ paddingLeft: '0px', paddingRight: '0px' }}>
-                  <Label for="status">
-                      Status
+                    <Label for="status">
+                        Status
                     </Label>
                     <Select
-                      components={{ Input: CustomSelectInput }}
-                      className="react-select"
-                      classNamePrefix="react-select"
-                      name="status"
-                      onChange={(e) => setSearchStatus(e.value)}
-                      options={selectStatusF}
-                      isSearchable={false}
-                      defaultValue={{ label: "Semua Status", value: "", key: 0, name: "status" }}
+                        components={{ Input: CustomSelectInput }}
+                        className="react-select"
+                        classNamePrefix="react-select"
+                        name="status"
+                        onChange={(e) => setSearchStatus(e.value)}
+                        options={selectStatusF}
+                        isSearchable={false}
+                        defaultValue={{ label: "Semua Status", value: "", key: 0, name: 'status' }}
                     />
                 </Colxx>
               </FormGroup>
@@ -838,7 +875,7 @@ const Data = ({ match, history, loading, error }) => {
                 <thead>
                   <tr>
                     <th className="center-xy" style={{ width: '40px' }}>#</th>
-                    <th>Asuransi</th>
+                    <th>Laboratorium</th>
                     <th className="center-xy" style={{ width: '55px' }}>&nbsp;</th>
                   </tr>
                 </thead>
@@ -852,14 +889,16 @@ const Data = ({ match, history, loading, error }) => {
                     <td>&nbsp;</td>
                   </tr>
                   ) : 
-                  insuranceData.length > 0 ? (
-                    insuranceData.map((data) => (
-                      <tr key={data.id} onClick={(e) => getInsuranceById(e, data.id)} style={{ cursor: 'pointer'}} className={`${rowSelected == data.id && 'row-selected'}`}>
+                  laboratoriumData.length > 0 ? (
+                    laboratoriumData.map((data) => (
+                      <tr key={data.id} onClick={(e) => getLaboratoriumById(e, data.id)} style={{ cursor: 'pointer'}} className={`${rowSelected == data.id && 'row-selected'}`}>
                         <th scope="row" style={{ textAlign: "center", verticalAlign: 'middle' }}>
                           {startNumber++}
                         </th>
                         <td>
                           <h6 style={{ fontWeight: 'bold' }} className="max-text">{data.nama}</h6>
+                          {data.alamat ? data.alamat : "-"}<br/>
+                          {data.nomor_telepon ? data.nomor_telepon : "-"}<br/>
                           {data.is_active == 1 ? (
                             <Badge color="success" className="mt-2">Aktif</Badge>
                           ) : (
@@ -868,7 +907,7 @@ const Data = ({ match, history, loading, error }) => {
                         </td>
                         <td style={{ textAlign: "center", verticalAlign: 'middle' }}>
                           <Button color="secondary" size="xs" className="button-xs"
-                            // onClick={(e) => getInsuranceById(e, data.id)}
+                            // onClick={(e) => getLaboratoriumById(e, data.id)}
                             >
                             <i className="simple-icon-arrow-right-circle"></i>
                           </Button>
@@ -889,9 +928,9 @@ const Data = ({ match, history, loading, error }) => {
               </Table>
               <Pagination
                 currentPage={currentPage}
-                totalPage={insuranceTotalPage}
+                totalPage={laboratoriumTotalPage}
                 onChangePage={(i) => setCurrentPage(i)}
-                numberLimit={insuranceTotalPage < 4 ? insuranceTotalPage : 3}
+                numberLimit={laboratoriumTotalPage < 4 ? laboratoriumTotalPage : 3}
               />
             </CardBody>
           </Card>
@@ -903,7 +942,7 @@ const Data = ({ match, history, loading, error }) => {
               <CardTitle>
                 <Row>
                   <Colxx sm="10" className="card-title-mobile">
-                    { dataStatus && dataStatus === "add" ? 'Form Tambah Asuransi' : 'Form Ubah Asuransi' }
+                    { dataStatus && dataStatus === "add" ? 'Form Tambah Laboratorium' : 'Form Ubah Laboratorium' }
                   </Colxx>
                   <Colxx sm="2" className="three-dots-menu">
                     { dataStatus === "update" && 
@@ -914,10 +953,10 @@ const Data = ({ match, history, loading, error }) => {
                         <DropdownMenu right>
                           {<IsActiveDropdown/>}
                           {(userData.roles.includes('isDev') ||
-                          userData.roles.includes('isManager')) && insuranceID &&
+                          userData.roles.includes('isManager')) && laboratoriumID &&
                             <>
                               <DropdownItem divider />
-                              <DropdownItem onClick={(e) => deleteById(e, insuranceID)}>
+                              <DropdownItem onClick={(e) => deleteById(e, laboratoriumID)}>
                                 <i className="simple-icon-trash"></i>&nbsp;Hapus
                               </DropdownItem>
                             </>
@@ -928,42 +967,109 @@ const Data = ({ match, history, loading, error }) => {
                   </Colxx>
                 </Row>
               </CardTitle>
-              <Form className="av-tooltip tooltip-right-top" onSubmit={onInsuranceSubmit}>
+              <Form className="av-tooltip tooltip-right-top" onSubmit={onLaboratoriumSubmit}>
                 <FormGroup row>
                   <Colxx sm={12}>
                     <FormGroup>
-                      <Label for="nama">
-                        Nama
-                        <span
-                          className="required text-danger"
-                          aria-required="true"
-                        >
-                          {" "}
-                          *
-                        </span>
-                      </Label>
-                      <Input
-                        type="text"
-                        name="nama"
-                        id="nama"
-                        placeholder="Nama"
-                        value={insurance.nama}
-                        onChange={onChange}
-                        // required
-                      />
-                      {errors.nama && (
-                        <div className="rounded invalid-feedback d-block">
-                          {errors.nama}
-                        </div>
-                      )}
-                    </FormGroup>
-                  </Colxx>
-
-                  <Colxx sm={12}>
-                    <FormGroup>
                       <Row>
+                        <Colxx sm={12}>
+                            <FormGroup>
+                            <Label for="nama">
+                                Nama
+                                <span
+                                className="required text-danger"
+                                aria-required="true"
+                                >
+                                {" "}
+                                *
+                                </span>
+                            </Label>
+                            <Input
+                                type="text"
+                                name="nama"
+                                id="nama"
+                                placeholder="Nama"
+                                value={laboratorium.nama}
+                                onChange={onChange}
+                            />
+                            {errors.nama && (
+                                <div className="rounded invalid-feedback d-block">
+                                {errors.nama}
+                                </div>
+                            )}
+                            </FormGroup>
+                        </Colxx>
+
                         <Colxx sm={6}>
-                          <Label>Kelas Asuransi
+                            <FormGroup>
+                            <Label for="nomor_telepon">
+                                No. Telepon
+                                <span
+                                className="required text-danger"
+                                aria-required="true"
+                                >
+                                {" "}
+                                *
+                                </span>
+                            </Label>
+                            <Input
+                                type="number"
+                                name="nomor_telepon"
+                                id="nomor_telepon"
+                                placeholder="No. Telepon"
+                                value={laboratorium.nomor_telepon}
+                                pattern="[0-9]*"
+                                onChange={onChange}
+                            />
+                            {errors.nomor_telepon && (
+                                <div className="rounded invalid-feedback d-block">
+                                {errors.nomor_telepon}
+                                </div>
+                            )}
+                            </FormGroup>
+                        </Colxx>
+
+                        <Colxx sm={6}>
+                            <FormGroup>
+                            <Label for="alamat">
+                                Alamat
+                                <span
+                                className="required text-danger"
+                                aria-required="true"
+                                >
+                                {" "}
+                                *
+                                </span>
+                            </Label>
+                            <Input
+                                type="text"
+                                name="alamat"
+                                id="alamat"
+                                placeholder="Alamat"
+                                value={laboratorium.alamat}
+                                onChange={onChange}
+                            />
+                            {errors.alamat && (
+                                <div className="rounded invalid-feedback d-block">
+                                {errors.alamat}
+                                </div>
+                            )}
+                            </FormGroup>
+                        </Colxx>
+
+                        <Colxx sm={6}>
+                          <Label>Pemeriksaan
+                            <span
+                              className="required text-danger"
+                              aria-required="true"
+                            >
+                              {" "}
+                              *
+                            </span>
+                          </Label>
+                        </Colxx>
+                        <Colxx sm={6}>
+                          <Label>Kategori
                             <span
                               className="required text-danger"
                               aria-required="true"
@@ -974,22 +1080,41 @@ const Data = ({ match, history, loading, error }) => {
                           </Label>
                         </Colxx>
                       </Row>
-                      {insuranceClass.map((input, index) => {
+                      {labServices.map((input, index) => {
                         return (
-                          <Row key={index}>
-                            <Colxx sm={12}>
-                              <InputGroup className="input-group-insurance">
+                        <Row key={index}>
+                            <Colxx sm={6}>
+                                <Select
+                                    components={{ Input: CustomSelectInput }}
+                                    className="react-select"
+                                    classNamePrefix="react-select"
+                                    name="id_pemeriksaan"
+                                    id="id_pemeriksaan"
+                                    options={selectedPemeriksaan}
+                                    value={selectedPemeriksaan.find(item => item.value === labServices[index].id_pemeriksaan) || { label: "Pilih Pemeriksaan", value: "", key: 0, name: 'id_pemeriksaan' }}
+                                    onChange={(event) =>
+                                      handleLabServicesChange(index, event)
+                                    }
+                                />
+                                {errors.id_pemeriksaan && (
+                                    <div className="rounded invalid-feedback d-block">
+                                        {errors.id_pemeriksaan}
+                                    </div>
+                                )}
+                            </Colxx>
+                            <Colxx sm={6}>
+                              <InputGroup className="input-group-laboratorium">
                                 <Input
-                                  name="nama_kelas"
-                                  placeholder="Kelas Asuransi"
-                                  value={insuranceClass[index].nama_kelas}
+                                  name="kategori"
+                                  placeholder="Kategori"
+                                  value={labServices[index].kategori}
                                   onChange={(event) =>
-                                    handleInsuranceClassChange(index, event)
+                                    handleLabServicesChange(index, event)
                                   }
                                 />
-                                {errors.nama_kelas && (
+                                {errors.kategori_layanan_lab && (
                                   <div className="rounded invalid-feedback d-block">
-                                    {errors.nama_kelas}
+                                    {errors.kategori_layanan_lab}
                                   </div>
                                 )}
                                 {index > 0 && (
@@ -997,9 +1122,9 @@ const Data = ({ match, history, loading, error }) => {
                                     color="danger"
                                     style={{ float: "right" }}
                                     onClick={() =>
-                                      removeInsuranceClassFields(input.id, index)
+                                      removeLabServicesFields(input.id, index)
                                     }
-                                    className="remove-insurance"
+                                    className="remove-laboratorium"
                                   >
                                     <i className="simple-icon-trash"></i>
                                   </Button>
@@ -1013,7 +1138,7 @@ const Data = ({ match, history, loading, error }) => {
                         color="primary"
                         // style={{ float: "right" }}
                         className="mb-2"
-                        onClick={addInsuranceClassFields}
+                        onClick={addLabServicesFields}
                       >
                         Tambah
                       </Button>
@@ -1037,7 +1162,7 @@ const Data = ({ match, history, loading, error }) => {
                     &nbsp;&nbsp;
                     <Button
                       color="primary"
-                      // onClick={(e) => onInsuranceSubmit(e)}
+                      // onClick={(e) => onLaboratoriumSubmit(e)}
                     >
                       Simpan
                     </Button>
@@ -1047,8 +1172,8 @@ const Data = ({ match, history, loading, error }) => {
             </CardBody>
             : <CardBody style={{ textAlign: 'center', verticalAlign: 'middle'}}>
                 <img src="/assets/empty.svg" width={150} className="mt-5 mb-3"/>
-                <p className="mb-5">Silahkan memilih asuransi untuk melihat, mengubah, menghapus, mengarsipkan, dan mengaktifkan data asuransi.
-                  Silahkan klik tombol tambah untuk menambahkan asuransi baru.</p>
+                <p className="mb-5">Silahkan memilih laboratorium untuk melihat, mengubah, menghapus, mengarsipkan, dan mengaktifkan data laboratorium.
+                  Silahkan klik tombol tambah untuk menambahkan laboratorium baru.</p>
             </CardBody> }
           </Card>
         </Colxx>
@@ -1057,9 +1182,9 @@ const Data = ({ match, history, loading, error }) => {
           isOpen={modalArchive}
           toggle={() => setModalArchive(!modalArchive)}
         >
-          <ModalHeader>Arsip Asuransi</ModalHeader>
+          <ModalHeader>Arsip Laboratorium</ModalHeader>
           <ModalBody>
-            <h5>Apakah Anda ingin {insuranceStatus == 1 ?  'mengarsipkan'  : 'aktivasi' } <b>{insuranceName}</b>?</h5>
+            <h5>Apakah Anda ingin {laboratoriumStatus == 1 ?  'mengarsipkan'  : 'aktivasi' } <b>{laboratoriumName}</b>?</h5>
           </ModalBody>
           <ModalFooter>
             <Button
@@ -1080,9 +1205,9 @@ const Data = ({ match, history, loading, error }) => {
           isOpen={modalDelete}
           toggle={() => setModalDelete(!modalDelete)}
         >
-          <ModalHeader>Hapus Asuransi</ModalHeader>
+          <ModalHeader>Hapus Laboratorium</ModalHeader>
           <ModalBody>
-            <h5>Apakah Anda ingin menghapus <b>{insuranceName}</b>?</h5>
+            <h5>Apakah Anda ingin menghapus <b>{laboratoriumName}</b>?</h5>
           </ModalBody>
           <ModalFooter>
             <Button
@@ -1106,7 +1231,7 @@ const Data = ({ match, history, loading, error }) => {
         className="float-btn"
         onClick={(e) => resetForm(e, true)}
       >
-        <i className="iconsminds-library"></i> Tambah Asuransi
+        <i className="iconsminds-library"></i> Tambah Laboratorium
       </Button> */}
     </>
   );

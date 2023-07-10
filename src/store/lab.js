@@ -20,4 +20,26 @@ const labTotalPage = (state = 0, action) => {
     }
 }
 
-export { lab, labTotalPage } ;
+const labServices = (state = [], action) => {
+    switch (action.type) {
+        case "GET_LAB_SERVICES":
+            return action.payload;
+            break;
+        default:
+            return state;
+            break;
+    }
+}
+
+const labServicesTotalPage = (state = 0, action) => {
+    switch (action.type) {
+        case "GET_TOTAL_PAGE_LAB_SERVICES":
+            return action.payload;
+            break;
+        default:
+            return state;
+            break;
+    }
+}
+
+export { lab, labTotalPage, labServices, labServicesTotalPage } ;
