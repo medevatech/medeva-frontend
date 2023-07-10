@@ -55,7 +55,6 @@ import divisionAPI from "api/division";
 import clinicAPI from "api/clinic";
 import employeeAPI from "api/employee";
 import scheduleAPI from "api/schedule";
-import doctorScheduleAPI from "api/schedule/doctor";
 
 import Swal from "sweetalert2";
 import moment from "moment";
