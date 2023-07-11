@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, useEffect } from 'react';
 import { connect } from 'react-redux';
 import ReactDOM from 'react-dom';
 import { Nav, NavItem, Collapse } from 'reactstrap';
@@ -24,6 +24,7 @@ class Sidebar extends Component {
       collapsedMenus: [],
     };
   }
+    
 
   handleWindowResize = (event) => {
     if (event && !event.isTrusted) {

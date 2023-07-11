@@ -653,9 +653,6 @@ const Data = ({ match, history, loading, error }) => {
     if (searchKlinik !== "") {
       params = `${params}&searchKlinik=${searchKlinik}`;
     }
-    if (!userData.roles.includes('isDev')) {
-      params = `${params}&searchKlinik=${userData.id_klinik}`;
-    }
     if (searchStatus !== "") {
       params = `${params}&searchStatus=${searchStatus}`;
     }

@@ -497,7 +497,7 @@ const Data = ({ match, history, loading, error }) => {
     } catch (e) {
       console.log(e);
     } finally {
-      getLabServicesByLabId(id)
+      getLabServicesByLabId(id);
     }
 
     // console.log(dataStatusLaboratorium);

@@ -65,12 +65,12 @@ const App = ({ match }) => {
             <ProtectedRoute
               path={`${match.url}/target-pps`}
               component={TargetPPS}
-              roles={[ "isDev", "isManager", "isAdmin" ]}
+              roles={[ "isDev", "isFinance", "isManajemen" ]}
             />
             <ProtectedRoute
               path={`${match.url}/target-ffs`}
               component={TargetFFS}
-              roles={[ "isDev", "isManager", "isAdmin" ]}
+              roles={[ "isDev", "isFinance", "isManajemen" ]}
             />
             <ProtectedRoute
               path={`${match.url}/list`}

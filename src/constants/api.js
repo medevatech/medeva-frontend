@@ -54,11 +54,11 @@ const api = {
     archive: '/pasien/archive',
     activate: '/pasien/activate',
     clinicalRules: '/tata-laksana',
-    clinic: '/klinik-pasien',
-    clinicByClinic: '/klinik-pasien/klinik',
-    clinicByPatient: '/klinik-pasien/pasien',
-    clinicArchive: '/klinik-pasien/archive',
-    clinicActivate: '/klinik-pasien/activate'
+    registered: '/terdaftar',
+    registeredByClinic: '/terdaftar/klinik',
+    registeredByPatient: '/terdaftar/pasien',
+    registeredArchive: '/terdaftar/archive',
+    registeredActivate: '/terdaftar/activate'
   },
   insurance: {
     all: '/asuransi',
@@ -143,6 +143,12 @@ const api = {
     all: '/penyakit', // MASTER OF 'PENYAKIT' FIELD
     getAll: 'penyakit/all'
   },
+  medService: {
+    all: '/klinik-jasa',
+    archive: '/klinik-jasa/archive',
+    activate: '/klinik-jasa/activate',
+    clinic: "/klinik-jasa/klinik",
+  },
   medicine: {
     all: '/obat',  // MASTER OF 'OBAT' FIELD
     archive: '/obat/archive',
@@ -182,6 +188,12 @@ const api = {
     treatment: '/pemeriksaan/layanan-lab', // GET LAB BY TREATMENT
     support: '/pemeriksaan-penunjang', // JOIN TABLE ID RECORD TO ID LAB TO ID INSPECT
     supportByRecord: 'pemeriksaan-penunjang/kunjungan'
+  },
+  property: {
+    all: '/klinik-aset-tanah-bangunan',
+    archive: '/klinik-aset-tanah-bangunan/archive',
+    activate: '/klinik-aset-tanah-bangunan/activate',
+    clinic: "/klinik-aset-tanah-bangunan/klinik",
   },
   vendor: {
     all: '/vendor',

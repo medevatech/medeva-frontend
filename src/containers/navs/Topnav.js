@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import {
   UncontrolledDropdown,
@@ -24,6 +24,8 @@ import {
 } from 'constants/defaultValues';
 
 import { MobileMenuIcon, MenuIcon } from 'components/svg';
+
+const userData = JSON.parse(localStorage.getItem('user_data'));
 
 const TopNav = ({
   history,
@@ -151,8 +153,12 @@ const TopNav = ({
   const handleLogout = () => {
     // logoutUserAction(history);
     // history.push("../login");
+    window.location.reload(false);
     localStorage.clear();
-    history.push('../');
+
+    setTimeout(() => {
+      history.push('../');
+    }, 500);
   };
 
   const menuButtonClick = (e, _clickCount, _conClassnames) => {

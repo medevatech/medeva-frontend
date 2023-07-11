@@ -9,10 +9,12 @@ import { vitalSigns, vitalSignsTotalPage, allVitalSignsByPatient } from "store/v
 import { record, recordTotalPage, allRecordByPatient } from "store/record";
 import { schedule, scheduleTotalPage } from "store/schedule";
 import { shift, shiftTotalPage } from "store/shift";
+import { property, propertyTotalPage, propertyClinic, propertyClinicTotalPage } from "store/property"
 import { employee, employeeTotalPage } from "store/employee";
 import { division, divisionTotalPage } from "store/division";
 import { queue, queueTotalPage } from "store/queue";
 import { disease, diseaseTotalPage } from 'store/disease';
+import { medService, medServiceTotalPage, medServiceClinic, medServiceClinicTotalPage } from 'store/med-service';
 import { medicine, medicineTotalPage, medicineList, medicineListTotalPage, medicineClinic, medicineClinicTotalPage } from 'store/medicine';
 import { consumables, consumablesTotalPage, consumablesClinic, consumablesClinicTotalPage, consumablesService, consumablesServiceTotalPage } from 'store/consumables';
 import { lab, labTotalPage, labServices, labServicesTotalPage } from 'store/lab';
@@ -33,11 +35,14 @@ const reducers = combineReducers({
   partnership, partnershipTotalPage,
   queue, queueTotalPage,
   vitalSigns, vitalSignsTotalPage, allVitalSignsByPatient,
-  record, recordTotalPage, schedule, scheduleTotalPage,
+  record, recordTotalPage,
+  schedule, scheduleTotalPage,
   shift, shiftTotalPage,
+  property, propertyTotalPage, propertyClinic, propertyClinicTotalPage,
   employee, employeeTotalPage,
   division, divisionTotalPage,
   disease, diseaseTotalPage,
+  medService, medServiceTotalPage, medServiceClinic, medServiceClinicTotalPage,
   medicine, medicineTotalPage, medicineList, medicineListTotalPage, medicineClinic, medicineClinicTotalPage,
   consumables, consumablesTotalPage, consumablesClinic, consumablesClinicTotalPage, consumablesService, consumablesServiceTotalPage,
   lab, labTotalPage, labServices, labServicesTotalPage,

@@ -41,7 +41,7 @@ import CustomSelectInput from "components/common/CustomSelectInput";
 
 import patientAPI from "api/patient";
 import clinicAPI from "api/clinic";
-import memberAPI from "api/patient/clinic";
+import registeredAPI from "api/patient/registered";
 import insuranceAPI from "api/insurance";
 import insuranceClassAPI from "api/insurance/class";
 import allergyAPI from "api/allergy";
@@ -266,7 +266,7 @@ const Data = ({ match }) => {
   const [patientName, setPatientName] = useState('');
   const [patientSubmit, setPatientSubmit] = useState('');
   const [clinicID, setClinicID] = useState(!userData.roles.includes('isDev') ? userData.id_klinik : '');
-  const [memberID, setMemberID] = useState('');
+  const [registeredID, setRegisteredID] = useState('');
 
   const [insurance, setInsurance] = useState([
     { id: '', id_pasien: patientID, id_asuransi: "", id_asuransi_kelas: "", nomor_asuransi: "" }
@@ -391,7 +391,7 @@ const Data = ({ match }) => {
     nama_kelurahan: ''
   });
 
-  const [member, setMember] = useState({
+  const [registered, setRegistered] = useState({
     id_pasien: patientID,
     id_klinik: clinicID,
   });
@@ -700,7 +700,7 @@ const Data = ({ match }) => {
     // console.log('e', e);
 
     if (e.name === 'id_klinik') {
-      setMember(current => {
+      setRegistered(current => {
           return { ...current, id_klinik: e ? e.value : ''}
       })
 
@@ -780,13 +780,13 @@ const Data = ({ match }) => {
     e.preventDefault();
     setPatientSubmit("process");
 
-    setMember(current => {
+    setRegistered(current => {
         return { ...current, id_klinik: clinicID}
     })
 
     let isError = false;
 
-    for(let [key, value] of Object.entries(member)) {
+    for(let [key, value] of Object.entries(registered)) {
       if((key === 'id_klinik' && value === '')){
         validate(e, key, value);
         isError = true;
@@ -890,14 +890,14 @@ const Data = ({ match }) => {
     setPatientSubmit("done");
   };
 
-  const onMemberSubmit = async (e) => {
+  const onregisteredSubmit = async (e) => {
     e && e.preventDefault();
       
-    member.id_pasien = patientID;
+    registered.id_pasien = patientID;
 
     if(dataStatusPatient === 'add') {
       try {
-        const response = await memberAPI.add(member);
+        const response = await registeredAPI.add(registered);
         // console.log(response);
   
         if (response.status == 200) {
@@ -936,7 +936,7 @@ const Data = ({ match }) => {
       }
     } else if (dataStatusPatient === 'update') {
       try {
-        const response = await memberAPI.update(member, member.id);
+        const response = await registeredAPI.update(registered, registered.id);
         // console.log(response);
   
         if (response.status == 200) {
@@ -1361,7 +1361,7 @@ const Data = ({ match }) => {
         changeKota(id_provinsi, editAddress);
       }
         
-      getMemberByPatientId(data.id);
+      getregisteredByPatientId(data.id);
     } catch (e) {
       console.log(e);
     } finally {
@@ -1372,17 +1372,17 @@ const Data = ({ match }) => {
     // console.log(dataStatusPatient);
   };
 
-  const getMemberByPatientId = async (id) => {
+  const getregisteredByPatientId = async (id) => {
     // e && e.preventDefault();
     // e && resetForm(e);
 
     try {
-      const res = await memberAPI.getClinicByPatient(`/${id}`);
+      const res = await registeredAPI.getRegisteredByPatient(`/${id}`);
       let data = res.data.data[0];
 
       // console.log(data);
 
-      setMemberID(data.id);
+      setRegisteredID(data.id);
       setContract({
         id: data.id,
         id_klinik: data.id_klinik,
@@ -1905,7 +1905,7 @@ const Data = ({ match }) => {
       setTimeout(() => {
 
         if(patient.nama_lengkap !== "" > 0 && patientID) {
-          onMemberSubmit("");
+          onregisteredSubmit("");
         }
 
         if(allergy.length > 0 && allergy[0].id_alergi !== "" && patientID) {
@@ -2163,7 +2163,7 @@ const Data = ({ match }) => {
                         name="id_klinik"
                         id="id_klinik"
                         options={selectedKlinik}
-                        value={selectedKlinik.find(item => item.value === member.id_klinik)}
+                        value={selectedKlinik.find(item => item.value === registered.id_klinik)}
                         onChange={onChange}
                         placeholder="Pilih Klinik"
                       />

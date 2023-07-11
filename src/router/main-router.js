@@ -57,6 +57,9 @@ const Service = React.lazy(() =>
 const Medicine = React.lazy(() =>
   import(/* webpackChunkName: "views-medicine" */ '../views/medicine')
 );
+const MedService = React.lazy(() =>
+  import(/* webpackChunkName: "views-med-service" */ '../views/med-service')
+);
 const Laboratorium = React.lazy(() =>
   import(/* webpackChunkName: "views-laboratorium" */ '../views/laboratorium')
 );
@@ -65,6 +68,9 @@ const Consumables = React.lazy(() =>
 );
 const Schedule = React.lazy(() =>
   import(/* webpackChunkName: "views-schedule" */ '../views/schedule')
+);
+const Property = React.lazy(() =>
+  import(/* webpackChunkName: "views-property" */ '../views/property')
 );
 const MasterData = React.lazy(() =>
   import(/* webpackChunkName: "views-master-data" */ '../views/master-data')
@@ -201,6 +207,12 @@ const MainRouter = ( ) => {
                 />
                 <ProtectedRoute
                 // <Route
+                    path="/med-service"
+                    component={MedService}
+                    roles={[ "isDev", "isManager", "isAdmin" ]}
+                />
+                <ProtectedRoute
+                // <Route
                     path="/laboratorium"
                     component={Laboratorium}
                     roles={[ "isDev", "isManager", "isAdmin" ]}
@@ -222,6 +234,12 @@ const MainRouter = ( ) => {
                     path="/individual-schedule"
                     component={individualSchedule}
                     roles={[ "isDev", "isManager", "isAdmin", "isResepsionis", "isPerawat", "isDokter" ]}
+                />
+                <ProtectedRoute
+                // <Route
+                    path="/property"
+                    component={Property}
+                    roles={[ "isDev", "isManager", "isAdmin" ]}
                 />
                 <ProtectedRoute
                 // <Route
